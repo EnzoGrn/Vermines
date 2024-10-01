@@ -1,0 +1,73 @@
+name: Sync Issue Comments
+
+on:
+  issue_comment:
+    types: [created, edited, deleted]
+
+jobs:
+  sync_comment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Set up variables
+        run: |
+          issue_number=${{ github.event.issue.number }}
+          action_type=${{ github.event.action }}
+          comment_body="${{ github.event.comment.body }}"
+
+          remote_repo="EnzoGrn/StardewEditor"
+          from_repo="${{ github.repository }}"
+          
+          # Lire le mapping des issues seulement si le fichier existe
+          if [ -f .github/issue_mapping.json ]; then
+            mapping=$(cat .github/issue_mapping.json | jq -r --arg issue_number "$issue_number" '.[$issue_number]')
+          else
+            mapping=$issue_number
+          fi
+          echo "mapped_issue_number=$mapping" >> $GITHUB_ENV  # Stocker le numéro mappé
+
+          # Stocker les variables dans l'environnement
+          echo "issue_number=$issue_number" >> $GITHUB_ENV
+          echo "action_type=$action_type" >> $GITHUB_ENV
+          echo "comment_body=$comment_body" >> $GITHUB_ENV
+          echo "remote_repo=$remote_repo" >> $GITHUB_ENV
+          echo "from_repo=$from_repo" >> $GITHUB_ENV
+
+      - name: Sync with linked issue
+        run: |
+          if [[ "${{ env.action_type }}" == "created" ]]; then
+            # Créer un nouveau commentaire dans l'issue liée
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.PAT }}" \
+              -H "Content-Type: application/json" \
+              -d "{\"body\": \"${{ env.comment_body }}\n\n Commentaire ajouté depuis ${{ env.from_repo }}#${{ env.issue_number }}\"}" \
+              "https://api.github.com/repos/${{ env.remote_repo }}/issues/${{ env.mapped_issue_number  }}/comments"
+            echo "Commentaire ajouté avec succès à l'issue #${{ env.mapped_issue_number  }}."
+
+          elif [[ "${{ env.action_type }}" == "edited" ]]; then
+            # Récupérer les commentaires de l'issue pour obtenir le dernier commentaire
+            comments=$(curl -s -H "Authorization: token ${{ secrets.PAT }}" \
+            "https://api.github.com/repos/${{ env.remote_repo }}/issues/${{ env.mapped_issue_number  }}/comments")
+
+            # Récupérer l'ID du dernier commentaire
+            comment_id=$(echo "$comments" | jq -r '.[-1].id')
+
+            if [[ "$comment_id" == "null" ]]; then
+              echo "Aucun commentaire trouvé pour l'issue #${{ env.mapped_issue_number  }}."
+              exit 1
+            fi
+
+            # Mettre à jour le dernier commentaire
+            curl -X PATCH \
+              -H "Authorization: token ${{ secrets.PAT }}" \
+              -H "Content-Type: application/json" \
+              -d "{\"body\": \"${{ env.comment_body }} \n\n Commentaire mis à jour depuis ${{ env.from_repo }}#${{ env.issue_number }}\"}" \
+              "https://api.github.com/repos/${{ env.remote_repo }}/issues/comments/$comment_id"
+              echo "Commentaire mis à jour avec succès pour l'issue #${{ env.mapped_issue_number  }}."
+
+          elif [[ "${{ env.action_type }}" == "deleted" ]]; then
+            echo "Le commentaire a été supprimé. Suppression en cascade non prise en charge."
+          fi
