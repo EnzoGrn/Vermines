@@ -1,0 +1,91 @@
+name: Link Issues Across Repositories
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  link_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Display the GitHub event payload
+        run: |
+          cat "$GITHUB_EVENT_PATH"
+      
+      - name: Debug API Request
+        run: |
+          response=$(curl -s -o response.json -w "%{http_code}" -H "Authorization: token ${{ secrets.PAT }}" "https://api.github.com/repos/EnzoGrn/autorelease/issues")
+          echo "HTTP Response Code: $response"
+          cat response.json
+
+      - name: Extract issue details
+        id: extract
+        run: |
+          issue_number=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
+          to_repo="EnzoGrn/StardewEditor"
+          from_repo="${{ github.repository }}"
+          issue_title=$(jq -r '.issue.title' "$GITHUB_EVENT_PATH")
+          issue_body=$(jq -r '.issue.body' "$GITHUB_EVENT_PATH")
+
+          # Vérifier si les valeurs sont vides
+          if [ -z "$issue_number" ] || [ -z "$issue_title" ]; then
+            echo "Erreur : numéro d'issue ou titre manquant."
+            exit 1
+          fi
+
+          # Si le corps est vide ou que son contenu est égal à "null", le remplir avec un message par défaut
+          if [ -z "$issue_body" ] || [ "$issue_body" == "null" ]; then
+            issue_body="Issue created by ${{ github.actor }}."
+          fi
+
+          echo "title=$issue_title" >> $GITHUB_ENV
+          echo "body=$issue_body" >> $GITHUB_ENV
+          echo "number=$issue_number" >> $GITHUB_ENV
+          echo "to_repo=$to_repo" >> $GITHUB_ENV
+          echo "from_repo=$from_repo" >> $GITHUB_ENV
+
+      - name: Debug Variables
+        run: |
+          echo "Title: ${{ env.title }}"
+          echo "Body: ${{ env.body }}"
+          echo "Number: ${{ env.number }}"
+
+      - name: Check if issue already exists
+        id: check_issue
+        run: |
+          existing_issues=$(curl -s -H "Authorization: token ${{ secrets.PAT }}" \
+          "https://api.github.com/repos/${{ env.to_repo }}/issues?state=open&filter=all")
+          
+          if echo "$existing_issues" | grep -q '"message":'; then
+            echo "Erreur lors de la récupération des issues : $existing_issues"
+            exit 1
+          fi
+
+          echo "Existing Issues Response: $existing_issues"
+
+          issue_exists=$(echo "$existing_issues" | jq --arg title "${{ env.title }}" \
+          'map(select(.title == $title)) | length')
+
+          if [ "$issue_exists" -gt 0 ]; then
+            echo "L'issue existe déjà."
+            echo "exists=true" >> $GITHUB_ENV
+          else
+            echo "L'issue n'existe pas."
+            echo "exists=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create issue if not exists
+        if: env.exists == 'false'
+        run: |
+          echo "{\"title\": \"${{ env.title }}\", \"body\": \"${{ env.body }} \n\n Linked to: ${{ env.from_repo }}#${{ env.number }}\"}" > /tmp/issue_data.json
+
+          # Utiliser ce fichier pour la requête curl
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.PAT }}" \
+            -H "Content-Type: application/json" \
+            -d @/tmp/issue_data.json \
+            https://api.github.com/repos/${{ env.to_repo }}/issues
