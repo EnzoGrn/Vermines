@@ -5,10 +5,10 @@ name: Check if Unity Project build correctly🔨
 # The result of the build can be found in the artifacts of the workflow.
 
 on:
-  # Work only on pull request with any branches
-  pull_request:
+  # Work only when we push on the main branch
+  push:
     branches:
-      - '**'
+      - main
   workflow_dispatch:
 
 env:
@@ -76,6 +76,9 @@ jobs:
             Library-${{ env.projectPath }}-
             Library-
       - name: Build project
+        # This step can failed if the Library folder is exacly the same as the cache.
+        # It will say:
+        # - Error: Branch is dirty. Refusing to base semantic version on uncommitted changes
         uses: game-ci/unity-builder@v4.2.3
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -91,6 +94,58 @@ jobs:
         with:
           name: Build-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        targetPlatform:
+          # The target platform to build the project for.
+          # Need to add more platform if the project need to be built for more platform.
+          # Example : StandaloneOSX, StandaloneLinux64, WebGL, iOS, Android, etc...
+          - StandaloneWindows64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Get last commit message
+        id: get_commit_message
+        run: |
+          LAST_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          echo "LAST_COMMIT_MESSAGE=${LAST_COMMIT_MESSAGE//$'\n'/\\n}" >> $GITHUB_ENV
+      - name: Extract version from commit message
+        id: version
+        run: |
+          TAG=$(echo "${{ env.LAST_COMMIT_MESSAGE }}" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z]+)?')
+          echo "Extracted TAG: $TAG"
+          if [ -z "$TAG" ]; then
+            echo "No valid tag found in the commit message."
+            exit 1
+          fi
+          TAG="v$TAG"  # Ajoute le préfixe 'v'
+          echo "TAG=$TAG" >> $GITHUB_ENV
+
+      - name: Download binaries
+        uses: actions/download-artifact@v3
+        with:
+          path: build
+      - name: List files in build directory # Debug for showing all the files that contains the Unity build.
+        run: ls -R build
+        shell: pwsh
+      - name: Create a ZIP of the build folder
+        run: |
+          zip -r build/Release.zip build/Build-${{ matrix.targetPlatform }}/*
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG }}
+          body: 'Auto-generated release'
+          files: |
+            build/Release.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   testRunner:
     needs:
       - checkLicense
