@@ -18,7 +18,7 @@ jobs:
           action_type=${{ github.event.action }}
           comment_body="${{ github.event.comment.body }}"
 
-          remote_repo="EnzoGrn/StardewEditor"
+          remote_repo="EpitechPromo2026/G-EIP-700-REN-7-1-eip-enzo.garnier"
           from_repo="${{ github.repository }}"
           
           # Lire le mapping des issues seulement si le fichier existe
