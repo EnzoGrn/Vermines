@@ -95,8 +95,58 @@ jobs:
           name: Build-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
 
+  testRunner:
+    needs:
+      - checkLicense
+      - build
+    strategy:
+      matrix:
+        targetPlatform:
+          # The target platform to build the project for.
+          # Need to add more platform if the project need to be built for more platform.
+          # Example : StandaloneOSX, StandaloneLinux64, WebGL, iOS, Android, etc...
+          - StandaloneWindows64
+    name: Test all modes 🧪
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Create LFS file list
+        run: git lfs ls-files | cut -d ' ' -f1 | sort > .lfs-asset-id
+      - name: Restore LFS cache
+        uses: actions/cache@v2
+        id: lfs-cache
+        with:
+          path: .git/lfs
+          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-asset-id') }}
+      - name: Git LFS pull
+        run: |
+          git lfs pull
+          git add .
+          git reset --hard
+      - name: Restore library cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.projectPath }}/Library
+          key: Library-${{ env.projectPath }}-{{ $matrix.targetPlatform }}
+          restore-keys: |
+            Library-${{ env.projectPath }}-
+            Library-
+      - name: Run Test
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ env.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
+        with:
+          projectPath: ${{ env.projectPath }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          customImage: ${{ env.dockerImage }}
+
   release:
-    needs: build
+    needs:
+      - build
+      - testRunner
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -145,51 +195,3 @@ jobs:
             build/Release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  testRunner:
-    needs:
-      - checkLicense
-      - build
-    strategy:
-      matrix:
-        targetPlatform:
-          # The target platform to build the project for.
-          # Need to add more platform if the project need to be built for more platform.
-          # Example : StandaloneOSX, StandaloneLinux64, WebGL, iOS, Android, etc...
-          - StandaloneWindows64
-    name: Test all modes 🧪
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Create LFS file list
-        run: git lfs ls-files | cut -d ' ' -f1 | sort > .lfs-asset-id
-      - name: Restore LFS cache
-        uses: actions/cache@v2
-        id: lfs-cache
-        with:
-          path: .git/lfs
-          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-asset-id') }}
-      - name: Git LFS pull
-        run: |
-          git lfs pull
-          git add .
-          git reset --hard
-      - name: Restore library cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.projectPath }}/Library
-          key: Library-${{ env.projectPath }}-{{ $matrix.targetPlatform }}
-          restore-keys: |
-            Library-${{ env.projectPath }}-
-            Library-
-      - name: Run Test
-        uses: game-ci/unity-test-runner@v4
-        env:
-          UNITY_LICENSE: ${{ env.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
-        with:
-          projectPath: ${{ env.projectPath }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          customImage: ${{ env.dockerImage }}
