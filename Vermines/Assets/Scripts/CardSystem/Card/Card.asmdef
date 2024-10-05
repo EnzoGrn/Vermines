@@ -1,0 +1,18 @@
+{
+    "name": "Card",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8ca27b9a3fbe270419ba12ac4ae7135f",
+        "GUID:f47db7b9d1d96834e9d858230d433232",
+        "GUID:68d99f03c00db8c4181ede6a81735cb0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -2,6 +2,7 @@ using Defective.JSON;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Json;
+using UnityEditor;
 using UnityEngine;
 
 /*
@@ -27,30 +28,36 @@ public class JSONCardParser {
         CardData cardData = ScriptableObject.CreateInstance<CardData>();
 
         // Parse JSON
-        JSONObject json = new JSONObject(cardConfig);
+        JSONObject json = new(cardConfig);
 
         Debug.Assert(json != null, "The JSON file is not valid.");
 
         // Parse default values of card
 
         if (json["name"] != null)
-            cardData.Name = json["name"].ToString();
+            cardData.Name = json["name"].ToString().Trim('\"');
         
         if (json["description"] != null)
-            cardData.Description = json["description"].ToString(); // TODO: Maybe letter Description will have bold world that can display a tooltip with the description of the effect
+            cardData.Description = json["description"].ToString().Trim('\"'); // TODO: Maybe letter Description will have bold world that can display a tooltip with the description of the effect
 
-        if (json["type"] != null)
-            cardData.Type = (CardType)System.Enum.Parse(typeof(CardType), json["type"].ToString());
+        if (json["type"] != null) {
+
+            // TODO: When trying to pass a string to the JSON, he didn't recognize it, so I put the type in int
+            /*string typeString = json["type"].ToString();
+
+            cardData.Type = CardTypeMethods.ToEnum(typeString);*/
+
+            cardData.Type = (CardType)json["type"].intValue;
+        }
 
         if (json["eloquence"] != null)
-            // Convert to int
             cardData.Eloquence = json["eloquence"].intValue;
 
         if (json["souls"] != null)
             cardData.Souls = json["souls"].intValue;
 
         if (json["sprite"] != null)
-            cardData.Sprite = Resources.Load<Sprite>("Sprites/Card/" + cardData.Type.ToString() + "/" + json["sprite"].ToString());
+            cardData.Sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Card/" + cardData.Type.ToString().Trim('\"') + "/" + json["sprite"].ToString().Trim('\"') + ".png");
 
         // Parse effects
         ParseEffect(json, "passiveEffect", "passiveParameters", (effect, parameters) => {
@@ -79,7 +86,7 @@ public class JSONCardParser {
     private void ParseEffect(JSONObject json, string effectKey, string parametersKey, System.Action<string, List<object>> applyEffect)
     {
         if (json[effectKey] != null) {
-            List<object> parameters = new List<object>();
+            List<object> parameters = new();
 
             if (json[parametersKey] != null) {
                 JSONObject parameterArray = json[parametersKey];
@@ -87,7 +94,7 @@ public class JSONCardParser {
                 foreach (var parameter in parameterArray) {
                     if (parameter is JSONObject value) {
                         if (!string.IsNullOrEmpty(value.ToString()))
-                            parameters.Add(value.ToString());
+                            parameters.Add(value.ToString().Trim('\"'));
                         else if (value.isNumber)
                             parameters.Add(value.intValue);
                         else if (value.isBool)
