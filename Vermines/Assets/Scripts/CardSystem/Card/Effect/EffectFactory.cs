@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-static class PassiveFactory {
+public static class PassiveFactory {
 
     static public PassiveEffect Create(string effectName, List<object> parameters)
     {
@@ -19,7 +19,7 @@ static class PassiveFactory {
     }
 }
 
-static class TurnStartFactory {
+public static class TurnStartFactory {
 
     static public TurnStartEffect Create(string effectName, List<object> parameters)
     {
@@ -36,7 +36,7 @@ static class TurnStartFactory {
     }
 }
 
-static class PlayedFactory
+public static class PlayedFactory
 {
 
     static public PlayedEffect Create(string effectName, List<object> parameters)
@@ -54,7 +54,7 @@ static class PlayedFactory
     }
 }
 
-static class DiscardFactory {
+public static class DiscardFactory {
 
     static public DiscardEffect Create(string effectName, List<object> parameters)
     {
@@ -71,7 +71,7 @@ static class DiscardFactory {
     }
 }
 
-static class SacrificeFactory {
+public static class SacrificeFactory {
 
     static public SacrificeEffect Create(string effectName, List<object> parameters)
     {

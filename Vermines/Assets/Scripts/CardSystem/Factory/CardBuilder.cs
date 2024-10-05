@@ -16,11 +16,23 @@ public class CardBuilder {
                 _Card = new EquipmentCard();
                 break;
             case CardType.Bee:
+                _Card = new PartisanCard();
+                break;
             case CardType.Cricket:
+                _Card = new PartisanCard();
+                break;
             case CardType.Firefly:
+                _Card = new PartisanCard();
+                break;
             case CardType.Fly:
+                _Card = new PartisanCard();
+                break;
             case CardType.Ladybug:
+                _Card = new PartisanCard();
+                break;
             case CardType.Mosquito:
+                _Card = new PartisanCard();
+                break;
             case CardType.Scarab:
                 _Card = new PartisanCard();
                 break;
@@ -33,7 +45,8 @@ public class CardBuilder {
 
     public CardBuilder SetCardData(CardData data)
     {
-        _Card.Data = data;
+        if (_Card != null)
+            _Card.Data = data;
 
         return this;
     }
