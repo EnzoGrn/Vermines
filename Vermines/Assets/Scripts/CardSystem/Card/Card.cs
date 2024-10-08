@@ -8,6 +8,8 @@ using UnityEngine;
 public interface ICard {
 
     public CardData Data { get; set; }
+
+    public bool HasCost();
 }
 
 /**
@@ -27,5 +29,10 @@ public abstract class Card : ICard
             if (value != null)
                 _Data = value;
         }
+    }
+
+    public bool HasCost()
+    {
+        return Data.Eloquence != -1;
     }
 }
