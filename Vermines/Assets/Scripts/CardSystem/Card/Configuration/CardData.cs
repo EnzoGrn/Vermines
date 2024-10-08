@@ -18,7 +18,7 @@ public class CardData : ScriptableObject {
 
     public CardType Type; // !< The type of the card (e.g. CardType.Bee)
 
-    public int Eloquence; // !< The eloquence of the card (e.g. 14) (The eloquence is the cost of the card in the market)
+    public int Eloquence = -1; // !< The eloquence of the card (e.g. 14) (The eloquence is the cost of the card in the market) (-1 if the card has no cost)
     public int Souls;     // !< The souls of the card (e.g. 25) (The souls are the number of souls that the card gives when it is sacrificed)
 
     public Sprite Sprite; // !< The sprite of the card (e.g. The image of the card, nothing is displayed if it is null)
