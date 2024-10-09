@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class CardContainer : MonoBehaviour {
 
+    public bool IsMyContainer = true;
+
     [Header("Constraints")]
     [SerializeField]
     private bool _ForceFitContainer;
@@ -94,6 +96,8 @@ public class CardContainer : MonoBehaviour {
 
             if (wrapper == null)
                 wrapper = card.gameObject.AddComponent<CardWrapper>();
+            wrapper.IsMyContainer = IsMyContainer;
+
             _Cards.Add(wrapper);
 
             AddOtherComponentsIfNeeded(wrapper);
@@ -125,6 +129,8 @@ public class CardContainer : MonoBehaviour {
             InitCards();
         if (_Cards.Count == 0)
             return;
+        if (_Cards.Count >= 6)
+            _ForceFitContainer = true;
         SetCardsPosition();
         SetCardsRotation();
         SetCardsUILayers();

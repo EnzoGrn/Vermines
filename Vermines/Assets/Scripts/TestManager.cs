@@ -6,6 +6,7 @@ public class TestManager : MonoBehaviour {
 
     public GameObject CardUIPrefab;
     public GameObject CardContainer;
+    public GameObject EnemyContainer;
 
     public CardUIView BuildUIView(Card card)
     {
@@ -76,5 +77,19 @@ public class TestManager : MonoBehaviour {
         card3.transform.SetParent(CardContainer.transform);
         card4.transform.SetParent(CardContainer.transform);
         card5.transform.SetParent(CardContainer.transform);
+
+        CardUIView card10 = BuildUIView(CardFactory.CreateCard(json1));
+        CardUIView card11 = BuildUIView(CardFactory.CreateCard(json2));
+        CardUIView card12 = BuildUIView(CardFactory.CreateCard(json3));
+        CardUIView card13 = BuildUIView(CardFactory.CreateCard(json3));
+        CardUIView card14 = BuildUIView(CardFactory.CreateCard(json3));
+        CardUIView card15 = BuildUIView(CardFactory.CreateCard(json4));
+
+        card10.transform.SetParent(EnemyContainer.transform);
+        card11.transform.SetParent(EnemyContainer.transform);
+        card12.transform.SetParent(EnemyContainer.transform);
+        card13.transform.SetParent(EnemyContainer.transform);
+        card14.transform.SetParent(EnemyContainer.transform);
+        card15.transform.SetParent(EnemyContainer.transform);
     }
 }
