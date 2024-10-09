@@ -5,6 +5,7 @@ using UnityEngine;
 public class TestManager : MonoBehaviour {
 
     public GameObject CardUIPrefab;
+    public GameObject CardContainer;
 
     public CardUIView BuildUIView(Card card)
     {
@@ -51,14 +52,29 @@ public class TestManager : MonoBehaviour {
             }
         ";
 
+        string json4 = @"
+            {
+                ""name"": ""Prêtre"",
+                ""description"": ""Gagnez <b>2E</b>."",
+                ""type"": 5,
+                ""eloquence"": 5,
+                ""souls"": 15,
+                ""sprite"": ""Priest""
+            }
+        ";
+
         CardUIView card0 = BuildUIView(CardFactory.CreateCard(json1));
         CardUIView card1 = BuildUIView(CardFactory.CreateCard(json2));
         CardUIView card2 = BuildUIView(CardFactory.CreateCard(json3));
+        CardUIView card3 = BuildUIView(CardFactory.CreateCard(json3));
+        CardUIView card4 = BuildUIView(CardFactory.CreateCard(json3));
+        CardUIView card5 = BuildUIView(CardFactory.CreateCard(json4));
 
-        GameObject UI = GameObject.Find("UI");
-
-        card0.transform.SetParent(UI.transform);
-        card1.transform.SetParent(UI.transform);
-        card2.transform.SetParent(UI.transform);
+        card0.transform.SetParent(CardContainer.transform);
+        card1.transform.SetParent(CardContainer.transform);
+        card2.transform.SetParent(CardContainer.transform);
+        card3.transform.SetParent(CardContainer.transform);
+        card4.transform.SetParent(CardContainer.transform);
+        card5.transform.SetParent(CardContainer.transform);
     }
 }

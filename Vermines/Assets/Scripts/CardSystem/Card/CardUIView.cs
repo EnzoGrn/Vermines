@@ -64,23 +64,22 @@ public class CardUIView : MonoBehaviour {
 
         CardData data = _Card.Data;
 
-        Debug.Log("Data.type : " + data.Type.ToString());
-
         // -- Changing the background image depending on the card type
-        Background.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Card/" + data.Type.ToString() + "/Background.jpg");
+        Background.sprite = Resources.Load<Sprite>("Sprites/Card/" + data.Type.ToString() + "/Background");
+        //        Background.sprite = Resources.Load<Sprite>("Assets/Resources/Sprites/Card/" + data.Type.ToString() + "/Background.jpg");
 
         // -- Changing the icons depending on the card type
         for (int i = 0; i < Icons.Length; i++) {
-            Icons[i].sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Card/" + data.Type.ToString() + "/Icon.png");
+            Icons[i].sprite = Resources.Load<Sprite>("Sprites/Card/" + data.Type.ToString() + "/Icon");
 
             Icons[i].gameObject.SetActive(Icons[i].sprite != null);
         }
 
         // -- Changing the descriptor field image depending on the card type
         if (data.Type == CardType.Tools || data.Type == CardType.Equipment)
-            DescriptorFieldImages[1] = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/Card/Item_Card_Descriptor.png");
+            DescriptorFieldImages[1] = Resources.Load<Sprite>("Sprites/UI/Card/Item_Card_Descriptor");
         else
-            DescriptorFieldImages[0] = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/Card/Partisan_Card_Descriptor.png");
+            DescriptorFieldImages[0] = Resources.Load<Sprite>("Sprites/UI/Card/Partisan_Card_Descriptor");
 
         // -- Update Character Art
         if (data.Sprite != null) {
