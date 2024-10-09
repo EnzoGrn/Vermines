@@ -53,11 +53,8 @@ public class CardUIView : MonoBehaviour {
 
     private void UpdateUI()
     {
-        if (_Card == null) {
-            Debug.LogWarning("Card is null.");
-
+        if (_Card == null)
             return;
-        }
 
         Debug.Assert(DescriptorFieldImages.Length == 2, "DescriptorFieldImages must have 2 elements.");
         Debug.Assert(Icons.Length == 2, "Icons must have 2 elements.");
