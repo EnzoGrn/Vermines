@@ -27,9 +27,4 @@ public class PartisanCard : Card {
     {
         Debug.Log("Partisan Card [" + Data.Name + "]: OnDiscard");
     }
-
-    public void OnPlay()
-    {
-        Debug.Log("Partisan Card [" + Data.Name + "]: OnPlay");
-    }
 }

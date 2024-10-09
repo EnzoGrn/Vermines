@@ -10,6 +10,8 @@ public interface ICard {
     public CardData Data { get; set; }
 
     public bool HasCost();
+
+    public void OnPlay();
 }
 
 /**
@@ -34,5 +36,10 @@ public abstract class Card : ICard
     public bool HasCost()
     {
         return Data.Eloquence != -1;
+    }
+
+    public void OnPlay()
+    {
+        Debug.Log("Card [" + Data.Name + "]: OnPlay");
     }
 }
