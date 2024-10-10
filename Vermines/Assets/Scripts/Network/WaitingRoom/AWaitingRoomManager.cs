@@ -29,6 +29,7 @@ public class AWaitingRoomManager : MonoBehaviour
         _networkWaitingRoomManager.OnPlayerLeftRoomAction += OnPlayerLeftRoom;
         _networkWaitingRoomManager.OnLeftRoomAction += OnLeftRoom;
         _networkWaitingRoomManager.OnPlayerEnteredRoomAction += OnPlayerEnteredRoom;
+        _networkWaitingRoomManager.OnMasterCLientCantStartMatchAction += OnMasterCLientCantStartMatch;
     }
 
     #region Callbacks  
@@ -70,6 +71,18 @@ public class AWaitingRoomManager : MonoBehaviour
     #endregion
 
     /*
+     * @brief This method is an event handler for when the master client cant start the match.
+     * 
+     * @param void
+     * 
+     * @return void
+     */
+    public virtual void OnMasterCLientCantStartMatch()
+    {
+        Debug.Log("Master client failed to start the match !");
+    }
+
+    /*
      * @brief This method is used to stop observing events, when the monobehaviour will be destroyed.
      * The base is mandatory to use Observable pattern.
      * 
@@ -82,5 +95,6 @@ public class AWaitingRoomManager : MonoBehaviour
         _networkWaitingRoomManager.OnPlayerLeftRoomAction -= OnPlayerLeftRoom;
         _networkWaitingRoomManager.OnLeftRoomAction -= OnLeftRoom;
         _networkWaitingRoomManager.OnPlayerEnteredRoomAction -= OnPlayerEnteredRoom;
+        _networkWaitingRoomManager.OnMasterCLientCantStartMatchAction -= OnMasterCLientCantStartMatch;
     }
 }

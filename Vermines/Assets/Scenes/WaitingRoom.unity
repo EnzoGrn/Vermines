@@ -447,7 +447,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 411316696}
         m_TargetAssemblyTypeName: NetworkWaitingRoomManager, Assembly-CSharp
-        m_MethodName: LoadLevel
+        m_MethodName: LoadMatch
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
