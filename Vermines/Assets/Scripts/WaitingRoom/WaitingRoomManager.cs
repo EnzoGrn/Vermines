@@ -7,16 +7,6 @@ public class WaitingRoomManager : AWaitingRoomManager
 {
     #region [SerializeField] Private Attributes
     /*
-     * @brief This attribute is used to store the game scene to load.
-     */
-    [SerializeField] private string _gameSceneToLoad; // TODO
-
-    /*
-     * @brief This attribute is used to store the lobby scene to load.
-     */
-    [SerializeField] private string _lobbyScene;
-
-    /*
      * @brief This attribute is used to store and display the code of the actual room.
      */
     [SerializeField] private TMP_Text _roomCodeText;
@@ -116,7 +106,7 @@ public class WaitingRoomManager : AWaitingRoomManager
     #region NetworkManagerCallbacks
     public override void OnLeftRoom()
     {
-        SceneManager.LoadScene(_lobbyScene);
+        Sceneloader.LoadScene(Sceneloader.Scene.Lobby);
     }
 
     public override void OnPlayerLeftRoom()

@@ -127,12 +127,8 @@ public class NetworkWaitingRoomManager : MonoBehaviourPunCallbacks
      */
     public void LoadMatch(string levelName)
     {
-        //Debug.Log("PhotonNetwork.PlayerList.Length " + PhotonNetwork.PlayerList.Length);
-        //Debug.Log("PhotonNetwork.CurrentRoom.MaxPlayers " + PhotonNetwork.CurrentRoom.MaxPlayers);
-
         if (PhotonNetwork.PlayerList.Length != PhotonNetwork.CurrentRoom.MaxPlayers)
         {
-            //Debug.Log("Master client cant start the match cause there is less player than expected!");
             OnMasterClientCantStartMatch();
             return;
 
