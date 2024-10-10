@@ -9,11 +9,6 @@ public class LobbyManager : ALobbyManager
      * @brief This attribute is used to display a message to the client.
      */
     [SerializeField] private TMP_Text _messageText;
-
-    /*
-     * @brief This attribute is used to store the name of the menu scene, to potentially return to the main menu of the game.
-     */
-    [SerializeField] private string _menuSceneName;
     #endregion
 
     /*
@@ -38,7 +33,7 @@ public class LobbyManager : ALobbyManager
     {
         _messageText.text = "Client disconnected to server";
         _messageText.color = Color.red;
-        SceneManager.LoadScene(_menuSceneName, LoadSceneMode.Single);
+        Sceneloader.LoadScene(Sceneloader.Scene.Menu);
     }
     #endregion
 
