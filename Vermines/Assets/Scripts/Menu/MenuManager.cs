@@ -5,19 +5,24 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         
     }
 
     #region Events
+    /*
+     * @brief This method is used to handle the event when the client clicks on the play online button, it will load the lobby scene.
+     * 
+     * @param void
+     * 
+     * @return void
+     */
     public void OnPlayOnlineButtonPressed()
     {
         SceneManager.LoadScene("Lobby", LoadSceneMode.Single);
