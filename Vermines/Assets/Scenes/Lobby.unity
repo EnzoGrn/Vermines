@@ -828,9 +828,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2000596704}
-        m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
-        m_MethodName: OnClickMenuButton
+      - m_Target: {fileID: 2000596705}
+        m_TargetAssemblyTypeName: NetworkLobbyManager, Assembly-CSharp
+        m_MethodName: DisconnectClientFromServer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2015,7 +2015,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _networkLobbyManagerPrefab: {fileID: 2000596705}
   _messageText: {fileID: 1157140458}
-  _menuSceneName: Menu
 --- !u!114 &2000596705
 MonoBehaviour:
   m_ObjectHideFlags: 0

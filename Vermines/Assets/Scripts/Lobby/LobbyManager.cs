@@ -36,18 +36,4 @@ public class LobbyManager : ALobbyManager
         Sceneloader.LoadScene(Sceneloader.Scene.Menu);
     }
     #endregion
-
-    #region Events
-    /*
-     * @brief This method is used to handle the event when the client clicks on the menu button, it disconnect the player from the server.
-     * 
-     * @param void
-     * 
-     * @return void
-     */
-    public void OnClickMenuButton()
-    {
-        _networkLobbyManagerPrefab.DisconnectClientFromServer();
-    }
-    #endregion
 }
