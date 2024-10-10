@@ -65,6 +65,8 @@ public class WaitingRoomManager : AWaitingRoomManager
         {
             _startMatchButton.interactable = true;
             _startMatchButton.enabled = true;
+            _startMatchButton.GetComponentInChildren<TMP_Text>().text = "Start Match";
+
         }
         else
         {
@@ -123,6 +125,7 @@ public class WaitingRoomManager : AWaitingRoomManager
         DisplayRoomCode();
         DisplayPlayersName();
         DisplayTotalPlayer();
+        SetUpStartMatchButton();
     }
 
     public override void OnPlayerEnteredRoom()

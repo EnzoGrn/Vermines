@@ -22,6 +22,12 @@ public class NetworkWaitingRoomManager : MonoBehaviourPunCallbacks
      */
     public event Action OnPlayerEnteredRoomAction;
 
+
+    /*
+     * @brief This event is triggered when the master client can't start the match.
+     */
+    public event Action OnMasterCLientCantStartMatchAction;
+
     #endregion
 
     #region Methods Implementation
@@ -119,8 +125,18 @@ public class NetworkWaitingRoomManager : MonoBehaviourPunCallbacks
      * 
      * @return void
      */
-    public void LoadLevel(string levelName)
+    public void LoadMatch(string levelName)
     {
+        //Debug.Log("PhotonNetwork.PlayerList.Length " + PhotonNetwork.PlayerList.Length);
+        //Debug.Log("PhotonNetwork.CurrentRoom.MaxPlayers " + PhotonNetwork.CurrentRoom.MaxPlayers);
+
+        if (PhotonNetwork.PlayerList.Length != PhotonNetwork.CurrentRoom.MaxPlayers)
+        {
+            //Debug.Log("Master client cant start the match cause there is less player than expected!");
+            OnMasterClientCantStartMatch();
+            return;
+
+        }
         PhotonNetwork.LoadLevel(levelName);
     }
 
@@ -145,5 +161,11 @@ public class NetworkWaitingRoomManager : MonoBehaviourPunCallbacks
         OnPlayerEnteredRoomAction?.Invoke();
     }
     #endregion
+
+    public void OnMasterClientCantStartMatch()
+    {
+        Debug.Log("Master client failed to start the match !");
+        OnMasterCLientCantStartMatchAction.Invoke();
+    }
 
 }

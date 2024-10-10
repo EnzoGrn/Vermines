@@ -83,10 +83,6 @@ public class NetworkRoomManager : MonoBehaviourPunCallbacks
     {
         if (!PhotonNetwork.IsConnectedAndReady || !PhotonNetwork.InLobby || PhotonNetwork.InRoom || roomCode.IsNullOrEmpty())
         {
-            Debug.Log("CLient isCOnnected  : " + PhotonNetwork.IsConnected);
-            Debug.Log("CLient isCOnnectedandReady  : " + PhotonNetwork.IsConnectedAndReady);
-            Debug.Log("CLient isInLobby  : " + PhotonNetwork.InLobby);
-            Debug.Log("CLient isInRoom  : " + PhotonNetwork.InRoom);
             OnJoinRoomFailed(0, "Client not connected or already in a room !");
             return;
         }
