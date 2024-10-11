@@ -112,7 +112,6 @@ public class NetworkWaitingRoomManager : MonoBehaviourPunCallbacks
         string playersNames = "";
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            Debug.Log("Players name : " + player.NickName);
             playersNames += player.NickName + "\n";
         }
         return playersNames;
