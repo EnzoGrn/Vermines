@@ -114,4 +114,11 @@ public abstract class ARoomManager : MonoBehaviour
         _networkRoomManager.OnJoinedPrivateRoomAction -= OnJoinedPrivateRoom;
         _networkRoomManager.OnJoinPrivateRoomFailedAction -= OnJoinPrivateRoomFailed;
     }
+
+    #region Events
+    public void OnClickCreateRoomButton()
+    {
+        _networkRoomManager.CreatePrivateRoom();
+    }
+    #endregion
 }

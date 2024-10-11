@@ -9,7 +9,7 @@ public static class Sceneloader
     /*
      * @brief This class is used to access coroutine.
      */
-    private class LoadingMonoBehaviour : MonoBehaviour { }
+    private class LoadingMonoBehaviour : MonoBehaviour {}
 
     /*
      * @brief This enum is used to store the scene name.
@@ -50,9 +50,17 @@ public static class Sceneloader
         Debug.Log("Loading scene : " + sceneName.ToString());
 
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName.ToString());
-        while (!asyncOperation.isDone)
+        while (asyncOperation != null && !asyncOperation.isDone)
         {
             yield return null;
         }
+
+        GameObject sceneLoader = GameObject.Find("Scene Loader");
+
+        if (sceneLoader != null)
+        {
+            Object.Destroy(sceneLoader);
+        }
+
     }
 }
