@@ -8,6 +8,14 @@ using UnityEngine;
 public interface ICard {
 
     public CardData Data { get; set; }
+
+    public string ID { get; set; }
+
+    public bool IsAnonyme { get; set; }
+
+    public bool HasCost();
+
+    public void OnPlay();
 }
 
 /**
@@ -17,15 +25,43 @@ public interface ICard {
  */
 public abstract class Card : ICard
 {
-
     private CardData _Data;
     public CardData Data
     {
-        get => _Data;
+        get => IsAnonyme ? null : _Data;
         set
         {
             if (value != null)
                 _Data = value;
         }
+    }
+
+    public string ID
+    {
+        get => _Data.ID;
+        set
+        {
+            _Data.ID = value;
+        }
+    }
+
+    public bool IsAnonyme
+    {
+        get => _Data.IsAnonyme;
+        set
+        {
+            if (value != _Data.IsAnonyme)
+                _Data.IsAnonyme = value;
+        }
+    }
+
+    public bool HasCost()
+    {
+        return Data.Eloquence != -1;
+    }
+
+    public void OnPlay()
+    {
+        Debug.Log("Card [" + Data.Name + "]: OnPlay");
     }
 }

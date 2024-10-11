@@ -8,6 +8,7 @@ using UnityEngine;
 /*
 """json example
 {
+    "id": "bard_000",
     "name": "Bard",
     "description": "Gagnez 8E.",
     "type": "Bee",
@@ -23,6 +24,11 @@ using UnityEngine;
 */
 public class JSONCardParser {
 
+    /**
+     * @brief Function that parse all data of a card from a JSON file.
+     * @warning The JSON file must have a specific format, and one of the key must be "id".
+     * If their is no "id" key, the function will throw an exception.
+     */
     public CardData Parse(string cardConfig)
     {
         CardData cardData = ScriptableObject.CreateInstance<CardData>();
@@ -31,8 +37,15 @@ public class JSONCardParser {
         JSONObject json = new(cardConfig);
 
         Debug.Assert(json != null, "The JSON file is not valid.");
+        Debug.Assert(json["id"] != null, "The JSON file doesn't contain an ID.");
+
+        if (json == null)
+            throw new System.Exception("The JSON file is not valid.");
 
         // Parse default values of card
+        if (json["id"] == null)
+            throw new System.Exception("The JSON file doesn't contain an ID.");
+        cardData.ID = json["id"].ToString().Trim('\"');
 
         if (json["name"] != null)
             cardData.Name = json["name"].ToString().Trim('\"');
@@ -57,7 +70,7 @@ public class JSONCardParser {
             cardData.Souls = json["souls"].intValue;
 
         if (json["sprite"] != null)
-            cardData.Sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Card/" + cardData.Type.ToString().Trim('\"') + "/" + json["sprite"].ToString().Trim('\"') + ".png");
+            cardData.Sprite = Resources.Load<Sprite>("Sprites/Card/" + cardData.Type.ToString().Trim('\"') + "/" + json["sprite"].ToString().Trim('\"'));
 
         // Parse effects
         ParseEffect(json, "passiveEffect", "passiveParameters", (effect, parameters) => {
