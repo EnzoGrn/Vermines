@@ -8,6 +8,7 @@ public class BuildingCardSystem {
 
     static public string jsonCard = @"       
         {
+            ""id"": ""bard_000"",
             ""name"": ""Bard"",
             ""description"": ""Gagnez 8E."",
             ""type"": 0,
@@ -20,6 +21,12 @@ public class BuildingCardSystem {
             ]
         }
     ";
+
+    /*
+     * @note If I didn't test the bad json format by giving a null when creating a card, or by giving a json without ID.
+     * It's because Unit Test get Debug.Assert() so my code automatically fail due to a crash, that is not here in Release mode.
+     * Solution is maybe to wrap the Debug.Assert() to ignore them in Unit Test.
+     */
 
     [Test]
     public void BuildingCardSystemSimplePasses()
@@ -39,6 +46,7 @@ public class BuildingCardSystem {
         CardData cardData = card.Data;
 
         if (cardData != null) {
+            Assert.AreEqual(cardData.ID, "bard_000");
             Assert.AreEqual(cardData.Name, "Bard");
             Assert.AreEqual(cardData.Description, "Gagnez 8E.");
             Assert.AreEqual(cardData.Type, CardType.Bee);
@@ -66,6 +74,7 @@ public class BuildingCardSystem {
         CardData cardData2 = card2.Data;
 
         if (cardData2 != null) {
+            Assert.AreEqual(cardData.ID, "bard_000");
             Assert.AreEqual(cardData2.Name, "Bard");
             Assert.AreEqual(cardData2.Description, "Gagnez 8E.");
             Assert.AreEqual(cardData2.Type, CardType.Bee);
@@ -78,4 +87,3 @@ public class BuildingCardSystem {
         }
     }
 }
-

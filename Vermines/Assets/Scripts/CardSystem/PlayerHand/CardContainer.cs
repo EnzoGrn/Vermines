@@ -131,6 +131,8 @@ public class CardContainer : MonoBehaviour {
             return;
         if (_Cards.Count >= 6)
             _ForceFitContainer = true;
+        else
+            _ForceFitContainer = false;
         SetCardsPosition();
         SetCardsRotation();
         SetCardsUILayers();

@@ -24,6 +24,8 @@ namespace Events {
 
         public bool PlayedOrDiscard = true; // True if played, false if discarded
 
+        // TODO: Need to detect if Equipment or not and change display on z axis.
+
         public CardPlayed(CardWrapper card) : base(card) {}
     }
 

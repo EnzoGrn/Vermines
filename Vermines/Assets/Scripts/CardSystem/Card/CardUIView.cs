@@ -37,6 +37,9 @@ public class CardUIView : MonoBehaviour {
     public GameObject EloquenceBanner; // Active if the card has a cost, disabled otherwise
     public TMP_Text   Eloquence;
 
+    // -- Anonymous Section
+    public GameObject Anonymous; // If the card is anonymous draw the anonymous section
+
     private ICard _Card;
 
     public void Start()
@@ -51,10 +54,23 @@ public class CardUIView : MonoBehaviour {
         UpdateUI();
     }
 
+    public ICard GetCard()
+    {
+        return _Card;
+    }
+
     private void UpdateUI()
     {
         if (_Card == null)
             return;
+        // -- Update Anonymous Section
+        if (_Card.IsAnonyme) {
+            Anonymous.SetActive(true);
+
+            return;
+        } else {
+            Anonymous.SetActive(false);
+        }
 
         Debug.Assert(DescriptorFieldImages.Length == 2, "DescriptorFieldImages must have 2 elements.");
         Debug.Assert(Icons.Length == 2, "Icons must have 2 elements.");
