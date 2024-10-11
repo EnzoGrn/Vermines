@@ -106,7 +106,7 @@ public class WaitingRoomManager : AWaitingRoomManager
     #region NetworkManagerCallbacks
     public override void OnLeftRoom()
     {
-        Sceneloader.LoadScene(Sceneloader.Scene.Lobby);
+        Sceneloader.sceneLoaderInstance.LoadScene(Sceneloader.Scene.Lobby);
     }
 
     public override void OnPlayerLeftRoom()

@@ -123,20 +123,16 @@ public class NetworkRoomManager : MonoBehaviourPunCallbacks
     #region PunCallbacks
     public override void OnCreatedRoom()
     {
-        Debug.Log("Room : " + PhotonNetwork.CurrentRoom.Name +  " created !");
         OnCreatePrivateRoomAction?.Invoke();
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
-        Debug.Log("efozjefoizejfioj");
-        Debug.Log(message);
         OnCreatePrivateRoomFailedAction?.Invoke();
     }
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("Give a name to the player");
         OnJoinedPrivateRoomAction?.Invoke();
     }
 

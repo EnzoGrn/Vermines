@@ -1,15 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public static class Sceneloader
+public class Sceneloader : MonoBehaviour
 {
-    /*
-     * @brief This class is used to access coroutine.
-     */
-    private class LoadingMonoBehaviour : MonoBehaviour {}
+    // Singleton
+    public static Sceneloader sceneLoaderInstance;
 
     /*
      * @brief This enum is used to store the scene name.
@@ -22,6 +18,19 @@ public static class Sceneloader
         // Game - > Is loaded by the WaitingRoomManager using Pun2
     }
 
+    private void Awake()
+    {
+        if (sceneLoaderInstance == null)
+        {
+            sceneLoaderInstance = this;
+            DontDestroyOnLoad(this);
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
     /*
      * @brief This method is used to load the scene asynchronously.
      * 
@@ -29,12 +38,10 @@ public static class Sceneloader
      * 
      * @return void
      */
-    public static void LoadScene(Scene scene)
+    public void LoadScene(Scene scene)
     {
-        GameObject loadingMonoBehaviour =  new GameObject("Scene Loader");
-
-        loadingMonoBehaviour.AddComponent<LoadingMonoBehaviour>().StartCoroutine(LoadSceneAsync(scene));
-
+        // Prevent the Scene Loader from being destroyed during the scene transition
+        StartCoroutine(LoadSceneAsync(scene));
     }
 
     /*
@@ -46,7 +53,6 @@ public static class Sceneloader
      */
     private static IEnumerator LoadSceneAsync(Scene sceneName)
     {
-
         Debug.Log("Loading scene : " + sceneName.ToString());
 
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName.ToString());
@@ -54,13 +60,5 @@ public static class Sceneloader
         {
             yield return null;
         }
-
-        GameObject sceneLoader = GameObject.Find("Scene Loader");
-
-        if (sceneLoader != null)
-        {
-            Object.Destroy(sceneLoader);
-        }
-
     }
 }

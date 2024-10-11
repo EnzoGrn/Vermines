@@ -25,7 +25,7 @@ public class MenuManager : MonoBehaviour
      */
     public void OnPlayOnlineButtonPressed()
     {
-        Sceneloader.LoadScene(Sceneloader.Scene.Lobby);
+        Sceneloader.sceneLoaderInstance.LoadScene(Sceneloader.Scene.Lobby);
     }
     #endregion
 }

@@ -2015,6 +2015,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _networkLobbyManagerPrefab: {fileID: 2000596705}
   _messageText: {fileID: 1157140458}
+  _createPrivateRoomButton: {fileID: 1487015217}
+  _joinPrivateRoomButton: {fileID: 1578942799}
 --- !u!114 &2000596705
 MonoBehaviour:
   m_ObjectHideFlags: 0
