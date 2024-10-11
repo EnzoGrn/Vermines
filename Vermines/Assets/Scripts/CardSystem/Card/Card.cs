@@ -62,8 +62,6 @@ public abstract class Card : ICard
 
     public void OnPlay()
     {
-        IsAnonyme = false;
-
         Debug.Log("Card [" + Data.Name + "]: OnPlay");
     }
 }
