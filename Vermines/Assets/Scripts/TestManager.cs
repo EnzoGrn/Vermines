@@ -23,6 +23,7 @@ public class TestManager : MonoBehaviour {
     {
         string json1 = @"
             {
+                ""id"": ""courtesan_000"",
                 ""name"": ""Courtisane"",
                 ""description"": ""Piochez deux cartes."",
                 ""type"": 0,
@@ -34,6 +35,7 @@ public class TestManager : MonoBehaviour {
 
         string json2 = @"
             {
+                ""id"": ""apothecary_000"",
                 ""name"": ""Apothicaire"",
                 ""description"": ""Vos achats côutent <b>2E</b> de moins."",
                 ""type"": 7,
@@ -45,6 +47,7 @@ public class TestManager : MonoBehaviour {
 
         string json3 = @"
             {
+                ""id"": ""worker_000"",
                 ""name"": ""Ouvrière"",
                 ""description"": ""Défaussez l'<b>ouvrière</b> pour gagnez 1E.<br>Si vous avez sacrifié 3 ouvrières au cours de la partie gagne <b>10A</b>."",
                 ""type"": 0,
@@ -55,6 +58,7 @@ public class TestManager : MonoBehaviour {
 
         string json4 = @"
             {
+                ""id"": ""priest_000"",
                 ""name"": ""Prêtre"",
                 ""description"": ""Gagnez <b>2E</b>."",
                 ""type"": 5,
@@ -84,6 +88,13 @@ public class TestManager : MonoBehaviour {
         CardUIView card13 = BuildUIView(CardFactory.CreateCard(json3));
         CardUIView card14 = BuildUIView(CardFactory.CreateCard(json3));
         CardUIView card15 = BuildUIView(CardFactory.CreateCard(json4));
+
+        card10.GetCard().IsAnonyme = true;
+        card11.GetCard().IsAnonyme = true;
+        card12.GetCard().IsAnonyme = true;
+        card13.GetCard().IsAnonyme = true;
+        card14.GetCard().IsAnonyme = true;
+        card15.GetCard().IsAnonyme = true;
 
         card10.transform.SetParent(EnemyContainer.transform);
         card11.transform.SetParent(EnemyContainer.transform);

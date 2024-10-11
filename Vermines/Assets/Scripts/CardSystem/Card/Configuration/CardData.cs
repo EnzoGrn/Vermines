@@ -13,6 +13,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Card Configuration", menuName = "Card Configuration")]
 public class CardData : ScriptableObject {
 
+    public string ID;          // !< The ID of the card (e.g. "bard_000") { format is "name_id" } (The ID is on format 000)
+
     public string Name;        // !< The name of the card (e.g. "Bard)
     public string Description; // !< The description of the card (e.g. "Gagnez 8E.")
 
@@ -32,4 +34,6 @@ public class CardData : ScriptableObject {
     public PlayedEffect    PlayedEffect;    // !< The played effect of the card
     public DiscardEffect   DiscardEffect;   // !< The discard effect of the card (e.g. "Défaussez le villageois pour gagner 2E.")
     public SacrificeEffect SacrificeEffect; // !< The sacrifice effect of the card
+
+    public bool IsAnonyme = false; // !< If the card is anonyme, it will display only the back of the card (by default, it's not anonyme)
 }
