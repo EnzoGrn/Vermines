@@ -5,7 +5,13 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "NetworkRoomManagerAssembly",
-        "PhotonUnityNetworking"
+        "PhotonUnityNetworking",
+        "CarType",
+        "CardParser",
+        "CardFactory",
+        "CardEffect",
+        "CardData",
+        "Card"
     ],
     "includePlatforms": [
         "Editor"
