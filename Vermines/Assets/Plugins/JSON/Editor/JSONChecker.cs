@@ -34,6 +34,7 @@ using UnityEngine.Networking;
 using UnityEngine.Profiling;
 #endif
 
+#if UNITY_EDITOR
 namespace Defective.JSON {
 	public class JSONChecker : EditorWindow {
 		string testJsonString = JSONObjectTestStrings.PrettyJsonString;
@@ -110,3 +111,4 @@ namespace Defective.JSON {
 		}
 	}
 }
+#endif

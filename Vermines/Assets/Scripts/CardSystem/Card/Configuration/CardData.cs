@@ -13,12 +13,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Card Configuration", menuName = "Card Configuration")]
 public class CardData : ScriptableObject {
 
+    public string ID;          // !< The ID of the card (e.g. "bard_000") { format is "name_id" } (The ID is on format 000)
+
     public string Name;        // !< The name of the card (e.g. "Bard)
     public string Description; // !< The description of the card (e.g. "Gagnez 8E.")
 
     public CardType Type; // !< The type of the card (e.g. CardType.Bee)
 
-    public int Eloquence; // !< The eloquence of the card (e.g. 14) (The eloquence is the cost of the card in the market)
+    public int Eloquence = -1; // !< The eloquence of the card (e.g. 14) (The eloquence is the cost of the card in the market) (-1 if the card has no cost)
     public int Souls;     // !< The souls of the card (e.g. 25) (The souls are the number of souls that the card gives when it is sacrificed)
 
     public Sprite Sprite; // !< The sprite of the card (e.g. The image of the card, nothing is displayed if it is null)
@@ -32,4 +34,6 @@ public class CardData : ScriptableObject {
     public PlayedEffect    PlayedEffect;    // !< The played effect of the card
     public DiscardEffect   DiscardEffect;   // !< The discard effect of the card (e.g. "Défaussez le villageois pour gagner 2E.")
     public SacrificeEffect SacrificeEffect; // !< The sacrifice effect of the card
+
+    public bool IsAnonyme = false; // !< If the card is anonyme, it will display only the back of the card (by default, it's not anonyme)
 }
