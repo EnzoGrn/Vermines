@@ -21,6 +21,17 @@ public class TestManager : MonoBehaviour {
 
     private void Start()
     {
+        Instantiate(Resources.Load<GameObject>(Constants.PlayGroundPref));
+
+        GameObject myHand    = Constants.InstantiatePlayerView(true);
+        GameObject enemyHand = Constants.InstantiatePlayerView(false);
+
+        myHand.transform.SetParent(Constants.PlayGround.transform, false);
+        enemyHand.transform.SetParent(Constants.PlayGround.transform, false);
+
+        CardContainer  = myHand.transform.Find("Hand").gameObject;
+        EnemyContainer = enemyHand.transform.Find("Hand").gameObject;
+
         string json1 = @"
             {
                 ""id"": ""courtesan_000"",
