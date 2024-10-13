@@ -11,7 +11,8 @@
         "CardFactory",
         "CardEffect",
         "CardData",
-        "Card"
+        "Card",
+        "Deck"
     ],
     "includePlatforms": [
         "Editor"
