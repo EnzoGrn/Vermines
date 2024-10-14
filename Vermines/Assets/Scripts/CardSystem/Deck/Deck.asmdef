@@ -1,0 +1,16 @@
+{
+    "name": "Deck",
+    "rootNamespace": "",
+    "references": [
+        "GUID:faf34c5e691132f4d8a24e8aec2bb026"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
