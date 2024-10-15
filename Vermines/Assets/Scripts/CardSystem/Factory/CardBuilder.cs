@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CardBuilder {
 
-    private Card _Card; // <-- Card object to be built
+    private ICard _Card; // <-- Card object to be built
 
     public CardBuilder CreateCard(CardType type)
     {
@@ -51,7 +51,7 @@ public class CardBuilder {
         return this;
     }
 
-    public Card Build()
+    public ICard Build()
     {
         return _Card;
     }

@@ -8,7 +8,7 @@ public class TestManager : MonoBehaviour {
     public GameObject CardContainer;
     public GameObject EnemyContainer;
 
-    public CardUIView BuildUIView(Card card)
+    public CardUIView BuildUIView(ICard card)
     {
         GameObject cardView = GameObject.Instantiate(CardUIPrefab);
 
@@ -32,7 +32,7 @@ public class TestManager : MonoBehaviour {
         CardContainer  = myHand.transform.Find("Hand").gameObject;
         EnemyContainer = enemyHand.transform.Find("Hand").gameObject;
 
-        string json1 = @"
+        /*string json1 = @"
             {
                 ""id"": ""courtesan_000"",
                 ""name"": ""Courtisane"",
@@ -112,6 +112,10 @@ public class TestManager : MonoBehaviour {
         card12.transform.SetParent(EnemyContainer.transform);
         card13.transform.SetParent(EnemyContainer.transform);
         card14.transform.SetParent(EnemyContainer.transform);
-        card15.transform.SetParent(EnemyContainer.transform);
+        card15.transform.SetParent(EnemyContainer.transform);*/
+
+        CardLoader cardLoader = new();
+
+        Debug.Log($"A total of {CardFactory.CardCount} cards have been loaded.");
     }
 }

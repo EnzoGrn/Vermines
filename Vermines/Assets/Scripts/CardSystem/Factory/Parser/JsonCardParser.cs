@@ -43,9 +43,7 @@ public class JSONCardParser {
             throw new System.Exception("The JSON file is not valid.");
 
         // Parse default values of card
-        if (json["id"] == null)
-            throw new System.Exception("The JSON file doesn't contain an ID.");
-        cardData.ID = json["id"].ToString().Trim('\"');
+        cardData.ID = json["id"] == null ? 0 : json["id"].intValue;
 
         if (json["name"] != null)
             cardData.Name = json["name"].ToString().Trim('\"');

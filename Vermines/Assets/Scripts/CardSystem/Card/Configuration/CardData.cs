@@ -13,7 +13,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Card Configuration", menuName = "Card Configuration")]
 public class CardData : ScriptableObject {
 
-    public string ID;          // !< The ID of the card (e.g. "bard_000") { format is "name_id" } (The ID is on format 000)
+    public int    ID;          // !< The ID of the card, when fetch during initialisation the id represent the number of examplar that cards have, and after initialisation that represent his ID in the game.
 
     public string Name;        // !< The name of the card (e.g. "Bard)
     public string Description; // !< The description of the card (e.g. "Gagnez 8E.")
