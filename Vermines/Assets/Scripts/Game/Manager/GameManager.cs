@@ -6,10 +6,16 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviourPunCallbacks {
 
+    static public GameManager Instance;
+
     private List<Vermines.Player> _ConnectedPlayer = new();
 
     private void Awake()
     {
+        if (Instance == null)
+            Instance = this;
+        else if (Instance != this)
+            Destroy(gameObject);
         _ConnectedPlayer = new();
 
         if (Constants.PlayGround == null)
@@ -37,8 +43,12 @@ public class GameManager : MonoBehaviourPunCallbacks {
 
     public void FixedUpdate()
     {
-        if (_ConnectedPlayer.Count != PhotonNetwork.CurrentRoom.PlayerCount)
+        if (_ConnectedPlayer.Count != PhotonNetwork.CurrentRoom.PlayerCount) {
             UpdateConnectedPlayerList();
+
+            if (_ConnectedPlayer.Count == PhotonNetwork.CurrentRoom.PlayerCount)
+                EventOnAllPlayersJoined();
+        }
     }
 
     private void UpdateConnectedPlayerList()
@@ -62,4 +72,39 @@ public class GameManager : MonoBehaviourPunCallbacks {
             }
         }
     }
+
+    #region Event
+
+    private void EventOnAllPlayersJoined()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+        CardLoader cardLoader = new();
+
+        // Send the update to all other clien
+    }
+
+    #endregion
+
+    #region Getters & Setters
+
+    public int GetNumbersOfPlayer => PhotonNetwork.CurrentRoom.PlayerCount;
+    public Vermines.Player GetPlayer(int playerIndex)
+    {
+        if (playerIndex < 0 || playerIndex >= _ConnectedPlayer.Count)
+            return null;
+        Vermines.Player player = null;
+
+        for (int i = 0; i < _ConnectedPlayer.Count; i++) {
+            if (i == playerIndex) {
+                player = _ConnectedPlayer[i];
+
+                break;
+            }
+        }
+
+        return player;
+    }
+
+    #endregion
 }

@@ -132,8 +132,13 @@ public class DeckTester {
         tempHandDeck.Shuffle();
 
         CompareDeck(HandDeck, tempHandDeck, false);
-        CompareDeck(HandDeck, Deck        , false);
+        CompareDeck(HandDeck, Deck        , false); // Note: if the result is not the one we expected, it's because the shuffle method is a random method, so it can be rarely the same
 
-        // Note: if the result is not the one we expected, it's because the shuffle method is a random method, so it can be rarely the same
+        Deck mergeDeck = new();
+
+        mergeDeck.Merge(HandDeck);
+        mergeDeck.Merge(Deck);
+
+        Assert.AreEqual(mergeDeck.GetNumberCards(), HandDeck.GetNumberCards() + Deck.GetNumberCards());
     }
 }

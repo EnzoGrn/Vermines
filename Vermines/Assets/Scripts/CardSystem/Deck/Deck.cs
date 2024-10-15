@@ -45,4 +45,20 @@ public class Deck {
 
         Cards.Insert(randomIndex, card);
     }
+
+    public void AddRandomly(List<ICard> cards)
+    {
+        if (cards == null || cards.Count == 0)
+            return;
+        foreach (ICard card in cards)
+            AddRandomly(card);
+    }
+
+    public void Merge(Deck other)
+    {
+        if (other == null)
+            return;
+        foreach (ICard card in other.Cards)
+            AddCard(card);
+    }
 }
