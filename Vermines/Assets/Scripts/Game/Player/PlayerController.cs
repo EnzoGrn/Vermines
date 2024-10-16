@@ -11,7 +11,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
 
     public static PlayerController localPlayer;
 
-    public PhotonView POV;
+    private PhotonView _POV;
+
+    public Vermines.PlayerData PlayerData;
 
     #endregion
 
@@ -19,12 +21,19 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
 
     public override void OnEnable()
     {
-        POV = GetComponent<PhotonView>();
+        _POV = GetComponent<PhotonView>();
+
+        PlayerData.enabled = true;
+    }
+
+    public override void OnDisable()
+    {
+        PlayerData.enabled = false;
     }
 
     public void Start()
     {
-        if (POV.IsMine) {
+        if (_POV.IsMine) {
             localPlayer = this;
 
             Debug.Log("Nickname: " + Vermines.PlayerData.Instance.Data.Profile.Nickname); // Print the nickname of the player
@@ -44,7 +53,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
     {
         string syncJson = player.DataToString();
 
-        POV.RPC("RPC_SyncPlayer", RpcTarget.OthersBuffered, syncJson);
+        _POV.RPC("RPC_SyncPlayer", RpcTarget.OthersBuffered, syncJson);
     }
 
     [PunRPC]
