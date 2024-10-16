@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6cee0671a97a168439e12e4cecfe767c, type: 3}
-  m_Name: Soldier
+  m_Name: Villagers
   m_EditorClassIdentifier: 
   ID: 2
-  Name: Soldier
-  Description: Your market purchases cost <b>2E</b> less.
-  Type: 3
-  Eloquence: 6
-  Souls: 15
-  SpriteName: Soldier
+  Name: Villagers
+  Description: Discard the villager to earn <b>2E</b>.
+  Type: 1
+  Eloquence: 2
+  Souls: 5
+  SpriteName: Villagers
   Sprite: {fileID: 0}
   PassiveEffect: {fileID: 0}
   TurnStartEffect: {fileID: 0}

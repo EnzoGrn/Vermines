@@ -67,8 +67,11 @@ public class JSONCardParser {
         if (json["souls"] != null)
             cardData.Souls = json["souls"].intValue;
 
-        if (json["sprite"] != null)
-            cardData.Sprite = Resources.Load<Sprite>("Sprites/Card/" + cardData.Type.ToString().Trim('\"') + "/" + json["sprite"].ToString().Trim('\"'));
+        if (json["sprite"] != null) {
+            cardData.SpriteName = json["sprite"].ToString().Trim('\"');
+
+            cardData.ChangeSprite();
+        }
 
         // Parse effects
         ParseEffect(json, "passiveEffect", "passiveParameters", (effect, parameters) => {

@@ -18,6 +18,7 @@ MonoBehaviour:
   Type: 0
   Eloquence: 7
   Souls: 10
+  SpriteName: Messenger
   Sprite: {fileID: 21300000, guid: 9bb401e926698b6449f4c5f814f68c28, type: 3}
   PassiveEffect: {fileID: 0}
   TurnStartEffect: {fileID: 0}

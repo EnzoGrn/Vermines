@@ -71,6 +71,8 @@ public class GameManager : MonoBehaviourPunCallbacks {
                 _ConnectedPlayer.Add(player);
             }
         }
+
+        SetFamilyTypes();
     }
 
     #region Event
@@ -104,6 +106,35 @@ public class GameManager : MonoBehaviourPunCallbacks {
         }
 
         return player;
+    }
+
+    public List<CardType> GetAllFamilyPlayed()
+    {
+        List<CardType> cardTypes = new();
+
+        foreach (Vermines.Player player in _ConnectedPlayer)
+            cardTypes.Add(player.FamilyTypes);
+        return cardTypes;
+    }
+
+    private void SetFamilyTypes()
+    {
+        CardType[] types     = Constants.FamilyTypes;
+        int playerCount      = GetNumbersOfPlayer;
+        List<int> selectedFamily = new();
+        System.Random random     = new();
+
+        for (int i = 0; i < playerCount; i++) {
+            while (selectedFamily.Count == i) {
+                int randomIndex = random.Next(types.Length);
+
+                if (!selectedFamily.Contains(randomIndex)) {
+                    GetPlayer(i).FamilyTypes = types[randomIndex];
+
+                    selectedFamily.Add(randomIndex);
+                }
+            }
+        }
     }
 
     #endregion

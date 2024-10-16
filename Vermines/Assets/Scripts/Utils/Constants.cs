@@ -46,4 +46,14 @@ public static class Constants {
                 return null;
         }
     }
+
+    // -- Constants type of cards in the game -- //
+
+    public static string[] BasicTypes = {
+        "Bee", "Mosquito", "Firefly"
+    };
+
+    public static CardType[] FamilyTypes = {
+        CardType.Fly, CardType.Ladybug, CardType.Scarab, CardType.Cricket
+    };
 }

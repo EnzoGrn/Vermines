@@ -19,6 +19,7 @@ MonoBehaviour:
   Type: 0
   Eloquence: 10
   Souls: 5
+  SpriteName: Royal Guard
   Sprite: {fileID: 21300000, guid: edb549db631d16241bd941757442e5b4, type: 3}
   PassiveEffect: {fileID: 0}
   TurnStartEffect: {fileID: 0}

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Plastic.Antlr3.Runtime;
 using UnityEngine;
 
 /**
@@ -23,6 +24,7 @@ public class CardData : ScriptableObject {
     public int Eloquence = -1; // !< The eloquence of the card (e.g. 14) (The eloquence is the cost of the card in the market) (-1 if the card has no cost)
     public int Souls;     // !< The souls of the card (e.g. 25) (The souls are the number of souls that the card gives when it is sacrificed)
 
+    public string SpriteName;
     public Sprite Sprite; // !< The sprite of the card (e.g. The image of the card, nothing is displayed if it is null)
 
     // TODO: Maybe one day, the effect will be list for allow a card to have multiple same type of effect
@@ -36,4 +38,9 @@ public class CardData : ScriptableObject {
     public SacrificeEffect SacrificeEffect; // !< The sacrifice effect of the card
 
     public bool IsAnonyme = false; // !< If the card is anonyme, it will display only the back of the card (by default, it's not anonyme)
+
+    public void ChangeSprite()
+    {
+        Sprite = Resources.Load<Sprite>("Sprites/Card/" + Type.ToString().Trim('\"') + "/" + SpriteName);
+    }
 }

@@ -32,6 +32,10 @@ namespace Vermines {
 
         private Config.PlayerProfile _Profile;
 
+        // Player's Family
+
+        public CardType FamilyTypes;
+
         private void Awake()
         {
             Init();

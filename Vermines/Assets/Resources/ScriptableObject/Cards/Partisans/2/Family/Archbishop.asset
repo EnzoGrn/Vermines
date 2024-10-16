@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6cee0671a97a168439e12e4cecfe767c, type: 3}
-  m_Name: Soldier
+  m_Name: Archbishop
   m_EditorClassIdentifier: 
-  ID: 2
-  Name: Soldier
-  Description: Your market purchases cost <b>2E</b> less.
-  Type: 3
-  Eloquence: 6
-  Souls: 15
-  SpriteName: Soldier
+  ID: 1
+  Name: Archbishop
+  Description: Earn <b>4E</b>.
+  Type: 1
+  Eloquence: 8
+  Souls: 20
+  SpriteName: Archbishop
   Sprite: {fileID: 0}
   PassiveEffect: {fileID: 0}
   TurnStartEffect: {fileID: 0}

@@ -18,6 +18,7 @@ MonoBehaviour:
   Type: 8
   Eloquence: 8
   Souls: 0
+  SpriteName: Relic
   Sprite: {fileID: 0}
   PassiveEffect: {fileID: 0}
   TurnStartEffect: {fileID: 0}
