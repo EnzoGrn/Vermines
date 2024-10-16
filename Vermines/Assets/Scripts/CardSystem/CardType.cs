@@ -10,6 +10,8 @@ using UnityEngine;
  * And contains a 'Background.jpg' and a 'Icon.png'.
  */
 public enum CardType {
+    None = -1,
+
     Bee = 0,
     Cricket = 1,
     Equipment = 2,

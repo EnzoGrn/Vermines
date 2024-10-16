@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using Unity.Plastic.Newtonsoft.Json;
 
 public class Deck {
 
-    public List<ICard> Cards;
+    public List<ICard> Cards { get; set; }
 
     public Deck()
     {

@@ -32,9 +32,9 @@ public class TestManager : MonoBehaviour {
         CardContainer  = myHand.transform.Find("Hand").gameObject;
         EnemyContainer = enemyHand.transform.Find("Hand").gameObject;
 
-        /*string json1 = @"
+        string json1 = @"
             {
-                ""id"": ""courtesan_000"",
+                ""id"": 1,
                 ""name"": ""Courtisane"",
                 ""description"": ""Piochez deux cartes."",
                 ""type"": 0,
@@ -46,7 +46,7 @@ public class TestManager : MonoBehaviour {
 
         string json2 = @"
             {
-                ""id"": ""apothecary_000"",
+                ""id"": 1,
                 ""name"": ""Apothicaire"",
                 ""description"": ""Vos achats côutent <b>2E</b> de moins."",
                 ""type"": 7,
@@ -58,7 +58,7 @@ public class TestManager : MonoBehaviour {
 
         string json3 = @"
             {
-                ""id"": ""worker_000"",
+                ""id"": 3,
                 ""name"": ""Ouvrière"",
                 ""description"": ""Défaussez l'<b>ouvrière</b> pour gagnez 1E.<br>Si vous avez sacrifié 3 ouvrières au cours de la partie gagne <b>10A</b>."",
                 ""type"": 0,
@@ -69,7 +69,7 @@ public class TestManager : MonoBehaviour {
 
         string json4 = @"
             {
-                ""id"": ""priest_000"",
+                ""id"": 1,
                 ""name"": ""Prêtre"",
                 ""description"": ""Gagnez <b>2E</b>."",
                 ""type"": 5,
@@ -79,7 +79,7 @@ public class TestManager : MonoBehaviour {
             }
         ";
 
-        CardUIView card0 = BuildUIView(CardFactory.CreateCard(json1));
+        /*CardUIView card0 = BuildUIView(CardFactory.CreateCard(json1));
         CardUIView card1 = BuildUIView(CardFactory.CreateCard(json2));
         CardUIView card2 = BuildUIView(CardFactory.CreateCard(json3));
         CardUIView card3 = BuildUIView(CardFactory.CreateCard(json3));
@@ -114,8 +114,37 @@ public class TestManager : MonoBehaviour {
         card14.transform.SetParent(EnemyContainer.transform);
         card15.transform.SetParent(EnemyContainer.transform);*/
 
-        CardLoader cardLoader = new();
+        /*CardLoader cardLoader = new();
 
-        Debug.Log($"A total of {CardFactory.CardCount} cards have been loaded.");
+        Debug.Log($"A total of {CardFactory.CardCount} cards have been loaded.");*/
+
+        PlayerData.enabled = true;
+
+        Vermines.Data data = Vermines.PlayerData.Instance.Data;
+
+        data.Eloquence = 10;
+        data.Souls = 5;
+        data.Family = CardType.Scarab;
+        data.Profile = new();
+        data.Deck = new();
+
+        data.Profile.Nickname = "PharaNight";
+        data.Profile.PlayerID = 69;
+
+        ICard card0 = CardFactory.CreateCard(json1);
+        ICard card1 = CardFactory.CreateCard(json2);
+        ICard card2 = CardFactory.CreateCard(json3);
+        ICard card3 = CardFactory.CreateCard(json4);
+
+        data.Deck.AddCard(card0);
+        data.Deck.AddCard(card1);
+        data.Deck.AddCard(card2);
+        data.Deck.AddCard(card3);
+
+        string json = PlayerData.DataToString();
+
+        Debug.Log(json);
     }
+
+    public Vermines.PlayerData PlayerData;
 }
