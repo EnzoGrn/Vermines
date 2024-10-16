@@ -359,6 +359,7 @@ MonoBehaviour:
   CardUIPrefab: {fileID: 1307939782142222816, guid: f7b041e57dbf8e246a535ec6332ee14e, type: 3}
   CardContainer: {fileID: 0}
   EnemyContainer: {fileID: 0}
+  PlayerData: {fileID: 0}
 --- !u!4 &729422763
 Transform:
   m_ObjectHideFlags: 0

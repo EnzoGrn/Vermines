@@ -35,8 +35,10 @@ public class CardLoader {
     {
         string path = $"{_ScriptableCardsPath}StartingCards/";
 
-        for (int i = 0; i < GameManager.Instance.GetNumbersOfPlayer; i++)
+        for (int i = 0; i < GameManager.Instance.GetNumbersOfPlayer; i++) {
             GameManager.Instance.GetPlayer(i).Deck = LoadDeckFromPath(path);
+            // GameManager.Instance.GetPlayer(i).PlayerData.Data.Deck = LoadDeckFromPath(path);
+        }
     }
 
     private void LoadEveryPartisanCard()
@@ -61,7 +63,7 @@ public class CardLoader {
     private Deck LoadEveryFamilyCard(int level)
     {
         List<CardType> types = GameManager.Instance.GetAllFamilyPlayed();
-        string path = $"{_ScriptableCardsPath}/Partisans/{level}/Family/";
+        string path = $"{_ScriptableCardsPath}Partisans/{level}/Family/";
         Deck deck = new();
 
         for (int i = 0; i < types.Count; i++) {

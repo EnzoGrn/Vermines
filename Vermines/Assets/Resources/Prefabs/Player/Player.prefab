@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Eloquence: 0
   Souls: 0
+  FamilyTypes: 0
 --- !u!114 &8958026720455086331
 MonoBehaviour:
   m_ObjectHideFlags: 0
