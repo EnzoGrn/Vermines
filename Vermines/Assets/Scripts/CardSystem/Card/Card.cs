@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 
 /**
@@ -26,6 +27,7 @@ public interface ICard {
 public abstract class Card : ICard
 {
     private CardData _Data;
+
     public CardData Data
     {
         get => IsAnonyme ? null : _Data;
