@@ -19,6 +19,7 @@ MonoBehaviour:
   Type: 0
   Eloquence: -1
   Souls: 0
+  SpriteName: Worker
   Sprite: {fileID: 21300000, guid: 85ef01b5136459c47b17371ad327412b, type: 3}
   PassiveEffect: {fileID: 0}
   TurnStartEffect: {fileID: 0}

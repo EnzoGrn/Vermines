@@ -41,12 +41,42 @@ public class CardLoader {
 
     private void LoadEveryPartisanCard()
     {
-        Deck firstLevelDeck = LoadEveryPartisanFromLevel(1);
-        Deck secondLevelDeck = LoadEveryPartisanFromLevel(2);
+        Deck firstLevelDeck  = LoadEveryPartisanFromLevel(1);
+        Deck firstFamilyDeck = LoadEveryFamilyCard(1);
+
+        firstLevelDeck.Merge(firstFamilyDeck);
+        firstLevelDeck.Shuffle();
+
+        Deck secondLevelDeck  = LoadEveryPartisanFromLevel(2);
+        Deck secondFamilyDeck = LoadEveryFamilyCard(2);
+
+        secondLevelDeck.Merge(secondFamilyDeck);
+        secondLevelDeck.Shuffle();
 
         firstLevelDeck.Merge(secondLevelDeck);
 
         // TODO: Fill the market (partisan) by giving the deck to the GameManager
+    }
+
+    private Deck LoadEveryFamilyCard(int level)
+    {
+        List<CardType> types = GameManager.Instance.GetAllFamilyPlayed();
+        string path = $"{_ScriptableCardsPath}/Partisans/{level}/Family/";
+        Deck deck = new();
+
+        for (int i = 0; i < types.Count; i++) {
+            Deck family = LoadDeckFromPath(path);
+
+            foreach (ICard card in family.Cards) {
+                CardData data = card.Data;
+
+                data.Type = types[i];
+            }
+
+            deck.Merge(family);
+        }
+
+        return deck;
     }
 
     private void LoadEveryItemCard()
@@ -62,25 +92,19 @@ public class CardLoader {
 
     private Deck LoadEveryPartisanFromLevel(int level)
     {
-        string   path      = $"{_ScriptableCardsPath}Partisans/{level}/";
-        string[] basicType = {
-            "Bee", "Mosquito", "Firefly"
-        };
+        string path = $"{_ScriptableCardsPath}Partisans/{level}/";
+        Deck   deck = new();
 
-        Deck deck = new();
-
-        foreach (string type in basicType) {
+        foreach (string type in Constants.BasicTypes) {
             string typePath = $"{path}{type}/";
 
             deck.Merge(LoadDeckFromPath(typePath));
         }
-
         return deck;
     }
 
     private Deck LoadDeckFromPath(string path)
     {
-        Debug.Log($"Loading deck from {path}");
         CardData[] cardDataArray = Resources.LoadAll<CardData>(path);
 
         if (cardDataArray.Length == 0) {

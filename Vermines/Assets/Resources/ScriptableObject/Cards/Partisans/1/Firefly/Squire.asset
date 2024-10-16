@@ -19,6 +19,7 @@ MonoBehaviour:
   Type: 3
   Eloquence: 3
   Souls: 10
+  SpriteName: Squire
   Sprite: {fileID: 0}
   PassiveEffect: {fileID: 0}
   TurnStartEffect: {fileID: 0}
