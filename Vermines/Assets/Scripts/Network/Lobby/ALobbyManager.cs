@@ -27,6 +27,7 @@ public abstract class ALobbyManager : MonoBehaviour
 
         _networkLobbyManagerPrefab.OnJoinedLobbyAction += OnClientConnectedToServer;
         _networkLobbyManagerPrefab.OnDisconnectedAction += OnClientDisconnectedFromServer;
+        _networkLobbyManagerPrefab.OnJoinRoomFailedAction += OnJoinRoomFailed;
     }
 
     #region Callbacks
@@ -52,6 +53,11 @@ public abstract class ALobbyManager : MonoBehaviour
     {
         Debug.Log("Client disconnected to server");
     }
+
+    public virtual void OnJoinRoomFailed()
+    {
+        Debug.Log("Client left lobby");
+    }
     #endregion
 
     /*
@@ -66,5 +72,6 @@ public abstract class ALobbyManager : MonoBehaviour
     {
         _networkLobbyManagerPrefab.OnJoinedLobbyAction -= OnClientConnectedToServer;
         _networkLobbyManagerPrefab.OnDisconnectedAction -= OnClientDisconnectedFromServer;
+        _networkLobbyManagerPrefab.OnJoinRoomFailedAction -= OnJoinRoomFailed;
     }
 }
