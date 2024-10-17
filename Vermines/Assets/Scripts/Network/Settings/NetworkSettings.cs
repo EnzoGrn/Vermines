@@ -61,4 +61,32 @@ public class NetworkSettings : ScriptableObject
      * @brief enableDebugLogging is used to enable or disable debug logging.
      */
     public bool enableDebugLogging = true;
+
+    private void OnValidate()
+    {
+        // Ensure maxPlayers is not lower than minPlayers
+        if (maxPlayers < minPlayers)
+        {
+            Debug.LogWarning("maxPlayers cannot be less than minPlayers! Adjusting maxPlayers to match minPlayers.");
+            maxPlayers = minPlayers;
+        }
+
+        if (maxRoomCodeLength < minRoomCodeLength)
+        {
+            Debug.LogWarning("maxRoomCodeLength cannot be less than minRoomCodeLength! Adjusting maxRoomCodeLength to match minRoomCodeLength.");
+            maxRoomCodeLength = minRoomCodeLength;
+        }
+
+        if (maxPlayerNicknameLength < minPlayerNicknameLength)
+        {
+            Debug.LogWarning("maxPlayerNicknameLength cannot be less than minPlayerNicknameLength! Adjusting maxPlayerNicknameLength to match minPlayerNicknameLength.");
+            maxPlayerNicknameLength = minPlayerNicknameLength;
+        }
+
+        if (keyStringCodeGeneration.Length == 0)
+        {
+            Debug.LogWarning("keyStringCodeGeneration cannot be empty");
+            keyStringCodeGeneration = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        }
+    }
 }

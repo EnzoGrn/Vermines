@@ -24,7 +24,6 @@ public class NetworkRoomManagerTests
     [TearDown]
     public void Teardown()
     {
-        UnityEngine.Object.Destroy(_networkSettings);
     }
 
     [Test]

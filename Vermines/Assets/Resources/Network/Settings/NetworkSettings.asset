@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: NetworkSettings
   m_EditorClassIdentifier: 
   automaticallySyncScene: 1
-  maxPlayers: 4
+  maxPlayers: 2
   minPlayers: 2
   minPlayerNicknameLength: 4
   maxPlayerNicknameLength: 8

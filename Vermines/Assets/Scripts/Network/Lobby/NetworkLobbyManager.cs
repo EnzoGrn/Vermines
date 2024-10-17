@@ -20,6 +20,11 @@ public class NetworkLobbyManager : MonoBehaviourPunCallbacks
      * @brief This event is triggered when the client has disconnected from the server.
      */
     public event Action OnDisconnectedAction;
+
+    /*
+     * @brief This event is triggered when the client failed to join a room.
+     */
+    public event Action OnJoinRoomFailedAction;
     #endregion
 
     #region Private Attributes
@@ -48,6 +53,9 @@ public class NetworkLobbyManager : MonoBehaviourPunCallbacks
 
     public void ConnectClientToServer()
     {
+        // Remove in the future: actually here for purpose test
+        PhotonNetwork.PhotonServerSettings.AppSettings.FixedRegion = "jp";
+
         if (PhotonNetwork.IsConnectedAndReady)
         {
             Debug.Log("Client already connected to master server");
@@ -125,5 +133,18 @@ public class NetworkLobbyManager : MonoBehaviourPunCallbacks
         Debug.Log(cause.ToString());
         OnDisconnectedAction?.Invoke();
     }
+
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        Debug.Log("Join room failed : " + message);
+
+        // When fail to join a room Pun2 seems disconnect the client from the lobby.
+        if (!PhotonNetwork.InLobby)
+        {
+            Debug.Log("Client not in a lobby");
+            ConnectToLobby();
+        }
+    }
+
     #endregion
 }

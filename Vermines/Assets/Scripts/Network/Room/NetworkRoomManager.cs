@@ -63,9 +63,31 @@ public class NetworkRoomManager : MonoBehaviourPunCallbacks
      */
     public void CreatePrivateRoom(string roomCode = "", int? maxPLayers = null, bool? isVisible = null)
     {
-        if (!PhotonNetwork.IsConnectedAndReady || !PhotonNetwork.InLobby || PhotonNetwork.InRoom)
+        if (!PhotonNetwork.IsConnected)
         {
-            OnCreateRoomFailed(0, "Client not connected or already in a room !");
+            OnCreateRoomFailed(0, "Client not connected to master server");
+            Debug.Log("Client not connected to master server");
+            return;
+        }
+
+        if (!PhotonNetwork.IsConnectedAndReady)
+        {
+            OnCreateRoomFailed(0, "Client may not be ready");
+            Debug.Log("Client may not be ready");
+            return;
+        }
+
+        if (!PhotonNetwork.InLobby)
+        {
+            OnCreateRoomFailed(0, "Client not in lobby");
+            Debug.Log("Client not in lobby");
+            return;
+        }
+
+        if (PhotonNetwork.InRoom)
+        {
+            OnCreateRoomFailed(0, "Client already in a room");
+            Debug.Log("Client already in a room");
             return;
         }
 
@@ -106,15 +128,31 @@ public class NetworkRoomManager : MonoBehaviourPunCallbacks
      */
     public void JoinPrivateRoom(string roomCode)
     {
-        if (!PhotonNetwork.IsConnectedAndReady || !PhotonNetwork.InLobby || PhotonNetwork.InRoom)
+        if (string.IsNullOrEmpty(roomCode))
         {
-            OnJoinRoomFailed(0, "Client not connected or already in a room !");
+            OnJoinRoomFailed(0, "Room code is empty");
+            Debug.Log("Room code is empty");
             return;
         }
 
-        if (string.IsNullOrEmpty(roomCode))
+        if (!PhotonNetwork.IsConnected)
         {
-            OnJoinRoomFailed(0, "Room code is empty !");
+            OnJoinRoomFailed(0, "Client not connected to master server");
+            Debug.Log("Client not connected to master server");
+            return;
+        }
+
+        if (!PhotonNetwork.IsConnectedAndReady)
+        {
+            OnJoinRoomFailed(0, "Client may not be ready");
+            Debug.Log("Client may not be ready");
+            return;
+        }
+
+        if (!PhotonNetwork.InLobby)
+        {
+            OnJoinRoomFailed(0, "Client not in lobby");
+            Debug.Log("Client not in lobby");
             return;
         }
 
@@ -158,7 +196,7 @@ public class NetworkRoomManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        Debug.Log(message);
+        Debug.Log($"JoinRoomFailed: {message} (Return Code: {returnCode})");
         OnJoinPrivateRoomFailedAction?.Invoke();
     }
     #endregion
