@@ -22,15 +22,32 @@ public class NetworkWaitingRoomManager : MonoBehaviourPunCallbacks
      */
     public event Action OnPlayerEnteredRoomAction;
 
-
     /*
      * @brief This event is triggered when the master client can't start the match.
      */
     public event Action OnMasterCLientCantStartMatchAction;
+    #endregion
 
+    #region Private Attributes
+    /*
+     * @brief This attribute is used to get the network settings.
+     */
+    private NetworkSettings _networkSettings;
     #endregion
 
     #region Methods Implementation
+    private void Awake()
+    {
+        _networkSettings = Resources.Load<NetworkSettings>("Network/Settings/NetworkSettings");
+
+        if (_networkSettings == null)
+        {
+            Debug.LogError("NetworkSettings not found in Resources folder !");
+            return;
+        }
+    }
+
+
     /*
      * @brief This method is used to leave the waiting room.
      * 
@@ -126,13 +143,12 @@ public class NetworkWaitingRoomManager : MonoBehaviourPunCallbacks
      */
     public void LoadMatch(string levelName)
     {
-        if (PhotonNetwork.PlayerList.Length != PhotonNetwork.CurrentRoom.MaxPlayers)
+        if (PhotonNetwork.PlayerList.Length >= _networkSettings.minPlayers && PhotonNetwork.PlayerList.Length <= _networkSettings.maxPlayers)
         {
-            OnMasterClientCantStartMatch();
+            PhotonNetwork.LoadLevel(levelName);
             return;
-
         }
-        PhotonNetwork.LoadLevel(levelName);
+        OnMasterClientCantStartMatch();
     }
 
     #endregion
@@ -162,5 +178,4 @@ public class NetworkWaitingRoomManager : MonoBehaviourPunCallbacks
         Debug.Log("Master client failed to start the match !");
         OnMasterCLientCantStartMatchAction.Invoke();
     }
-
 }
