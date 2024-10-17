@@ -120,7 +120,7 @@ public class TestManager : MonoBehaviour {
 
         PlayerData.enabled = true;
 
-        Vermines.Data data = Vermines.PlayerData.Instance.Data;
+        Vermines.Data data = PlayerData.Data;
 
         data.Eloquence = 10;
         data.Souls = 5;

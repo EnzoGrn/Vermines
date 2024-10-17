@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Photon.Pun;
+using Vermines;
 
-public class PlayerSetupView : MonoBehaviour {
+public class PlayerSetupView : MonoBehaviour/*, IPunObservable*/ {
 
     #region Attributes /* GameObject to setup */
 
@@ -31,16 +32,6 @@ public class PlayerSetupView : MonoBehaviour {
         Hand.enabled = true;
 
         ChangeRectTransformOfThePlayerView();
-
-        SetPlayerName(PhotonNetwork.LocalPlayer.NickName);
-    }
-
-    /**
-     * @brief Call this method to update the name of the player (UI).
-     */
-    public void SetPlayerName(string playerName)
-    {
-        _PlayerName.text = playerName;
     }
 
     private void GetComponents()
@@ -66,4 +57,17 @@ public class PlayerSetupView : MonoBehaviour {
         _PlayAreaRect.anchorMax = new Vector2(0f, 1f);
         _PlayAreaRect.pivot = new Vector2(0f, 1f);
     }
+
+    public void EditView(Data data)
+    {
+        _PlayerName.text = data.Profile.Nickname;
+    }
+
+    /*public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+            stream.SendNext(_PlayerName.text);
+        else if (stream.IsReading)
+            _PlayerName.text = (string)stream.ReceiveNext();
+    }*/
 }

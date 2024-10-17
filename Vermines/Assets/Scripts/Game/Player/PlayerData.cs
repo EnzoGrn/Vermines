@@ -1,19 +1,11 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines {
 
-    public class PlayerData : MonoBehaviour {
-
-        /*
-         * @brief Singleton pattern for the PlayerData class.
-         * This instance is used to store all data of the player.
-         * And it store only on local, so other player can't access to it.
-         *
-         * @note It's this instance, that we want to send to the server.
-         */
-        public static PlayerData Instance;
+    public class PlayerData : MonoBehaviour/*, IPunObservable*/ {
 
         /*
          * @brief Data of the player.
@@ -26,10 +18,6 @@ namespace Vermines {
         private void OnEnable()
         {
             Data = new();
-
-            PlayerData.Instance = this;
-
-            DontDestroyOnLoad(gameObject);
         }
 
         /*
@@ -40,6 +28,20 @@ namespace Vermines {
         {
             return JsonUtility.ToJson(Data);
         }
+
+        public Data StringToData(string data)
+        {
+            return JsonUtility.FromJson<Data>(data);
+        }
+
+        /*public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting) {
+                stream.SendNext(DataToString());
+            } else {
+                Data = StringToData((string)stream.ReceiveNext());
+            }
+        }*/
     }
 
     /*
@@ -54,7 +56,7 @@ namespace Vermines {
          * It's the nickname and the playerID of the player in the server.
          * Their are use for recognize all the player in the party.
          */
-        public Config.PlayerProfile Profile;
+        public Config.PlayerProfile Profile = new();
 
         // -- Player's Stats (Money & Victory Points) -- //
 
