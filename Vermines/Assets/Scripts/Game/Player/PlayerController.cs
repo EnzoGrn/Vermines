@@ -33,13 +33,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
 
     public void Start()
     {
-        if (_POV.IsMine) {
+        /*if (_POV.IsMine) {
             localPlayer = this;
 
             Debug.Log("Nickname: " + Vermines.PlayerData.Instance.Data.Profile.Nickname); // Print the nickname of the player
 
             SyncPlayer(Vermines.PlayerData.Instance);
-        }
+        }*/
     }
 
     #endregion

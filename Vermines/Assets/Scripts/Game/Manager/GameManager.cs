@@ -19,9 +19,9 @@ public class GameManager : MonoBehaviourPunCallbacks {
             Destroy(gameObject);
         _ConnectedPlayer = new();
 
-        if (Constants.PlayGround == null)
+        /*if (Constants.PlayGround == null)
             Instantiate(Resources.Load<GameObject>(Constants.PlayGroundPref));
-        AddNewPlayerToList(PhotonNetwork.NickName, PhotonNetwork.LocalPlayer.ActorNumber);
+        AddNewPlayerToList(PhotonNetwork.NickName, PhotonNetwork.LocalPlayer.ActorNumber);*/
     }
 
     private void AddNewPlayerToList(string nickname, int playerID)
@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviourPunCallbacks {
 
     private void UpdateConnectedPlayerList()
     {
-        _ConnectedPlayer.Clear();
+        /*_ConnectedPlayer.Clear();
 
         foreach (Vermines.Player player in FindObjectsOfType<Vermines.Player>()) {
             PhotonView photonView = player.GetComponent<PhotonView>();
@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviourPunCallbacks {
             }
         }
 
-        SetFamilyTypes();
+        SetFamilyTypes();*/
     }
 
     #region Event
