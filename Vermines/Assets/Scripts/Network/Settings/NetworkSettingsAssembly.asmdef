@@ -1,12 +1,8 @@
 {
-    "name": "NetworkRoomManagerAssembly",
+    "name": "NetworkSettingsAssembly",
     "rootNamespace": "",
     "references": [
-        "GUID:831409e8f9d13b5479a3baef9822ad34",
-        "GUID:57c32fc907df0f54e8e6e8f0d2488336",
-        "GUID:a738238285a7a8246af046cbf977522f",
-        "GUID:4d7f1c64c9ea01c4791eb6775dd950e0",
-        "GUID:7c35a93390159514087b747380f61213"
+        ""
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
