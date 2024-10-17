@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,7 @@ public class CardWrapper : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     private const float EPS = 0.01f; // Epsilon value for float comparaison
 
-    public bool    IsMyContainer;
+    public PhotonView POV;
     public float   TargetRotation;
     public Vector2 TargetPosition;
     public float   TargetVerticalDisplacement;
@@ -119,7 +120,7 @@ public class CardWrapper : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (_IsDragged || !IsMyContainer) // Avoid hover events while dragging
+        if (_IsDragged || !POV.IsMine) // Avoid hover events while dragging
             return;
         if (ZoomConfig.BringToFrontOnHover)
             _Canvas.sortingOrder = ZoomConfig.ZoomedSortOrder;
@@ -130,7 +131,7 @@ public class CardWrapper : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (_IsDragged || !IsMyContainer) // Avoid hover events while dragging
+        if (_IsDragged || !POV.IsMine) // Avoid hover events while dragging
             return;
         _Canvas.sortingOrder = UILayer;
         _IsHovered           = false;
@@ -140,7 +141,7 @@ public class CardWrapper : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (PreventCardInteraction || !IsMyContainer)
+        if (PreventCardInteraction || !POV.IsMine)
             return;
         _IsDragged    = true;
         _DragStartPos = new Vector2(transform.position.x - eventData.position.x, transform.position.y - eventData.position.y);

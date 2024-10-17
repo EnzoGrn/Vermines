@@ -8,8 +8,17 @@ using UnityEngine;
  */
 public class PlayerSetup : MonoBehaviour {
 
+    #region Attributes /* GameObject to setup */
+
+    [Header("GameObject to setup")]
+    public PlayerSetupView View;
+
+    #endregion
+
     public void IsLocalPlayer()
     {
-        Debug.Log($"Hi {PhotonNetwork.LocalPlayer.NickName}, here is your player instance.");
+        Debug.Log($"Hi {PhotonNetwork.LocalPlayer.NickName}! Here is your player instance.");
+
+        View.enabled = true;
     }
 }
