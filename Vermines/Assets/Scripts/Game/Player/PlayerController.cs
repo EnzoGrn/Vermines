@@ -13,7 +13,10 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
 
     private PhotonView _POV;
 
-    public Vermines.PlayerData PlayerData;
+    [SerializeField]
+    public PlayerData _PlayerData;
+
+    public PlayerSetupView View;
 
     #endregion
 
@@ -23,23 +26,27 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
     {
         _POV = GetComponent<PhotonView>();
 
-        PlayerData.enabled = true;
+        View.enabled = true;
+
+        if (_POV.IsMine) {
+            _PlayerData.enabled = true;
+
+            _PlayerData.Data.Profile.Nickname = PhotonNetwork.LocalPlayer.NickName;
+            _PlayerData.Data.Profile.PlayerID = PhotonNetwork.LocalPlayer.ActorNumber;
+
+            View.EditView(_PlayerData.Data);
+        }
     }
 
-    public override void OnDisable()
-    {
-        PlayerData.enabled = false;
-    }
+    public override void OnDisable() {}
 
     public void Start()
     {
-        /*if (_POV.IsMine) {
+        if (_POV.IsMine) {
             localPlayer = this;
 
-            Debug.Log("Nickname: " + Vermines.PlayerData.Instance.Data.Profile.Nickname); // Print the nickname of the player
-
-            SyncPlayer(Vermines.PlayerData.Instance);
-        }*/
+            SyncPlayer(_PlayerData);
+        }
     }
 
     #endregion
@@ -47,7 +54,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
     #region RPC functions
 
     [SerializeField]
-    private Vermines.Data _MyData;
+    private Data _MyData;
 
     public void SyncPlayer(PlayerData player)
     {
@@ -59,7 +66,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
     [PunRPC]
     public void RPC_SyncPlayer(string data)
     {
-        _MyData = JsonUtility.FromJson<Vermines.Data>(data);
+        _MyData = JsonUtility.FromJson<Data>(data);
+
+        View.EditView(_MyData);
 
         Debug.Log("Nickname: " + _MyData.Profile.Nickname);
     }
@@ -75,7 +84,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         } else {
             string data = (string)stream.ReceiveNext();
 
-            _MyData = JsonUtility.FromJson<Vermines.Data>(data);
+            _MyData = JsonUtility.FromJson<Data>(data);
         }
     }
 
