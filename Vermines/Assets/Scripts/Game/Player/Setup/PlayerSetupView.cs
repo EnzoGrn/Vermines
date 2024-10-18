@@ -15,6 +15,9 @@ public class PlayerSetupView : MonoBehaviour {
     public CardContainer Hand;
 
     [SerializeField]
+    private RectTransform _HandRect;
+
+    [SerializeField]
     private RectTransform _DiscardAreaRect;
 
     [SerializeField]
@@ -34,6 +37,9 @@ public class PlayerSetupView : MonoBehaviour {
 
     private PhotonView _POV;
 
+    [SerializeField]
+    private GameObject _CardUIPrefab;
+
     #endregion
 
     public void OnEnable()
@@ -47,7 +53,7 @@ public class PlayerSetupView : MonoBehaviour {
 
     private void GetComponents()
     {
-        _POV = GetComponent<PhotonView>();
+        _POV           = GetComponent<PhotonView>();
         _RectTransform = GetComponent<RectTransform>();
     }
 
@@ -58,6 +64,12 @@ public class PlayerSetupView : MonoBehaviour {
         _RectTransform.anchorMax        = new Vector2(0.5f, 0f);
         _RectTransform.pivot            = new Vector2(0.5f, 0f);
         _RectTransform.anchoredPosition = new Vector2(0f, 0f);
+
+        /* Put Hand Rect Bottom Center of the canvas */
+        _HandRect.anchorMin = new Vector2(0.5f, 0f);
+        _HandRect.anchorMax = new Vector2(0.5f, 0f);
+        _HandRect.pivot = new Vector2(0.5f, 0f);
+        _HandRect.anchoredPosition = new Vector2(0f, 0f);
 
         /* Put Discard Area Bottom Right of the canvas */
         _DiscardAreaRect.anchorMin = new Vector2(1f, 0f);
@@ -81,5 +93,32 @@ public class PlayerSetupView : MonoBehaviour {
         _PlayerName.text = data.Profile.Nickname;
         _Eloquence.text  = $"{data.Eloquence.ToString()}E";
         _Family.text     = data.Family.ToString();
+    }
+
+    public void EditHandView(Data data)
+    {
+        List<ICard> currentCards = Hand.GetCards();
+        List<ICard> cards        = data.HandDeck.Cards;
+
+        foreach (ICard card in cards)
+            if (!currentCards.Contains(card))
+                AddCardToHand(card);
+    }
+
+    public void AddCardToHand(ICard card)
+    {
+        if (card == null)
+            return;
+        BuildUIView(card);
+    }
+
+    private void BuildUIView(ICard card)
+    {
+        GameObject cardView   = GameObject.Instantiate(_CardUIPrefab);
+        CardUIView cardUIView = cardView.GetComponent<CardUIView>();
+
+        cardUIView.SetCard(card);
+
+        cardUIView.transform.SetParent(Hand.transform);
     }
 }

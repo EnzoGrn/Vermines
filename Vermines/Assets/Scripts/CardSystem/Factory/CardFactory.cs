@@ -64,6 +64,7 @@ static public class CardFactory {
     static public int CardCount
     {
         get => _CardCount;
+        set => _CardCount = value;
     }
 
     #endregion

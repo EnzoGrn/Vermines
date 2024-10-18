@@ -20,7 +20,7 @@ public class GameRoom : AGameRoomManager {
      */
     public override void OnPlayerEnteredRoom()
     {
-        GameObject playerObj = PhotonNetwork.Instantiate("Prefabs/Player/AU_Player"/*Constants.PlayerPref*/, Vector3.zero, Quaternion.identity);
+        GameObject playerObj = PhotonNetwork.Instantiate(Constants.PlayerPref, Vector3.zero, Quaternion.identity);
 
         playerObj.GetComponent<PlayerSetup>().IsLocalPlayer();
     }

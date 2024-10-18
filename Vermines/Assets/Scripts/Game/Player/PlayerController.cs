@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         _POV = GetComponent<PhotonView>();
     }
 
-    public override void OnDisable() { }
+    public override void OnDisable() {}
 
     public void Init()
     {
@@ -50,6 +50,32 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         }
     }
 
+    /*
+     * @brief Function that draw a number of card from the deck into the hand.
+     */
+    public void DrawCard(int numberOfCardToDraw)
+    {
+        if (_POV.IsMine) {
+            for (int i = 0; i < numberOfCardToDraw; i++) {
+                ICard card = _PlayerData.Data.Deck.PickACard();
+
+                if (card == null) {
+                    // TODO: Merge the discard pile with the deck
+                    // Shuffle the deck and pick a card
+                    break; // Temp break
+                }
+
+                card.IsAnonyme = false;
+
+                _PlayerData.Data.HandDeck.AddCard(card);
+
+                SyncPlayer(_PlayerData);
+
+                View.AddCardToHand(card);
+            }
+        }
+    }
+
     #endregion
 
     #region RPC functions
@@ -64,14 +90,21 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         _POV.RPC("RPC_SyncPlayer", RpcTarget.OthersBuffered, syncJson);
     }
 
-    [PunRPC]
-    public void RPC_SyncPlayer(string data)
+    public void Sync()
     {
-        _MyData = JsonUtility.FromJson<Data>(data);
+        SyncPlayer(_PlayerData);
+    }
 
-        View.EditView(_MyData);
+    [PunRPC]
+    public void RPC_SyncPlayer(string playerDataJson)
+    {
+        if (!string.IsNullOrEmpty(playerDataJson)) {
+            _MyData = JsonUtility.FromJson<Data>(playerDataJson);
 
-        _PlayerData.Data = _MyData;
+            View.EditView(_MyData);
+
+            _PlayerData.Data = _MyData;
+        }
     }
 
     #endregion
@@ -83,9 +116,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         if (stream.IsWriting) {
             stream.SendNext(JsonUtility.ToJson(_MyData));
         } else {
-            string data = (string)stream.ReceiveNext();
+            string playerDataJson = (string)stream.ReceiveNext();
 
-            _MyData = JsonUtility.FromJson<Data>(data);
+            _MyData = JsonUtility.FromJson<Data>(playerDataJson);
         }
     }
 
@@ -102,8 +135,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
                 _PlayerData.Data.Family = value;
 
                 View.EditView(_PlayerData.Data);
-
-                SyncPlayer(_PlayerData);
             }
         }
     }
@@ -117,8 +148,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
                 _PlayerData.Data.Eloquence = value;
 
                 View.EditView(_PlayerData.Data);
-
-                SyncPlayer(_PlayerData);
             } 
         }
     }
@@ -129,8 +158,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         set
         {
             _PlayerData.Data.Deck = value;
-
-            SyncPlayer(_PlayerData);
         }
     }
 

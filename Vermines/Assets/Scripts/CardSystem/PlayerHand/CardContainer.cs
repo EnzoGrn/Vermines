@@ -57,8 +57,8 @@ public class CardContainer : MonoBehaviour {
 
     private void InitView()
     {
-        if (!POV.IsMine) {
-            _MaxCardRotation       = -_MaxCardRotation * 3;
+        if (POV.IsMine) {
+            _MaxCardRotation       = -_MaxCardRotation / 3;
             _MaxHeightDisplacement = -_MaxHeightDisplacement;
         }
     }
@@ -289,5 +289,18 @@ public class CardContainer : MonoBehaviour {
             cursorPosition.x > playAreaCorners[0].x && cursorPosition.x < playAreaCorners[2].x &&
             cursorPosition.y > playAreaCorners[0].y && cursorPosition.y < playAreaCorners[2].y
         );
+    }
+
+    public List<ICard> GetCards()
+    {
+        List<ICard> cards = new();
+
+        foreach (Transform child in transform) {
+            var card = child.GetComponent<CardUIView>();
+
+            if (card != null)
+                cards.Add(card._Card);
+        }
+        return cards;
     }
 }
