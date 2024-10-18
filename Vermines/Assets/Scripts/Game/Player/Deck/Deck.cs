@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using TMPro;
 
-public class Deck {
+[Serializable]
+public class Deck : ISerializationCallbackReceiver {
 
     public List<ICard> Cards { get; set; }
 
@@ -61,4 +63,51 @@ public class Deck {
         foreach (ICard card in other.Cards)
             AddCard(card);
     }
+
+    public ICard PickACard()
+    {
+        if (GetNumberCards() == 0)
+            return null;
+        ICard card = Cards[GetNumberCards() - 1];
+
+        Cards.RemoveAt(GetNumberCards() - 1);
+
+        return card;
+    }
+
+    #region ISerializationCallbackReceiver implementation
+
+    [SerializeField]
+    private List<string> _IDs = new();
+
+    public void OnBeforeSerialize()
+    {
+        _IDs.Clear();
+
+        for (int i = 0; i < Cards.Count; i++) {
+            int id = Cards[i].ID;
+
+            _IDs.Add(id.ToString());
+        }
+    }
+
+    public void OnAfterDeserialize()
+    {
+        Cards = new();
+
+        for (int i = 0; i < _IDs.Count; i++) {
+            try {
+                ICard card = CardManager.Instance.FoundACard(int.Parse(_IDs[i]));
+
+                if (card != null)
+                    Cards.Add(card);
+            } catch (Exception e) {
+                Debug.Log($"Error on card {_IDs[i]}: " + e.Message + " - " + e.StackTrace);
+
+                continue;
+            }
+        }
+    }
+
+    #endregion
 }

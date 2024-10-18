@@ -9,8 +9,6 @@ public class CardLoader {
 
     private int _PlayerToLoad = 0;
 
-    private ScriptableObjectLoader dataLoader = new();
-
     #endregion
 
     #region Constructor
@@ -74,11 +72,15 @@ public class CardLoader {
         for (int i = 0; i < types.Count; i++) {
             // -- Create a new deck for one family, and set all this card to the same type
             Deck family = LoadDeckFromPath(path);
-                
+
             foreach (ICard card in family.Cards) {
+                card.IsAnonyme = false;
+
                 CardData data = card.Data;
 
                 data.Type = types[i];
+
+                card.IsAnonyme = true;
             }
 
             deck.Merge(family);
@@ -129,7 +131,7 @@ public class CardLoader {
      */
     private Deck LoadDeckFromPath(string path)
     {
-        CardData[] cardDataArray = dataLoader.LoadAllScriptableObject<CardData>(path);
+        CardData[] cardDataArray = Resources.LoadAll<CardData>(path);
 
         if (cardDataArray.Length == 0) {
             Debug.LogWarning($"No Card found in Resources/{path}.");
@@ -154,9 +156,12 @@ public class CardLoader {
         List<ICard> cards = new();
 
         for (int i = 0; i < numberNeeded; i++) {
-            data.ID = CardFactory.CardCount;
+            CardData copyData = Object.Instantiate(data);
 
-            ICard card = CardFactory.CreateCard(data);
+            copyData.ID        = CardFactory.CardCount;
+            copyData.IsAnonyme = true;
+
+            ICard card = CardFactory.CreateCard(copyData);
 
             cards.Add(card);
         }

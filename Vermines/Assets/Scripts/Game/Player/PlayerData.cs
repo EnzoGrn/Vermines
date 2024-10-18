@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -73,14 +74,14 @@ namespace Vermines {
         /*
          * @brief The deck containing all the cards of the player's hand.
          */
-        public Deck HandDeck;
+        public Deck HandDeck = new();
 
         /*
          * @brief The deck containing all the cards of the player.
          * When it's empty, we refill it with the discard deck,
          * by merging the two decks in one, and shuffle it.
          */
-        public Deck Deck;
+        public Deck Deck = new();
 
         /*
          * @brief The deck containing all the discarded cards of the player.
@@ -88,12 +89,12 @@ namespace Vermines {
          * and when their is no more card in his deck,
          * the player merge his deck with his discard deck, and shuffle it.
          */
-        public Deck DiscardDeck;
+        public Deck DiscardDeck = new();
 
         /*
          * @brief The deck containing all the sacrificed cards that the player has made.
          * It can be use to get the amount of Bee the player has sacrificed for example.
          */
-        public Deck SacrifiedDeck;
+        public Deck SacrifiedDeck = new();
     }
 }
