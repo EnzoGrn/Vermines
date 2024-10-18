@@ -15,7 +15,7 @@ MonoBehaviour:
   ID: 1
   Name: Priest
   Description: Earn <b>2E</b>.
-  Type: 1
+  Type: 7
   Eloquence: 5
   Souls: 15
   SpriteName: Priest

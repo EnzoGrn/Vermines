@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
     private PhotonView _POV;
 
     [SerializeField]
-    public PlayerData _PlayerData;
+    private PlayerData _PlayerData;
 
     public PlayerSetupView View;
 
@@ -25,12 +25,15 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
     public override void OnEnable()
     {
         _POV = GetComponent<PhotonView>();
+    }
 
+    public override void OnDisable() { }
+
+    public void Init()
+    {
         View.enabled = true;
 
         if (_POV.IsMine) {
-            _PlayerData.enabled = true;
-
             _PlayerData.Data.Profile.Nickname = PhotonNetwork.LocalPlayer.NickName;
             _PlayerData.Data.Profile.PlayerID = PhotonNetwork.LocalPlayer.ActorNumber;
 
@@ -38,14 +41,12 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         }
     }
 
-    public override void OnDisable() {}
-
     public void Start()
     {
         if (_POV.IsMine) {
-            localPlayer = this;
-
             SyncPlayer(_PlayerData);
+
+            localPlayer = this;
         }
     }
 
@@ -70,7 +71,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
 
         View.EditView(_MyData);
 
-        Debug.Log("Nickname: " + _MyData.Profile.Nickname);
+        _PlayerData.Data = _MyData;
     }
 
     #endregion
@@ -85,6 +86,51 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
             string data = (string)stream.ReceiveNext();
 
             _MyData = JsonUtility.FromJson<Data>(data);
+        }
+    }
+
+    #endregion
+
+    #region Setters
+
+    public CardType Family
+    {
+        get => _PlayerData.Data.Family;
+        set
+        {
+            if (value != _PlayerData.Data.Family) {
+                _PlayerData.Data.Family = value;
+
+                View.EditView(_PlayerData.Data);
+
+                SyncPlayer(_PlayerData);
+            }
+        }
+    }
+
+    public int Eloquence
+    {
+        get => _PlayerData.Data.Eloquence;
+        set
+        {
+            if (value != _PlayerData.Data.Eloquence) {
+                _PlayerData.Data.Eloquence = value;
+
+                View.EditView(_PlayerData.Data);
+
+                SyncPlayer(_PlayerData);
+            } 
+        }
+    }
+
+    public Deck Deck
+    {
+        get => _PlayerData.Data.Deck;
+        set
+        {
+            _PlayerData.Data.Deck = value;
+
+            SyncPlayer(_PlayerData);
         }
     }
 

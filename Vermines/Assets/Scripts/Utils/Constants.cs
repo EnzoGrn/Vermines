@@ -53,7 +53,16 @@ public static class Constants {
         "Bee", "Mosquito", "Firefly"
     };
 
-    public static CardType[] FamilyTypes = {
+    public static List<CardType> FamilyTypes = new () {
         CardType.Fly, CardType.Ladybug, CardType.Scarab, CardType.Cricket
     };
+
+    // -- Scriptable Object (CardData) path -- //
+
+    public static string ScriptableObjectCardsPath =  "ScriptableObject/Cards/";
+    public static string PathToStartingCard        = $"{ScriptableObjectCardsPath}StartingCards/";
+    public static string PathToItemsCard           = $"{ScriptableObjectCardsPath}Item/";
+    public static string PathToEquipmentCard       = $"{PathToItemsCard}Equipment/";
+    public static string PathToToolsCard           = $"{PathToItemsCard}Tools/";
+    public static string PathToPartisan            = $"{ScriptableObjectCardsPath}Partisans/";
 }

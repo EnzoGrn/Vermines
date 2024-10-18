@@ -12,13 +12,11 @@ public class PlayerSetup : MonoBehaviour {
 
     [Header("GameObject to setup")]
     public PlayerController PlayerController;
-    //public PlayerSetupView  View;
 
     #endregion
 
     public void IsLocalPlayer()
     {
-        PlayerController.enabled = true;
-        //View.enabled             = true;
+        PlayerController.Init();
     }
 }
