@@ -40,6 +40,8 @@ MonoBehaviour:
   - Fire
   - RespawnSpaceship
   - RPC_SyncPlayer
+  - RPC_SyncAllFamilyPlayed
+  - RPC_SyncFamily
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

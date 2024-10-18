@@ -15,7 +15,7 @@ MonoBehaviour:
   ID: 1
   Name: Apothecary
   Description: Your purchases cost <b>2E</b> less.
-  Type: 1
+  Type: 7
   Eloquence: 8
   Souls: 20
   SpriteName: Apothecary

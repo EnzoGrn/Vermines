@@ -36,6 +36,9 @@ public class CardBuilder {
             case CardType.Scarab:
                 _Card = new PartisanCard();
                 break;
+            case CardType.None:
+                _Card = new PartisanCard(); // It's a partisan card (family types), but not set yet.
+                break;
             default:
                 break; // TODO: Anonymous Card
         }

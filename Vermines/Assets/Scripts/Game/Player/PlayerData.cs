@@ -5,20 +5,12 @@ using UnityEngine;
 
 namespace Vermines {
 
-    public class PlayerData : MonoBehaviour/*, IPunObservable*/ {
+    public class PlayerData : MonoBehaviour {
 
         /*
          * @brief Data of the player.
          */
-        public Data Data;
-
-        /*
-         * @brief Function called when the object is enabled.
-         */
-        private void OnEnable()
-        {
-            Data = new();
-        }
+        public Data Data = new();
 
         /*
          * @brief Function that convert the player data to a string.
@@ -33,15 +25,6 @@ namespace Vermines {
         {
             return JsonUtility.FromJson<Data>(data);
         }
-
-        /*public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-        {
-            if (stream.IsWriting) {
-                stream.SendNext(DataToString());
-            } else {
-                Data = StringToData((string)stream.ReceiveNext());
-            }
-        }*/
     }
 
     /*
