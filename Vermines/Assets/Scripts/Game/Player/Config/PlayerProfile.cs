@@ -14,12 +14,12 @@ namespace Config {
          * @brief Nickname of the player.
          * It's the nickname created by the server for keep the anonymity of the player.
          */
-        public string Nickname;
+        public string Nickname = string.Empty;
 
         /*
          * @brief ID of the player in the server.
          * It's the ID of the player in the server, for recognize the player in the party.
          */
-        public int PlayerID;
+        public int PlayerID = -1;
     }
 }

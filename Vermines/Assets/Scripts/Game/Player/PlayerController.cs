@@ -44,9 +44,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
     public void Start()
     {
         if (_POV.IsMine) {
-            SyncPlayer(_PlayerData);
-
             localPlayer = this;
+
+            SyncPlayer(_PlayerData);
         }
     }
 
@@ -102,6 +102,10 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
             _MyData = JsonUtility.FromJson<Data>(playerDataJson);
 
             View.EditView(_MyData);
+            View.EditHandView(_MyData);
+
+            Debug.Log($"Player {_MyData.Profile.Nickname} has been updated");
+            Debug.Log($"Data: {playerDataJson}");
 
             _PlayerData.Data = _MyData;
         }
@@ -159,6 +163,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         {
             _PlayerData.Data.Deck = value;
         }
+    }
+
+    public Config.PlayerProfile Profile
+    {
+        get => _PlayerData.Data.Profile;
     }
 
     #endregion
