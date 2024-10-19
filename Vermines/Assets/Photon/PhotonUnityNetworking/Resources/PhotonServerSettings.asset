@@ -43,6 +43,7 @@ MonoBehaviour:
   - RPC_SyncAllFamilyPlayed
   - RPC_SyncFamily
   - RPC_SyncDeck
+  - RPC_SyncGameManager
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
