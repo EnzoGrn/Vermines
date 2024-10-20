@@ -2,35 +2,37 @@ using NUnit.Framework;
 using UnityEngine;
 using System;
 using Photon.Pun;
+using UnityEngine.UIElements;
 
 [TestFixture]
 public class NetworkRoomManagerTests
 {
-    private NetworkRoomManager _networkRoomManager;
+    private NetworkSettings _networkSettings;
 
     [SetUp]
     public void Setup()
     {
-        // Create a GameObject and add the MonoBehaviour (NetworkRoomManager) to it
-        var gameObject = new GameObject();
-        _networkRoomManager = gameObject.AddComponent<NetworkRoomManager>();
+        _networkSettings = Resources.Load<NetworkSettings>("Network/Settings/NetworkSettings");
+
+        if (_networkSettings == null)
+        {
+            Debug.LogError("NetworkSettings not found in Resources folder !");
+            return;
+        }
     }
 
     [TearDown]
     public void Teardown()
     {
-        // Clean up the instantiated GameObject
-        GameObject.DestroyImmediate(_networkRoomManager.gameObject);
     }
 
     [Test]
     public void GenerateRandomCode_ReturnsStringOfGivenLength()
     {
-        // Arrange
         int length = 6;
 
         // Act
-        string randomCode = _networkRoomManager.GenerateRandomCode(length);
+        string randomCode = NetworkUtils.GenerateRandomCode(_networkSettings.keyStringCodeGeneration, length, _networkSettings.random);
 
         // Assert
         Assert.AreEqual(length, randomCode.Length, "The generated code length is incorrect.");
@@ -39,17 +41,15 @@ public class NetworkRoomManagerTests
     [Test]
     public void GenerateRandomCode_ContainsOnlyAllowedCharacters()
     {
-        // Arrange
-        int length = 10;
-        string allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        int length = 25;
 
         // Act
-        string randomCode = _networkRoomManager.GenerateRandomCode(length);
+        string randomCode = NetworkUtils.GenerateRandomCode(_networkSettings.keyStringCodeGeneration, length, _networkSettings.random);
 
         // Assert
         foreach (char c in randomCode)
         {
-            Assert.Contains(c, allowedCharacters.ToCharArray(), "Code contains invalid character.");
+            Assert.Contains(c, _networkSettings.keyStringCodeGeneration.ToCharArray(), "Code contains invalid character.");
         }
     }
 }
