@@ -12,7 +12,9 @@
         "CardEffect",
         "CardData",
         "Card",
-        "Deck"
+        "Deck",
+        "NetworkUtilsAssembly",
+        "NetworkSettingsAssembly"
     ],
     "includePlatforms": [
         "Editor"

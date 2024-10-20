@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using System.Linq;
 
 #region PUN2 Imports
 using Photon.Pun;
@@ -11,14 +10,9 @@ public class NetworkRoomManager : MonoBehaviourPunCallbacks
 {
     #region Private Attributes
     /*
-     * @brief This string is used to generate a random code for the room.
+     * @brief This attribute is used to get the network settings.
      */
-    private const string keyStringCodeGeneration = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    
-    /*
-     * @brief This attribute is used to generate a random number.
-     */
-    private System.Random _random = new();
+    private NetworkSettings _networkSettings;
     #endregion
 
     #region Public Attributes
@@ -44,19 +38,30 @@ public class NetworkRoomManager : MonoBehaviourPunCallbacks
     #endregion
 
     #region Methods Implementation
-    public void Start()
+    private void Awake()
     {
-        PhotonNetwork.NickName = "Player " + GenerateRandomCode(4);
+        _networkSettings = Resources.Load<NetworkSettings>("Network/Settings/NetworkSettings");
+
+        if (_networkSettings == null)
+        {
+            Debug.LogError("NetworkSettings not found in Resources folder !");
+            return;
+        }
+
+        PhotonNetwork.NickName = "Player " + NetworkUtils.GenerateRandomCode(_networkSettings.keyStringCodeGeneration,
+            _networkSettings.maxPlayerNicknameLength, _networkSettings.random);
     }
 
     /*
      * @brief This method is used to create a private room.
      * 
-     * @param void
+     * @param string roomCode (optional) default value is "".
+     * @param int? maxPLayers (optional) default value is null.
+     * @param bool? isVisible (optional) default value is null.
      * 
      * @return void
      */
-    public void CreatePrivateRoom(string roomCode = "", bool isVisible = false, int maxPLayers = 2)
+    public void CreatePrivateRoom(string roomCode = "", int? maxPLayers = null, bool? isVisible = null)
     {
         if (!PhotonNetwork.IsConnected)
         {
@@ -86,15 +91,31 @@ public class NetworkRoomManager : MonoBehaviourPunCallbacks
             return;
         }
 
+        if (!_networkSettings.allowCustomRoomCodes && !string.IsNullOrEmpty(roomCode))
+        {
+            OnCreateRoomFailed(0, "Custom room codes are not allowed !");
+            return;
+        }
+
         if (string.IsNullOrEmpty(roomCode))
         {
-            roomCode = GenerateRandomCode(6);
+            roomCode = NetworkUtils.GenerateRandomCode(_networkSettings.keyStringCodeGeneration,
+                _networkSettings.maxRoomCodeLength, _networkSettings.random);
         }
+
+        if (maxPLayers != null && (maxPLayers < _networkSettings.minPlayers || maxPLayers > _networkSettings.maxPlayers))
+        {
+            OnCreateRoomFailed(0, "Invalid number of players !");
+            return;
+        }
+
+        maxPLayers ??= _networkSettings.maxPlayers;
+        isVisible ??= _networkSettings.defaultVisibleSetting;
 
         PhotonNetwork.CreateRoom(roomCode, new RoomOptions
         {
-            MaxPlayers = maxPLayers,
-            IsVisible = isVisible,
+            MaxPlayers = (int)maxPLayers,
+            IsVisible = (bool)isVisible,
         });
     }
 
@@ -135,27 +156,13 @@ public class NetworkRoomManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        if (PhotonNetwork.InRoom)
+        if (roomCode.Length < _networkSettings.minRoomCodeLength || roomCode.Length > _networkSettings.maxRoomCodeLength)
         {
-            OnJoinRoomFailed(0, "Client already in a room");
-            Debug.Log("Client already in a room");
+            OnJoinRoomFailed(0, "Invalid room code length !");
             return;
         }
 
         PhotonNetwork.JoinRoom(roomCode);
-    }
-
-    /*
-     * @brief This method is used to generate a random code.
-     * 
-     * @param int length
-     * 
-     * @return string
-     */
-    public string GenerateRandomCode(int length)
-    {
-        return new string(Enumerable.Repeat(keyStringCodeGeneration, length).Select(s =>
-            s[_random.Next(0, keyStringCodeGeneration.Length)]).ToArray());
     }
 
     /*
