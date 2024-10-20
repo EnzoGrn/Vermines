@@ -19,7 +19,7 @@ MonoBehaviour:
     AppIdVoice: 
     AppVersion: 
     UseNameServer: 1
-    FixedRegion: 
+    FixedRegion: jp
     Server: 
     Port: 0
     ProxyServer: 
@@ -39,6 +39,11 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - RPC_SyncPlayer
+  - RPC_SyncAllFamilyPlayed
+  - RPC_SyncFamily
+  - RPC_SyncDeck
+  - RPC_SyncGameManager
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

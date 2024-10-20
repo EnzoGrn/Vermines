@@ -12,7 +12,6 @@
         "CardEffect",
         "CardData",
         "Card",
-        "Deck",
         "NetworkUtilsAssembly",
         "NetworkSettingsAssembly"
     ],

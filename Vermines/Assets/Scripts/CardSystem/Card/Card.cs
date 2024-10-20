@@ -9,7 +9,7 @@ public interface ICard {
 
     public CardData Data { get; set; }
 
-    public string ID { get; set; }
+    public int ID { get; set; }
 
     public bool IsAnonyme { get; set; }
 
@@ -26,6 +26,7 @@ public interface ICard {
 public abstract class Card : ICard
 {
     private CardData _Data;
+
     public CardData Data
     {
         get => IsAnonyme ? null : _Data;
@@ -36,7 +37,7 @@ public abstract class Card : ICard
         }
     }
 
-    public string ID
+    public int ID
     {
         get => _Data.ID;
         set

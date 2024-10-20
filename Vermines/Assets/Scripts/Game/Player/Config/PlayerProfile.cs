@@ -4,10 +4,22 @@ using UnityEngine;
 
 namespace Config {
 
+    /*
+     * @brief Class containing the profile of player in the server side.
+     */
+    [System.Serializable]
     public class PlayerProfile {
 
-        public string Nickname;
+        /*
+         * @brief Nickname of the player.
+         * It's the nickname created by the server for keep the anonymity of the player.
+         */
+        public string Nickname = string.Empty;
 
-        public int PlayerID;
+        /*
+         * @brief ID of the player in the server.
+         * It's the ID of the player in the server, for recognize the player in the party.
+         */
+        public int PlayerID = -1;
     }
 }

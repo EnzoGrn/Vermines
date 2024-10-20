@@ -40,7 +40,7 @@ public class CardUIView : MonoBehaviour {
     // -- Anonymous Section
     public GameObject Anonymous; // If the card is anonymous draw the anonymous section
 
-    private ICard _Card;
+    public ICard _Card;
 
     public void Start()
     {

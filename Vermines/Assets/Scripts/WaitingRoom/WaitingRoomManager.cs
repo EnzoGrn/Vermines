@@ -10,7 +10,7 @@ public class WaitingRoomManager : AWaitingRoomManager
      * @brief This attribute is used to store and display the code of the actual room.
      */
     [SerializeField] private TMP_Text _roomCodeText;
-
+ 
     /*
      * @brief This attribute is used to store and display the total player in the room.
      */
