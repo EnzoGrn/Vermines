@@ -27,6 +27,10 @@ public class NetworkLobbyManager : MonoBehaviourPunCallbacks
     public event Action OnJoinRoomFailedAction;
     #endregion
 
+    #region Private Attributes
+    private NetworkSettings _networkSettings;
+    #endregion
+
 
     #region Methods Implementation
     /*
@@ -36,6 +40,17 @@ public class NetworkLobbyManager : MonoBehaviourPunCallbacks
      * 
      * @return void
      */
+    private void Awake()
+    {
+        _networkSettings = Resources.Load<NetworkSettings>("Network/Settings/NetworkSettings");
+
+        if (_networkSettings == null)
+        {
+            Debug.LogError("NetworkSettings not found in Resources folder !");
+            return;
+        }
+    }
+
     public void ConnectClientToServer()
     {
         // Remove in the future: actually here for purpose test
@@ -89,7 +104,7 @@ public class NetworkLobbyManager : MonoBehaviourPunCallbacks
      */
     private void ConnectToLobby()
     {
-        PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.AutomaticallySyncScene = _networkSettings.automaticallySyncScene;
 
         if (PhotonNetwork.InLobby)
         {
