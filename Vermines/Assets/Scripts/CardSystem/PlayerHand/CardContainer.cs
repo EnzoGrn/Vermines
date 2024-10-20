@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
+[RequireComponent(typeof(PhotonView))]
 public class CardContainer : MonoBehaviour {
 
-    public bool IsMyContainer = true;
+    public PhotonView POV;
 
     [Header("Constraints")]
     [SerializeField]
@@ -45,11 +47,20 @@ public class CardContainer : MonoBehaviour {
     private RectTransform     _RectTransform;
     private List<CardWrapper> _Cards = new();
 
-    private void Start()
+    private void OnEnable()
     {
         _RectTransform = GetComponent<RectTransform>();
 
+        InitView();
         InitCards();
+    }
+
+    private void InitView()
+    {
+        if (POV.IsMine) {
+            _MaxCardRotation       = -_MaxCardRotation / 3;
+            _MaxHeightDisplacement = -_MaxHeightDisplacement;
+        }
     }
 
     private void InitCards()
@@ -96,7 +107,7 @@ public class CardContainer : MonoBehaviour {
 
             if (wrapper == null)
                 wrapper = card.gameObject.AddComponent<CardWrapper>();
-            wrapper.IsMyContainer = IsMyContainer;
+            wrapper.POV = POV;
 
             _Cards.Add(wrapper);
 
@@ -278,5 +289,18 @@ public class CardContainer : MonoBehaviour {
             cursorPosition.x > playAreaCorners[0].x && cursorPosition.x < playAreaCorners[2].x &&
             cursorPosition.y > playAreaCorners[0].y && cursorPosition.y < playAreaCorners[2].y
         );
+    }
+
+    public List<ICard> GetCards()
+    {
+        List<ICard> cards = new();
+
+        foreach (Transform child in transform) {
+            var card = child.GetComponent<CardUIView>();
+
+            if (card != null)
+                cards.Add(card._Card);
+        }
+        return cards;
     }
 }

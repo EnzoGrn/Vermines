@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,10 @@ using UnityEngine;
  * This folder needs to have the same name as the card type.
  * And contains a 'Background.jpg' and a 'Icon.png'.
  */
+[Serializable]
 public enum CardType {
+    None = -1,
+
     Bee = 0,
     Cricket = 1,
     Equipment = 2,
@@ -62,4 +66,3 @@ static public class CardTypeMethods {
         return CardType.Count;*/
     }
 }
-

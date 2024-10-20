@@ -1,65 +1,179 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vermines;
 
-public class GameManager : MonoBehaviourPunCallbacks {
+public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
 
-    private List<Vermines.Player> _ConnectedPlayer = new();
+    #region Attributes
 
-    private void Awake()
+    static public GameManager Instance;
+
+    [SerializeField]
+    private Dictionary<int, PlayerController> _Players = new();
+
+    private bool _IsGameStarted = false;
+
+    public CardManager CardManager;
+    public GameInfo    GameInfo;
+
+    #endregion
+
+    #region Action
+
+    private Action _EveryPlayersLoadCallbacks;
+    private Action _InitializationOfPlayersDeck;
+
+    #endregion
+
+    #region Methods
+
+    public void Awake()
     {
-        _ConnectedPlayer = new();
+        if (Instance == null)
+            Instance = this;
+        else if (Instance != this)
+            Destroy(gameObject);
+        _EveryPlayersLoadCallbacks += OnAllPlayersJoined;
 
-        if (Constants.PlayGround == null)
-            Instantiate(Resources.Load<GameObject>(Constants.PlayGroundPref));
-        AddNewPlayerToList(PhotonNetwork.NickName, PhotonNetwork.LocalPlayer.ActorNumber);
-    }
-
-    private void AddNewPlayerToList(string nickname, int playerID)
-    {
-        GameObject playerObj = PhotonNetwork.Instantiate(Constants.PlayerPref, Vector3.zero, Quaternion.identity);
-
-        Vermines.Player player = playerObj.GetComponent<Vermines.Player>();
-
-        Debug.Assert(player != null, "Player not found");
-
-        Config.PlayerProfile profile = new() {
-            Nickname = nickname,
-            PlayerID = playerID
-        };
-
-        player.SetProfile(profile);
-
-        Debug.Log($"Player {nickname} {playerID} has been added to the game");
+        GameInfo.enabled = true;
     }
 
     public void FixedUpdate()
     {
-        if (_ConnectedPlayer.Count != PhotonNetwork.CurrentRoom.PlayerCount)
-            UpdateConnectedPlayerList();
+        _EveryPlayersLoadCallbacks?.Invoke();   // Call this event until all players have joined the game room, after that it will be removed from the callback list.
+        _InitializationOfPlayersDeck?.Invoke(); // Call this event client are ready to initialize their deck.
+    }
+    
+    public void Update()
+    {
+        if (!_IsGameStarted)
+            return;
+        _StartingDraw?.Invoke();
     }
 
-    private void UpdateConnectedPlayerList()
+    private Action _StartingDraw;
+
+    private void DrawCardBegin()
     {
-        _ConnectedPlayer.Clear();
+        PlayerController.localPlayer.DrawCard(2);
 
-        foreach (Vermines.Player player in FindObjectsOfType<Vermines.Player>()) {
-            PhotonView photonView = player.GetComponent<PhotonView>();
+        _StartingDraw -= DrawCardBegin;
+    }
 
-            if (photonView == null)
-                Debug.Assert(false, "PhotonView not found");
-            else {
-                Config.PlayerProfile profile = new() {
-                    Nickname = photonView.Owner.NickName,
-                    PlayerID = photonView.Owner.ActorNumber
-                };
+    /*
+     * @brief Event called when all players have joined the game room.
+     * If used for initialization, it should be removed from the callback list.
+     * 
+     * @note Only the master client can call this event.
+     */
+    private void OnAllPlayersJoined()
+    {
+        PlayerController[] controllers = FindObjectsOfType<PlayerController>();
 
-                player.SetProfile(profile);
+        if (controllers.Length != PhotonNetwork.CurrentRoom.PlayerCount)
+            return;
+        _Players.Clear();
 
-                _ConnectedPlayer.Add(player);
+        if (!PhotonNetwork.IsMasterClient) {
+            List<CardType> cardTypes = new();
+
+            for (int i = 0; i < controllers.Length; i++) {
+                if (controllers[i].Family == CardType.None)
+                    return;
+                cardTypes.Add(controllers[i].Family);
+            }
+            GameInfo.FamilyPlayed = cardTypes;
+
+            _Command = "ClientReady";
+
+            SyncGameManager(_Command);
+        } else {
+            GameInfo.SelectEveryFamily(PhotonNetwork.CurrentRoom.PlayerCount); // Select every family for each player, and sync with the other clients the family chosen.
+
+            for (int i = 0; i < controllers.Length; i++) {
+                int startingEloquence = i > 2 ? 2 : i; // Give eloquence to the player depending in their order (First: 0E, Secound: 1E, Third+: 2E).
+
+                controllers[i].Family    = GameInfo.FamilyPlayed[i];
+                controllers[i].Eloquence = startingEloquence;
+                controllers[i].Sync();
+
+                _Players.Add(i, controllers[i]); // Currently the players are sort by an index number, maybe we should sort them by their playerID
             }
         }
+
+        CardManager.enabled = true;
+
+        _EveryPlayersLoadCallbacks -= OnAllPlayersJoined;
     }
+
+    private void InitPlayerDeck()
+    {
+        if (PhotonNetwork.IsMasterClient) {
+            PlayerController[] controllers = FindObjectsOfType<PlayerController>();
+
+            for (int i = 0; i < controllers.Length; i++) {
+                controllers[i].Deck = CardManager.GetPlayerDeck(i);
+                controllers[i].Sync();
+            }
+            _Command = "ClientReady";
+
+            SyncGameManager(_Command);
+        }
+        _InitializationOfPlayersDeck -= InitPlayerDeck;
+        _StartingDraw                += DrawCardBegin;
+        _IsGameStarted = true;
+    }
+
+    #endregion
+
+    #region Getters
+
+    public List<CardType> GetAllFamilyPlayed()
+    {
+        return GameInfo.FamilyPlayed;
+    }
+
+    #endregion
+
+    #region IPunObservable implementation
+
+    private string _Command = string.Empty;
+
+    private void SyncGameManager(string command)
+    {
+        // RPC without photonView
+
+        photonView.RPC("RPC_SyncGameManager", RpcTarget.OthersBuffered, command);
+    }
+
+    [PunRPC]
+    public void RPC_SyncGameManager(string command)
+    {
+        if (!string.IsNullOrEmpty(command)) {
+            _Command = command;
+
+            HandleCommand();
+        }
+    }
+
+    private void HandleCommand()
+    {
+        if (_Command == "ClientReady")
+            _InitializationOfPlayersDeck += InitPlayerDeck;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting) {
+            stream.SendNext(_Command);
+        } else {
+            _Command = (string)stream.ReceiveNext();
+        }
+    }
+
+    #endregion
 }

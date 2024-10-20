@@ -14,9 +14,8 @@ public static class Constants {
 
     // -- Prefabs Constants Name -- //
 
+    public static string PlayerPref     = "Prefabs/Player/AU_Player";
     public static string PlayGroundPref = "Prefabs/Game/PlayGround";
-    public static string PlayerViewPref = "Prefabs/Player/Player View";
-    public static string PlayerPref     = "Prefabs/Player/Player";
 
     // -- Constants string -- //
 
@@ -25,14 +24,6 @@ public static class Constants {
     public static string Other = "(Other)";
 
     // -- Get GameObject Constants -- //
-
-    public static GameObject InstantiatePlayerView(bool viewIsMine)
-    {
-        if (viewIsMine)
-            return GameObject.Instantiate(Resources.Load<GameObject>($"{PlayerViewPref} {Mine}"));
-        else
-            return GameObject.Instantiate(Resources.Load<GameObject>($"{PlayerViewPref} {Other}"));
-    }
 
     public static GameObject PlayGround
     {
@@ -46,4 +37,23 @@ public static class Constants {
                 return null;
         }
     }
+
+    // -- Constants type of cards in the game -- //
+
+    public static string[] BasicTypes = {
+        "Bee", "Mosquito", "Firefly"
+    };
+
+    public static List<CardType> FamilyTypes = new () {
+        CardType.Fly, CardType.Ladybug, CardType.Scarab, CardType.Cricket
+    };
+
+    // -- Scriptable Object (CardData) path -- //
+
+    public static string ScriptableObjectCardsPath =  "ScriptableObject/Cards/";
+    public static string PathToStartingCard        = $"{ScriptableObjectCardsPath}StartingCards/";
+    public static string PathToItemsCard           = $"{ScriptableObjectCardsPath}Item/";
+    public static string PathToEquipmentCard       = $"{PathToItemsCard}Equipment/";
+    public static string PathToToolsCard           = $"{PathToItemsCard}Tools/";
+    public static string PathToPartisan            = $"{ScriptableObjectCardsPath}Partisans/";
 }

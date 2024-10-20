@@ -8,7 +8,7 @@ public class BuildingCardSystem {
 
     static public string jsonCard = @"       
         {
-            ""id"": ""bard_000"",
+            ""id"": 1,
             ""name"": ""Bard"",
             ""description"": ""Gagnez 8E."",
             ""type"": 0,
@@ -31,7 +31,7 @@ public class BuildingCardSystem {
     [Test]
     public void BuildingCardSystemSimplePasses()
     {
-        Card card = CardFactory.CreateCard(jsonCard);
+        ICard card = CardFactory.CreateCard(jsonCard);
 
         Assert.AreNotEqual(card, null);
 
@@ -46,7 +46,7 @@ public class BuildingCardSystem {
         CardData cardData = card.Data;
 
         if (cardData != null) {
-            Assert.AreEqual(cardData.ID, "bard_000");
+            Assert.AreEqual(cardData.ID, 1);
             Assert.AreEqual(cardData.Name, "Bard");
             Assert.AreEqual(cardData.Description, "Gagnez 8E.");
             Assert.AreEqual(cardData.Type, CardType.Bee);
@@ -58,7 +58,7 @@ public class BuildingCardSystem {
             Assert.AreNotEqual(false, false); // Test not past because the cardData is null
         }
 
-        Card card2 = CardFactory.CreateCard(card.Data);
+        ICard card2 = CardFactory.CreateCard(card.Data);
 
         Assert.AreNotEqual(card2, null);
 
@@ -74,7 +74,7 @@ public class BuildingCardSystem {
         CardData cardData2 = card2.Data;
 
         if (cardData2 != null) {
-            Assert.AreEqual(cardData.ID, "bard_000");
+            Assert.AreEqual(cardData.ID, 1);
             Assert.AreEqual(cardData2.Name, "Bard");
             Assert.AreEqual(cardData2.Description, "Gagnez 8E.");
             Assert.AreEqual(cardData2.Type, CardType.Bee);

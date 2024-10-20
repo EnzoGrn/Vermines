@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CardBuilder {
 
-    private Card _Card; // <-- Card object to be built
+    private ICard _Card; // <-- Card object to be built
 
     public CardBuilder CreateCard(CardType type)
     {
@@ -36,6 +36,9 @@ public class CardBuilder {
             case CardType.Scarab:
                 _Card = new PartisanCard();
                 break;
+            case CardType.None:
+                _Card = new PartisanCard(); // It's a partisan card (family types), but not set yet.
+                break;
             default:
                 break; // TODO: Anonymous Card
         }
@@ -51,7 +54,7 @@ public class CardBuilder {
         return this;
     }
 
-    public Card Build()
+    public ICard Build()
     {
         return _Card;
     }
