@@ -20,6 +20,26 @@ public class RoomManager : ARoomManager
     [SerializeField] private string _sceneToLoad;
     #endregion
 
+    #region Private Attributes
+    /*
+     * @brief This attribute is used to get the network settings.
+     */
+    private NetworkSettings _networkSettings;
+    #endregion
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        _networkSettings = Resources.Load<NetworkSettings>("Network/Settings/NetworkSettings");
+
+        if (_networkSettings == null)
+        {
+            Debug.LogError("NetworkSettings not found in Resources folder !");
+            return;
+        }
+    }
+
     /*
      * @brief This method is used to setup the code room input field before Update method is called the first time.
      * 
@@ -29,7 +49,7 @@ public class RoomManager : ARoomManager
      */
     void Start()
     {
-        _privateRoomCodeToJoin.characterLimit = 6;
+        _privateRoomCodeToJoin.characterLimit = _networkSettings.maxRoomCodeLength;
         _privateRoomCodeToJoin.contentType = TMP_InputField.ContentType.Password;
     }
 
