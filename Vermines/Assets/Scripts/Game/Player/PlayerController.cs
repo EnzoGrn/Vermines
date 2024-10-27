@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
 
     public static PlayerController localPlayer;
 
-    private PhotonView _POV;
+	private PhotonView _POV;
 
     [SerializeField]
     private PlayerData _PlayerData;
@@ -76,11 +76,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         }
     }
 
-    #endregion
+	#endregion
 
-    #region RPC functions
+	#region RPC functions
 
-    [SerializeField]
+	[SerializeField]
     private Data _MyData;
 
     public void SyncPlayer(PlayerData player)
@@ -152,7 +152,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
                 _PlayerData.Data.Eloquence = value;
 
                 View.EditView(_PlayerData.Data);
-            } 
+            }
         }
     }
 
@@ -170,5 +170,5 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         get => _PlayerData.Data.Profile;
     }
 
-    #endregion
+	#endregion
 }
