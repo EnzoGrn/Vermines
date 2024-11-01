@@ -90,8 +90,8 @@ public class PlayerSetupView : MonoBehaviour {
 
     public void EditView(Data data)
     {
-        _PlayerName.text = data.Profile.Nickname;
-        _Eloquence.text  = $"{data.Eloquence.ToString()}E";
+        _PlayerName.text = data.Profile.Nickname + " - " + data.Profile.PlayerID.ToString();
+		_Eloquence.text  = $"{data.Eloquence.ToString()}E";
         _Family.text     = data.Family.ToString();
     }
 
