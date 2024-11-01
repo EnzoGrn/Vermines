@@ -72,13 +72,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
 
 	private void StartTurn()
 	{
-		Debug.Log("Starting turn for local player with ID " + PlayerController.localPlayer.Profile.PlayerID);
+		//Debug.Log("Starting turn for local player with ID " + PlayerController.localPlayer.Profile.PlayerID);
 		PlayerController.localPlayer.Eloquence += 2;
 		PlayerController.localPlayer.Sync();
 
 		TurnText.text = "It's your turn!";
-		// TODO: Add additional turn-based actions here.
 	}
+
+	// TODO: Add additional turn-based actions here, and call it in button event.
 
 	private void NextTurn()
 	{
@@ -88,7 +89,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
 			int nextIndex = (currentIndex + 1) % _playerTurnOrder.Count;
 			_currentPlayerIndex = _playerTurnOrder[nextIndex];
 
-			Debug.Log("Next turn for player ID " + _currentPlayerIndex);
+			//Debug.Log("Next turn for player ID " + _currentPlayerIndex);
 			photonView.RPC("RPC_SetCurrentPlayerIndex", RpcTarget.All, _currentPlayerIndex);
 		}
 	}
@@ -99,8 +100,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
 
 		foreach (var player in _Players)
 		{
-			// Afficher l'ID du joueur et son Éloquence
-			Debug.Log($"Player ID: {player.Key}, Eloquence: {player.Value.Eloquence}");
+			//Debug.Log($"Player ID: {player.Key}, Eloquence: {player.Value.Eloquence}");
 			playersWithEloquence.Add(new KeyValuePair<int, int>(player.Key, player.Value.Eloquence));
 		}
 
@@ -109,15 +109,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
 			int compareEloquence = a.Value.CompareTo(b.Value);
 			if (compareEloquence == 0)
 			{
-				return a.Key.CompareTo(b.Key); // Tri par ID en cas d'égalité
+				return a.Key.CompareTo(b.Key);
 			}
 			return compareEloquence;
 		});
 
 		_playerTurnOrder = playersWithEloquence.ConvertAll(pair => pair.Key);
-		_currentPlayerIndex = _playerTurnOrder[0]; // Utilisez le bon index en fonction de votre logique
+		_currentPlayerIndex = _playerTurnOrder[0];
 
-		Debug.Log("Turn order initialized. Starting with player ID: " + _currentPlayerIndex);
+		//Debug.Log("Turn order initialized. Starting with player ID: " + _currentPlayerIndex);
 	}
 
 	private void EndTurn()
@@ -237,39 +237,36 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
 	public void RPC_SetCurrentPlayerIndex(int newPlayerIndex)
 	{
 		_currentPlayerIndex = newPlayerIndex;
-		Debug.Log("Received updated turn index: " + _currentPlayerIndex);
+		//Debug.Log("Received updated turn index: " + _currentPlayerIndex);
 
 		if (_currentPlayerIndex == PlayerController.localPlayer.Profile.PlayerID)
 		{
-			Debug.Log("It's the local player's turn. Starting turn for local player.");
+			//Debug.Log("It's the local player's turn. Starting turn for local player.");
 			StartTurn();
 		}
-		else
-		{
-			Debug.Log("Waiting for player " + _currentPlayerIndex + " to take their turn.");
-		}
+		//else
+		//{
+		//	Debug.Log("Waiting for player " + _currentPlayerIndex + " to take their turn.");
+		//}
 	}
 
 	[PunRPC]
 	public void RPC_EndTurn(int playerID)
 	{
-		Debug.Log("Player " + playerID + " has ended their turn.");
+		//Debug.Log("Player " + playerID + " has ended their turn.");
 
 		if (_Players.TryGetValue(playerID, out PlayerController player))
 		{
-			// Vérifiez si c'est le tour du joueur qui a terminé
 			if (_currentPlayerIndex == playerID)
 			{
-				// Appelle la méthode de pioche du joueur
-				player.photonView.RPC("RPC_DrawCards", RpcTarget.All, 3); // Le joueur pioche 3 cartes
-				//player.DrawCard(3); // Assurez-vous que cette méthode est définie dans PlayerController
-				Debug.Log("End turn for player " + player.Profile.Nickname);
-				NextTurn(); // Change le tour
+				player.photonView.RPC("RPC_DrawCards", RpcTarget.All, 3);
+				//Debug.Log("End turn for player " + player.Profile.Nickname);
+				NextTurn();
 			}
-			else
-			{
-				Debug.Log("It's not your turn yet.");
-			}
+			//else
+			//{
+			//	Debug.Log("It's not your turn yet.");
+			//}
 		}
 		else
 		{
