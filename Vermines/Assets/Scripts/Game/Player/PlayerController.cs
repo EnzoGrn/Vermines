@@ -111,11 +111,17 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         }
     }
 
-    #endregion
+	[PunRPC]
+	public void RPC_DrawCards(int numberOfCards)
+	{
+		DrawCard(numberOfCards);
+	}
 
-    #region IPunObservable implementation
+	#endregion
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	#region IPunObservable implementation
+
+	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting) {
             stream.SendNext(JsonUtility.ToJson(_MyData));
