@@ -228,8 +228,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
             _Command = "ClientReady";
 
             SyncGameManager(_Command);
+            photonView.RPC("RPC_SetCurrentPlayerIndex", RpcTarget.All, _currentPlayerIndex);
         }
-        photonView.RPC("RPC_SetCurrentPlayerIndex", RpcTarget.All, _currentPlayerIndex);
 
         _InitializationOfPlayersDeck -= InitPlayerDeck;
         _StartingDraw                += DrawCardBegin;
