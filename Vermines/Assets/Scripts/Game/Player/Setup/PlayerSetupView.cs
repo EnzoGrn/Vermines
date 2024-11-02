@@ -17,6 +17,7 @@ public class PlayerSetupView : MonoBehaviour {
     // TODO: Add a PlayedCardList
     public PlayedCardList PlayedCardList;
     public DiscardedCardList DiscardedCardList;
+    public SacrifiedCardList SacrifiedCardList;
 
     [SerializeField]
     private RectTransform _HandRect;
@@ -94,6 +95,7 @@ public class PlayerSetupView : MonoBehaviour {
         /* Set the PlayedCardList position */
         PlayedCardList.transform.position = new Vector3(-8f, -1.19f, -8f);
         DiscardedCardList.transform.position = new Vector3(16f, -1.19f, -12.5f);
+        SacrifiedCardList.transform.position = new Vector3(10f, -1.19f, -12.5f);
     }
 
     public void EditView(Data data)

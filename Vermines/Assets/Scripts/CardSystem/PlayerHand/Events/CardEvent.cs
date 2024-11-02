@@ -45,10 +45,6 @@ namespace Events {
 
             if ((playedCardList == null && playedOrDiscard) || (discardedCardList == null && !playedOrDiscard))
             {
-                Debug.Log("Value of PlayedOrDiscard -> " + playedOrDiscard);
-                Debug.Log("Played Card List -> " + playedCardList);
-                Debug.Log("Discarded Card List -> " + discardedCardList);
-
                 Debug.LogError("Played or Discarded card list not found.");
                 return;
             }

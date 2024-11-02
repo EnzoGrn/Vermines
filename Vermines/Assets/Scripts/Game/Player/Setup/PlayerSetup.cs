@@ -14,6 +14,7 @@ public class PlayerSetup : MonoBehaviour {
     public PlayerController PlayerController;
     public PlayedCardList PlayedCardList;
     public DiscardedCardList DiscardedCardList;
+    public SacrifiedCardList SacrifiedCardList;
 
     #endregion
 
@@ -22,5 +23,6 @@ public class PlayerSetup : MonoBehaviour {
         PlayerController.Init();
         PlayedCardList.Init();
         DiscardedCardList.Init();
+        SacrifiedCardList.Init();
     }
 }
