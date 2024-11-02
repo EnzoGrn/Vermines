@@ -52,6 +52,16 @@ public class CardManager : MonoBehaviour {
         return _PlayerDecks[playerID];
     }
 
+    public Deck GetPartisanDeck()
+    {
+        return _MarketPartisanDeck;
+    }
+
+    public Deck GetObjectDeck()
+    {
+        return _MarketObjectDeck;
+    }
+
     public ICard FoundACard(int id)
     {
         if (_AllCardsOfTheGame == null)

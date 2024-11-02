@@ -14,6 +14,14 @@ public class Deck : ISerializationCallbackReceiver {
         Cards = new();
     }
 
+    public Deck(int numberCards)
+    {
+        Cards = new();
+
+        for (int i = 0; i < numberCards; i++)
+            Cards.Add(null);
+    }
+
     public void Shuffle()
     {
         int numberCards = GetNumberCards();
@@ -75,6 +83,32 @@ public class Deck : ISerializationCallbackReceiver {
         return card;
     }
 
+    public ICard GetCard(int cardID)
+    {
+        foreach (ICard card in Cards) {
+            if (card.ID == cardID)
+                return card;
+        }
+
+        return null;
+    }
+
+    public ICard GetCardByIndex(int index)
+    {
+        if (index < 0 || index >= GetNumberCards())
+            return null;
+        return Cards[index];
+    }
+
+    public ICard GetLast()
+    {
+        int numberCards = GetNumberCards();
+
+        if (numberCards == 0)
+            return null;
+        return Cards[numberCards - 1];
+    }
+
     #region ISerializationCallbackReceiver implementation
 
     [SerializeField]
@@ -85,7 +119,10 @@ public class Deck : ISerializationCallbackReceiver {
         _IDs.Clear();
 
         for (int i = 0; i < Cards.Count; i++) {
-            int id = Cards[i].ID;
+            int id = -1;
+
+            if (Cards[i] != null)
+                id = Cards[i].ID;
 
             _IDs.Add(id.ToString());
         }
@@ -97,10 +134,14 @@ public class Deck : ISerializationCallbackReceiver {
 
         for (int i = 0; i < _IDs.Count; i++) {
             try {
-                ICard card = CardManager.Instance.FoundACard(int.Parse(_IDs[i]));
+                if (_IDs[i] == "-1") {
+                    Cards.Add(null);
+                } else {
+                    ICard card = CardManager.Instance.FoundACard(int.Parse(_IDs[i]));
 
-                if (card != null)
-                    Cards.Add(card);
+                    if (card != null)
+                        Cards.Add(card);
+                }
             } catch (Exception e) {
                 Debug.Log($"Error on card {_IDs[i]}: " + e.Message + " - " + e.StackTrace);
 
