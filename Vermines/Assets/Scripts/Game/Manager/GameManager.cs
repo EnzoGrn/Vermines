@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
     public CardManager CardManager;
     public GameInfo    GameInfo;
 
+    public ShopManager Shop;
+
     #endregion
 
     #region Action
@@ -39,6 +41,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
             Destroy(gameObject);
         _EveryPlayersLoadCallbacks += OnAllPlayersJoined;
 
+        if (PhotonNetwork.IsMasterClient) {
+            GameObject shop = PhotonNetwork.Instantiate("Prefabs/Game/Shop/Shop", Vector3.zero, Quaternion.identity);
+
+            Shop = shop.GetComponent<ShopManager>();
+        } else {
+            Shop = FindObjectOfType<ShopManager>();
+        }
+
         GameInfo.enabled = true;
     }
 
@@ -50,6 +60,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
     
     public void Update()
     {
+        // -- Test
+        if (Input.GetKeyDown(KeyCode.R))
+            Shop.Refill();
+
         if (!_IsGameStarted)
             return;
         _StartingDraw?.Invoke();
@@ -60,6 +74,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
     private void DrawCardBegin()
     {
         PlayerController.localPlayer.DrawCard(2);
+
+        // -- Temp line for buying card test
+        PlayerController.localPlayer.Eloquence += 25;
+        PlayerController.localPlayer.Sync();
+
+        Shop.Refill();
 
         _StartingDraw -= DrawCardBegin;
     }
@@ -125,6 +145,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
         }
         _InitializationOfPlayersDeck -= InitPlayerDeck;
         _StartingDraw                += DrawCardBegin;
+        if (Shop == null)
+            Shop = FindObjectOfType<ShopManager>();
+        Shop.enabled = true;
         _IsGameStarted = true;
     }
 
@@ -135,6 +158,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
     public List<CardType> GetAllFamilyPlayed()
     {
         return GameInfo.FamilyPlayed;
+    }
+
+    public bool IsMyTurn()
+    {
+        // TODO: Implement the logic, of the current player turn.
+        if (PhotonNetwork.IsMasterClient)
+            return false;
+        return true;
     }
 
     #endregion
