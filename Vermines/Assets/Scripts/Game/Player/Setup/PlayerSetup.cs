@@ -12,11 +12,14 @@ public class PlayerSetup : MonoBehaviour {
 
     [Header("GameObject to setup")]
     public PlayerController PlayerController;
+    public PlayedCardList PlayedCardList;
 
     #endregion
 
     public void IsLocalPlayer()
     {
+        PlayedCardList.Init();
+        
         PlayerController.Init();
     }
 }

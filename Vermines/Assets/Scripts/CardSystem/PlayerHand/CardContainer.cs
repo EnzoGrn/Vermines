@@ -31,6 +31,9 @@ public class CardContainer : MonoBehaviour {
     private float _MaxHeightDisplacement;
 
     [SerializeField]
+    private PlayedCardList _PlayedCardList;
+
+    [SerializeField]
     private Config.Zoom _ZoomConfig;
 
     [SerializeField]
@@ -232,12 +235,29 @@ public class CardContainer : MonoBehaviour {
     {
         // If card is in play area, play it!
         if (IsCursorInPlayArea()) {
-            _EventsConfig?.OnCardPlayed?.Invoke(new Events.CardPlayed(_CurrentDraggedCard));
+
+            // Get the PlayedList from the parent gameobejct
+
+            if (_PlayedCardList == null)
+            {
+                Debug.LogError("PlayedCardList not found.");
+                return;
+            }
+
+            _EventsConfig?.OnCardPlayed?.Invoke(new Events.CardPlayed(_CurrentDraggedCard, _PlayedCardList));
 
             if (_CardPlayConfig.DestroyOnPlay)
                 DestroyCard(_CurrentDraggedCard);
         } else if (IsCursorInDiscardArea()) {
-            Events.CardPlayed cardPlayed = new Events.CardPlayed(_CurrentDraggedCard);
+
+
+            if (_PlayedCardList == null)
+            {
+                Debug.LogError("PlayedCardList not found.");
+                return;
+            }
+
+            Events.CardPlayed cardPlayed = new Events.CardPlayed(_CurrentDraggedCard, _PlayedCardList);
 
             cardPlayed.PlayedOrDiscard = false;
 
@@ -246,7 +266,6 @@ public class CardContainer : MonoBehaviour {
             if (_CardPlayConfig.DestroyOnDiscard)
                 DestroyCard(_CurrentDraggedCard);
         }
-
         _CurrentDraggedCard = null;
     }
 

@@ -6,14 +6,9 @@
         "UnityEditor.TestRunner",
         "NetworkRoomManagerAssembly",
         "PhotonUnityNetworking",
-        "CarType",
-        "CardParser",
-        "CardFactory",
-        "CardEffect",
-        "CardData",
-        "Card",
         "NetworkUtilsAssembly",
-        "NetworkSettingsAssembly"
+        "NetworkSettingsAssembly",
+        "Vermine"
     ],
     "includePlatforms": [
         "Editor"

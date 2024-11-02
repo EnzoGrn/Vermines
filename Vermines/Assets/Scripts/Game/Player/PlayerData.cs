@@ -96,5 +96,12 @@ namespace Vermines {
          * It can be use to get the amount of Bee the player has sacrificed for example.
          */
         public Deck SacrifiedDeck = new();
+
+        /*
+         * @brief The deck containing all the played cards of the player.
+         * It can contain max 3 cards for a classic setUp and up to 4 with a specific god.
+         * It can be used to see card played by players
+         */
+        public Deck PlayedDeck = new();
     }
 }
