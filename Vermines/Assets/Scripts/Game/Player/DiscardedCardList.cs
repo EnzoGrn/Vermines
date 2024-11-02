@@ -1,20 +1,19 @@
 using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines;
 
-public class PlayedCardList : MonoBehaviourPunCallbacks
+public class DiscardedCardList : MonoBehaviourPunCallbacks
 {
-    public List<CardView> playedCards = new List<CardView>();
-    public float spaceBetween = 1.0f;
-    public int maxCardNumber = 3; // Up to 4 with a specific god
+    public List<CardView> discardedCards = new List<CardView>();
 
     [SerializeField]
     private PhotonView _POV;
 
     [SerializeField]
     private PlayerData _PlayerData;
-    
+
     public void Awake()
     {
 
@@ -22,8 +21,8 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
 
     public void Init()
     {
-        Debug.Log("Init PlayedCardList");
-        playedCards.Clear();
+        Debug.Log("Init DiscardedCardList");
+        discardedCards.Clear();
 
         // Enable the view
         gameObject.SetActive(true);
@@ -33,7 +32,7 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
     {
         string syncJson = player.DataToString();
 
-        _POV.RPC("SyncPlayedCard", RpcTarget.OthersBuffered , syncJson);
+        _POV.RPC("SyncPlayedCard", RpcTarget.OthersBuffered, syncJson);
     }
 
     [PunRPC]
@@ -45,21 +44,21 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
 
     private void UpdateReceivedCard(Data data)
     {
-        Debug.Log("Scycing data ... total of player cards -> " + data.PlayedDeck.Cards.Count);
+        Debug.Log("Scycing data ... total of player cards -> " + data.DiscardDeck.Cards.Count);
 
-        if (playedCards.Count < 0 || data == null)
+        if (discardedCards.Count < 0 || data == null)
         {
             return;
         }
 
-        for (int i = 0; i < data.PlayedDeck.Cards.Count; i++)
+        for (int i = 0; i < data.DiscardDeck.Cards.Count; i++)
         {
             CardView card = Instantiate(Resources.Load<GameObject>(Constants.CardPref), transform.position, Quaternion.identity).GetComponent<CardView>();
-            card.SetCard(data.PlayedDeck.Cards[i]);
+            card.SetCard(data.DiscardDeck.Cards[i]);
 
             // Set IsAnonyme to false
             card.GetCard().IsAnonyme = false;
-            card.transform.position = new Vector3(transform.position.x + i * spaceBetween - 6, transform.position.y, transform.position.z);
+            card.transform.position = new Vector3(transform.position.x, (float)(transform.position.y + i * 0.05), transform.position.z);
             card.transform.Rotate(90, 180, 0);
             card.gameObject.SetActive(true);
             card.gameObject.transform.Find("Back").gameObject.SetActive(false);
@@ -69,9 +68,9 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
 
     private void UpdateCardPosition()
     {
-        for (int i = 0; i < playedCards.Count; i++)
+        for (int i = 0; i < discardedCards.Count; i++)
         {
-            playedCards[i].transform.position = new Vector3(transform.position.x + i * spaceBetween - 6 , transform.position.y, transform.position.z);
+            discardedCards[i].transform.position = new Vector3(transform.position.x, (float)(transform.position.y + i * 0.05), transform.position.z);
         }
 
         if (_POV.IsMine)
@@ -86,7 +85,7 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
     {
         if (_POV.IsMine)
         {
-            if (playedCards.Count + 1 > maxCardNumber || card.GetCard() == null)
+            if (card.GetCard() == null)
             {
                 Destroy(card.gameObject);
                 Debug.Log("Played card list is full");
@@ -94,8 +93,8 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
             }
             card.gameObject.SetActive(true);
 
-            _PlayerData.Data.PlayedDeck.AddCard(card.GetCard());
-            playedCards.Add(card);
+            _PlayerData.Data.DiscardDeck.AddCard(card.GetCard());
+            discardedCards.Add(card);
             UpdateCardPosition();
         }
     }
@@ -104,8 +103,8 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
     {
         if (_POV.IsMine)
         {
-            playedCards.Remove(card);
-            _PlayerData.Data.PlayedDeck.RemoveCard(card.GetCard());
+            discardedCards.Remove(card);
+            _PlayerData.Data.DiscardDeck.RemoveCard(card.GetCard());
             UpdateCardPosition();
         }
     }
