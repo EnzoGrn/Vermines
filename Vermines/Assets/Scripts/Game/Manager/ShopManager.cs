@@ -24,12 +24,6 @@ public class ShopManager : MonoBehaviour {
         Refill();
     }
 
-    public void OnDisable()
-    {
-        PartisanShop.enabled = false;
-        ObjectShop.enabled   = false;
-    }
-
     #endregion
 
     public void Refill()
