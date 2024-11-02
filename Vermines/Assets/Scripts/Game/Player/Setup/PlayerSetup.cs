@@ -13,13 +13,14 @@ public class PlayerSetup : MonoBehaviour {
     [Header("GameObject to setup")]
     public PlayerController PlayerController;
     public PlayedCardList PlayedCardList;
+    public DiscardedCardList DiscardedCardList;
 
     #endregion
 
     public void IsLocalPlayer()
     {
-        PlayedCardList.Init();
-        
         PlayerController.Init();
+        PlayedCardList.Init();
+        DiscardedCardList.Init();
     }
 }

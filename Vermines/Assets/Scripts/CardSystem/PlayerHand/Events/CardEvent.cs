@@ -23,23 +23,33 @@ namespace Events {
 
     public class CardPlayed : CardEvent {
 
-        public bool PlayedOrDiscard = true; // True if played, false if discarded
+        // public bool PlayedOrDiscard = true; // True if played, false if discarded
 
 
         // TODO: Need to detect if Equipment or not and change display on z axis.
 
-        public CardPlayed(CardWrapper card, PlayedCardList playedCardList) : base(card) {
+        public CardPlayed(CardWrapper card, PlayedCardList playedCardList, DiscardedCardList discardedCardList, bool playedOrDiscard) : base(card) {
             GameObject cardPrefab = Resources.Load<GameObject>(Constants.CardPref);
 
-            if (cardPrefab == null || card == null || playedCardList == null)
+            if (card == null)
+            {
+                Debug.LogError("Card not found.");
+                return;
+            }
+
+            if (cardPrefab == null)
             {
                 Debug.LogError("Card prefab not found.");
                 return;
             }
 
-            if (card == null || playedCardList == null)
+            if ((playedCardList == null && playedOrDiscard) || (discardedCardList == null && !playedOrDiscard))
             {
-                Debug.LogError("Arguments should not be null !");
+                Debug.Log("Value of PlayedOrDiscard -> " + playedOrDiscard);
+                Debug.Log("Played Card List -> " + playedCardList);
+                Debug.Log("Discarded Card List -> " + discardedCardList);
+
+                Debug.LogError("Played or Discarded card list not found.");
                 return;
             }
 
@@ -75,7 +85,15 @@ namespace Events {
             cardView.gameObject.transform.Find("Back").gameObject.SetActive(false);
 
             // Add a card to the Deck of played cards
-            playedCardList.AddCard(cardView);
+
+            if (playedOrDiscard)
+            {
+                playedCardList.AddCard(cardView);
+            }
+            else
+            {
+                discardedCardList.AddCard(cardView);
+            }
         }
     }
 

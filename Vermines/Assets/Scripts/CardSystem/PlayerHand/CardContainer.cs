@@ -34,6 +34,9 @@ public class CardContainer : MonoBehaviour {
     private PlayedCardList _PlayedCardList;
 
     [SerializeField]
+    private DiscardedCardList _DiscardedCardList;
+
+    [SerializeField]
     private Config.Zoom _ZoomConfig;
 
     [SerializeField]
@@ -244,22 +247,21 @@ public class CardContainer : MonoBehaviour {
                 return;
             }
 
-            _EventsConfig?.OnCardPlayed?.Invoke(new Events.CardPlayed(_CurrentDraggedCard, _PlayedCardList));
+            _EventsConfig?.OnCardPlayed?.Invoke(new Events.CardPlayed(_CurrentDraggedCard, _PlayedCardList, null, true));
 
             if (_CardPlayConfig.DestroyOnPlay)
                 DestroyCard(_CurrentDraggedCard);
         } else if (IsCursorInDiscardArea()) {
 
-
-            if (_PlayedCardList == null)
+            if (_DiscardedCardList == null)
             {
-                Debug.LogError("PlayedCardList not found.");
+                Debug.LogError("DiscardedCardList not found.");
                 return;
             }
 
-            Events.CardPlayed cardPlayed = new Events.CardPlayed(_CurrentDraggedCard, _PlayedCardList);
+            Events.CardPlayed cardPlayed = new Events.CardPlayed(_CurrentDraggedCard, null, _DiscardedCardList, false);
 
-            cardPlayed.PlayedOrDiscard = false;
+            // cardPlayed.PlayedOrDiscard = false;
 
             _EventsConfig?.OnCardPlayed?.Invoke(cardPlayed);
 
