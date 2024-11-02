@@ -60,9 +60,16 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
                 ICard card = _PlayerData.Data.Deck.PickACard();
 
                 if (card == null) {
-                    // TODO: Merge the discard pile with the deck
-                    // Shuffle the deck and pick a card
-                    break; // Temp break
+                    _PlayerData.Data.Deck.Merge(_PlayerData.Data.DiscardDeck);
+                    _PlayerData.Data.Deck.Shuffle();
+                    _PlayerData.Data.DiscardDeck.Cards.Clear();
+
+                    foreach (ICard singleCard in _PlayerData.Data.Deck.Cards)
+                        singleCard.IsAnonyme = true;
+                    card = _PlayerData.Data.Deck.PickACard();
+
+                    if (card == null)
+                        break;
                 }
 
                 card.IsAnonyme = false;
@@ -76,7 +83,30 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         }
     }
 
-	#endregion
+    public void BuyCard(ICard cardBuyed)
+    {
+        if (_POV.IsMine) {
+            if (cardBuyed.HasCost())
+                SpendMoney(cardBuyed.Data.Eloquence);
+            _PlayerData.Data.DiscardDeck.AddCard(cardBuyed);
+
+            SyncPlayer(_PlayerData);
+        }
+    }
+
+    public bool CanBuy(int amount)
+    {
+        return _PlayerData.Data.Eloquence >= amount;
+    }
+
+    private void SpendMoney(int amount)
+    {
+        _PlayerData.Data.Eloquence -= amount;
+
+        SyncPlayer(_PlayerData);
+    }
+
+    #endregion
 
 	#region RPC functions
 
@@ -85,6 +115,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
 
     public void SyncPlayer(PlayerData player)
     {
+        if (_POV.IsMine)
+            View.EditView(player.Data);
         string syncJson = player.DataToString();
 
         _POV.RPC("RPC_SyncPlayer", RpcTarget.OthersBuffered, syncJson);
