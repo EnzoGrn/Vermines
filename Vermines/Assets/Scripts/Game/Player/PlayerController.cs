@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
 
     public static PlayerController localPlayer;
 
-    private PhotonView _POV;
+	private PhotonView _POV;
 
     [SerializeField]
     private PlayerData _PlayerData;
@@ -60,9 +60,16 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
                 ICard card = _PlayerData.Data.Deck.PickACard();
 
                 if (card == null) {
-                    // TODO: Merge the discard pile with the deck
-                    // Shuffle the deck and pick a card
-                    break; // Temp break
+                    _PlayerData.Data.Deck.Merge(_PlayerData.Data.DiscardDeck);
+                    _PlayerData.Data.Deck.Shuffle();
+                    _PlayerData.Data.DiscardDeck.Cards.Clear();
+
+                    foreach (ICard singleCard in _PlayerData.Data.Deck.Cards)
+                        singleCard.IsAnonyme = true;
+                    card = _PlayerData.Data.Deck.PickACard();
+
+                    if (card == null)
+                        break;
                 }
 
                 card.IsAnonyme = false;
@@ -101,9 +108,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
 
     #endregion
 
-    #region RPC functions
+	#region RPC functions
 
-    [SerializeField]
+	[SerializeField]
     private Data _MyData;
 
     public void SyncPlayer(PlayerData player)
@@ -136,11 +143,17 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         }
     }
 
-    #endregion
+	[PunRPC]
+	public void RPC_DrawCards(int numberOfCards)
+	{
+		DrawCard(numberOfCards);
+	}
 
-    #region IPunObservable implementation
+	#endregion
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	#region IPunObservable implementation
+
+	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting) {
             stream.SendNext(JsonUtility.ToJson(_MyData));
@@ -177,7 +190,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
                 _PlayerData.Data.Eloquence = value;
 
                 View.EditView(_PlayerData.Data);
-            } 
+            }
         }
     }
 
@@ -195,5 +208,5 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
         get => _PlayerData.Data.Profile;
     }
 
-    #endregion
+	#endregion
 }
