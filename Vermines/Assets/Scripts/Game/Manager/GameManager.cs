@@ -24,7 +24,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
     public GameInfo    GameInfo;
     public TMP_Text    TurnText;
 
-	#endregion
+    public ShopManager Shop;
+
+    #endregion
 
 	#region Action
 
@@ -43,6 +45,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
         else if (Instance != this)
             Destroy(gameObject);
         _EveryPlayersLoadCallbacks += OnAllPlayersJoined;
+
+        if (PhotonNetwork.IsMasterClient) {
+            GameObject shop = PhotonNetwork.Instantiate("Prefabs/Game/Shop/Shop", Vector3.zero, Quaternion.identity);
+
+            Shop = shop.GetComponent<ShopManager>();
+        } else {
+            Shop = FindObjectOfType<ShopManager>();
+        }
 
         GameInfo.enabled = true;
     }
@@ -72,8 +82,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
 
 	private void StartTurn()
 	{
-		//Debug.Log("Starting turn for local player with ID " + PlayerController.localPlayer.Profile.PlayerID);
-		PlayerController.localPlayer.Eloquence += 2;
+        Shop.Refill();
+
+        //Debug.Log("Starting turn for local player with ID " + PlayerController.localPlayer.Profile.PlayerID);
+        PlayerController.localPlayer.Eloquence += 2;
 		PlayerController.localPlayer.Sync();
 
 		TurnText.text = "It's your turn!";
@@ -141,13 +153,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
         _Players.Clear();
         List<CardType> cardTypes = new();
 
-        if (PhotonNetwork.IsMasterClient)
-        {
+        if (PhotonNetwork.IsMasterClient) {
             GameInfo.SelectEveryFamily(PhotonNetwork.CurrentRoom.PlayerCount);
 
-            for (int i = 0; i < controllers.Length; i++)
-            {
+            for (int i = 0; i < controllers.Length; i++) {
                 int startingEloquence = i > 2 ? 2 : i;
+
                 controllers[i].Family = GameInfo.FamilyPlayed[i];
                 controllers[i].Eloquence = startingEloquence;
                 controllers[i].Sync();
@@ -156,28 +167,53 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
             }
 
             InitializePlayerTurnOrder();
-            _Command = "ClientReady";
-            SyncGameManager(_Command);
-        }
-        else
-        {
-            for (int i = 0; i < controllers.Length; i++)
-            {
-                if (controllers[i].Family == CardType.None)
-                    return;
 
-                cardTypes.Add(controllers[i].Family);
+            _Command = "ClientReady";
+
+            SyncGameManager(_Command);
+        } else {
+            for (int i = 0; i < controllers.Length; i++)
                 _Players.Add(controllers[i].Profile.PlayerID, controllers[i]);
+
+            InitializePlayerTurnOrder();
+
+            cardTypes.Clear();
+
+            for (int i = 0; i < controllers.Length; i++) {
+                int id              = _playerTurnOrder[i];
+                PlayerController pc = GetPlayersByID(id);
+
+                if (pc != null) {
+                    if (pc.Family == CardType.None)
+                        return;
+                    cardTypes.Add(pc.Family);
+                }
             }
 
             GameInfo.FamilyPlayed = cardTypes;
+
             _Command = "ClientReady";
-			InitializePlayerTurnOrder();
+
 			SyncGameManager(_Command);
         }
 
         CardManager.enabled = true;
         _EveryPlayersLoadCallbacks -= OnAllPlayersJoined;
+    }
+
+    private PlayerController GetPlayersByID(int id)
+    {
+        PlayerController pc = null;
+
+        foreach (var player in _Players) {
+            if (player.Value.Profile.PlayerID == id) {
+                pc = player.Value;
+
+                break;
+            }
+        }
+
+        return pc;
     }
 
     private void InitPlayerDeck()
@@ -192,12 +228,17 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
             _Command = "ClientReady";
 
             SyncGameManager(_Command);
+        }
+        photonView.RPC("RPC_SetCurrentPlayerIndex", RpcTarget.All, _currentPlayerIndex);
 
-			photonView.RPC("RPC_SetCurrentPlayerIndex", RpcTarget.All, _currentPlayerIndex);
-		}
-		_InitializationOfPlayersDeck -= InitPlayerDeck;
-		_StartingDraw                += DrawCardBegin;
-		_IsGameStarted = true;
+        _InitializationOfPlayersDeck -= InitPlayerDeck;
+        _StartingDraw                += DrawCardBegin;
+
+        if (Shop == null)
+            Shop = FindObjectOfType<ShopManager>();
+
+        Shop.enabled = true;
+        _IsGameStarted = true;
 	}
 
     #endregion
@@ -207,6 +248,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
     public List<CardType> GetAllFamilyPlayed()
     {
         return GameInfo.FamilyPlayed;
+    }
+
+    public bool IsMyTurn()
+    {
+        if (!_IsGameStarted)
+            return false;
+        return _currentPlayerIndex == PlayerController.localPlayer.Profile.PlayerID;
     }
 
     #endregion
@@ -239,10 +287,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
 		_currentPlayerIndex = newPlayerIndex;
 		//Debug.Log("Received updated turn index: " + _currentPlayerIndex);
 
-		if (_currentPlayerIndex == PlayerController.localPlayer.Profile.PlayerID)
-		{
+		if (_currentPlayerIndex == PlayerController.localPlayer.Profile.PlayerID) {
+            if (_IsGameStarted)
 			//Debug.Log("It's the local player's turn. Starting turn for local player.");
-			StartTurn();
+    			StartTurn();
 		}
 		//else
 		//{
@@ -255,10 +303,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable {
 	{
 		//Debug.Log("Player " + playerID + " has ended their turn.");
 
-		if (_Players.TryGetValue(playerID, out PlayerController player))
-		{
-			if (_currentPlayerIndex == playerID)
-			{
+		if (_Players.TryGetValue(playerID, out PlayerController player)) {
+			if (_currentPlayerIndex == playerID) {
 				player.photonView.RPC("RPC_DrawCards", RpcTarget.All, 3);
 				//Debug.Log("End turn for player " + player.Profile.Nickname);
 				NextTurn();
