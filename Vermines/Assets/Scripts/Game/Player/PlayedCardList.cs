@@ -73,7 +73,7 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
     {
         for (int i = 0; i < playedCards.Count; i++)
         {
-            playedCards[i].transform.position = new Vector3(transform.position.x + i * spaceBetween - 6, transform.position.y + 1, transform.position.z);
+            playedCards[i].transform.position = new Vector3(transform.position.x + i * spaceBetween - 6 , transform.position.y + 1, transform.position.z);
         }
 
         if (_POV.IsMine)

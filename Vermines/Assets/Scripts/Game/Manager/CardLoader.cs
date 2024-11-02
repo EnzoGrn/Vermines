@@ -53,9 +53,9 @@ public class CardLoader {
         secondLevelDeck.Merge(secondFamilyDeck);
         secondLevelDeck.Shuffle();
 
-        firstLevelDeck.Merge(secondLevelDeck);
+        secondLevelDeck.Merge(firstLevelDeck);
 
-        return firstLevelDeck;
+        return secondLevelDeck;
     }
 
     /*
