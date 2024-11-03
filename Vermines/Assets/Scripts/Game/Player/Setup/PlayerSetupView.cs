@@ -110,10 +110,22 @@ public class PlayerSetupView : MonoBehaviour {
         List<ICard> currentCards = Hand.GetCards();
         List<ICard> cards        = data.HandDeck.Cards;
 
+        foreach (ICard card in currentCards)
+            if (!cards.Contains(card))
+                RemoveCardToHand(card);
+
         foreach (ICard card in cards)
             if (!currentCards.Contains(card))
                 AddCardToHand(card);
     }
+
+    public void RemoveCardToHand(ICard card)
+    {
+        if (card == null)
+            return;
+        // TODO: Destroy A card
+    }
+
 
     public void AddCardToHand(ICard card)
     {

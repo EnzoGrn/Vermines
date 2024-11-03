@@ -5,6 +5,7 @@ using Vermines;
 
 public class PlayedCardList : MonoBehaviourPunCallbacks
 {
+    #region Attributes
     public List<PlayedCell> playedCards = new List<PlayedCell>();
     public List<CardView> otherCards = new List<CardView>();
 
@@ -19,10 +20,11 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
 
     [SerializeField]
     private SacrifiedCardList _SacrifiedCardList;
+    #endregion
 
+    #region Methods
     public void Init()
     {
-        Debug.Log("Init PlayedCardList");
         playedCards.Clear();
 
         // Enable the view
@@ -45,8 +47,6 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
 
     private void UpdateReceivedCard(Data data)
     {
-        Debug.Log("Scycing data ... total of player cards -> " + data.PlayedDeck.Cards.Count);
-
         if (data == null)
         {
             return;
@@ -102,8 +102,8 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
         if (_POV.IsMine)
         {
             // Sync Players
-            Debug.Log("Need to sync Data !");
             SyncPlayer(_PlayerData);
+            PlayerController.localPlayer.Sync();
         }
     }
 
@@ -117,6 +117,10 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
                 Debug.Log("Played card list is full");
                 return;
             }
+
+            // Remove Card From the Hand
+            _PlayerData.Data.HandDeck.RemoveCard(card.GetCard());
+
             card.gameObject.SetActive(true);
 
             _PlayerData.Data.PlayedDeck.AddCard(card.GetCard());
@@ -144,10 +148,10 @@ public class PlayedCardList : MonoBehaviourPunCallbacks
     {
         if (_POV.IsMine)
         {
-            Debug.Log("Remove card " + cell.CardView.GetCard().ID);
             playedCards.Remove(cell);
             _PlayerData.Data.PlayedDeck.RemoveCard(cell.CardView.GetCard());
             UpdateCardPosition();
         }
     }
+    #endregion
 }
