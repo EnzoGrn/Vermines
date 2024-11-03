@@ -49,7 +49,10 @@ public class Deck : ISerializationCallbackReceiver {
 
     public void RemoveCard(ICard card)
     {
+        Debug.Log("Remove card " + card.ID);
+        Debug.Log("Cards count " + Cards.Count);
         Cards.Remove(card);
+        Debug.Log("Cards count " + Cards.Count);
     }
 
     public void AddRandomly(ICard card)

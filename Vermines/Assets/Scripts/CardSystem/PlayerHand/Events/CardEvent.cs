@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-//using Vermines;
 
 namespace Events {
 
@@ -28,14 +27,16 @@ namespace Events {
 
         // TODO: Need to detect if Equipment or not and change display on z axis.
 
-        public CardPlayed(CardWrapper card, PlayedCardList playedCardList, DiscardedCardList discardedCardList, bool playedOrDiscard) : base(card) {
-            GameObject cardPrefab = Resources.Load<GameObject>(Constants.CardPref);
+        public CardPlayed(CardWrapper card, PlayedCardList playedCardList,
+            DiscardedCardList discardedCardList, bool playedOrDiscard) : base(card) {
 
             if (card == null)
             {
                 Debug.LogError("Card not found.");
                 return;
             }
+            
+            GameObject cardPrefab = Resources.Load<GameObject>(Constants.CardPref);
 
             if (cardPrefab == null)
             {

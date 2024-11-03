@@ -103,7 +103,7 @@ public class CardView : MonoBehaviour {
             Transform newTransform = SplashArt.GetComponent<Transform>();
             newTransform.position = oldTransform.position;
             newTransform.rotation = oldTransform.rotation;
-            newTransform.localScale = oldTransform.localScale;
+            newTransform.localScale = new Vector3(1, 1, 1);
         } else {
             SplashArt.gameObject.SetActive(false);
         }
