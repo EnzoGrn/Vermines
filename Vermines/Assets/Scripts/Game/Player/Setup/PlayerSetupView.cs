@@ -14,6 +14,11 @@ public class PlayerSetupView : MonoBehaviour {
     [Header("GameObject to setup")]
     public CardContainer Hand;
 
+    // TODO: Add a PlayedCardList
+    public PlayedCardList PlayedCardList;
+    public DiscardedCardList DiscardedCardList;
+    public SacrifiedCardList SacrifiedCardList;
+
     [SerializeField]
     private RectTransform _HandRect;
 
@@ -86,6 +91,11 @@ public class PlayerSetupView : MonoBehaviour {
         _EloquenceTextRect.anchorMax        = new Vector2(0f, 0f);
         _EloquenceTextRect.pivot            = new Vector2(0f, 0f);
         _EloquenceTextRect.anchoredPosition = new Vector2(-200f, 0f);
+
+        /* Set the PlayedCardList position */
+        PlayedCardList.transform.position = new Vector3(-8f, -1.19f, -8f);
+        DiscardedCardList.transform.position = new Vector3(16f, -1.19f, -12.5f);
+        SacrifiedCardList.transform.position = new Vector3(10f, -1.19f, -12.5f);
     }
 
     public void EditView(Data data)
@@ -100,10 +110,22 @@ public class PlayerSetupView : MonoBehaviour {
         List<ICard> currentCards = Hand.GetCards();
         List<ICard> cards        = data.HandDeck.Cards;
 
+        foreach (ICard card in currentCards)
+            if (!cards.Contains(card))
+                RemoveCardToHand(card);
+
         foreach (ICard card in cards)
             if (!currentCards.Contains(card))
                 AddCardToHand(card);
     }
+
+    public void RemoveCardToHand(ICard card)
+    {
+        if (card == null)
+            return;
+        // TODO: Destroy A card
+    }
+
 
     public void AddCardToHand(ICard card)
     {

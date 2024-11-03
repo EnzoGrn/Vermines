@@ -14,8 +14,10 @@ public static class Constants {
 
     // -- Prefabs Constants Name -- //
 
-    public static string PlayerPref     = "Prefabs/Player/AU_Player";
-    public static string PlayGroundPref = "Prefabs/Game/PlayGround";
+    public static string PlayerPref         = "Prefabs/Player/AU_Player";
+    public static string PlayGroundPref     = "Prefabs/Game/PlayGround";
+    public static string PlayedCardListPref = "Prefabs/Player/PlayedCardBoard";
+    public static string CardPref           = "Prefabs/Cards/PlayedCard";
 
     // -- Constants string -- //
 
@@ -50,7 +52,7 @@ public static class Constants {
 
     // -- Scriptable Object (CardData) path -- //
 
-    public static string ScriptableObjectCardsPath =  "ScriptableObject/Cards/";
+    public static string ScriptableObjectCardsPath = "ScriptableObject/Cards/";
     public static string PathToStartingCard        = $"{ScriptableObjectCardsPath}StartingCards/";
     public static string PathToItemsCard           = $"{ScriptableObjectCardsPath}Item/";
     public static string PathToEquipmentCard       = $"{PathToItemsCard}Equipment/";
