@@ -6,7 +6,7 @@ using UnityEditor;
 public class CardView : MonoBehaviour {
 
     /**
-     * Descriptor field images.
+     * Descriptor field sprite.
      * 
      * Index 0: Partisan fields
      * Index 1: Tools & Equipment fields
@@ -77,7 +77,7 @@ public class CardView : MonoBehaviour {
 
         CardData data = _Card.Data;
 
-        // -- Changing the background image depending on the card type
+        // -- Changing the background sprite depending on the card type
         Background.sprite = Resources.Load<Sprite>("Sprites/Card/" + data.Type.ToString() + "/Background");
         //        Background.sprite = Resources.Load<Sprite>("Assets/Resources/Sprites/Card/" + data.Type.ToString() + "/Background.jpg");
 
@@ -86,7 +86,7 @@ public class CardView : MonoBehaviour {
             Icons[i].sprite = Resources.Load<Sprite>("Sprites/Card/" + data.Type.ToString() + "/Icon");
         }
 
-        // -- Changing the descriptor field image depending on the card type
+        // -- Changing the descriptor field sprite depending on the card type
         if (data.Type == CardType.Tools || data.Type == CardType.Equipment)
             DescriptorFieldImages[1] = Resources.Load<Sprite>("Sprites/UI/Card/Item_Card_Descriptor");
         else
@@ -101,9 +101,6 @@ public class CardView : MonoBehaviour {
             SplashArt.gameObject.SetActive(true);
 
             Transform newTransform = SplashArt.GetComponent<Transform>();
-            newTransform.position = oldTransform.position;
-            newTransform.rotation = oldTransform.rotation;
-            newTransform.localScale = new Vector3(1, 1, 1);
         } else {
             SplashArt.gameObject.SetActive(false);
         }

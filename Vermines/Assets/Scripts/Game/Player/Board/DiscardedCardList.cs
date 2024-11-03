@@ -6,6 +6,7 @@ using Vermines;
 
 public class DiscardedCardList : MonoBehaviourPunCallbacks
 {
+    #region Attributes
     public List<CardView> discardedCards = new List<CardView>();
 
     [SerializeField]
@@ -13,15 +14,11 @@ public class DiscardedCardList : MonoBehaviourPunCallbacks
 
     [SerializeField]
     private PlayerData _PlayerData;
+    #endregion
 
-    public void Awake()
-    {
-
-    }
-
+    #region Methods
     public void Init()
     {
-        Debug.Log("Init DiscardedCardList");
         discardedCards.Clear();
 
         // Enable the view
@@ -44,8 +41,6 @@ public class DiscardedCardList : MonoBehaviourPunCallbacks
 
     private void UpdateReceivedCard(Data data)
     {
-        Debug.Log("Scycing data ... total of player cards -> " + data.DiscardDeck.Cards.Count);
-
         if (discardedCards.Count < 0 || data == null)
         {
             return;
@@ -76,7 +71,6 @@ public class DiscardedCardList : MonoBehaviourPunCallbacks
         if (_POV.IsMine)
         {
             // Sync Players
-            Debug.Log("Need to sync Data !");
             SyncPlayer(_PlayerData);
         }
     }
@@ -88,7 +82,6 @@ public class DiscardedCardList : MonoBehaviourPunCallbacks
             if (card.GetCard() == null)
             {
                 Destroy(card.gameObject);
-                Debug.Log("Played card list is full");
                 return;
             }
             card.gameObject.SetActive(true);
@@ -108,4 +101,5 @@ public class DiscardedCardList : MonoBehaviourPunCallbacks
             UpdateCardPosition();
         }
     }
+    #endregion
 }

@@ -22,9 +22,6 @@ namespace Events {
 
     public class CardPlayed : CardEvent {
 
-        // public bool PlayedOrDiscard = true; // True if played, false if discarded
-
-
         // TODO: Need to detect if Equipment or not and change display on z axis.
 
         public CardPlayed(CardWrapper card, PlayedCardList playedCardList,
@@ -80,8 +77,6 @@ namespace Events {
             cardView.SetCard(cardUIView.GetCard());
 
             cardView.gameObject.transform.Find("Back").gameObject.SetActive(false);
-
-            // Add a card to the Deck of played cards
 
             if (playedOrDiscard)
             {

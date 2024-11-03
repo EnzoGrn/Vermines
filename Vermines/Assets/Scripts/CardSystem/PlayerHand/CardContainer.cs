@@ -241,6 +241,11 @@ public class CardContainer : MonoBehaviour {
 
             // Get the PlayedList from the parent gameobejct
 
+            if (!POV.IsMine)
+            {
+                return;
+            }
+
             if (_PlayedCardList == null)
             {
                 Debug.LogError("PlayedCardList not found.");
@@ -260,8 +265,6 @@ public class CardContainer : MonoBehaviour {
             }
 
             Events.CardPlayed cardPlayed = new Events.CardPlayed(_CurrentDraggedCard, null, _DiscardedCardList, false);
-
-            // cardPlayed.PlayedOrDiscard = false;
 
             _EventsConfig?.OnCardPlayed?.Invoke(cardPlayed);
 
