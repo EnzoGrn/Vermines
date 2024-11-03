@@ -239,8 +239,6 @@ public class CardContainer : MonoBehaviour {
         // If card is in play area, play it!
         if (IsCursorInPlayArea()) {
 
-            // Get the PlayedList from the parent gameobejct
-
             if (!POV.IsMine)
             {
                 return;
