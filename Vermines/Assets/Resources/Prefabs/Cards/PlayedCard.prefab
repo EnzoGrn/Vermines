@@ -1239,6 +1239,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4732748601360401869}
   - component: {fileID: -8075556098948340799}
+  - component: {fileID: 7528867355764076091}
   m_Layer: 0
   m_Name: PlayedCard
   m_TagString: Untagged
@@ -1290,6 +1291,27 @@ MonoBehaviour:
   EloquenceBanner: {fileID: 2032181988481081514}
   Eloquence: {fileID: 5080991217860650104}
   Anonymous: {fileID: 3625572132146936213}
+--- !u!65 &7528867355764076091
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6717195028210640128}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.7460189, y: 0.99648106, z: 0.021605104}
+  m_Center: {x: 0.005584955, y: 0.0017594695, z: -0.0003196178}
 --- !u!1 &7002346467821893702
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Vermines;
 
-public class DiscardedCardList : MonoBehaviourPunCallbacks
+public class SacrifiedCardList : MonoBehaviourPunCallbacks
 {
-    public List<CardView> discardedCards = new List<CardView>();
+    public List<CardView> sacrifiedCards = new List<CardView>();
 
     [SerializeField]
     private PhotonView _POV;
@@ -22,7 +22,7 @@ public class DiscardedCardList : MonoBehaviourPunCallbacks
     public void Init()
     {
         Debug.Log("Init DiscardedCardList");
-        discardedCards.Clear();
+        sacrifiedCards.Clear();
 
         // Enable the view
         gameObject.SetActive(true);
@@ -44,21 +44,21 @@ public class DiscardedCardList : MonoBehaviourPunCallbacks
 
     private void UpdateReceivedCard(Data data)
     {
-        Debug.Log("Scycing data ... total of player cards -> " + data.DiscardDeck.Cards.Count);
+        Debug.Log("Scycing data ... total of player cards -> " + data.SacrifiedDeck.Cards.Count);
 
-        if (discardedCards.Count < 0 || data == null)
+        if (sacrifiedCards.Count < 0 || data == null)
         {
             return;
         }
 
-        for (int i = 0; i < data.DiscardDeck.Cards.Count; i++)
+        for (int i = 0; i < data.SacrifiedDeck.Cards.Count; i++)
         {
             CardView card = Instantiate(Resources.Load<GameObject>(Constants.CardPref), transform.position, Quaternion.identity).GetComponent<CardView>();
-            card.SetCard(data.DiscardDeck.Cards[i]);
+            card.SetCard(data.SacrifiedDeck.Cards[i]);
 
             // Set IsAnonyme to false
             card.GetCard().IsAnonyme = false;
-            card.transform.position = new Vector3(transform.position.x, (float)(transform.position.y + i * 0.05), transform.position.z);
+            card.transform.position = new Vector3(transform.position.x, (float)(transform.position.y + i * 0.05 + 0.2), transform.position.z);
             card.transform.Rotate(90, 180, 0);
             card.gameObject.SetActive(true);
             card.gameObject.transform.Find("Back").gameObject.SetActive(false);
@@ -68,9 +68,9 @@ public class DiscardedCardList : MonoBehaviourPunCallbacks
 
     private void UpdateCardPosition()
     {
-        for (int i = 0; i < discardedCards.Count; i++)
+        for (int i = 0; i < sacrifiedCards.Count; i++)
         {
-            discardedCards[i].transform.position = new Vector3(transform.position.x, (float)(transform.position.y + i * 0.05), transform.position.z);
+            sacrifiedCards[i].transform.position = new Vector3(transform.position.x, (float)(transform.position.y + i * 0.05 + 0.2), transform.position.z);
         }
 
         if (_POV.IsMine)
@@ -93,8 +93,8 @@ public class DiscardedCardList : MonoBehaviourPunCallbacks
             }
             card.gameObject.SetActive(true);
 
-            _PlayerData.Data.DiscardDeck.AddCard(card.GetCard());
-            discardedCards.Add(card);
+            _PlayerData.Data.SacrifiedDeck.AddCard(card.GetCard());
+            sacrifiedCards.Add(card);
             UpdateCardPosition();
         }
     }
@@ -103,8 +103,8 @@ public class DiscardedCardList : MonoBehaviourPunCallbacks
     {
         if (_POV.IsMine)
         {
-            discardedCards.Remove(card);
-            _PlayerData.Data.DiscardDeck.RemoveCard(card.GetCard());
+            sacrifiedCards.Remove(card);
+            _PlayerData.Data.SacrifiedDeck.RemoveCard(card.GetCard());
             UpdateCardPosition();
         }
     }
