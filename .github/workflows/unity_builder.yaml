@@ -173,7 +173,7 @@ jobs:
             exit 1
           fi
           TAG="v$TAG"  # Ajoute le préfixe 'v'
-          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "TAG=$TAG" | tee -a $GITHUB_ENV
 
       - name: Download binaries
         uses: actions/download-artifact@v3
