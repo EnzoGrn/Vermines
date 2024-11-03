@@ -19,7 +19,6 @@ public class SacrifiedCardList : MonoBehaviourPunCallbacks
     #region Methods
     public void Init()
     {
-        Debug.Log("Init DiscardedCardList");
         sacrifiedCards.Clear();
 
         // Enable the view
