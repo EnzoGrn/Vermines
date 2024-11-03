@@ -1,0 +1,19 @@
+{
+    "name": "NetworkWaitingRoomAssembly",
+    "rootNamespace": "",
+    "references": [
+        "PhotonRealtime",
+        "PhotonUnityNetworking",
+        "NetworkUtilsAssembly",
+        "NetworkSettingsAssembly"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
