@@ -119,6 +119,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable {
             View.EditView(player.Data);
         string syncJson = player.DataToString();
 
+        Debug.Log("Cards in hand to sync " + player.Data.HandDeck.Cards.Count);
+
         _POV.RPC("RPC_SyncPlayer", RpcTarget.OthersBuffered, syncJson);
     }
 

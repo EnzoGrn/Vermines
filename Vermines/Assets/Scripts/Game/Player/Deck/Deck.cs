@@ -47,6 +47,11 @@ public class Deck : ISerializationCallbackReceiver {
         Cards.Add(card);
     }
 
+    public void RemoveCard(ICard card)
+    {
+        Cards.Remove(card);
+    }
+
     public void AddRandomly(ICard card)
     {
         System.Random rng = new();

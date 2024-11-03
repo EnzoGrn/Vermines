@@ -124,6 +124,7 @@ public class CardWrapper : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             return;
         if (ZoomConfig.BringToFrontOnHover)
             _Canvas.sortingOrder = ZoomConfig.ZoomedSortOrder;
+
         EventsConfig?.OnCardHover?.Invoke(new Events.CardHover(this));
 
         _IsHovered = true;
