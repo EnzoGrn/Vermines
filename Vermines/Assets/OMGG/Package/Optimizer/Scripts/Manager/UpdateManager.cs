@@ -7,18 +7,7 @@ using UnityEngine;
  * 
  * Thanks to that every slowing method of unity will be ignored, and will improve the performance of the game.
  */
-public class UpdateManager : MonoBehaviour {
-
-    #region Singleton
-
-    /*
-     * @brief Singleton instance of the UpdateManager.
-     * Allow the Manager to be get everywhere in the code.
-     * And if not exist, it will be instantiated, by the creation of a game object and the addition of the component.
-     */
-    public static Singleton<UpdateManager> Instance { get; private set; }
-
-    #endregion
+public class UpdateManager : Singleton<UpdateManager> {
 
     #region Attributes
 
@@ -55,7 +44,7 @@ public class UpdateManager : MonoBehaviour {
 
     #endregion
 
-    #region Static Methods /* that need to be called by objects scripts */
+    #region Methods /* that need to be called by objects scripts */
 
     public void RegisterObserver(IUpdateObserver observer)
     {
