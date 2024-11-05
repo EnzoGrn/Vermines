@@ -1,0 +1,17 @@
+{
+    "name": "OMGG.Optimizer.Manager",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f2deacab370e9a0458020f0f50fe743b",
+        "GUID:ccf32771fe516bc489a368d08f2fd759"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
