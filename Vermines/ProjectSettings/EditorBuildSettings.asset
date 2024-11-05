@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Resources/Scenes/Game.unity
     guid: a45fb4c356ba9d241a28d641679fb411
+  - enabled: 1
+    path: Assets/Resources/Scenes/UnitTest - Scene/Test - Update Manager.unity
+    guid: 5427fe87058e9334dab8c1b15793741d
   m_configObjects: {}
