@@ -26,4 +26,16 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
             return _Instance;
         }
     }
+
+    public void Awake()
+    {
+        if (_Instance != null) {
+            Destroy(gameObject);
+
+            return;
+        }
+        _Instance = GetComponent<T>();
+
+        DontDestroyOnLoad(gameObject);
+    }
 }
