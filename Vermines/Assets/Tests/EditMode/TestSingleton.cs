@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
+using OMGG.DesignPattern;
 
 namespace Test {
 
-    public class TestManager : Singleton<TestManager> {
+    public class TestManager : MonoBehaviourSingleton<TestManager> {
 
         public void OnCall()
         {
