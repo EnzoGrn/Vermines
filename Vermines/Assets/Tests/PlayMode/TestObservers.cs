@@ -3,8 +3,8 @@ using NUnit.Framework;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.TestTools;
-using System.Diagnostics;
 using System.Collections.Generic;
+using OMGG.Optimizer;
 
 namespace Tests {
 
@@ -36,25 +36,45 @@ namespace Tests {
     [TestFixture]
     public class TestObserver {
 
-        private const string _SceneName = "Test - Update Manager";
-
-        /*
-         * @brief Load a test scene before running tests
-         * Wait the scene is totally loaded before running tests
-         */
         [SetUp]
         public void Setup()
         {
-            SceneManager.LoadScene(_SceneName);
+            Scene newScene = SceneManager.CreateScene("Test.PlayMode.TestObservers");
+
+            SceneManager.SetActiveScene(newScene);
+        }
+
+        [TearDown]
+        public void Teardown()
+        {
+            var objects = GameObject.FindObjectsOfType<GameObject>();
+
+            // Destroy properly the objects.
+            foreach (var obj in objects)
+                GameObject.Destroy(obj);
+
+            // Unload the scene.
+            SceneManager.UnloadSceneAsync("Test.PlayMode.TestObservers");
         }
 
         [UnityTest]
         public IEnumerator CheckIfObservedObjectAreCalled()
         {
-            GameObject         testObj          = new("TestObservedObject");
-            TestObservedObject testObjComponent = testObj.AddComponent<TestObservedObject>();
+            { // -- Check the well-done creation of the ObservedObject.
+                GameObject testObj = new("TestObservedObject");
 
-            Assert.IsNotNull(testObjComponent);
+                Assert.IsNotNull(testObj);
+
+                TestObservedObject testObjComponent = testObj.AddComponent<TestObservedObject>();
+
+                Assert.IsNotNull(testObjComponent);
+            }
+
+            { // -- Check if MonoBehaviourSingleton GameObjects are created.
+                Assert.IsNotNull(GameObject.Find("Auto-generated UpdateManager"));
+                Assert.IsNotNull(GameObject.Find("Auto-generated FixedUpdateManager"));
+                Assert.IsNotNull(GameObject.Find("Auto-generated LateUpdateManager"));
+            }
 
             yield return RunTest<TestObservedObject>();
         }
@@ -65,13 +85,7 @@ namespace Tests {
 
             for (int i = 0; i < 100; i++)
                 objects.Add(new GameObject(typeof(T).Name + " " + i, typeof(T)));
-
             yield return null;
-
-            foreach (var obj in objects)
-                GameObject.Destroy(obj);
-            yield return null;
-
         }
     }
 }

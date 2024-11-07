@@ -1,15 +1,18 @@
-/*
- * @brief Command interface, for all the command objects.
- */
-public interface ICommand {
+namespace OMGG.DesignPattern {
 
     /*
-     * @brief Execute the command.
+     * @brief Command interface, for all the command objects.
      */
-    void Execute();
+    public interface ICommand {
 
-    /*
-     * @brief Function to undo the command.
-     */
-    void Undo();
+        /*
+         * @brief Execute the command.
+         */
+        void Execute();
+
+        /*
+         * @brief Function to undo the command.
+         */
+        void Undo();
+    }
 }
