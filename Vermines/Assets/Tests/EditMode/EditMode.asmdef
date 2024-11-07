@@ -9,7 +9,8 @@
         "NetworkUtilsAssembly",
         "NetworkSettingsAssembly",
         "Vermine",
-        "Singleton"
+        "Singleton",
+        "Command"
     ],
     "includePlatforms": [
         "Editor"
