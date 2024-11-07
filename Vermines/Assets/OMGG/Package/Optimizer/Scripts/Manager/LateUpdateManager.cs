@@ -34,8 +34,15 @@ public class LateUpdateManager : Singleton<LateUpdateManager> {
     private void LateUpdate()
     {
         // -- Loop through all the observers and call the ObservedLateUpdate method.
-        for (int currentIndex = _Observers.Count - 1; currentIndex >= 0; currentIndex--)
-            _Observers[currentIndex].ObservedLateUpdate();
+        for (int currentIndex = _Observers.Count - 1; currentIndex >= 0; currentIndex--) {
+            MonoBehaviour script = _Observers[currentIndex] as MonoBehaviour;
+
+            // -- Check if the observer is active and enabled.
+            // If it is, call the ObservedUpdate method.
+            // If not, let's it in hold until it is active and enabled.
+            if (script && script.isActiveAndEnabled)
+                _Observers[currentIndex].ObservedLateUpdate();
+        }
 
         // -- Loop through all the pending observers and remove them from the observers list.
         for (int i = 0; i < _PendingObservers.Count; i++)
