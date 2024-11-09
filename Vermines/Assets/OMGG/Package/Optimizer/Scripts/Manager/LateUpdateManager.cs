@@ -34,7 +34,7 @@ namespace OMGG.Optimizer {
             _PendingObservers.Clear();
         }
 
-        private void LateUpdate()
+        public void LateUpdate()
         {
             // -- Loop through all the observers and call the ObservedLateUpdate method.
             for (int currentIndex = _Observers.Count - 1; currentIndex >= 0; currentIndex--) {
