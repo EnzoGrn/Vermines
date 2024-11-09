@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using OMGG.DesignPattern;
 
-namespace Test {
+namespace Test.Pattern {
 
     public class Player {
 
@@ -39,7 +39,7 @@ namespace Test {
     public class TestCommandPattern {
 
         [Test]
-        public void TestCommandPatternSimplePasses()
+        public void ExecuteAndUndoCommands()
         {
             Player  player   = new();
             Vector3 movement = new(1, 0, 0);
