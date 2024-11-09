@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - main
+      - experimental/*
   workflow_dispatch:
 
 env:
@@ -133,6 +134,7 @@ jobs:
             Library-${{ env.projectPath }}-
             Library-
       - name: Run Test
+        id: tests
         uses: game-ci/unity-test-runner@v4
         env:
           UNITY_LICENSE: ${{ env.UNITY_LICENSE }}
@@ -142,6 +144,20 @@ jobs:
           projectPath: ${{ env.projectPath }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           customImage: ${{ env.dockerImage }}
+          checkName: ${{ matrix.testMode }} Test Results
+          coverageOption: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport'
+      - name: Store test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: Test results for ${{ matrix.targetPlatform }}
+          path: ${{ steps.tests.outputs.artifactsPath }}
+      - name: Code Coverage Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: Coverage results for ${{ matrix.targetPlatform }}
+          path: ${{ steps.tests.outputs.coveragePath }}
 
   release:
     needs:
