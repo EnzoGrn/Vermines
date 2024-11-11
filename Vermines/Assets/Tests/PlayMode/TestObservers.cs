@@ -6,9 +6,13 @@ using UnityEngine.TestTools;
 using System.Collections.Generic;
 using OMGG.Optimizer;
 
-namespace Tests {
+namespace Test.Optimizer {
 
     public class TestObservedObject : MonoBehaviour, IUpdateObserver, IFixedUpdateObserver, ILateUpdateObserver {
+
+        public int numberUpdate = 0;
+        public int numberFixedUpdate = 0;
+        public int numberLateUpdate = 0;
 
         public void Awake()
         {
@@ -17,29 +21,43 @@ namespace Tests {
             LateUpdateManager.Instance.RegisterObserver(this);
         }
 
+        public void Shutdown()
+        {
+            UpdateManager.Instance.UnregisterObserver(this);
+            FixedUpdateManager.Instance.UnregisterObserver(this);
+            LateUpdateManager.Instance.UnregisterObserver(this);
+        }
+
         public void ObservedUpdate()
         {
-            Assert.Pass("ObservedUpdate is called.");
+            numberUpdate++;
         }
 
         public void ObservedFixedUpdate()
         {
-            Assert.Pass("ObservedFixedUpdate is called.");
+            numberFixedUpdate++;
         }
 
         public void ObservedLateUpdate()
         {
-            Assert.Pass("ObservedLateUpdate is called.");
+            numberLateUpdate++;
         }
     }
 
     [TestFixture]
-    public class TestObserver {
+    public class TestUpdateOptimizerManager {
+
+        private const string sceneName = "Test.PlayMode.TestObservers";
+        private string[] singletonNames = {
+            "Auto-generated UpdateManager",
+            "Auto-generated FixedUpdateManager",
+            "Auto-generated LateUpdateManager"
+        };
 
         [SetUp]
         public void Setup()
         {
-            Scene newScene = SceneManager.CreateScene("Test.PlayMode.TestObservers");
+            Scene newScene = SceneManager.CreateScene(sceneName);
 
             SceneManager.SetActiveScene(newScene);
         }
@@ -54,7 +72,7 @@ namespace Tests {
                 GameObject.Destroy(obj);
 
             // Unload the scene.
-            SceneManager.UnloadSceneAsync("Test.PlayMode.TestObservers");
+            SceneManager.UnloadSceneAsync(sceneName);
         }
 
         [UnityTest]
@@ -71,20 +89,45 @@ namespace Tests {
             }
 
             { // -- Check if MonoBehaviourSingleton GameObjects are created.
-                Assert.IsNotNull(GameObject.Find("Auto-generated UpdateManager"));
-                Assert.IsNotNull(GameObject.Find("Auto-generated FixedUpdateManager"));
-                Assert.IsNotNull(GameObject.Find("Auto-generated LateUpdateManager"));
+                for (int i = 0; i < singletonNames.Length; i++)
+                    Assert.IsNotNull(GameObject.Find(singletonNames[i]));
             }
 
             yield return RunTest<TestObservedObject>();
+
+            Assert.IsTrue(UpdateManager.Instance.HasObservers);
+            Assert.IsTrue(FixedUpdateManager.Instance.HasObservers);
+            Assert.IsTrue(LateUpdateManager.Instance.HasObservers);
+
+            { // -- Shutdown the ObservedObject.
+                GameObject testObj = GameObject.Find("TestObservedObject");
+
+                Assert.IsNotNull(testObj);
+
+                testObj.GetComponent<TestObservedObject>().Shutdown();
+
+                UpdateManager.Instance.Update();
+                FixedUpdateManager.Instance.FixedUpdate();
+                LateUpdateManager.Instance.LateUpdate();
+
+                Assert.Less(0, testObj.GetComponent<TestObservedObject>().numberUpdate);
+                Assert.Less(0, testObj.GetComponent<TestObservedObject>().numberFixedUpdate);
+                Assert.Less(0, testObj.GetComponent<TestObservedObject>().numberLateUpdate);
+            }
+
+            yield return null;
         }
 
         public IEnumerator RunTest<T>() where T : MonoBehaviour
         {
             var objects = new List<GameObject>();
 
-            for (int i = 0; i < 100; i++)
-                objects.Add(new GameObject(typeof(T).Name + " " + i, typeof(T)));
+            for (int i = 0; i < 100; i++) {
+                GameObject obj = new(typeof(T).Name + " " + i, typeof(T));
+
+                objects.Add(obj);
+            }
+
             yield return null;
         }
     }
