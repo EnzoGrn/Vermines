@@ -1,14 +1,9 @@
 {
-    "name": "EditMode",
+    "name": "Tests1",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "NetworkRoomManagerAssembly",
-        "PhotonUnityNetworking",
-        "NetworkUtilsAssembly",
-        "NetworkSettingsAssembly",
-        "Vermine",
         "Singleton",
         "Command"
     ],

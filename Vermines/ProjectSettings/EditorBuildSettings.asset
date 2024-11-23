@@ -12,9 +12,10 @@ EditorBuildSettings:
     path: Assets/Resources/Scenes/Lobby.unity
     guid: 4145cd36006f3bb48a940d2175a26c15
   - enabled: 1
-    path: Assets/Resources/Scenes/WaitingRoom.unity
-    guid: 3540b3ac9eae6514f8b41f565643be47
-  - enabled: 1
     path: Assets/Resources/Scenes/Game.unity
     guid: a45fb4c356ba9d241a28d641679fb411
+  - enabled: 0
+    path: Assets/Resources/Scenes/WaitingRoom.unity
+    guid: 3540b3ac9eae6514f8b41f565643be47
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0
