@@ -30,11 +30,11 @@ env:
   # The version of Unity to use.
   # Note: We currently use 2022.3.44f1 for dev the project, but their is no docker image for this version.
   #       So, we use the latest version that have a docker image.
-  unityVersion: '2022.3.42f1'
+  unityVersion: '6000.0.25f1'
 
   # ! If the version of Unity change, know that the docker image may need an update.
   # You can found other version: https://hub.docker.com/r/unityci/editor/tags
-  dockerImage: 'unityci/editor:windows-2022.3.42f1-windows-il2cpp-3.1.0'
+  dockerImage: 'unityci/editor:windows-6000.0.25f1-windows-il2cpp-3.1.0'
 
 jobs:
   checkLicense:
