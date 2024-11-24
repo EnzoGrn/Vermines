@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 using System.Collections.Generic;
 using OMGG.Optimizer;
 
-namespace Test.Optimizer {
+namespace Test.OMGG.Optimizer {
 
     public class TestObservedObject : MonoBehaviour, IUpdateObserver, IFixedUpdateObserver, ILateUpdateObserver {
 

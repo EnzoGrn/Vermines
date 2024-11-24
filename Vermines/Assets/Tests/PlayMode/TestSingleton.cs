@@ -6,7 +6,7 @@ using System.Reflection;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
-namespace Test.Pattern {
+namespace Test.OMGG.Pattern {
 
     class TestManager : MonoBehaviourSingleton<TestManager> {
 

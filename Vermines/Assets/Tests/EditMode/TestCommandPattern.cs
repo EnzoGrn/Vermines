@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using OMGG.DesignPattern;
 
-namespace Test.Pattern {
+namespace Test.OMGG.Pattern {
 
     public class Player {
 

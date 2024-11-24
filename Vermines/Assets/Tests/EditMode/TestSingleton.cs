@@ -3,7 +3,7 @@ using OMGG.DesignPattern;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Test.Pattern {
+namespace Test.OMGG.Pattern {
 
     class TestManager : Singleton<TestManager> {
 
