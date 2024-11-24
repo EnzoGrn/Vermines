@@ -1,0 +1,16 @@
+{
+    "name": "OMGG.Network.Quantum",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a8b3c70aa16c9fe48ba89921691ebf3b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
