@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System.Reflection;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using System.Security.Cryptography;
 
 namespace Test.OMGG.Pattern {
 

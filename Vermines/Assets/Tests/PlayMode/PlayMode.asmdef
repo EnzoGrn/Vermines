@@ -6,7 +6,12 @@
         "UnityEditor.TestRunner",
         "OMGG.Optimizer.Interface",
         "OMGG.Optimizer.Manager",
-        "Singleton"
+        "Singleton",
+        "Vermines",
+        "OMGG.Network.Presenter",
+        "OMGG.Network.Interface",
+        "OMGG.Network.Fusion",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
