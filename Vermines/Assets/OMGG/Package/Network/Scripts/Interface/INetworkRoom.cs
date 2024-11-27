@@ -1,8 +1,14 @@
 using System.Collections.Generic;
+using System;
 
 namespace OMGG.Network {
 
     public class RoomOptions {
+
+        /*
+         * @brief Name of the room
+         */
+        public string RoomName { get; set; }
 
         /*
          * @brief Boolean that indicates if the room is visible or not (public or private)
@@ -64,5 +70,15 @@ namespace OMGG.Network {
          * @brief Leave the current room
          */
         void LeaveRoom();
+
+        /*
+         * @brief OnPlayerJoined is an event that is triggered when a player joins the room
+         */
+        event Action<IPlayer> OnPlayerJoined;
+
+        /*
+         * @brief OnPlayerLeft is an event that is triggered when a player leaves the room
+         */
+        event Action<IPlayer> OnPlayerLeft;
     }
 }

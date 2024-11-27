@@ -26,16 +26,21 @@ namespace Test.OMGG.Pattern {
         [Test]
         public void TryCallOnCall()
         {
+            int number = TestManager.Instance.number;
+
             TestManager.Instance.OnCall();
 
-            Assert.AreEqual(1, TestManager.Instance.number);
+            Assert.IsTrue(TestManager.Instance.number == number + 1);
         }
 
         [Test]
         public void Admin_TrySingletonSetter()
         {
-            // Why here the number is not 2 ? It's because the Unity Test Runner, delete the old test for each new test.
-            TryCallOnCall();
+            int number = TestManager.Instance.number;
+
+            TestManager.Instance.OnCall();
+
+            Assert.IsTrue(TestManager.Instance.number == number + 1);
 
             // Get the Singleton class
             var singletonType = typeof(Singleton<TestManager>);

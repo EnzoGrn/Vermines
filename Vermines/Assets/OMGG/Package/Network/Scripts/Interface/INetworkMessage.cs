@@ -1,8 +1,24 @@
 namespace OMGG.Network {
 
     /*
+     * @brief IMessageSerializer is an interface that represents the structure for message serialization.
+     * It can Serialize and Deserialize messages, it's linked to INetworkMessage.
+     */
+    public interface IMessageSerializer {
+
+        /*
+         * @brief Method that serializes the message.
+         */
+        public byte[] Serialize(INetworkMessage message);
+
+        /*
+         * @brief Method that deserializes the message.
+         */
+        INetworkMessage Deserialize(byte[] data);
+    }
+
+    /*
      * @brief INetworkMessage is an interface that represents the structure for network messages.
-     * It can Serialize/deserialize data, And define communication channels.
      */
     public interface INetworkMessage {
 
@@ -15,15 +31,5 @@ namespace OMGG.Network {
          * @brief The channel id of the message.
          */
         byte ChannelId { get; }
-
-        /*
-         * @brief Method that serializes the message.
-         */
-        void Serialize();
-
-        /*
-         * @brief Method that deserializes the message.
-         */
-        void Deserialize(byte[] data);
     }
 }

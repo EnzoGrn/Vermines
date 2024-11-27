@@ -25,7 +25,17 @@ namespace OMGG.Network.Fusion {
             throw new NotImplementedException();
         }
 
+        public void Connect(string address = null, int port = 0, string auth = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Disconnect()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ConnectionState GetConnectionState()
         {
             throw new NotImplementedException();
         }

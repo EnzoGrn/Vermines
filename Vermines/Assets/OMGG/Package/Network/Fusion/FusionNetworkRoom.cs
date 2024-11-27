@@ -9,6 +9,9 @@ namespace OMGG.Network.Fusion {
 
         public IEnumerable<IPlayer> Players => throw new NotImplementedException();
 
+        public event Action<IPlayer> OnPlayerJoined;
+        public event Action<IPlayer> OnPlayerLeft;
+
         public void CreateRoom(string roomName, RoomOptions options)
         {
             throw new NotImplementedException();

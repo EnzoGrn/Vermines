@@ -6,6 +6,8 @@ namespace OMGG.Network.Fusion {
 
         public float NetworkTime => throw new NotImplementedException();
 
+        public event Action<float> OnTimeSynced;
+
         public void SyncTime()
         {
             throw new NotImplementedException();

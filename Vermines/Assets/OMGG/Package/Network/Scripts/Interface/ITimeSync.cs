@@ -1,3 +1,5 @@
+using System;
+
 namespace OMGG.Network {
 
     /*
@@ -16,5 +18,10 @@ namespace OMGG.Network {
          * @brief Sync the time with the server
          */
         void SyncTime();
+
+        /*
+         * @brief Event that is triggered when the time is synchronized.
+         */
+        event Action<float> OnTimeSynced;
     }
 }

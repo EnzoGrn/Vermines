@@ -17,12 +17,19 @@ namespace OMGG.Network {
          * @brief Methods for spawning the object.
          * 
          * @note The object to be instantiated must be a prefab.
+         *
+         * @important The initiliazeData parameter is used to pass data to the object when it is instantiated.
          */
-        void Spawn(string prefabId, Vector3 position, Quaternion rotation);
+        void Spawn(string prefabId, Vector3 position, Quaternion rotation, object initiliazeData = null);
 
         /*
          * @brief Method for destroying the object.
          */
         void Destroy();
+
+        /*
+         * @brief Method for send more information about the object.
+         */
+        void SyncState(object state);
     }
 }

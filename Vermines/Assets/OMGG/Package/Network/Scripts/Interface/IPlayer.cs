@@ -1,3 +1,5 @@
+using System;
+
 namespace OMGG.Network {
 
     /*
@@ -22,10 +24,21 @@ namespace OMGG.Network {
         string PlayerName { get; }
 
         /*
+         * @brief Boolean value that indicates if the player is local or not.
+         * @note A local player is a player that is controlled by the current user.
+         */
+        bool IsLocal { get; }
+
+        /*
          * @brief Method that sends a message to the player.
          * 
          * @param message The message to send. (see INetworkMessage)
          */
         void SendMessage(INetworkMessage message);
+
+        /*
+         * @brief Event that is triggered when a message is received from the player.
+         */
+        event Action<INetworkMessage> OnMessageReceived;
     }
 }

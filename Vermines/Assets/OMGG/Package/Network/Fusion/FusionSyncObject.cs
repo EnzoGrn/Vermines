@@ -16,5 +16,15 @@ namespace OMGG.Network.Fusion {
         {
             throw new NotImplementedException();
         }
+
+        public void Spawn(string prefabId, Vector3 position, Quaternion rotation, object initiliazeData = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SyncState(object state)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

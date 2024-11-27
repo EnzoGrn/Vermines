@@ -15,6 +15,8 @@ namespace Test.OMGG.Network {
         {
             _Options = new RoomOptions();
 
+            _Options.RoomName = "Room #1";
+
             _Options.IsOpen = true;
             _Options.IsVisible = true;
 
@@ -23,7 +25,6 @@ namespace Test.OMGG.Network {
 
             _Options.CustomProperties = new();
 
-            _Options.CustomProperties.Add("RoomName", "Room #1");
             _Options.CustomProperties.Add("Language", "fr");
             _Options.CustomProperties.Add("GameMode", "Deathmatch");
         }
@@ -32,13 +33,14 @@ namespace Test.OMGG.Network {
         [Test]
         public void NewTestScriptSimplePasses()
         {
+            Assert.AreEqual("Room #1", _Options.RoomName);
+
             Assert.IsTrue(_Options.IsOpen);
             Assert.IsTrue(_Options.IsVisible);
 
             Assert.AreEqual(4, _Options.MaxPlayers);
             Assert.AreEqual(2, _Options.MinPlayers);
 
-            Assert.AreEqual("Room #1"   , _Options.CustomProperties["RoomName"]);
             Assert.AreEqual("fr"        , _Options.CustomProperties["Language"]);
             Assert.AreEqual("Deathmatch", _Options.CustomProperties["GameMode"]);
         }
