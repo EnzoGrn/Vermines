@@ -1,3 +1,4 @@
+using Fusion;
 using System;
 
 namespace OMGG.Network.Fusion {
@@ -9,6 +10,11 @@ namespace OMGG.Network.Fusion {
         public string PlayerName => throw new NotImplementedException();
 
         public bool IsLocal => throw new NotImplementedException();
+
+        public FusionPlayer(PlayerRef player)
+        {
+
+        }
 
         public event Action<INetworkMessage> OnMessageReceived;
 

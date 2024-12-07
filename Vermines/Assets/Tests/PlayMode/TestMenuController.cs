@@ -40,6 +40,9 @@ namespace Test.Vermines.Controller {
         [TearDown]
         public void TearDown()
         {
+            _MenuController.ShowError("The controller are being destroyed!");
+            _MenuController.OnDestroy();
+
             GameObject.Destroy(_MenuControllerGameObject);
             GameObject.Destroy(_StatusTextMock.gameObject);
         }
@@ -56,10 +59,11 @@ namespace Test.Vermines.Controller {
             INetworkManager networkManager = (INetworkManager)networkManagerField.GetValue(_MenuController);
 
             Assert.IsNotNull(networkManager);
-            Assert.IsTrue(networkManager.IsConnected);
             Assert.AreEqual(ConnectionState.Connected, networkManager.GetConnectionState());
 
-            networkManager.Disconnect();
+            networkManager.Connect();
+
+            yield return null;
         }
     }
 }

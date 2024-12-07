@@ -2,11 +2,13 @@
     "name": "OMGG.Network.Fusion",
     "rootNamespace": "",
     "references": [
-        "GUID:a8b3c70aa16c9fe48ba89921691ebf3b"
+        "GUID:a8b3c70aa16c9fe48ba89921691ebf3b",
+        "GUID:f2deacab370e9a0458020f0f50fe743b",
+        "GUID:1baf1ffff1031e948b3b228ab3453251"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
