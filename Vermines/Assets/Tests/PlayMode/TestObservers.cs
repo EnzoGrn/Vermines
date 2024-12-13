@@ -65,7 +65,7 @@ namespace Test.OMGG.Optimizer {
         [TearDown]
         public void Teardown()
         {
-            var objects = GameObject.FindObjectsOfType<GameObject>();
+            var objects = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
 
             // Destroy properly the objects.
             foreach (var obj in objects)

@@ -1,6 +1,3 @@
-using Codice.Client.BaseCommands.Merge.Xml;
-using System.Diagnostics;
-
 namespace OMGG.Network {
 
     /*
@@ -23,13 +20,18 @@ namespace OMGG.Network {
         private readonly INetworkManagerView _View;
 
         /*
+         * @brief Check if the NetworkManager is connected to the server.
+         */
+        public bool IsConnected => _Model.IsConnected;
+
+        /*
          * @brief Constructor of the NetworkManagerPresenter.
          * It initializes the model and the view.
          */
         public NetworkManagerPresenter(INetworkManager model, INetworkManagerView view)
         {
             _Model = model;
-            _View = view;
+            _View  = view;
         }
 
         /*
@@ -48,8 +50,6 @@ namespace OMGG.Network {
          */
         public void StopConnection()
         {
-            UnityEngine.Debug.LogWarning("Disconnecting...");
-
             _Model.Disconnect();
         }
     }

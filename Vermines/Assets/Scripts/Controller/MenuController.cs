@@ -2,7 +2,6 @@ using OMGG.Network.Fusion;
 using OMGG.Optimizer;
 using OMGG.Network;
 using UnityEngine;
-using Fusion;
 using TMPro;
 
 public class MenuController : MonoBehaviour, INetworkManagerView, IFixedUpdateObserver {
@@ -22,12 +21,8 @@ public class MenuController : MonoBehaviour, INetworkManagerView, IFixedUpdateOb
      */
     private void Awake()
     {
-        // Create the NetworkRunner object.
-        GameObject  runnerGO = new("NetworkRunner");
-        NetworkRunner runner = runnerGO.AddComponent<NetworkRunner>();
-
         // Initialize the network manager and the presenter.
-        _NetworkManager = new FusionNetworkManager(runner, "Vermines");
+        _NetworkManager = new FusionNetworkManager("Vermines");
 
         // Binding the events for the network callbacks.
         _NetworkManager.OnConnected    += () => ShowMessage("Connected to the server.");
@@ -47,6 +42,26 @@ public class MenuController : MonoBehaviour, INetworkManagerView, IFixedUpdateOb
     private void Start()
     {
         _NetworkPresenter.StartConnection();
+    }
+
+    /*
+     * @brief Shutdown the connection when the object is destroyed.
+     */
+    public void OnDestroy()
+    {
+        Shutdown();
+    }
+
+    /*
+     * @brief Shutdown the connection.
+     */
+    public void Shutdown()
+    {
+        if (_NetworkPresenter.IsConnected) {
+            FixedUpdateManager.Instance.UnregisterObserver(this);
+
+            _NetworkPresenter.StopConnection();
+        }
     }
 
     /*

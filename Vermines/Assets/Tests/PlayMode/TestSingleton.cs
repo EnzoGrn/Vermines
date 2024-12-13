@@ -6,6 +6,7 @@ using System.Reflection;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Security.Cryptography;
+using System.Security.Permissions;
 
 namespace Test.OMGG.Pattern {
 
@@ -35,7 +36,7 @@ namespace Test.OMGG.Pattern {
         [TearDown]
         public void Teardown()
         {
-            var objects = GameObject.FindObjectsOfType<GameObject>();
+            var objects = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
 
             // Destroy properly the objects.
             foreach (var obj in objects)
