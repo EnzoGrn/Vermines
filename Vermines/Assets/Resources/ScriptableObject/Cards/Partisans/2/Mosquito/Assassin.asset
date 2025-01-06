@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Assassin
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
-  Exemplars: 1
+  Name: Assassin
+  Description: You can spend <b><color=purple>4E</color></b> and then earn <b><color=red>5A</color></b>.
+  Exemplars: 2
   IsStartingCard: 0
-  Type: -1
+  Type: 0
   IsFamilyCard: 0
-  Eloquence: 0
+  Eloquence: 10

@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Merchant
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
+  Name: Merchant
+  Description: Your purchases cost <b><color=purple>1E</color></b> less.
   Exemplars: 1
   IsStartingCard: 0
-  IsFamilyCard: 0
-  Type: -1
-  Eloquence: 0
+  Type: 0
+  IsFamilyCard: 1
+  Eloquence: 5

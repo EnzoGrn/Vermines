@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Squire
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
-  Exemplars: 1
+  Name: Squire
+  Description: Discard the <b>squire</b> to gain <b><color=purple>2E</color></b>
+    and replace 1 market and yard card (the squire counts as a <b>tool</b> card).
+  Exemplars: 2
   IsStartingCard: 0
-  Type: -1
+  Type: 0
   IsFamilyCard: 0
-  Eloquence: 0
+  Eloquence: 3

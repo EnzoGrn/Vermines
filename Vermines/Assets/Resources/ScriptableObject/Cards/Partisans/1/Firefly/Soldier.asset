@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Soldier
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
-  Exemplars: 1
+  Name: Soldier
+  Description: Your market purchases cost <b><color=purple>2E</color></b> less.
+  Exemplars: 2
   IsStartingCard: 0
-  Type: -1
+  Type: 0
   IsFamilyCard: 0
-  Eloquence: 0
+  Eloquence: 6

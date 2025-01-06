@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Villagers
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
-  Exemplars: 1
+  Name: Villagers
+  Description: Discard the <b>villager</b> to earn <b><color=purple>2E</color></b>.
+  Exemplars: 2
   IsStartingCard: 0
-  Type: -1
-  IsFamilyCard: 0
-  Eloquence: 0
+  Type: 0
+  IsFamilyCard: 1
+  Eloquence: 2

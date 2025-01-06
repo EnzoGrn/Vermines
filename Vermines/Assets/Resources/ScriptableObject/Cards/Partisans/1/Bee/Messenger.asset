@@ -12,11 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Messenger
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
-  Exemplars: 1
+  Name: Messenger
+  Description: Gain a bonus <b><color=red>5A</color></b> for each additional sacrifice.
+  Exemplars: 5
   IsStartingCard: 0
+  Type: 0
   IsFamilyCard: 0
-  Type: -1
-  Eloquence: 0
-  Sprite: {fileID: 0}
+  Eloquence: 7

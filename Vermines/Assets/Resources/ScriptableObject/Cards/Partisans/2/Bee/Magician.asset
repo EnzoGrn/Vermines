@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Magician
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
+  Name: Magician
+  Description: Cancel another <b>partisan</b>'s next power activation, and his soul
+    value becomes <b><color=red>0A</color></b> until your next turn.
   Exemplars: 1
   IsStartingCard: 0
-  Type: -1
+  Type: 0
   IsFamilyCard: 0
-  Eloquence: 0
+  Eloquence: 14
