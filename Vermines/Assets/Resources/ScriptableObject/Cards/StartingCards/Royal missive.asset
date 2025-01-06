@@ -9,21 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cee0671a97a168439e12e4cecfe767c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Royal missive
   m_EditorClassIdentifier: 
-  ID: 2
   Name: Royal missive
-  Description: Choose one :<br>- Replace 1 market and yard card.<br>- Gain <b>1E</b>,
-    you can only do this effect before refilling your hand.
-  Type: 8
-  Eloquence: -1
-  Souls: 0
-  SpriteName: Royal missive
+  Description: Choose one :<br>- Replace <b>1 market</b> and <b>yard</b> card.<br>-
+    Gain <b><color=purple>1E</color></b>,  you can only do this effect before refilling
+    your hand.
+  Exemplars: 2
+  IsStartingCard: 1
+  IsFamilyCard: 0
+  Type: 2
+  Eloquence: 0
   Sprite: {fileID: 0}
-  PassiveEffect: {fileID: 0}
-  TurnStartEffect: {fileID: 0}
-  PlayedEffect: {fileID: 0}
-  DiscardEffect: {fileID: 0}
-  SacrificeEffect: {fileID: 0}
-  IsAnonyme: 0

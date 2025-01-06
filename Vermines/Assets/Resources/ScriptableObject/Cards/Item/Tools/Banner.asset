@@ -9,22 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cee0671a97a168439e12e4cecfe767c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Banner
   m_EditorClassIdentifier: 
-  ID: 3
   Name: Banner
-  Description: 'If you have: <b>1 equipment</b>: win <b>4E</b>, <b>2 equipment</b>:
-    win <b>6E</b>, <b>3 equipment</b>: win <b>6E</b> and draw 1 card then discard
-    1 card.<br>You can only play one <b>banner</b> per turn.'
-  Type: 8
+  Description: 'If you have:<br><b>1 equipment</b>: win <b><color=purple>4E</color></b>.<br><b>2
+    equipment</b>: win <b><color=purple>6E</color></b>.<br><b>3 equipment</b>: win
+    <b><color=purple>6E</color></b> and <b>draw 1</b> card then <b>discard 1</b>
+    card.<br>You can only play one <b>banner</b> per turn.'
+  Exemplars: 3
+  IsStartingCard: 0
+  IsFamilyCard: 0
+  Type: 2
   Eloquence: 8
-  Souls: 0
-  SpriteName: Banner
   Sprite: {fileID: 0}
-  PassiveEffect: {fileID: 0}
-  TurnStartEffect: {fileID: 0}
-  PlayedEffect: {fileID: 0}
-  DiscardEffect: {fileID: 0}
-  SacrificeEffect: {fileID: 0}
-  IsAnonyme: 0

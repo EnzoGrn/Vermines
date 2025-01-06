@@ -9,21 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cee0671a97a168439e12e4cecfe767c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Gold coins
   m_EditorClassIdentifier: 
-  ID: 5
   Name: Gold coins
-  Description: Draw 2 cards, then discard 1. You can only play one <b>gold coins</b>
-    per turn.
-  Type: 8
-  Eloquence: 5
-  Souls: 0
-  SpriteName: Gold coins
+  Description: <b>Draw 2</b> cards, then <b>discard 1</b>.<br>You can only play one
+    <b>gold coins</b> per turn.
+  Exemplars: 5
+  IsStartingCard: 0
+  IsFamilyCard: 0
+  Type: 2
+  Eloquence: 0
   Sprite: {fileID: 0}
-  PassiveEffect: {fileID: 0}
-  TurnStartEffect: {fileID: 0}
-  PlayedEffect: {fileID: 0}
-  DiscardEffect: {fileID: 0}
-  SacrificeEffect: {fileID: 0}
-  IsAnonyme: 0

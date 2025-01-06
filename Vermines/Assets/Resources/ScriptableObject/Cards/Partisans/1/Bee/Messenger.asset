@@ -9,20 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cee0671a97a168439e12e4cecfe767c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Messenger
   m_EditorClassIdentifier: 
-  ID: 5
-  Name: Messenger
-  Description: Gain a bonus <b>5A</b> for each additional sacrifice.
-  Type: 0
-  Eloquence: 7
-  Souls: 10
-  SpriteName: Messenger
-  Sprite: {fileID: 21300000, guid: 9bb401e926698b6449f4c5f814f68c28, type: 3}
-  PassiveEffect: {fileID: 0}
-  TurnStartEffect: {fileID: 0}
-  PlayedEffect: {fileID: 0}
-  DiscardEffect: {fileID: 0}
-  SacrificeEffect: {fileID: 0}
-  IsAnonyme: 0
+  Name: 
+  Description: 
+  Exemplars: 1
+  IsStartingCard: 0
+  IsFamilyCard: 0
+  Type: -1
+  Eloquence: 0
+  Sprite: {fileID: 0}

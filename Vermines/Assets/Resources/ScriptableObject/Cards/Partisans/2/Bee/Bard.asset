@@ -9,20 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cee0671a97a168439e12e4cecfe767c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Bard
   m_EditorClassIdentifier: 
-  ID: 1
-  Name: Bard
-  Description: Earn <b>8E</b>.
-  Type: 0
-  Eloquence: 14
-  Souls: 25
-  SpriteName: Bard
-  Sprite: {fileID: 21300000, guid: f07497f1c657d2049840940d779a2c17, type: 3}
-  PassiveEffect: {fileID: 0}
-  TurnStartEffect: {fileID: 0}
-  PlayedEffect: {fileID: 0}
-  DiscardEffect: {fileID: 0}
-  SacrificeEffect: {fileID: 0}
-  IsAnonyme: 0
+  Name: 
+  Description: 
+  Exemplars: 1
+  IsStartingCard: 0
+  Type: -1
+  IsFamilyCard: 0
+  Eloquence: 0

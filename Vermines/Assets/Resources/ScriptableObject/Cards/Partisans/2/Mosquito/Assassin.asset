@@ -9,20 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cee0671a97a168439e12e4cecfe767c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Assassin
   m_EditorClassIdentifier: 
-  ID: 2
-  Name: Assassin
-  Description: You can spend <b>4E</b> and then earn </b>5A<b>.
-  Type: 6
-  Eloquence: 10
-  Souls: 20
-  SpriteName: Assassin
-  Sprite: {fileID: 0}
-  PassiveEffect: {fileID: 0}
-  TurnStartEffect: {fileID: 0}
-  PlayedEffect: {fileID: 0}
-  DiscardEffect: {fileID: 0}
-  SacrificeEffect: {fileID: 0}
-  IsAnonyme: 0
+  Name: 
+  Description: 
+  Exemplars: 1
+  IsStartingCard: 0
+  Type: -1
+  IsFamilyCard: 0
+  Eloquence: 0
