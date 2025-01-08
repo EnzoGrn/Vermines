@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
+  m_Name: Demented scroll
+  m_EditorClassIdentifier: 
+  Name: Demented scroll
+  Description: Earn <b><color=purple>3E</color></b>.<br>You can only play one <b>demented
+    scroll</b> per turn.
+  Exemplars: 5
+  IsStartingCard: 0
+  IsFamilyCard: 0
+  Type: 2
+  Eloquence: 8
+  Sprite: {fileID: 0}

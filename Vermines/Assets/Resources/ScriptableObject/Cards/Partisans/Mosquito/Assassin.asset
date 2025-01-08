@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
+  m_Name: Assassin
+  m_EditorClassIdentifier: 
+  Name: Assassin
+  Description: You can spend <b><color=purple>4E</color></b> and then earn <b><color=red>5A</color></b>.
+  Exemplars: 2
+  IsStartingCard: 0
+  Type: 0
+  IsFamilyCard: 0
+  Eloquence: 10

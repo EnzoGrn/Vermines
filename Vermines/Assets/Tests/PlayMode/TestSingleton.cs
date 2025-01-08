@@ -5,8 +5,10 @@ using NUnit.Framework;
 using System.Reflection;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using System.Security.Cryptography;
+using System.Security.Permissions;
 
-namespace Test.Pattern {
+namespace Test.OMGG.Pattern {
 
     class TestManager : MonoBehaviourSingleton<TestManager> {
 
@@ -34,7 +36,7 @@ namespace Test.Pattern {
         [TearDown]
         public void Teardown()
         {
-            var objects = GameObject.FindObjectsOfType<GameObject>();
+            var objects = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
 
             // Destroy properly the objects.
             foreach (var obj in objects)
