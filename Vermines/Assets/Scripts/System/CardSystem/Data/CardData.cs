@@ -155,10 +155,7 @@ namespace Vermines.CardSystem.Data {
             get => !IsFamilyCard ? _Sprite : null;
             set
             {
-                if (!IsFamilyCard)
-                    _Sprite = value;
-                else
-                    _Sprite = null;
+                _Sprite = value;
             }
         }
 

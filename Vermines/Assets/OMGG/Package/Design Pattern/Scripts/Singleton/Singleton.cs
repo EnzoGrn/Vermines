@@ -6,9 +6,9 @@ namespace OMGG.DesignPattern {
      */
     public class Singleton<T> where T : class, new() {
 
-        /*
-         * @brief Lock object to make the singleton thread-safe.
-         */
+        /// <summary>
+        /// Lock object to make the singleton thread-safe.
+        /// </summary>
         private static readonly object _Lock = new();
 
         private static T _Instance;
@@ -31,12 +31,15 @@ namespace OMGG.DesignPattern {
                 return _Instance;
             }
 
-            /*
-             * We don't want to set the instance from outside.
-             * 
-             * @brief Protect the instance setter.
-             */
             private set => _Instance = value;
+        }
+
+        /// <summary>
+        /// Call this function to reset the instance of the singleton.
+        /// </summary>
+        public void Reset()
+        {
+            _Instance = null;
         }
     }
 }

@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "Singleton",
         "Command",
-        "OMGG.Network.Interface"
+        "OMGG.Network.Interface",
+        "Vermines"
     ],
     "includePlatforms": [
         "Editor"
