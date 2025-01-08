@@ -1,3 +1,6 @@
+// -- Remove the warning CS0168 (Unused variable) for the whole file
+#pragma warning disable 0168
+
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;

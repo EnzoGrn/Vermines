@@ -4,7 +4,7 @@
             {
                 "type": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                 "key": "IncludeAssemblies",
-                "value": "{\"m_Value\":\"Command,OMGG.Network.Fusion,OMGG.Network.Interface,OMGG.Optimizer.Interface,OMGG.Optimizer.Manager,Singleton,Vermines\"}"
+                "value": "{\"m_Value\":\"CardSystem,Command,OMGG.Network.Fusion,OMGG.Network.Interface,OMGG.Optimizer.Interface,OMGG.Optimizer.Manager,Singleton,Vermines\"}"
             },
             {
                 "type": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",

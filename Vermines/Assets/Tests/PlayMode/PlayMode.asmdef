@@ -7,7 +7,6 @@
         "OMGG.Optimizer.Interface",
         "OMGG.Optimizer.Manager",
         "Singleton",
-        "Vermines",
         "OMGG.Network.Presenter",
         "OMGG.Network.Interface",
         "OMGG.Network.Fusion",
