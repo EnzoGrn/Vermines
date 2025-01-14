@@ -2,8 +2,7 @@ using Fusion;
 
 namespace Vermines.Network.Utilities {
 
-    static public class NetworkNameTools
-    {
+    static public class NetworkNameTools {
 
         /// <summary>
         /// Give to a networking object a name depending on its authority.

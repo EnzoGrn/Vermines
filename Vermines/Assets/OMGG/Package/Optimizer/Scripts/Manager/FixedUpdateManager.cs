@@ -28,8 +28,10 @@ namespace OMGG.Optimizer {
 
         #region Monobeaviour Methods
 
-        private void OnDestroy()
+        private new void OnDestroy()
         {
+            base.OnDestroy();
+
             _Observers.Clear();
             _PendingObservers.Clear();
         }

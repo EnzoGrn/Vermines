@@ -17,7 +17,6 @@ MonoBehaviour:
     1 <b>partisan</b> card (maximum 3 times/turn).<br>You cannot have the <b>scourge</b>.
   Exemplars: 3
   IsStartingCard: 0
-  IsFamilyCard: 0
   Type: 1
+  IsFamilyCard: 0
   Eloquence: 5
-  Sprite: {fileID: 0}

@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8501971812109088964}
   - component: {fileID: 1456946192299027768}
+  - component: {fileID: 1249932418643325045}
+  - component: {fileID: 6441156129286385912}
   - component: {fileID: 2676703785937154257}
   m_Layer: 0
   m_Name: Gameplay
@@ -46,6 +48,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerPrefabs: {fileID: 2811704706866188713, guid: 77e3c923454ef14488263767a46202ab, type: 3}
+  _Initializer: {fileID: 6441156129286385912}
+  Storage: {fileID: 1249932418643325045}
+--- !u!114 &1249932418643325045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 222937835093749848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 920eb80882e685b41a5778313ce35240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerPrefabs: {fileID: 2811704706866188713, guid: 77e3c923454ef14488263767a46202ab, type: 3}
+  _PlayerData:
+    _items: []
+--- !u!114 &6441156129286385912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 222937835093749848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fbab24ad2de97f4d85b215e6924af52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2676703785937154257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,3 +95,5 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1456946192299027768}
+  - {fileID: 1249932418643325045}
+  - {fileID: 6441156129286385912}

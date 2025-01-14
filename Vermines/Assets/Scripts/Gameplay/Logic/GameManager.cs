@@ -1,25 +1,25 @@
+using OMGG.Network.Fusion;
+using UnityEngine;
 using Fusion;
 
 namespace Vermines {
-    using UnityEngine;
+
     using Vermines.Player;
 
     public class GameManager : NetworkBehaviour {
 
         #region Editor
 
-        /// <summary>
-        /// The player controller script links to the player prefab.
-        /// </summary>
-        public PlayerController PlayerPrefabs;
+        [SerializeField]
+        private GameInitializer _Initializer;
 
         #endregion
 
-        [Networked]
-        [Capacity(32)]
-        [HideInInspector]
-        public NetworkDictionary<PlayerRef, PlayerData> PlayerData { get; }
+        #region Singleton
 
+        public static GameManager Instance => NetworkSingleton<GameManager>.Instance;
+
+        #endregion
 
         #region Override Methods
 
@@ -33,50 +33,70 @@ namespace Vermines {
         {
             if (HasStateAuthority == false)
                 return;
-            PlayerManager<PlayerController>.UpdatePlayerConnections(Runner, SpawnPlayer, DespawnPlayer);
-        }
-
-        #endregion
-
-        #region Callbacks
-
-        private void SpawnPlayer(PlayerRef playerRef)
-        {
-            if (PlayerData.TryGet(playerRef, out PlayerData data) == false) {
-                data = new PlayerData() {
-                    Nickname    = playerRef.ToString(),
-                    PlayerRef   = playerRef,
-                    IsConnected = false
-                };
-            }
-
-            if (data.IsConnected == true) // Already connected
+            if (!Start) {
+                if (GameDataStorage.Instance.PlayerData.Count >= 2)
+                    StartGame();
                 return;
-            Debug.LogWarning($"{playerRef} connected.");
-
-            data.IsConnected = true;
-
-            PlayerData.Set(playerRef, data);
-
-            var player = Runner.Spawn(PlayerPrefabs, Vector3.zero, Quaternion.identity, playerRef);
-
-            // Set player instance as PlayerObject so we can easily get it from other locations.
-            Runner.SetPlayerObject(playerRef, player.Object);
-        }
-
-        private void DespawnPlayer(PlayerRef playerRef, PlayerController player)
-        {
-            if (PlayerData.TryGet(playerRef, out PlayerData data) == true) {
-                if (data.IsConnected == true)
-                    Debug.LogWarning($"{playerRef} disconnected.");
-                data.IsConnected = false;
-
-                PlayerData.Set(playerRef, data);
             }
+            try {
+                foreach (var player in GameDataStorage.Instance.PlayerData)
+                {
+                    PlayerData data = player.Value;
+                    PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player.Key];
 
-            Runner.Despawn(player.Object);
+                    Debug.LogWarning($"{player.Key} - {data.Nickname} - {data.IsConnected}");
+                    Debug.LogWarning($"{data.Eloquence} - {data.Souls} - {data.Family}");
+
+                    System.Text.StringBuilder stringBuilder = new();
+
+                    foreach (var card in deck.Deck)
+                        stringBuilder.Append($"{card.ID} ");
+                    Debug.LogWarning(stringBuilder);
+                }
+            }
+            catch (System.Exception) { }
         }
 
         #endregion
+
+        [Networked]
+        [HideInInspector]
+        public bool Start
+        {
+            get => default;
+            set { }
+        }
+
+        public void StartGame()
+        {
+            if (HasStateAuthority == false)
+                return;
+            if (_Initializer.Initialize() == -1)
+                return;
+            _Initializer.DeckDistribution();
+
+            Start = true;
+        }
+
+        /*public void FixedUpdate()
+        {
+            if (!Start)
+                return;
+            try {
+                foreach (var player in GameDataStorage.Instance.PlayerData) {
+                    PlayerData data = player.Value;
+                    PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player.Key];
+
+                    Debug.LogWarning($"{player.Key} - {data.Nickname} - {data.IsConnected}");
+                    Debug.LogWarning($"{data.Eloquence} - {data.Souls} - {data.Family}");
+
+                    System.Text.StringBuilder stringBuilder = new();
+
+                    foreach (var card in deck.Deck)
+                        stringBuilder.Append($"{card.ID} ");
+                    Debug.LogWarning(stringBuilder);
+                }
+            } catch (System.Exception) {}
+        }*/
     }
 }

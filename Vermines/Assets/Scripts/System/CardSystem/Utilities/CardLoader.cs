@@ -102,7 +102,7 @@ namespace Vermines.CardSystem.Utilities {
             if (card == null)
                 return null;
             card.ID        = CardFactory.CardCount;
-            card.IsAnonyme = true;
+            card.IsAnonyme = false;
 
             return card;
         }
