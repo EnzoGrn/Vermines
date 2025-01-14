@@ -40,7 +40,7 @@ namespace Vermines.Gameplay.Commands.Internal {
         /// Pass every data needed to initialize the deck of every player.
         /// </summary>
         /// <data>
-        /// [Player:1]:[Deck]1,3,5,4,2[Hand];[Discard];[Graveyard]|[Player:2]:[Deck]1,3,5,4,2[Hand];[Discard];[Graveyard]
+        /// [Player:1]:Deck[1,3,5,4,2];Hand[];Discard[];Graveyard[]|[Player:2]:Deck[1,3,5,4,2];Hand[];Discard[];Graveyard[]
         /// </data>
         /// <param name="data">The data to parse for initialize every deck</param>
         public InitializeDeckCommand(string data)

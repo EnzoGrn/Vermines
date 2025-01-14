@@ -85,5 +85,29 @@ namespace Vermines {
         }
 
         #endregion
+
+        #region Serialization
+
+        public string SerializeDeck(bool debugging = false)
+        {
+            string data = string.Empty;
+
+            foreach (var player in PlayerDeck) {
+                // Player reference
+                data += player.Key.RawEncoded + ":";
+
+                // Decks serializer
+                data += player.Value.Serialize();
+
+                // Decks separator
+                data += "|";
+            }
+
+            if (debugging == true)
+                Debug.LogWarning($"[SERVER]: {data}");
+            return data;
+        }
+
+        #endregion
     }
 }

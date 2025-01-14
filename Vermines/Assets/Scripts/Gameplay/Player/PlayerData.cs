@@ -57,7 +57,40 @@ namespace Vermines.Player {
             Graveyard = new List<ICard>();
         }
 
-        public readonly string Serialize()
+        #region Deck Manipulation
+
+        public void Draw()
+        {
+            // -- Check if I can take a card from the deck
+            if (Deck.Count == 0) {
+                if (Discard.Count == 0) {
+                    // TODO: Maybe alert the player that is no more have card in his deck.
+
+                    return;
+                }
+                Deck.AddRange(Discard);
+                Discard.Clear();
+                Shuffle();
+            }
+            ICard card = Deck.Last();
+
+            Deck.Remove(card);
+            Hand.Add(card);
+        }
+
+        public void Shuffle()
+        {
+            int           seed = GameManager.Instance.Seed;
+            System.Random rand = new(seed);
+
+            Deck = Deck.OrderBy(card => rand.Next()).ToList();
+        }
+
+        #endregion
+
+            #region Serialization
+
+            public readonly string Serialize()
         {
             string serializedPlayerDeck = string.Empty;
 
@@ -100,5 +133,7 @@ namespace Vermines.Player {
 
             return deck;
         }
+
+        #endregion
     }
 }

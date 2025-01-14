@@ -38,23 +38,6 @@ namespace Vermines {
                     StartGame();
                 return;
             }
-            try {
-                foreach (var player in GameDataStorage.Instance.PlayerData)
-                {
-                    PlayerData data = player.Value;
-                    PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player.Key];
-
-                    Debug.LogWarning($"{player.Key} - {data.Nickname} - {data.IsConnected}");
-                    Debug.LogWarning($"{data.Eloquence} - {data.Souls} - {data.Family}");
-
-                    System.Text.StringBuilder stringBuilder = new();
-
-                    foreach (var card in deck.Deck)
-                        stringBuilder.Append($"{card.ID} ");
-                    Debug.LogWarning(stringBuilder);
-                }
-            }
-            catch (System.Exception) { }
         }
 
         #endregion
@@ -67,6 +50,13 @@ namespace Vermines {
             set { }
         }
 
+        [Networked]
+        public int Seed
+        {
+            get => default;
+            set { }
+        }
+
         public void StartGame()
         {
             if (HasStateAuthority == false)
@@ -74,29 +64,9 @@ namespace Vermines {
             if (_Initializer.Initialize() == -1)
                 return;
             _Initializer.DeckDistribution();
+            _Initializer.StartingDraw();
 
             Start = true;
         }
-
-        /*public void FixedUpdate()
-        {
-            if (!Start)
-                return;
-            try {
-                foreach (var player in GameDataStorage.Instance.PlayerData) {
-                    PlayerData data = player.Value;
-                    PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player.Key];
-
-                    Debug.LogWarning($"{player.Key} - {data.Nickname} - {data.IsConnected}");
-                    Debug.LogWarning($"{data.Eloquence} - {data.Souls} - {data.Family}");
-
-                    System.Text.StringBuilder stringBuilder = new();
-
-                    foreach (var card in deck.Deck)
-                        stringBuilder.Append($"{card.ID} ");
-                    Debug.LogWarning(stringBuilder);
-                }
-            } catch (System.Exception) {}
-        }*/
     }
 }

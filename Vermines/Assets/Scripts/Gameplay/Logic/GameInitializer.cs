@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using OMGG.DesignPattern;
 using Fusion;
+using UnityEngine;
 
 namespace Vermines {
 
     using Vermines.Gameplay.Commands.Internal;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Commands.Deck;
     using Vermines.CardSystem.Utilities;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
@@ -73,20 +75,15 @@ namespace Vermines {
                 decks.Add(player.Key, deck);
             }
 
-            // Serialize the player deck
-            foreach (var player in decks) {
-
-                // Player reference
-                serializedPlayerDeck += player.Key.RawEncoded + ":";
-
-                // Decks serializer
-                serializedPlayerDeck += player.Value.Serialize();
-
-                serializedPlayerDeck += "|";
-            }
-
             // -- RPC Command for sync initialization
-            RPC_InitializeDeck(serializedPlayerDeck);
+            RPC_InitializeDeck(storage.SerializeDeck());
+        }
+
+        public void StartingDraw()
+        {
+            int numberOfCardToDraw = 3; // TODO: Add a GameManager config files for the specific data
+
+            RPC_StartingDraw(numberOfCardToDraw);
         }
 
         #endregion
@@ -108,6 +105,18 @@ namespace Vermines {
             ICommand initializeCommand = new InitializeDeckCommand(data);
 
             CommandInvoker.ExecuteCommand(initializeCommand);
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPC_StartingDraw(int numberOfCardToDraw)
+        {
+            for (int i = 0; i < numberOfCardToDraw; i++) {
+                foreach (var player in GameDataStorage.Instance.PlayerDeck) {
+                    ICommand drawCommand = new DrawCommand(player.Key);
+
+                    CommandInvoker.ExecuteCommand(drawCommand);
+                }
+            }
         }
 
         #endregion

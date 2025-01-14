@@ -50,24 +50,29 @@ namespace Vermines.CardSystem.Data {
             return false;
         }
 
+        public bool CardExist(string id)
+        {
+            if (_Cards == null || _Cards.Count == 0 || string.IsNullOrEmpty(id))
+                return false;
+            foreach (ICard card in _Cards) {
+                if (card.ID.ToString().CompareTo(id) == 0)
+                    return true;
+            }
+            return false;
+        }
+
         public ICard GetCardByID(int id)
         {
-            if (_Cards == null || _Cards.Count == 0)
+            if (!CardExist(id))
                 return null;
-            foreach (ICard card in _Cards)
-                if (card.ID == id)
-                    return card;
-            return null;
+            return _Cards.Find(x => x.ID == id);
         }
 
         public ICard GetCardByID(string id)
         {
-            if (_Cards == null || _Cards.Count == 0)
+            if (!CardExist(id))
                 return null;
-            foreach (ICard card in _Cards)
-                if (card.ID.ToString() == id)
-                    return card;
-            return null;
+            return _Cards.Find(x => x.ID.ToString() == id);
         }
 
         /// <summary>
