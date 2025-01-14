@@ -3,74 +3,118 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using System.Reflection;
 
 #region Vermines CardSystem namespace
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
     using Vermines.CardSystem.Elements;
-using System.Reflection;
 #endregion
 
 namespace Test.Vermines.CardSystem {
 
     public class TestCardSetDatabase {
 
-        private static int NumberOfCardsForTwoPlayers = 112;
-        private static int NumberOfCardsForThreePlayers = 123;
-        private static int NumberOfCardsForFourPlayers = 134;
+        private static int NumberOfCardsForTwoPlayers = 93;
+        private static int NumberOfCardsForThreePlayers = 104;
+        private static int NumberOfCardsForFourPlayers = 115;
+
+        private static int NumberOfStarterCardsForThreePlayers = 15;
 
         [Test]
         public void TwoPlayersSet()
         {
-            List<CardFamily> families = new() {
-                CardFamily.Ladybug,
-                CardFamily.Scarab
-            };
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(2);
 
             CardSetDatabase.Instance.Initialize(families);
 
             Assert.AreEqual(NumberOfCardsForTwoPlayers, CardSetDatabase.Instance.Size);
 
-            Assert.IsTrue(CardSetDatabase.Instance.CardExist(5));
-            Assert.IsNotNull(CardSetDatabase.Instance.GetCardByID(5));
-
-            Assert.IsFalse(CardSetDatabase.Instance.CardExist(5000000));
-            Assert.IsNull(CardSetDatabase.Instance.GetCardByID(5000000));
-
             CardSetDatabase.Instance.Reset();
-
-            Assert.IsFalse(CardSetDatabase.Instance.CardExist(5));
-            Assert.IsNull(CardSetDatabase.Instance.GetCardByID(5));
         }
 
         [Test]
         public void ThreePlayersSet()
         {
-            List<CardFamily> families = new() {
-                CardFamily.Ladybug,
-                CardFamily.Scarab,
-                CardFamily.Fly
-            };
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(3);
 
             CardSetDatabase.Instance.Initialize(families);
 
             Assert.AreEqual(NumberOfCardsForThreePlayers, CardSetDatabase.Instance.Size);
+
+            CardSetDatabase.Instance.Reset();
         }
 
         [Test]
         public void FourPlayersSet()
         {
-            List<CardFamily> families = new() {
-                CardFamily.Ladybug,
-                CardFamily.Scarab,
-                CardFamily.Fly,
-                CardFamily.Cricket
-            };
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(4);
 
             CardSetDatabase.Instance.Initialize(families);
 
             Assert.AreEqual(NumberOfCardsForFourPlayers, CardSetDatabase.Instance.Size);
+
+            CardSetDatabase.Instance.Reset();
+        }
+
+        [Test]
+        public void GetEveryStarterCard()
+        {
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(3);
+
+            CardSetDatabase.Instance.Initialize(families);
+
+            List<ICard> starterCards = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.IsStartingCard == true);
+
+            Assert.AreEqual(NumberOfStarterCardsForThreePlayers, starterCards.Count);
+
+            CardSetDatabase.Instance.Clear();
+        }
+
+        [Test]
+        public void GetCard()
+        {
+            Assert.IsNull(CardSetDatabase.Instance.GetCardByID("5"));
+            Assert.IsNull(CardSetDatabase.Instance.GetCardByID(5));
+
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(3);
+
+            CardSetDatabase.Instance.Initialize(families);
+
+            ICard cardbyIDInt = CardSetDatabase.Instance.GetCardByID(5);
+
+            Assert.IsNotNull(cardbyIDInt);
+            Assert.IsNull(CardSetDatabase.Instance.GetCardByID(5000000));
+
+            ICard cardbyIDString = CardSetDatabase.Instance.GetCardByID("5");
+
+            Assert.IsNotNull(cardbyIDString);
+            Assert.IsNull(CardSetDatabase.Instance.GetCardByID("5000000"));
+
+            CardSetDatabase.Instance.Clear();
+        }
+
+        [Test]
+        public void GetCards()
+        {
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(3);
+
+            CardSetDatabase.Instance.Initialize(families);
+
+            List<ICard> cardbyIDIntArray = CardSetDatabase.Instance.GetCardByIds(new int[] { 5, 6, 7 });
+
+            Assert.AreEqual(3, cardbyIDIntArray.Count);
+            Assert.AreEqual(2, CardSetDatabase.Instance.GetCardByIds(new int[] { 2, 6, 50000000 }).Count);
+            Assert.AreEqual(0, CardSetDatabase.Instance.GetCardByIds(new int[] { -5 }).Count);
+
+            List<ICard> cardbyIDStringArray = CardSetDatabase.Instance.GetCardByIds("5,6,7");
+
+            Assert.AreEqual(3, cardbyIDStringArray.Count);
+            Assert.AreEqual(2, CardSetDatabase.Instance.GetCardByIds("5,6,50000000").Count);
+            Assert.AreEqual(0, CardSetDatabase.Instance.GetCardByIds("     ").Count);
+
+            CardSetDatabase.Instance.Clear();
         }
     }
 
@@ -107,7 +151,7 @@ namespace Test.Vermines.CardSystem {
                 CardBuilder builder = new();
 
                 builder.CreateCard(CardType.None).Build();
-            } catch (System.Exception _) {
+            } catch (System.Exception) {
                 Assert.Pass();
             }
         }
@@ -125,6 +169,8 @@ namespace Test.Vermines.CardSystem {
             CardSetDatabase.Instance.Initialize(families);
 
             ICard card = CardSetDatabase.Instance.GetCardByID(5);
+
+            card.IsAnonyme = true;
 
             Assert.IsNotNull(card);
             Assert.IsNull(card.Data);
@@ -170,6 +216,40 @@ namespace Test.Vermines.CardSystem {
             Assert.AreNotEqual("Archbishop", data.SpriteName);
 
             Assert.IsNull(data.Sprite);
+        }
+    }
+
+    public class TestFamilyCard {
+
+        [Test]
+        public void FamilyListToIds()
+        {
+            int[] ids = { 1, 3, 4, 6 };
+            List<CardFamily> families = FamilyUtils.FamiliesIdsToList(ids);
+
+            Assert.AreEqual(4, families.Count);
+            Assert.AreEqual(CardFamily.Cricket, families[0]);
+            Assert.AreEqual(CardFamily.Fly, families[1]);
+            Assert.AreEqual(CardFamily.Ladybug, families[2]);
+            Assert.AreEqual(CardFamily.Scarab, families[3]);
+        }
+
+        [Test]
+        public void FamiliesIdsToList()
+        {
+            List<CardFamily> families = new() {
+                CardFamily.Cricket,
+                CardFamily.Fly,
+                CardFamily.Ladybug,
+                CardFamily.Scarab
+            };
+            int[] ids = FamilyUtils.FamiliesListToIds(families);
+
+            Assert.AreEqual(4, ids.Length);
+            Assert.AreEqual(1, ids[0]);
+            Assert.AreEqual(3, ids[1]);
+            Assert.AreEqual(4, ids[2]);
+            Assert.AreEqual(6, ids[3]);
         }
     }
 }
