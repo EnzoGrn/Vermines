@@ -174,7 +174,7 @@ namespace Fusion.Menu {
 
       Controller.Show<FusionMenuUILoading>();
 
-      var result = await Connection.ConnectAsync(ConnectionArgs);
+            var result = await Connection.ConnectAsync(ConnectionArgs);
 
       await HandleConnectionResult(result, this.Controller);
     }
