@@ -63,9 +63,13 @@ namespace Vermines.CardSystem.Data {
                     cardData.IsFamilyCard = false;
                 }
 
-                if (cardData.Type == CardType.Partisan && cardData.IsFamilyCard == false) {
-                    // [Tooltip("Family of the card.")]
-                    cardData.Family = (CardFamily)EditorGUILayout.EnumPopup(new GUIContent("Family", "Family of the card."), cardData.Family);
+                if (cardData.Type == CardType.Partisan) {
+                    if (cardData.IsFamilyCard == false) {
+                        // [Tooltip("Family of the card.")]
+                        cardData.Family = (CardFamily)EditorGUILayout.EnumPopup(new GUIContent("Family", "Family of the card."), cardData.Family);
+                    } else {
+                        cardData.Family = CardFamily.None;
+                    }
 
                     if (cardData.IsStartingCard == false) {
                         // [Tooltip("Level of the card, only available for partisan cards.")]
@@ -75,7 +79,7 @@ namespace Vermines.CardSystem.Data {
                         cardData.Level = 0;
                 } else {
                     cardData.Family = CardFamily.None;
-                    cardData.Level = 0;
+                    cardData.Level  = 0;
                 }
 
                 GUILayout.EndVertical();
@@ -113,7 +117,7 @@ namespace Vermines.CardSystem.Data {
             GUILayout.BeginVertical(EditorStyles.helpBox);
 
             if (cardData.IsFamilyCard == false) {
-                DrawSpritePreview(cardData.Sprite);
+                DrawSpritePreview(cardData.Sprite, cardData.Type, cardData.Family);
 
                 // [Tooltip("The visual representation of the card. (Character, object, etc.)")]
                 cardData.Sprite     = (Sprite)EditorGUILayout.ObjectField(new GUIContent("Card Visual", "The visual representation of the card. (Character, object, etc.)"), cardData.Sprite, typeof(Sprite), false);
@@ -168,28 +172,38 @@ namespace Vermines.CardSystem.Data {
             return description;
         }
 
-        private void DrawSpritePreview(Sprite sprite)
+        private void DrawSpritePreview(Sprite sprite, CardType type, CardFamily family)
         {
             if (sprite == null) {
                 EditorGUILayout.HelpBox("No preview available\nDrag and drop a sprite on the bottom-right box", MessageType.Info);
             } else {
-                Texture2D texture = AssetPreview.GetAssetPreview(sprite);
+                Texture2D background = AssetPreview.GetAssetPreview(GetBackground(type, family));
+                Texture2D texture    = AssetPreview.GetAssetPreview(sprite);
 
                 GUILayout.BeginVertical(EditorStyles.helpBox);
                 GUILayout.Label("Card Visual Preview", EditorStyles.boldLabel);
 
-                if (texture != null) {
-                    float previewSize = 100f;
+                float previewWidth  = 102.40f;
+                float previewHeight = 177.15f;
 
-                    GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Label(texture, GUILayout.Width(previewSize), GUILayout.Height(previewSize));
-                    GUILayout.FlexibleSpace();
-                    GUILayout.EndHorizontal();
-                } else {
-                    GUILayout.Label("No Preview Available");
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+
+                Rect previewRect = GUILayoutUtility.GetRect(previewWidth, previewHeight);
+
+                if (background != null)
+                    GUI.DrawTexture(previewRect, background, ScaleMode.ScaleToFit);
+                if (texture != null) {
+                    float textureWidth  = previewWidth  * 0.6f; // 60% scale 
+                    float textureHeight = previewHeight * 0.6f; // 60% scale
+
+                    Rect textureRect = new(previewRect.x + (previewRect.width - textureWidth) / 2, previewRect.y + (previewRect.height - textureHeight) / 2, textureWidth, textureHeight);
+
+                    GUI.DrawTexture(textureRect, texture, ScaleMode.ScaleToFit, true, 0, Color.white, 0, 0);
                 }
 
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
                 GUILayout.EndVertical();
             }
         }
@@ -205,7 +219,7 @@ namespace Vermines.CardSystem.Data {
                 foreach (CardFamily family in System.Enum.GetValues(typeof(CardFamily))) {
                     if (family == CardFamily.None || family == CardFamily.Count)
                         continue;
-                    string   folderPath  = $"Assets/Resources/Sprites/Card/{family.ToString()}";
+                    string   folderPath  = $"Assets/Resources/Sprites/Card/{family}";
                     string[] spritePaths = Directory.GetFiles(folderPath, "*.png", SearchOption.AllDirectories);
 
                     foreach (string path in spritePaths) {
@@ -217,7 +231,7 @@ namespace Vermines.CardSystem.Data {
                             GUILayout.Space(10);
                             GUILayout.Label($"Family: {family}", EditorStyles.boldLabel);
 
-                            DrawSpritePreview(sprite);
+                            DrawSpritePreview(sprite, CardType.Partisan, family);
 
                             break;
                         }
@@ -226,6 +240,30 @@ namespace Vermines.CardSystem.Data {
 
                 GUILayout.EndVertical();
             }
+        }
+
+        private Sprite GetBackground(CardType type, CardFamily family)
+        {
+            string     folderPath = $"Assets/Resources/Sprites/Card/";
+            const string fileName = "Background.png";
+            Sprite background;
+
+            if (type == CardType.Equipment || type == CardType.Tools) {
+                folderPath += $"{type}";
+            } else if (type == CardType.Partisan) {
+                if (family == CardFamily.None)
+                    return null;
+                folderPath += $"{family}";
+            } else {
+                return null;
+            }
+            string[] sprites = Directory.GetFiles(folderPath, fileName, SearchOption.AllDirectories);
+
+            if (sprites == null)
+                return null;
+            background = AssetDatabase.LoadAssetAtPath<Sprite>(sprites[0]);
+
+            return background;
         }
     }
 }
