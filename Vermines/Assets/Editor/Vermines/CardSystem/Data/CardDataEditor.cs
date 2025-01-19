@@ -177,7 +177,8 @@ namespace Vermines.CardSystem.Data {
             if (sprite == null) {
                 EditorGUILayout.HelpBox("No preview available\nDrag and drop a sprite on the bottom-right box", MessageType.Info);
             } else {
-                Texture2D background = AssetPreview.GetAssetPreview(GetBackground(type, family));
+                Texture2D background = AssetPreview.GetAssetPreview(GetDefaultSprite(type, family, "Background.png"));
+                Texture2D icon = AssetPreview.GetAssetPreview(GetDefaultSprite(type, family, "Icon.png"));
                 Texture2D texture    = AssetPreview.GetAssetPreview(sprite);
 
                 GUILayout.BeginVertical(EditorStyles.helpBox);
@@ -200,6 +201,14 @@ namespace Vermines.CardSystem.Data {
                     Rect textureRect = new(previewRect.x + (previewRect.width - textureWidth) / 2, previewRect.y + (previewRect.height - textureHeight) / 2, textureWidth, textureHeight);
 
                     GUI.DrawTexture(textureRect, texture, ScaleMode.ScaleToFit, true, 0, Color.white, 0, 0);
+                }
+                if (icon != null) {
+                    float iconWidth = previewWidth * 0.2f; // 20% scale
+                    float iconHeight = previewHeight * 0.2f; // 20% scale
+
+                    Rect iconRect = new(previewRect.x + 5, previewRect.y + 35, iconWidth, iconHeight);
+
+                    GUI.DrawTexture(iconRect, icon, ScaleMode.ScaleToFit, true, 0, Color.white, 0, 0);
                 }
 
                 GUILayout.FlexibleSpace();
@@ -242,10 +251,9 @@ namespace Vermines.CardSystem.Data {
             }
         }
 
-        private Sprite GetBackground(CardType type, CardFamily family)
+        private Sprite GetDefaultSprite(CardType type, CardFamily family, string spriteWanted)
         {
-            string     folderPath = $"Assets/Resources/Sprites/Card/";
-            const string fileName = "Background.png";
+            string folderPath = $"Assets/Resources/Sprites/Card/";
             Sprite background;
 
             if (type == CardType.Equipment || type == CardType.Tools) {
@@ -257,7 +265,7 @@ namespace Vermines.CardSystem.Data {
             } else {
                 return null;
             }
-            string[] sprites = Directory.GetFiles(folderPath, fileName, SearchOption.AllDirectories);
+            string[] sprites = Directory.GetFiles(folderPath, spriteWanted, SearchOption.AllDirectories);
 
             if (sprites == null)
                 return null;
