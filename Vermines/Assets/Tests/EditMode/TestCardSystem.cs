@@ -16,9 +16,9 @@ namespace Test.Vermines.CardSystem {
 
     public class TestCardSetDatabase {
 
-        private static int NumberOfCardsForTwoPlayers = 93;
-        private static int NumberOfCardsForThreePlayers = 104;
-        private static int NumberOfCardsForFourPlayers = 115;
+        private static int NumberOfCardsForTwoPlayers = 91;
+        private static int NumberOfCardsForThreePlayers = 102;
+        private static int NumberOfCardsForFourPlayers = 113;
 
         private static int NumberOfStarterCardsForThreePlayers = 15;
 
