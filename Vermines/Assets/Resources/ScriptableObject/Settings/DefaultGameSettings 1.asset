@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8066587305ca645a51cf1d7688d5ba, type: 3}
+  m_Name: DefaultGameSettings 1
+  m_EditorClassIdentifier: 
+  MaxPlayers: 4
+  MinPlayers: 2
+  IsRoundBased: 0
+  MaxRounds: 100
+  MaxTurnTime: 300
+  NumberOfCardsToStartWith: 3
+  IsMaxCardsPerPlayerInHandBased: 0
+  MaxCardsPerPlayerInHand: 25
+  NumberOfCardsToDrawPerTurn: 1
+  IsMaxCardsNumberBased: 0
+  MaxCardsNumber: 25
+  MaxEloquence: 50
+  EloquenceToStartWith: 0
+  NumberOfEloquencesToStartTheTurnWith: 2
+  MaxSoulsToWin: 100
+  SoulsToStartWith: 0
+  MaxCardsToPlay: 3
+  MaxCardsToPlayPerTurn: 3
+  MaxPlayerEquipementCards: 3
+  MaxSacrificesPerTurn: 2
+  MaxMarketCards: 5
+  AllowMarketReshuffle: 0
+  MaxCourtyardCards: 5
+  AllowCourtyardReshuffle: 0
+  DebugMode: 0
+  RandomSeed: 0

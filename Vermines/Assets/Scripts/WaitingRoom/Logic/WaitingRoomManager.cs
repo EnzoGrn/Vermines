@@ -19,6 +19,7 @@ namespace Vermines
         [SerializeField] private WaitingRoomUiHandler WaitingRoomUIHandler;
         [SerializeField] private Button _StartButton;
         [SerializeField] private TMPro.TextMeshProUGUI _StatusText;
+        [SerializeField] private GameObject _GameSettings;
 
         [Header("Events")]
         public FusionEvent OnShutdownEvent;
@@ -26,6 +27,9 @@ namespace Vermines
         public FusionEvent OnPlayerLeftEvent;
         public FusionEvent OnPlayerJoinnedEvent;
         public FusionEvent OnHostMigrationEvent;
+
+        [Header("Game Settings")]
+        [SerializeField] private GameSettings _GameSettingsData;
 
         [Header("Network Variable")]
         [Networked, Capacity(10)] public NetworkDictionary<PlayerRef, WaitingRoomPlayerData> Players { get; }
@@ -52,11 +56,13 @@ namespace Vermines
             {
                 _StatusText.gameObject.SetActive(false);
                 _StartButton.gameObject.SetActive(true);
+                _GameSettings.gameObject.SetActive(true);
             }
             else
             {
                 _StatusText.gameObject.SetActive(true);
                 _StartButton.gameObject.SetActive(false);
+                _GameSettings.gameObject.SetActive(false);
             }
         }
 
@@ -94,6 +100,8 @@ namespace Vermines
                     IsHost = (networkRunner.LocalPlayer == player)
                 };
                 Players.Set(player, playerData);
+
+                UpdateStartButtonState();
             }
 
             // Update list
@@ -116,6 +124,8 @@ namespace Vermines
                 {
                     Debug.Log("---------> Player: " + activePlayers.PlayerId + " is active.");
                 }
+
+                UpdateStartButtonState();
             }
 
             if (player == networkRunner.LocalPlayer)
@@ -218,6 +228,41 @@ namespace Vermines
             //}
 
             SceneManager.LoadScene("StartUp");
+        }
+
+        private void UpdateStartButtonState()
+        {
+            if (Runner.IsServer)
+            {
+                _StartButton.interactable = (Players.Count >= _GameSettingsData.MinPlayers && Players.Count <= _GameSettingsData.MaxPlayers);
+            }
+        }
+
+        private void KickLastPlayerJoinned()
+        {
+            int numberOfPlayersToKick = Players.Count - _GameSettingsData.MaxPlayers;
+
+            for (int i = 0; i < numberOfPlayersToKick; i++)
+            {
+                PlayerRef playerToKick = Players.Last().Key;
+                Debug.Log($"Kicking player {playerToKick} due to settings");
+                Runner.Disconnect(playerToKick);
+            }
+        }
+
+        // TODO : Implement this method to update the UI when the game settings change
+        public void OnGameSettingsChangeUpdateUI()
+        {
+            // Update UI
+            if (Runner.IsServer)
+            {
+                UpdateStartButtonState();
+            
+                if (Players.Count > _GameSettingsData.MaxPlayers)
+                {
+                    KickLastPlayerJoinned();
+                }
+            }
         }
 
         private void OnDisconnect(PlayerRef player, NetworkRunner runner)
