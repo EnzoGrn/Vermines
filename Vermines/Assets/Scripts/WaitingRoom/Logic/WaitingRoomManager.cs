@@ -173,6 +173,13 @@ namespace Vermines
         public void LeaveWaitingRoom()
         {
             _ = LeaveWaitingRoomAsync();
+
+            //if (Runner != null)
+            //{
+            //    Runner.Shutdown();
+            //}
+
+            SceneManager.LoadScene("Startup");
         }
 
         private async Task LeaveWaitingRoomAsync()

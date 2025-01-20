@@ -338,7 +338,7 @@ namespace Vermines {
                 }
                 else
                 {
-                    //Debug.Log("Network Runner OnShutdown: " + shutdownReason);
+                    Debug.Log("Network Runner OnShutdown: " + shutdownReason);
                     //// Raise the shutdown event
                     //Controller.OnGameStopped();
                     //Controller.Show<FusionMenuUIMain>();
