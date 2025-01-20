@@ -17,7 +17,7 @@ namespace Vermines {
 
         #region Methods
 
-        public int Initialize()
+        public int Initialize(int seed, int startingEloquence)
         {
             GameDataStorage storage = GameDataStorage.Instance;
             int      numberOfPlayer = storage.PlayerData.Count;
@@ -26,7 +26,7 @@ namespace Vermines {
             // For now just check if the number of player is 2 or more.
             if (numberOfPlayer < 2)
                 return -1;
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(numberOfPlayer);
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(seed, numberOfPlayer);
 
             // -- Player Initialization
             int orderIndex = 0;
@@ -34,25 +34,20 @@ namespace Vermines {
             foreach (var player in storage.PlayerData) {
                 PlayerData data = player.Value;
 
-                data.Family = families[orderIndex];
-
-                if (orderIndex == 0)
-                    data.Eloquence = 0;
-                else if (orderIndex == 1)
-                    data.Eloquence = 1;
-                else
-                    data.Eloquence = 2;
-                orderIndex++;
+                data.Family    = families[orderIndex];
+                data.Eloquence = GiveEloquence(orderIndex, startingEloquence);
 
                 storage.PlayerData.Set(player.Key, data);
+
+                orderIndex++;
             }
 
-            RPC_InitializeGame(FamilyUtils.FamiliesListToIds(families));
+            RPC_InitializeGame(seed, FamilyUtils.FamiliesListToIds(families));
 
             return 0;
         }
 
-        public void DeckDistribution()
+        public void DeckDistribution(System.Random rand)
         {
             GameDataStorage     storage = GameDataStorage.Instance;
             List<ICard>    starterCards = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.IsStartingCard == true);
@@ -60,7 +55,6 @@ namespace Vermines {
             string serializedPlayerDeck = string.Empty;
 
             Dictionary<PlayerRef, PlayerDeck> decks = new();
-            System.Random rand = new();
 
             foreach (var player in storage.PlayerData) {
                 PlayerDeck deck = new(starterDeckLength);
@@ -79,11 +73,19 @@ namespace Vermines {
             RPC_InitializeDeck(storage.SerializeDeck());
         }
 
-        public void StartingDraw()
+        public void StartingDraw(int numberOfCardToDraw)
         {
-            int numberOfCardToDraw = 3; // TODO: Add a GameManager config files for the specific data
-
             RPC_StartingDraw(numberOfCardToDraw);
+        }
+
+        private int GiveEloquence(int index, int startingEloquence)
+        {
+            return startingEloquence + Mathf.Min(index, 2);
+        }
+
+        private void SetGameSeed(int seed)
+        {
+            GameManager.Instance.Config.Seed = seed;
         }
 
         #endregion
@@ -91,8 +93,10 @@ namespace Vermines {
         #region Commands
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPC_InitializeGame(int[] familiesIds)
+        private void RPC_InitializeGame(int seed, int[] familiesIds)
         {
+            SetGameSeed(seed);
+
             List<CardFamily> familiesList = FamilyUtils.FamiliesIdsToList(familiesIds);
             ICommand    initializeCommand = new InitializeGameCommand(familiesList);
 
