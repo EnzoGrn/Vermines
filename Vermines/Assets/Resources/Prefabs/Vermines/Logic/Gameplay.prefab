@@ -47,9 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9bea19bb8aca68438adb65b634cef9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerPrefabs: {fileID: 2811704706866188713, guid: 77e3c923454ef14488263767a46202ab, type: 3}
   _Initializer: {fileID: 6441156129286385912}
-  Storage: {fileID: 1249932418643325045}
+  Config: {fileID: 11400000, guid: 5f08fb16073037943b19151cbb6a4c0c, type: 2}
+  _Start: 0
+  _Seed: 0
 --- !u!114 &1249932418643325045
 MonoBehaviour:
   m_ObjectHideFlags: 0

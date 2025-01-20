@@ -25,6 +25,8 @@ namespace Vermines.Gameplay.Commands.Deck {
             _OldDeck = deck;
 
             deck.Draw();
+
+            GameDataStorage.Instance.PlayerDeck[_Player] = deck;
         }
 
         public void Undo()

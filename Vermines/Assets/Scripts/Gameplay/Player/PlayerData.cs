@@ -80,8 +80,7 @@ namespace Vermines.Player {
 
         public void Shuffle()
         {
-            int           seed = GameManager.Instance.Seed;
-            System.Random rand = new(seed);
+            System.Random rand = GameManager.Instance.Config.Rand;
 
             Deck = Deck.OrderBy(card => rand.Next()).ToList();
         }

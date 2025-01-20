@@ -21,10 +21,9 @@ namespace Vermines.CardSystem.Utilities {
             return families;
         }
 
-        static public List<CardFamily> GenerateFamilies(int numberOfPlayer)
+        static public List<CardFamily> GenerateFamilies(int seed, int numberOfPlayer)
         {
-            System.Random random = new();
-
+            System.Random random = new(seed);
             List<CardFamily> availableFamilies = new() {
                 CardFamily.Ladybug,
                 CardFamily.Scarab,

@@ -16,6 +16,8 @@ namespace Test.Vermines.CardSystem {
 
     public class TestCardSetDatabase {
 
+        private static int Seed = 123456789;
+
         private static int NumberOfCardsForTwoPlayers = 91;
         private static int NumberOfCardsForThreePlayers = 102;
         private static int NumberOfCardsForFourPlayers = 113;
@@ -25,7 +27,7 @@ namespace Test.Vermines.CardSystem {
         [Test]
         public void TwoPlayersSet()
         {
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(2);
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 2);
 
             CardSetDatabase.Instance.Initialize(families);
 
@@ -37,7 +39,7 @@ namespace Test.Vermines.CardSystem {
         [Test]
         public void ThreePlayersSet()
         {
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(3);
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 3);
 
             CardSetDatabase.Instance.Initialize(families);
 
@@ -49,7 +51,7 @@ namespace Test.Vermines.CardSystem {
         [Test]
         public void FourPlayersSet()
         {
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(4);
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 4);
 
             CardSetDatabase.Instance.Initialize(families);
 
@@ -61,7 +63,7 @@ namespace Test.Vermines.CardSystem {
         [Test]
         public void GetEveryStarterCard()
         {
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(3);
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 3);
 
             CardSetDatabase.Instance.Initialize(families);
 
@@ -78,7 +80,7 @@ namespace Test.Vermines.CardSystem {
             Assert.IsNull(CardSetDatabase.Instance.GetCardByID("5"));
             Assert.IsNull(CardSetDatabase.Instance.GetCardByID(5));
 
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(3);
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 3);
 
             CardSetDatabase.Instance.Initialize(families);
 
@@ -98,7 +100,7 @@ namespace Test.Vermines.CardSystem {
         [Test]
         public void GetCards()
         {
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(3);
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 3);
 
             CardSetDatabase.Instance.Initialize(families);
 

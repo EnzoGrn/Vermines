@@ -4,7 +4,7 @@ using Fusion;
 
 namespace Vermines {
 
-    using Vermines.Player;
+    using Vermines.Config;
 
     public class GameManager : NetworkBehaviour {
 
@@ -18,6 +18,20 @@ namespace Vermines {
         #region Singleton
 
         public static GameManager Instance => NetworkSingleton<GameManager>.Instance;
+
+        #endregion
+
+        #region Game Rules
+
+        public GameConfig Config;
+
+        public void SetNewConfiguration(GameConfig newConfig)
+        {
+            // -- Check if the game is already started
+            if (Start)
+                return;
+            Config = newConfig;
+        }
 
         #endregion
 
@@ -50,21 +64,16 @@ namespace Vermines {
             set { }
         }
 
-        [Networked]
-        public int Seed
-        {
-            get => default;
-            set { }
-        }
-
         public void StartGame()
         {
             if (HasStateAuthority == false)
                 return;
-            if (_Initializer.Initialize() == -1)
+            Config.Seed = Random.Range(0, int.MaxValue);
+
+            if (_Initializer.Initialize(Config.Seed, Config.FirstEloquence) == -1)
                 return;
-            _Initializer.DeckDistribution();
-            _Initializer.StartingDraw();
+            _Initializer.DeckDistribution(Config.Rand);
+            _Initializer.StartingDraw(Config.FirstDraw);
 
             Start = true;
         }
