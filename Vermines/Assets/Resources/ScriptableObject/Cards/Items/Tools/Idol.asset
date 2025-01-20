@@ -17,7 +17,6 @@ MonoBehaviour:
     turn.
   Exemplars: 5
   IsStartingCard: 0
-  IsFamilyCard: 0
   Type: 2
+  IsFamilyCard: 0
   Eloquence: 5
-  Sprite: {fileID: 0}

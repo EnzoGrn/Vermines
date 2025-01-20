@@ -16,7 +16,6 @@ MonoBehaviour:
   Description: Earn <b><color=purple>1E</color></b>.
   Exemplars: 5
   IsStartingCard: 0
-  IsFamilyCard: 0
   Type: 1
+  IsFamilyCard: 0
   Eloquence: 3
-  Sprite: {fileID: 0}
