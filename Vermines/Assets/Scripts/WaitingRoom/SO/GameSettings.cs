@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines
@@ -5,101 +6,82 @@ namespace Vermines
     /// <summary>
     /// Game Settings.
     /// 
-    /// Round : A round is a full game played by all players
-    /// Turn : A turn is a full player's actions cycle (sacrifice, toggle card effect, draw card, etc.)
+    /// Contains all the settings for the game.
     /// 
-    /// TODO: Adjust Restictions for settings
-    /// - MaxPlayers: 2-4
-    /// - MaxRounds: 1-100
-    /// - MaxTurnTime: 60-300
-    /// - NumberOfCardsToStartWith: 1-20
-    /// - MaxCardsPerPlayerInHand: NumberOfCardsToStartWith-25 // (Optional)
-    /// - NumberOfCardsToDrawPerTurn: 1-5
-    /// - MaxCardsNumber: NumberOfCardsToStartWith-25 // (Optional)
-    /// - MaxEloquence: 1-50
-    /// - EloquenceToStartWith: 0-MaxEloquence
-    /// - NumberOfEloquencesToStartTheTurnWith: 0-MaxEloquence
-    /// - MaxAmesToWin: 1-200
-    /// - AmesToStartWith: 0-MaxAmesToWin
-    /// - MaxCardsToPlay: 1-3
-    /// - MaxCardsToPlayPerTurn: 1-MaxCardsToPlay
-    /// - MaxPlayerEquipementCards: 1-3
-    /// - MaxSacrificesPerTurn: 1-MaxCardsToPlay
-    /// - MaxMarketCards: 1-5
-    /// - MaxCourtyardCards: 1-5
+    /// For now settings must be grouped by category.
     /// 
     /// </summary>
-    [CreateAssetMenu(menuName = "Vermines/Settings/GameSettings")]
+    [CreateAssetMenu(menuName = "Vermines/Settings/GameSetting")]
     public class GameSettings : ScriptableObject
     {
-        [Header("Player Settings")]
+        // Player Settings
         [Tooltip("Maximum number of players allowed in the game.")]
-        public int MaxPlayers = 4;
+        public IntSetting MaxPlayers = new("Max Players", 4, 2, 4, "Player Settings");
         [Tooltip("Minimum number of players required to start the game.")]
-        public int MinPlayers = 2;
+        public IntSetting MinPlayers = new("Min Players", 2, 2, 4, "Player Settings");
 
-        [Header("Game Flow")]
-        public bool IsRoundBased;
+        // Game Flow Settings
+        public BoolSetting IsRoundBased = new BoolSetting("Is Round Based", false, "Game Flow Settings");
         [Tooltip("Maximum number of rounds per game.")]
-        public int MaxRounds = 15;
+        public IntSetting MaxRounds = new IntSetting("Max Rounds", 15, 1, 100, "Game Flow Settings");
         [Tooltip("Time (in seconds) allowed per player's turn.")]
-        public int MaxTurnTime = 300;
+        public IntSetting MaxTurnTime = new IntSetting("Max Turn Time", 120, 60, 300, "Game Flow Settings");
 
-        [Header("Hand Settings")]
+        // Hand Settings
         [Tooltip("Number of cards each player starts with in their hand.")]
-        public int NumberOfCardsToStartWith = 1;
+        public IntSetting NumberOfCardsToStartWith = new IntSetting("Number Of Cards To Start With", 3, 1, 5, "Hand Settings");
         [Tooltip("Toggle whether to enforce a maximum number of cards per player in hand.")]
-        public bool IsMaxCardsPerPlayerInHandBased = false;
+        public BoolSetting IsMaxCardsPerPlayerInHandBased = new BoolSetting("Is Max Cards Per Player In Hand Based", false, "Hand Settings");
         [Tooltip("Maximum number of cards a player can hold in their hand.")]
-        public int MaxCardsPerPlayerInHand = 10;
+        public IntSetting MaxCardsPerPlayerInHand = new IntSetting("Max Cards Per Player In Hand", 10, 5, 25, "Hand Settings");
 
-        [Header("Deck Settings")]
+        // Deck Settings
         [Tooltip("Number of cards drawn per turn.")]
-        public int NumberOfCardsToDrawPerTurn = 1;
+        public IntSetting NumberOfCardsToDrawPerTurn = new IntSetting("Number Of Cards To Draw Per Turn", 1, 1, 5, "Deck Settings");
         [Tooltip("Toggle whether to enforce a maximum number of cards per player.")]
-        public bool IsMaxCardsNumberBased = false;
+        public BoolSetting IsMaxCardsNumberBased = new BoolSetting("Is Max Cards Number Based", false, "Deck Settings");
         [Tooltip("Maximum number of cards a player can hold in their deck.")]
-        public int MaxCardsNumber = 25;
+        public IntSetting MaxCardsNumber = new IntSetting("Max Cards Number", 20, 10, 25, "Deck Settings");
 
-        [Header("General Game Rules")]
+        // Game Rules Settings
         [Tooltip("Maximum amount of eloquence a player can have.")]
-        public int MaxEloquence = 20;
+        public IntSetting MaxEloquence = new IntSetting("Max Eloquence", 20, 1, 50, "Game Rules Settings");
         [Tooltip("Initial eloquence for each player at the start of the game.")]
-        public int EloquenceToStartWith = 0;
+        public IntSetting EloquenceToStartWith = new IntSetting("Eloquence To Start With", 0, 0, 100, "Game Rules Settings");
         [Tooltip("Amount of eloquence a player receives at the start of each turn.")]
-        public int NumberOfEloquencesToStartTheTurnWith = 2;
+        public IntSetting NumberOfEloquencesToStartTheTurnWith = new IntSetting("Number Of Eloquences To Start The Turn With", 2, 1, 100, "Game Rules Settings");
 
         [Tooltip("Maximum number of souls needed to win.")]
-        public int MaxSoulsToWin = 100;
+        public IntSetting MaxSoulsToWin = new IntSetting("Max Souls To Win", 100, 1, 100, "Game Rules Settings");
         [Tooltip("Initial number of souls each player starts with.")]
-        public int SoulsToStartWith = 0;
+        public IntSetting SoulsToStartWith = new IntSetting("Souls To Start With", 0, 0, 100, "Game Rules Settings");
 
-        [Header("Card To Play Settings")]
-        public int MaxCardsToPlay = 3;
-        public int MaxCardsToPlayPerTurn = 3;
-        public int MaxPlayerEquipementCards = 3;
+        // Cards Settings
+        public IntSetting MaxCardsToPlay = new IntSetting("Max Cards To Play", 3, 1, 3, "Cards Settings");
+        public IntSetting MaxCardsToPlayPerTurn = new IntSetting("Max Cards To Play Per Turn", 3, 1, 3, "Cards Settings");
+        public IntSetting MaxPlayerEquipementCards = new IntSetting("Max Player Equipement Cards", 3, 1, 3, "Cards Settings");
 
-        [Header("Sacrifice Settings")]
+        // Sacrifice Settings
         [Tooltip("Maximum number of followers a player can sacrifice per turn.")]
-        public int MaxSacrificesPerTurn = 2;
+        public IntSetting MaxSacrificesPerTurn = new IntSetting("Max Sacrifices Per Turn", 2, 1, 3, "Sacrifice Settings");
 
-        [Header("Market Settings")]
+        // Market Settings
         [Tooltip("Number of cards to replenish in the market at the end of a turn.")]
-        public int MaxMarketCards = 5;
+        public IntSetting MaxMarketCards = new IntSetting("Max Market Cards", 5, 1, 5, "Market Settings");
         [Tooltip("Indicates whether the market deck reshuffles when exhausted.")]
-        public bool AllowMarketReshuffle = true;
+        public BoolSetting AllowMarketReshuffle = new BoolSetting("Allow Market Reshuffle", false, "Market Settings");
 
-        [Header("Courtyard  Settings")]
+        // Courtyard  Settings
         [Tooltip("Number of equipment cards a player can attach to their cultist.")]
-        public int MaxCourtyardCards = 5;
+        public IntSetting MaxCourtyardCards = new IntSetting("Max Courtyard Cards", 5, 1, 5, "Courtyard  Settings");
         [Tooltip("The cost of reshuffling the deck if required (optional balance setting).")]
-        public bool AllowCourtyardReshuffle = true;
+        public BoolSetting AllowCourtyardReshuffle = new BoolSetting("Allow Market Reshuffle", true, "Courtyard  Settings");
 
-        [Header("Advanced Settings")]
+        // Advanced Settings
         [Tooltip("Enable debug mode for additional logs and testing features.")]
-        public bool DebugMode = false;
+        public BoolSetting DebugMode = new BoolSetting("Debug Mode", false, "Advanced Settings");
         [Tooltip("Seed for random number generation (set to 0 for random seed).")]
-        public int RandomSeed = 0;
+        public IntSetting RandomSeed = new IntSetting("Random Seed", 0, 0, 1, "Advanced Settings");
     }
 }
 

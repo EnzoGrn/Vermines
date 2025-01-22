@@ -234,13 +234,13 @@ namespace Vermines
         {
             if (Runner.IsServer)
             {
-                _StartButton.interactable = (Players.Count >= _GameSettingsData.MinPlayers && Players.Count <= _GameSettingsData.MaxPlayers);
+                _StartButton.interactable = (Players.Count >= _GameSettingsData.MinPlayers.Value && Players.Count <= _GameSettingsData.MaxPlayers.Value);
             }
         }
 
         private void KickLastPlayerJoinned()
         {
-            int numberOfPlayersToKick = Players.Count - _GameSettingsData.MaxPlayers;
+            int numberOfPlayersToKick = Players.Count - _GameSettingsData.MaxPlayers.Value;
 
             for (int i = 0; i < numberOfPlayersToKick; i++)
             {
@@ -250,16 +250,29 @@ namespace Vermines
             }
         }
 
+        private void UpdateRoomPlayerLimit()
+        {
+            // Change the room player limit of fusion room
+            if (Runner.IsServer)
+            {
+                // TODO: Implement this
+            }
+        }
+
         // TODO : Implement this method to update the UI when the game settings change
         public void OnGameSettingsChangeUpdateUI()
         {
             // Update UI
             if (Runner.IsServer)
             {
+                Debug.Log("WaitingRoomManager OnGameSettingsChangeUpdateUI.");
+
+                UpdateRoomPlayerLimit();
                 UpdateStartButtonState();
-            
-                if (Players.Count > _GameSettingsData.MaxPlayers)
+
+                if (Players.Count > _GameSettingsData.MaxPlayers.Value)
                 {
+                    Debug.Log("WaitingRoomManager OnGameSettingsChangeUpdateUI. Kicking last player joined.");
                     KickLastPlayerJoinned();
                 }
             }
