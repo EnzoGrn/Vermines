@@ -17,11 +17,6 @@ using UnityEngine;
         [SerializeField, HideInInspector] public string Category;
         [SerializeField, HideInInspector] public string Name;
 
-        [SerializeField, HideInInspector] public string ErrorMessage;
-
-        //[SerializeField] public object Value;
-
-        public virtual void SetUpErrorMessage() {}
         public abstract void RestrictionCheck<T>(T Value);
 
 }

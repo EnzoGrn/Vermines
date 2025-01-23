@@ -19,13 +19,8 @@ public class BoolSetting : ASetting
     {
         if (Value is not bool)
         {
-            throw new System.Exception("Value may be wrong.");
+            throw new System.Exception($"Value of {Name} must be a boolean");
         }
-    }
-
-    public override void SetUpErrorMessage()
-    {
-        ErrorMessage = $"Value of {Name} must be a boolean";
     }
 }
 

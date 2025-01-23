@@ -29,12 +29,6 @@ namespace Vermines
         [SerializeField] private GameSettings _GameSettings;
         [SerializeField] private GameSettings _DefaultGameSettings;
 
-        // TODO : Change the way to handle the GameSettings scriptable object
-        // Create a specific Object with a type a default value and some restrictions to loop over the fields instead of hardcoding them
-        // Also Load them dinamically from the GameSettings scriptable object instead of placing them in the scene
-        // Also add a way to add some spaces between some fields to avoid block and display settings as categories
-        // Faire des input fiels dynamiques en fonction des settings
-
         private Dictionary<string, GameObject> _InputFields;
         private Dictionary<string, List<ASetting>> _SettingsByCategory;
         private Dictionary<string, List<ASetting>> _DefaultSettingsByCategory;
@@ -202,7 +196,6 @@ namespace Vermines
             }
             catch (System.Exception e)
             {
-                Debug.Log("------------------------------------------------------");
                 _InfoStateGameSettings.text = e.Message;
                 _InfoStateGameSettings.color = Color.red;
             }
@@ -251,8 +244,6 @@ namespace Vermines
         private void ApplyChangesToGameSettings()
         {
             // To Apply Changes I need to loop over the ui elements and update the dictionary
-            Debug.Log("Apply Changes to Game Settings");
-
             foreach (List<ASetting> settingsList in _SettingsByCategory.Values)
             {
                 foreach (ASetting setting in settingsList)

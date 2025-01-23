@@ -30,7 +30,6 @@ namespace Vermines
             }
             catch (System.Exception e)
             {
-                // Debug.LogError(e.Message);
                 intSetting.Value = EditorGUILayout.IntField(intSetting.Name, (int)intSetting.Value);
                 EditorGUILayout.HelpBox(e.Message, MessageType.Error);
             }

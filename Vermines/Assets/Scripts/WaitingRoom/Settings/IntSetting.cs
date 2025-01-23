@@ -10,7 +10,6 @@ public class IntSetting : ASetting
 
     public IntSetting(string name, int value, int minValue, int maxValue, string category)
     {
-        //name = nameuh;
         Name = name;
         Value = value;
         MinValue = minValue;
@@ -18,16 +17,13 @@ public class IntSetting : ASetting
         Category = category;
 
         Type = SettingType.Int;
-
-        ErrorMessage = $"Value of {Name} must be between {MinValue} and {MaxValue}";
     }
 
     public void RestrictionCheck(int value)
     {
-        Debug.Log("Restriction check for int setting Min : " + MinValue + ", Value : " + value + ", Max Value : " + MaxValue);
         if (value < MinValue || value > MaxValue)
         {
-            throw new System.Exception(ErrorMessage);
+            throw new System.Exception($"Value of {Name} must be between {MinValue} and {MaxValue}");
         }
         else if (MinValue > MaxValue)
         {
@@ -45,20 +41,14 @@ public class IntSetting : ASetting
 
         int intValue = (int)(object)value;
 
-        Debug.Log("Restriction check for int setting Min : " + MinValue + ", Value : " + intValue + ", Max Value : " + MaxValue);
         if (intValue < MinValue || intValue > MaxValue)
         {
-            throw new System.Exception(ErrorMessage);
+            throw new System.Exception($"Value of {Name} must be between {MinValue} and {MaxValue}");
         }
         else if (MinValue > MaxValue)
         {
             throw new System.Exception("Min value cannot be greater than max value");
         }
-    }
-
-    public override void SetUpErrorMessage()
-    {
-        ErrorMessage = $"Value of {Name} must be between {MinValue} and {MaxValue}";
     }
 }
 

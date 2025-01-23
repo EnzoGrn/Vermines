@@ -28,11 +28,10 @@ namespace Vermines
                     }
 
                     settingsByCategory[setting.Category].Add(setting);
-                    Debug.Log("Setting added to category: " + setting.Category);
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogWarning("WARNING -> " + e.Message);
+                    Debug.LogWarning(e.Message);
                 }
             }
 

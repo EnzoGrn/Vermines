@@ -119,12 +119,6 @@ namespace Vermines
                 Players.TryGet(player, out var playerData);
                 Players.Remove(player);
 
-                // Dump Active Players
-                foreach (var activePlayers in Runner.ActivePlayers)
-                {
-                    Debug.Log("---------> Player: " + activePlayers.PlayerId + " is active.");
-                }
-
                 UpdateStartButtonState();
             }
 
@@ -255,11 +249,12 @@ namespace Vermines
             // Change the room player limit of fusion room
             if (Runner.IsServer)
             {
-                // TODO: Implement this
+                // TODO: Change the room player limit of fusion room
+                // The way to make it may be to create a new room with the new player limit
+                // It seems that there is no easy way to change the room player limit of a fusion room
             }
         }
 
-        // TODO : Implement this method to update the UI when the game settings change
         public void OnGameSettingsChangeUpdateUI()
         {
             // Update UI
