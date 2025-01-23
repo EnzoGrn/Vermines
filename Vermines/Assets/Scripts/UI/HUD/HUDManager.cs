@@ -41,9 +41,10 @@ namespace Vermines.HUD
             {
                 List<Player> players = new List<Player>
                 {
-                    new Player { Eloquence = 10, Souls = 5, Nickname = "Player 1", Family = CardFamily.None },
-                    new Player { Eloquence = 20, Souls = 10, Nickname = "Player 2", Family = CardFamily.None },
-                    new Player { Eloquence = 30, Souls = 15, Nickname = "Player 3", Family = CardFamily.None }
+                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 1", Family = CardFamily.None },
+                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 2", Family = CardFamily.None },
+                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 3", Family = CardFamily.None },
+                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 4", Family = CardFamily.None }
                 };
 
                 Initialize(players);
@@ -71,6 +72,16 @@ namespace Vermines.HUD
 
             float bannerHeight = playerBanners[1].rectTransform.rect.height;
 
+
+            // Mise à jour de l'index une fois toutes les animations terminées
+            currentPlayerIndex = nextPlayerIndex;
+            UpdatePlayerDisplay();
+
+            // Replace la bannière active en bas après la montée
+            activeBanner.rectTransform.SetSiblingIndex(playerBanners.Count - 1);
+
+
+            /*
             LayoutGroup layoutGroup = playerListParent.GetComponent<LayoutGroup>();
             layoutGroup.enabled = false; // Désactiver le Layout Group temporairement
 
@@ -97,18 +108,19 @@ namespace Vermines.HUD
                     UpdatePlayerDisplay();
 
                     // Replace la bannière active en bas après la montée
-                    //activeBanner.rectTransform.SetSiblingIndex(playerBanners.Count - 1);
+                    activeBanner.rectTransform.SetSiblingIndex(playerBanners.Count - 1);
                     //activeBanner.rectTransform.localPosition = new Vector3(screenWidth, -bannerHeight * (playerBanners.Count - 1), 0);
 
                     layoutGroup.enabled = true;
                     // Étape 3 : Réintroduction du joueur actif
-                    activeBanner.rectTransform
-                        .DOLocalMoveX(0, 0.5f)
-                        .SetEase(Ease.OutBack)
-                        .OnComplete(() =>
-                        {
-                        });
+                    //activeBanner.rectTransform
+                    //    .DOLocalMoveX(0, 0.5f)
+                    //    .SetEase(Ease.OutBack)
+                    //    .OnComplete(() =>
+                    //    {
+                    //    });
                 });
+            */
         }
 
         private void UpdatePlayerDisplay()
