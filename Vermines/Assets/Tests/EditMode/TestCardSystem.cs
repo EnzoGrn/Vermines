@@ -17,6 +17,7 @@ using System.Reflection;
 
 namespace Test.Vermines.CardSystem {
 
+
     public class TestCardSetDatabase {
 
         private static int NumberOfCardsForTwoPlayers = 112;

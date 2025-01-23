@@ -7,6 +7,7 @@
         "Singleton",
         "Command",
         "OMGG.Network.Interface",
+        "Vermines",
         "CardSystem"
     ],
     "includePlatforms": [

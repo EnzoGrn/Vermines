@@ -12,9 +12,5 @@ namespace Vermines.Player
         
         public PlayerRef PlayerRef;
         public bool IsHost;
-
-        #region In-game Data
-        // TODO: Add in-game data -> Eloquence, Souls, etc...
-        #endregion
     }
 }

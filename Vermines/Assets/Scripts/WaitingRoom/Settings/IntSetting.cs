@@ -19,18 +19,6 @@ public class IntSetting : ASetting
         Type = SettingType.Int;
     }
 
-    public void RestrictionCheck(int value)
-    {
-        if (value < MinValue || value > MaxValue)
-        {
-            throw new System.Exception($"Value of {Name} must be between {MinValue} and {MaxValue}");
-        }
-        else if (MinValue > MaxValue)
-        {
-            throw new System.Exception("Min value cannot be greater than max value");
-        }
-    }
-
     public override void RestrictionCheck<T>(T value)
     {
         // Check if T is an int
