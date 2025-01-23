@@ -1,0 +1,122 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using DG.Tweening;
+using Vermines.CardSystem.Enumerations;
+using UnityEngine.UI;
+
+namespace Vermines.HUD
+{
+    /// <summary>
+    /// TODO:
+    /// This class is only a placeholder for the real Player class.
+    /// This needs to be replaced by the actual Player class.
+    /// Do not remove this class, it is used in debugging.
+    /// </summary>
+    public class Player
+    {
+        public int Eloquence;
+        public int Souls;
+        public string Nickname;
+        public CardFamily Family;
+    }
+
+    public class HUDManager : MonoBehaviour
+    {
+        public static HUDManager Instance;
+
+        [SerializeField] private Transform playerListParent; // Le parent contenant les bannières
+        [SerializeField] private GameObject playerBannerPrefab;
+        [SerializeField] private bool debugMode = false;
+
+        private List<PlayerBanner> playerBanners = new List<PlayerBanner>();
+        private int currentPlayerIndex = 0;
+
+        void Awake()
+        {
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+
+            if (debugMode)
+            {
+                List<Player> players = new List<Player>
+                {
+                    new Player { Eloquence = 10, Souls = 5, Nickname = "Player 1", Family = CardFamily.None },
+                    new Player { Eloquence = 20, Souls = 10, Nickname = "Player 2", Family = CardFamily.None },
+                    new Player { Eloquence = 30, Souls = 15, Nickname = "Player 3", Family = CardFamily.None }
+                };
+
+                Initialize(players);
+            }
+        }
+
+        public void Initialize(List<Player> players)
+        {
+            foreach (var player in players)
+            {
+                GameObject bannerObject = Instantiate(playerBannerPrefab, playerListParent);
+                PlayerBanner banner = bannerObject.GetComponent<PlayerBanner>();
+                banner.Setup(player);
+                playerBanners.Add(banner);
+            }
+
+            UpdatePlayerDisplay();
+        }
+
+        public void NextPlayer()
+        {
+            float screenWidth = Screen.width;
+            PlayerBanner activeBanner = playerBanners[currentPlayerIndex];
+            int nextPlayerIndex = (currentPlayerIndex + 1) % playerBanners.Count;
+
+            float bannerHeight = playerBanners[1].rectTransform.rect.height;
+
+            LayoutGroup layoutGroup = playerListParent.GetComponent<LayoutGroup>();
+            layoutGroup.enabled = false; // Désactiver le Layout Group temporairement
+
+            // Étape 1 : Sortie du joueur actif
+            activeBanner.rectTransform
+                .DOLocalMoveX(-screenWidth, 0.5f)
+                .SetEase(Ease.InBack)
+                .OnComplete(() =>
+                {
+                    // Étape 2 : La liste monte après la sortie
+                    for (int i = 0; i < playerBanners.Count; i++)
+                    {
+                        if (i != currentPlayerIndex) // Ne pas inclure la bannière active qui est sortie
+                        {
+                            playerBanners[i].rectTransform
+                                .DOLocalMoveY(playerBanners[i].rectTransform.localPosition.y + bannerHeight, 0.5f)
+                                .SetEase(Ease.OutQuad);
+                        }
+                    }
+
+
+                    // Mise à jour de l'index une fois toutes les animations terminées
+                    currentPlayerIndex = nextPlayerIndex;
+                    UpdatePlayerDisplay();
+
+                    // Replace la bannière active en bas après la montée
+                    //activeBanner.rectTransform.SetSiblingIndex(playerBanners.Count - 1);
+                    //activeBanner.rectTransform.localPosition = new Vector3(screenWidth, -bannerHeight * (playerBanners.Count - 1), 0);
+
+                    layoutGroup.enabled = true;
+                    // Étape 3 : Réintroduction du joueur actif
+                    activeBanner.rectTransform
+                        .DOLocalMoveX(0, 0.5f)
+                        .SetEase(Ease.OutBack)
+                        .OnComplete(() =>
+                        {
+                        });
+                });
+        }
+
+        private void UpdatePlayerDisplay()
+        {
+            for (int i = 0; i < playerBanners.Count; i++)
+            {
+                playerBanners[i].SetSize(i == currentPlayerIndex);
+            }
+        }
+    }
+}
