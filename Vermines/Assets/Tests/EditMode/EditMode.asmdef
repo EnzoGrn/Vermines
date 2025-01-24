@@ -6,8 +6,9 @@
         "UnityEditor.TestRunner",
         "Singleton",
         "Command",
-        "OMGG.Network.Interface",
-        "CardSystem"
+        "CardSystem",
+        "Defective.JSON",
+        "Vermines"
     ],
     "includePlatforms": [
         "Editor"

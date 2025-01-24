@@ -70,9 +70,12 @@ namespace Vermines {
                 return;
             Config.Seed = Random.Range(0, int.MaxValue);
 
-            if (_Initializer.Initialize(Config.Seed, Config.FirstEloquence) == -1)
+            if (_Initializer.InitializePlayers(Config.Seed, Config.FirstEloquence) == -1)
                 return;
-            _Initializer.DeckDistribution(Config.Rand);
+            if (_Initializer.DeckDistribution(Config.Rand) == -1)
+                return;
+            if (_Initializer.InitializeShop(Config.Seed) == -1)
+                return;
             _Initializer.StartingDraw(Config.FirstDraw);
 
             Start = true;

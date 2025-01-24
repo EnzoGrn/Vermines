@@ -7,6 +7,7 @@ namespace Vermines.Player {
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Utilities;
 
     public struct PlayerData : INetworkStruct {
 
@@ -68,9 +69,8 @@ namespace Vermines.Player {
 
                     return;
                 }
-                Deck.AddRange(Discard);
-                Discard.Clear();
-                Shuffle();
+                Deck.Merge(Discard);
+                Deck.Shuffle(GameManager.Instance.Config.Seed);
             }
             ICard card = Deck.Last();
 
@@ -78,18 +78,11 @@ namespace Vermines.Player {
             Hand.Add(card);
         }
 
-        public void Shuffle()
-        {
-            System.Random rand = GameManager.Instance.Config.Rand;
-
-            Deck = Deck.OrderBy(card => rand.Next()).ToList();
-        }
-
         #endregion
 
-            #region Serialization
+        #region Serialization
 
-            public readonly string Serialize()
+        public readonly string Serialize()
         {
             string serializedPlayerDeck = string.Empty;
 
