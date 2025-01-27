@@ -5,7 +5,6 @@ namespace Vermines.ShopSystem.Data {
 
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
-    using System.Diagnostics;
 
     [System.Serializable]
     public class ShopSection {
@@ -19,6 +18,8 @@ namespace Vermines.ShopSystem.Data {
             Deck = new List<ICard>();
             DiscardDeck = new List<ICard>();
         }
+
+        private ShopSection() {}
 
         /// <summary>
         /// Serialize the shop section
@@ -135,6 +136,15 @@ namespace Vermines.ShopSystem.Data {
                 }
             }
             return null;
+        }
+
+        public ShopSection DeepCopy()
+        {
+            return new ShopSection {
+                AvailableCards = new Dictionary<int, ICard>(this.AvailableCards),
+                Deck           = new List<ICard>(this.Deck),
+                DiscardDeck    = new List<ICard>(this.DiscardDeck)
+            };
         }
 
         /// <summary>

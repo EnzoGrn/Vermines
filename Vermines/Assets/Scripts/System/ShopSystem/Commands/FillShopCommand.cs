@@ -1,26 +1,34 @@
 using System.Collections.Generic;
+using System.Linq;
 using OMGG.DesignPattern;
 
 namespace Vermines.ShopSystem.Commands {
-    using System.Linq;
+
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Utilities;
     using Vermines.ShopSystem.Data;
 
     public class FillShopCommand : ICommand {
 
+        private ShopData _Shop;
         private ShopData _OldShop;
+
+        public FillShopCommand(ShopData shopToFill)
+        {
+            _Shop    = shopToFill;
+            _OldShop = shopToFill.DeepCopy();
+        }
 
         public void Execute()
         {
-            _OldShop = GameDataStorage.Instance.Shop;
+            _OldShop = _Shop.DeepCopy();
 
-            GameDataStorage.Instance.Shop = FillShop();
+            _Shop = FillShop();
         }
 
         public void Undo()
         {
-            GameDataStorage.Instance.Shop = _OldShop;
+            _Shop.Sections = _OldShop.Sections;
         }
 
         /// <note>
@@ -28,8 +36,7 @@ namespace Vermines.ShopSystem.Commands {
         /// </note>
         private ShopData FillShop()
         {
-            ShopData                  shop = GameDataStorage.Instance.Shop;
-            List<ShopSection> shopSections = shop.Sections.Values.ToList();
+            List<ShopSection> shopSections = _Shop.Sections.Values.ToList();
 
             foreach (ShopSection shopSection in shopSections) {
                 foreach (var slot in shopSection.AvailableCards.ToList()) {
@@ -42,7 +49,7 @@ namespace Vermines.ShopSystem.Commands {
                 }
             }
 
-            return shop;
+            return _Shop;
         }
 
         private ICard DrawCard(ShopSection shopSection)

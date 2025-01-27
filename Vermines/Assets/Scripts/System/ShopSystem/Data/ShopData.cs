@@ -6,6 +6,7 @@ namespace Vermines.ShopSystem.Data {
 
     using Vermines.ShopSystem.Enumerations;
     using Vermines.CardSystem.Elements;
+    using System.Linq;
 
     public class ShopData : ScriptableObject {
 
@@ -117,6 +118,18 @@ namespace Vermines.ShopSystem.Data {
             if (section == null)
                 return;
             section.Deck = cards;
+        }
+
+        public ShopData DeepCopy()
+        {
+            ShopData shop = ScriptableObject.CreateInstance<ShopData>();
+
+            shop.Sections = this.Sections.ToDictionary(
+                entry => entry.Key,
+                entry => entry.Value.DeepCopy()
+            );
+
+            return shop;
         }
     }
 }

@@ -153,7 +153,7 @@ namespace Vermines {
 
         private void FillShop()
         {
-            ICommand fillCommand = new FillShopCommand();
+            ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 
             CommandInvoker.ExecuteCommand(fillCommand);
         }
