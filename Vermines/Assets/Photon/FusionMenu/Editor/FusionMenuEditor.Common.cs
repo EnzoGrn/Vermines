@@ -5,11 +5,12 @@
 namespace Fusion.Editor {
   using Menu;
   using UnityEditor;
+    using UnityEngine;
 
-  /// <summary>
-  /// Debug FusionMenuUIScreen content.
-  /// </summary>
-  [CustomEditor(typeof(FusionMenuUIScreen), true)]
+    /// <summary>
+    /// Debug FusionMenuUIScreen content.
+    /// </summary>
+    [CustomEditor(typeof(FusionMenuUIScreen), true)]
   public class FusionMenuUIScreenEditor : Editor {
     public override void OnInspectorGUI() {
       base.OnInspectorGUI();

@@ -89,7 +89,7 @@ namespace Fusion.Menu {
     /// Is called when the <see cref="_createButton"/> is pressed using SendMessage() from the UI object.
     /// </summary>
     protected virtual async void OnCreateButtonPressed() {
-      await ConnectAsync(true);
+            await ConnectAsync(true);
     }
 
     /// <summary>
@@ -113,8 +113,8 @@ namespace Fusion.Menu {
     /// <param name="creating">Create or join</param>
     /// <returns></returns>
     protected virtual async Task ConnectAsync(bool creating) {
-      // Test for input errors before switching screen
-      var inputRegionCode = _sessionCodeField.text.ToUpper();
+            // Test for input errors before switching screen
+            var inputRegionCode = _sessionCodeField.text.ToUpper();
       if (creating == false && Config.CodeGenerator.IsValid(inputRegionCode) == false) {
         await Controller.PopupAsync($"The session code '{inputRegionCode}' is not a valid session code. Please enter {Config.CodeGenerator.Length} characters or digits.", "Invalid Session Code");
         return;
