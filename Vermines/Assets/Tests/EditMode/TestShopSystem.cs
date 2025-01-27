@@ -19,6 +19,7 @@ using Vermines.CardSystem.Enumerations;
 #endregion
 
 using Vermines.Config;
+using Vermines.ShopSystem.Commands.Internal;
 
 namespace Test.Vermines.ShopSystem {
 
@@ -96,6 +97,17 @@ namespace Test.Vermines.ShopSystem {
 
         #endregion
 
+        #region Commands
+
+        public void FillCommand(ShopData shop)
+        {
+            ICommand fillCommand = new FillShopCommand(shop);
+
+            CommandInvoker.ExecuteCommand(fillCommand);
+        }
+
+        #endregion
+
         [Test]
         public void Serialization()
         {
@@ -105,11 +117,12 @@ namespace Test.Vermines.ShopSystem {
             // Serialize the shop (first time)
             string data1 = shop1.Serialize();
 
-            // -- Deserialize the shop
-            ShopData shop2 = ScriptableObject.CreateInstance<ShopData>();
+            // -- Synchronise the shop2 with data of shop1
+            ShopData shop2 = ShopBuilder(_Config, new List<ICard>(), new List<ICard>());
 
-            shop2.Initialize(_Config.NumerOfCardsProposed);
-            shop2.Deserialize(data1);
+            ICommand syncCommand = new SyncShopCommand(shop2, data1, _Config);
+
+            CommandInvoker.ExecuteCommand(syncCommand);
 
             // Serialize the shop (second time)
             string data2 = shop2.Serialize();
@@ -127,15 +140,10 @@ namespace Test.Vermines.ShopSystem {
             // -- Shop initialization with default settings.
             ShopData shop = InitializeShop(_Config);
 
-            /// [Test]
-            /// public void TestFillCommand(ShopData shop)
-            {
-                ICommand fillCommand = new FillShopCommand(shop);
+            // -- Fill the shop
+            FillCommand(shop);
 
-                CommandInvoker.ExecuteCommand(fillCommand);
-            }
-
-            // Check if the shop is correctly fill
+            // -- Check if the shop is correctly fill
             foreach (var shopSection in shop.Sections) {
                 foreach (var slot in shopSection.Value.AvailableCards) {
                     if (slot.Value == null)
@@ -143,15 +151,50 @@ namespace Test.Vermines.ShopSystem {
                 }
             }
 
-            // Undo the command
+            // -- Undo the command
             CommandInvoker.UndoCommand();
 
+            // -- Check if the shop is empty
             foreach (var shopSection in shop.Sections) {
                 foreach (var slot in shopSection.Value.AvailableCards) {
                     if (slot.Value != null)
                         Assert.Fail($"The slot {slot.Key} in the {shopSection.Key} should be empty.");
                 }
             }
+        }
+
+        /// <summary>
+        /// Change card represent the 'Royale Missive' / 'Squire' action in the game.
+        /// </summary>
+        [Test]
+        public void ChangeCardInShop()
+        {
+            // -- Shop initialization with default settings.
+            ShopData shop = InitializeShop(_Config);
+
+            // -- Fill the shop
+            FillCommand(shop);
+
+            // -- Store the card before the change
+            ICard cardBeforeTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+
+            // -- Change a card in the 'Courtyard' at the place '0'
+            ICommand changeCardCommand = new ChangeCardCommand(shop, ShopType.Courtyard, 0);
+
+            CommandInvoker.ExecuteCommand(changeCardCommand);
+
+            // -- Check if the card is correctly changed
+            ICard cardAfterTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+
+            Assert.AreNotEqual(cardBeforeTheChange.ID, cardAfterTheChange.ID);
+
+            // -- Undo the command
+            CommandInvoker.UndoCommand();
+
+            // -- Check if the card is correctly changed
+            cardAfterTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+
+            Assert.AreEqual(cardBeforeTheChange.ID, cardAfterTheChange.ID);
         }
     }
 }

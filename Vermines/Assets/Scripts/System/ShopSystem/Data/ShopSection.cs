@@ -5,6 +5,7 @@ namespace Vermines.ShopSystem.Data {
 
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
+    using System.Linq;
 
     [System.Serializable]
     public class ShopSection {
@@ -145,6 +146,15 @@ namespace Vermines.ShopSystem.Data {
                 Deck           = new List<ICard>(this.Deck),
                 DiscardDeck    = new List<ICard>(this.DiscardDeck)
             };
+        }
+
+        public void Clear()
+        {
+            Deck        = new List<ICard>();
+            DiscardDeck = new List<ICard>();
+
+            foreach (var slot in AvailableCards.ToList())
+                AvailableCards[slot.Key] = null;
         }
 
         /// <summary>

@@ -199,7 +199,7 @@ namespace Vermines {
 
                 // Ignore the host because it's shop is already initialized (it's just synchronising the shop with others)
                 if (HasStateAuthority == false) {
-                    ICommand initializeCommand = new SyncShopCommand(data);
+                    ICommand initializeCommand = new SyncShopCommand(GameDataStorage.Instance.Shop, data, GameManager.Instance.Config);
 
                     CommandInvoker.ExecuteCommand(initializeCommand);
                 }

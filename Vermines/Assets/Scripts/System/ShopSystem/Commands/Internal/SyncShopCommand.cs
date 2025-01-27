@@ -4,38 +4,44 @@ using UnityEngine;
 namespace Vermines.ShopSystem.Commands.Internal {
 
     using Vermines.ShopSystem.Data;
+    using Vermines.Config;
 
     public class SyncShopCommand : ICommand {
 
-        private readonly string   _Data;
-
+        private ShopData _Shop;
         private ShopData _OldShop;
 
-        public SyncShopCommand(string data)
+        private readonly string _Data;
+
+        private readonly GameConfig _Config;
+
+        public SyncShopCommand(ShopData shopToSync, string data, GameConfig config)
         {
-            _Data = data;
+            _Shop    = shopToSync;
+            _OldShop = shopToSync?.DeepCopy() ?? null;
+            _Data    = data;
+            _Config  = config;
         }
 
         public void Execute()
         {
-            _OldShop = GameDataStorage.Instance.Shop;
-
-            GameDataStorage.Instance.Shop = CreateNewShop(_Data);
+            _OldShop = _Shop?.DeepCopy() ?? null;
+            
+            SyncShop(_Shop, _Data, _Config);
         }
 
         public void Undo()
         {
-            GameDataStorage.Instance.Shop = _OldShop;
+            _Shop = _OldShop;
         }
 
-        private ShopData CreateNewShop(string data)
+        private void SyncShop(ShopData shopToSync, string data, GameConfig config)
         {
-            ShopData shop = ScriptableObject.CreateInstance<ShopData>();
-
-            shop.Initialize(GameManager.Instance.Config.NumerOfCardsProposed);
-            shop.Deserialize(data);
-
-            return shop;
+            if (shopToSync == null)
+                shopToSync = ScriptableObject.CreateInstance<ShopData>();
+            shopToSync.Clear();
+            shopToSync.Initialize(config.NumerOfCardsProposed);
+            shopToSync.Deserialize(data);
         }
     }
 }

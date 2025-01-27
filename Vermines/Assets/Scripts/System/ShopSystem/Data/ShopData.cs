@@ -131,5 +131,13 @@ namespace Vermines.ShopSystem.Data {
 
             return shop;
         }
+
+        public void Clear()
+        {
+            if (Sections == null)
+                return;
+            foreach (ShopSection section in Sections.Values)
+                section.Clear();
+        }
     }
 }
