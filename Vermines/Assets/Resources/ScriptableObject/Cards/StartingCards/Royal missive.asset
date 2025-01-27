@@ -18,7 +18,6 @@ MonoBehaviour:
     your hand.
   Exemplars: 2
   IsStartingCard: 1
-  IsFamilyCard: 0
   Type: 2
+  IsFamilyCard: 0
   Eloquence: 0
-  Sprite: {fileID: 0}

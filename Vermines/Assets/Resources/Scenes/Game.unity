@@ -392,6 +392,10 @@ PrefabInstance:
       propertyPath: SortKey
       value: 871877615
       objectReference: {fileID: 0}
+    - target: {fileID: 2676703785937154257, guid: cb80c6d807127d443947e5dff2466b3b, type: 3}
+      propertyPath: NetworkedBehaviours.Array.size
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 8501971812109088964, guid: cb80c6d807127d443947e5dff2466b3b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

@@ -1,25 +1,39 @@
+using OMGG.Network.Fusion;
+using UnityEngine;
 using Fusion;
 
 namespace Vermines {
-    using UnityEngine;
-    using Vermines.Player;
+
+    using Vermines.Config;
 
     public class GameManager : NetworkBehaviour {
 
         #region Editor
 
-        /// <summary>
-        /// The player controller script links to the player prefab.
-        /// </summary>
-        public PlayerController PlayerPrefabs;
+        [SerializeField]
+        private GameInitializer _Initializer;
 
         #endregion
 
-        [Networked]
-        [Capacity(32)]
-        [HideInInspector]
-        public NetworkDictionary<PlayerRef, PlayerData> PlayerData { get; }
+        #region Singleton
 
+        public static GameManager Instance => NetworkSingleton<GameManager>.Instance;
+
+        #endregion
+
+        #region Game Rules
+
+        public GameConfig Config;
+
+        public void SetNewConfiguration(GameConfig newConfig)
+        {
+            // -- Check if the game is already started
+            if (Start)
+                return;
+            Config = newConfig;
+        }
+
+        #endregion
 
         #region Override Methods
 
@@ -33,50 +47,35 @@ namespace Vermines {
         {
             if (HasStateAuthority == false)
                 return;
-            PlayerManager<PlayerController>.UpdatePlayerConnections(Runner, SpawnPlayer, DespawnPlayer);
-        }
-
-        #endregion
-
-        #region Callbacks
-
-        private void SpawnPlayer(PlayerRef playerRef)
-        {
-            if (PlayerData.TryGet(playerRef, out PlayerData data) == false) {
-                data = new PlayerData() {
-                    Nickname    = playerRef.ToString(),
-                    PlayerRef   = playerRef,
-                    IsConnected = false
-                };
-            }
-
-            if (data.IsConnected == true) // Already connected
+            if (!Start) {
+                if (GameDataStorage.Instance.PlayerData.Count >= 2)
+                    StartGame();
                 return;
-            Debug.LogWarning($"{playerRef} connected.");
-
-            data.IsConnected = true;
-
-            PlayerData.Set(playerRef, data);
-
-            var player = Runner.Spawn(PlayerPrefabs, Vector3.zero, Quaternion.identity, playerRef);
-
-            // Set player instance as PlayerObject so we can easily get it from other locations.
-            Runner.SetPlayerObject(playerRef, player.Object);
-        }
-
-        private void DespawnPlayer(PlayerRef playerRef, PlayerController player)
-        {
-            if (PlayerData.TryGet(playerRef, out PlayerData data) == true) {
-                if (data.IsConnected == true)
-                    Debug.LogWarning($"{playerRef} disconnected.");
-                data.IsConnected = false;
-
-                PlayerData.Set(playerRef, data);
             }
-
-            Runner.Despawn(player.Object);
         }
 
         #endregion
+
+        [Networked]
+        [HideInInspector]
+        public bool Start
+        {
+            get => default;
+            set { }
+        }
+
+        public void StartGame()
+        {
+            if (HasStateAuthority == false)
+                return;
+            Config.Seed = Random.Range(0, int.MaxValue);
+
+            if (_Initializer.Initialize(Config.Seed, Config.FirstEloquence) == -1)
+                return;
+            _Initializer.DeckDistribution(Config.Rand);
+            _Initializer.StartingDraw(Config.FirstDraw);
+
+            Start = true;
+        }
     }
 }

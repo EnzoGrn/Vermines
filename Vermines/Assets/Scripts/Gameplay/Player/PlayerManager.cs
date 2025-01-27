@@ -10,8 +10,8 @@ namespace Vermines.Player {
     /// </summary>
     static public class PlayerManager<T> where T : NetworkBehaviour {
 
-        static private List<PlayerRef> _TempSpawnPlayers   = new();
-        static private List<T>         _TempSpawnedPlayers = new();
+        static readonly private List<PlayerRef> _TempSpawnPlayers   = new();
+        static readonly private List<T>         _TempSpawnedPlayers = new();
 
         static private void Reset()
         {

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Messenger
   Description: Gain a bonus <b><color=red>5A</color></b> for each additional sacrifice.
-  Exemplars: 5
+  Exemplars: 4
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0

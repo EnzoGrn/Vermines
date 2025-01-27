@@ -17,7 +17,6 @@ MonoBehaviour:
     scroll</b> per turn.
   Exemplars: 5
   IsStartingCard: 0
-  IsFamilyCard: 0
   Type: 2
+  IsFamilyCard: 0
   Eloquence: 8
-  Sprite: {fileID: 0}

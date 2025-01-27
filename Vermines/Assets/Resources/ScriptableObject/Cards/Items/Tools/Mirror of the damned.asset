@@ -17,7 +17,6 @@ MonoBehaviour:
     <b>partisan</b> from one of your opponents. (Effect, type and soul value)
   Exemplars: 3
   IsStartingCard: 0
-  IsFamilyCard: 0
   Type: 2
+  IsFamilyCard: 0
   Eloquence: 6
-  Sprite: {fileID: 0}

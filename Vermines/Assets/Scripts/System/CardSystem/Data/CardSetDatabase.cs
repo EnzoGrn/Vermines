@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using OMGG.DesignPattern;
 
 namespace Vermines.CardSystem.Data {
-
+    using System;
+    using System.Linq;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
@@ -49,28 +50,106 @@ namespace Vermines.CardSystem.Data {
             return false;
         }
 
+        public bool CardExist(string id)
+        {
+            if (_Cards == null || _Cards.Count == 0 || string.IsNullOrEmpty(id))
+                return false;
+            foreach (ICard card in _Cards) {
+                if (card.ID.ToString().CompareTo(id) == 0)
+                    return true;
+            }
+            return false;
+        }
+
         public ICard GetCardByID(int id)
         {
-            if (_Cards == null || _Cards.Count == 0)
+            if (!CardExist(id))
                 return null;
-            foreach (ICard card in _Cards)
-                if (card.ID == id)
-                    return card;
-            return null;
+            return _Cards.Find(x => x.ID == id);
+        }
+
+        public ICard GetCardByID(string id)
+        {
+            if (!CardExist(id))
+                return null;
+            return _Cards.Find(x => x.ID.ToString() == id);
+        }
+
+        /// <summary>
+        /// Give a list of ids and return a list of card.
+        /// The list must be separated by a comma.
+        /// </summary>
+        /// <example>
+        /// 5,6,15,82,12,63,13
+        /// </example>
+        /// <param name="ids">The list of cards you want</param>
+        /// <returns>The cards list</returns>
+        public List<ICard> GetCardByIds(string ids)
+        {
+            List<ICard> cards = new();
+
+            if (string.IsNullOrWhiteSpace(ids))
+                return cards;
+            string[] cardsIds = ids.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string cardId in cardsIds) {
+                ICard card = GetCardByID(cardId);
+
+                if (card != null)
+                    cards.Add(card);
+            }
+
+            return cards;
+        }
+
+        /// <summary>
+        /// Give a list of ids and return a list of card.
+        /// </summary>
+        /// <param name="ids">The list of cards you want</param>
+        /// <returns>The cards list</returns>
+        public List<ICard> GetCardByIds(int[] ids)
+        {
+            List<ICard> cards = new();
+
+            foreach (int id in ids) {
+                ICard card = GetCardByID(id);
+
+                if (card != null)
+                    cards.Add(card);
+            }
+            return cards;
+        }
+
+        /// <summary>
+        /// Function that return a list of card that have the filter function validated.
+        /// Becare, if a card is anonyme you can't access it, so at beginning every card are not anonyme for access everything
+        /// </summary>
+        /// <returns>Every card wanted with the request</returns>
+        public List<ICard> GetEveryCardWith(Func<ICard, bool> filter)
+        {
+            return _Cards.Where(filter).ToList();
         }
 
         public int Size => _Cards != null ? _Cards.Count : 0;
 
         /// <summary>
         /// Call this function to reset the database value.
+        /// Also clear the singleton.
         /// </summary>
         public new void Reset()
         {
             // To reset the singleton
             base.Reset();
 
-            // To reset the database
-            _Cards = new List<ICard>();
+            Clear();
+        }
+
+        /// <summary>
+        /// Call this function to clear the database value.
+        /// </summary>
+        public void Clear()
+        {
+            _Cards.Clear();
         }
     }
 }

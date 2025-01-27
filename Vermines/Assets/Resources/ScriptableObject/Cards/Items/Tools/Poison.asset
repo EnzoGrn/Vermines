@@ -17,7 +17,6 @@ MonoBehaviour:
     to the discard pile, then remove the <b>poison</b> from the game.<br>- Earn <b><color=purple>2E</color></b>.
   Exemplars: 8
   IsStartingCard: 0
-  IsFamilyCard: 0
   Type: 2
+  IsFamilyCard: 0
   Eloquence: 4
-  Sprite: {fileID: 0}
