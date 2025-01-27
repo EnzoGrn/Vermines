@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System;
 using OMGG.DesignPattern;
+using UnityEngine;
 
 namespace Vermines.CardSystem.Data {
-    using System;
-    using System.Linq;
+
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
@@ -150,6 +153,20 @@ namespace Vermines.CardSystem.Data {
         public void Clear()
         {
             _Cards.Clear();
+        }
+
+        /// <summary>
+        /// Print the database.
+        /// </summary>
+        public void Print()
+        {
+            StringBuilder log = new();
+
+            log.AppendLine("[SERVER][DEBUG]: Database information:");
+
+            foreach (ICard card in _Cards)
+                log.AppendLine($"{card.ID} | {card.Data.name}");
+            Debug.Log(log.ToString());
         }
     }
 }

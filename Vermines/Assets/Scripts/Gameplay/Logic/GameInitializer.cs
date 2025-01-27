@@ -17,6 +17,7 @@ namespace Vermines {
     using Vermines.ShopSystem.Enumerations;
     using Vermines.ShopSystem.Data;
     using Vermines.Player;
+    using Vermines.ShopSystem.Commands;
 
     public class GameInitializer : NetworkBehaviour {
 
@@ -94,8 +95,10 @@ namespace Vermines {
 
             GameDataStorage.Instance.Shop = shop;
 
+            FillShop();
+
             // -- RPC Command for sync initialization
-            RPC_InitializeShop(shop.Serialize());
+            RPC_InitializeShop(GameDataStorage.Instance.Shop.Serialize());
 
             return 0;
         }
@@ -148,6 +151,13 @@ namespace Vermines {
             GameManager.Instance.Config.Seed = seed;
         }
 
+        private void FillShop()
+        {
+            ICommand fillCommand = new FillShopCommand();
+
+            CommandInvoker.ExecuteCommand(fillCommand);
+        }
+
         #endregion
 
         #region Commands
@@ -187,11 +197,12 @@ namespace Vermines {
                 Debug.Log($"[SERVER]: Shop initialization:");
                 Debug.Log(data);
 
-                if (HasStateAuthority == true)
-                    return;
-                ICommand initializeCommand = new SyncShopCommand(data);
+                // Ignore the host because it's shop is already initialized (it's just synchronising the shop with others)
+                if (HasStateAuthority == false) {
+                    ICommand initializeCommand = new SyncShopCommand(data);
 
-                CommandInvoker.ExecuteCommand(initializeCommand);
+                    CommandInvoker.ExecuteCommand(initializeCommand);
+                }
             });
         }
 
