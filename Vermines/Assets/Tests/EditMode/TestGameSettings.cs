@@ -1,18 +1,18 @@
 using NUnit.Framework;
 using UnityEngine;
+using Vermines;
 
-
-namespace Tests
+namespace Test.Vermines.Settings
 {
     public class TestGameSettings
     {
-        private Vermines.GameSettings _GameSettings;
+        private GameSettings _GameSettings;
 
         [SetUp]
         public void SetUp()
         {
             // Create an instance of the ScriptableObject
-            _GameSettings = ScriptableObject.CreateInstance<Vermines.GameSettings>();
+            _GameSettings = ScriptableObject.CreateInstance<GameSettings>();
         }
 
         [TearDown]
