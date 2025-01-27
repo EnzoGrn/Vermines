@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using Vermines.CardSystem.Enumerations;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Vermines.HUD
 {
@@ -21,16 +22,22 @@ namespace Vermines.HUD
         public CardFamily Family;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class HUDManager : MonoBehaviour
     {
         public static HUDManager Instance;
 
         [SerializeField] private Transform playerListParent; // Le parent contenant les bannières
         [SerializeField] private GameObject playerBannerPrefab;
+        [SerializeField] private GameObject phaseBannerObject;
+        [SerializeField] private TextMeshProUGUI buttonText; // Texte associé au bouton
         [SerializeField] private bool debugMode = false;
 
         private List<PlayerBanner> playerBanners = new List<PlayerBanner>();
         private int currentPlayerIndex = 0;
+        private PhaseType currentPhase = PhaseType.Sacrifice; // Phase initiale
 
         void Awake()
         {
@@ -51,7 +58,7 @@ namespace Vermines.HUD
             }
         }
 
-        public void Initialize(List<Player> players)
+        public void Initialize(List<Player> players) // TODO: Replace Player with the actual Player class
         {
             foreach (var player in players)
             {
@@ -62,6 +69,60 @@ namespace Vermines.HUD
             }
 
             UpdatePlayerDisplay();
+            UpdatePhaseBanner();
+        }
+
+        // Appelée lorsqu'on clique sur le bouton
+        public void NextPhase()
+        {
+            switch (currentPhase)
+            {
+                case PhaseType.Sacrifice:
+                    currentPhase = PhaseType.Gain;
+                    break;
+                case PhaseType.Gain:
+                    currentPhase = PhaseType.Action;
+                    break;
+                case PhaseType.Action:
+                    currentPhase = PhaseType.Resolution;
+                    break;
+                case PhaseType.Resolution:
+                    currentPhase = PhaseType.Sacrifice;
+                    NextPlayer(); // Change de joueur
+                    break;
+            }
+
+            UpdatePhaseBanner();
+        }
+
+        private void UpdatePhaseBanner()
+        {
+            PhaseBanner phaseBanner = phaseBannerObject.GetComponent<PhaseBanner>();
+            phaseBanner.SetPhase(currentPhase);
+
+            UpdateButtonText();
+        }
+
+        private void UpdateButtonText()
+        {
+            if (buttonText != null)
+            {
+                switch (currentPhase)
+                {
+                    case PhaseType.Sacrifice:
+                        buttonText.text = "Passer à la phase de Gain";
+                        break;
+                    case PhaseType.Gain:
+                        buttonText.text = "Passer à la phase d'Action";
+                        break;
+                    case PhaseType.Action:
+                        buttonText.text = "Passer à la phase de Résolution";
+                        break;
+                    case PhaseType.Resolution:
+                        buttonText.text = "Changer de joueur (Phase de Sacrifice)";
+                        break;
+                }
+            }
         }
 
         public void NextPlayer()
@@ -72,14 +133,12 @@ namespace Vermines.HUD
 
             float bannerHeight = playerBanners[1].rectTransform.rect.height;
 
-
             // Mise à jour de l'index une fois toutes les animations terminées
             currentPlayerIndex = nextPlayerIndex;
             UpdatePlayerDisplay();
 
             // Replace la bannière active en bas après la montée
             activeBanner.rectTransform.SetSiblingIndex(playerBanners.Count - 1);
-
 
             /*
             LayoutGroup layoutGroup = playerListParent.GetComponent<LayoutGroup>();
@@ -101,7 +160,6 @@ namespace Vermines.HUD
                                 .SetEase(Ease.OutQuad);
                         }
                     }
-
 
                     // Mise à jour de l'index une fois toutes les animations terminées
                     currentPlayerIndex = nextPlayerIndex;
@@ -128,6 +186,14 @@ namespace Vermines.HUD
             for (int i = 0; i < playerBanners.Count; i++)
             {
                 playerBanners[i].SetSize(i == currentPlayerIndex);
+            }
+        }
+
+        private void OnValidate()
+        {
+            if (debugMode)
+            {
+                Debug.LogWarning("HUDManager: Debug mode is enabled. Make sure to disable it before building the game.");
             }
         }
     }
