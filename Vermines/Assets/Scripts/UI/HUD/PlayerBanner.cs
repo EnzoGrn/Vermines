@@ -10,12 +10,13 @@ namespace Vermines.HUD
         public TextMeshProUGUI playerEloquenceText;
         public TextMeshProUGUI playerSoulsText;
         public RectTransform rectTransform;
+        public float scale = 1.1f;
+        public float activeScale = 1.275f;
 
         private void Start()
         {
             if (playerNameObject != null)
             {
-                // get playerNameText parent
                 playerNameObject.SetActive(false);
             }
         }
@@ -38,7 +39,6 @@ namespace Vermines.HUD
 
         public void Setup(Player player)
         {
-            //playerNameText.text = player.Nickname;
             playerNameObject.GetComponent<TextMeshProUGUI>().text = player.Nickname;
             playerEloquenceText.text = player.Eloquence.ToString();
             playerSoulsText.text = player.Souls.ToString();
@@ -47,7 +47,7 @@ namespace Vermines.HUD
 
         public void SetSize(bool isActive)
         {
-            rectTransform.localScale = isActive ? Vector3.one * 1.275f : Vector3.one * 1.1f;
+            rectTransform.localScale = isActive ? Vector3.one * activeScale : Vector3.one * scale;
         }
     }
 }
