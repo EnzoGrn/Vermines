@@ -47,6 +47,10 @@ MonoBehaviour:
     m_Key: Me Tag
     m_Metadata:
       m_Items: []
+  - m_Id: 343348000333824
+    m_Key: StatusText
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

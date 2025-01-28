@@ -50,6 +50,10 @@ MonoBehaviour:
     m_Localized: (Vous)
     m_Metadata:
       m_Items: []
+  - m_Id: 343348000333824
+    m_Localized: "En attente de l'h\xF4te..."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
