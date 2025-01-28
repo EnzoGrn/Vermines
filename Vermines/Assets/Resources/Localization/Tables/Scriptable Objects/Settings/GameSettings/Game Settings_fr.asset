@@ -1,0 +1,167 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Game Settings_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: 0a886984331d07247915b99f7759191d, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 329262833664
+    m_Localized: Joueur
+    m_Metadata:
+      m_Items: []
+  - m_Id: 369746255872
+    m_Localized: Style de jeu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 574747058176
+    m_Localized: Main
+    m_Metadata:
+      m_Items: []
+  - m_Id: 691503898624
+    m_Localized: Deck
+    m_Metadata:
+      m_Items: []
+  - m_Id: 736928210944
+    m_Localized: "R\xE8gle de jeu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 828137545728
+    m_Localized: Cartes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 876170715136
+    m_Localized: Sacrifice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 945678721024
+    m_Localized: "March\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045461213184
+    m_Localized: Cour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1162318716928
+    m_Localized: "Avanc\xE9e"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23623429005312
+    m_Localized: Nombre max. de joueurs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24893124517888
+    m_Localized: Nombre min. de joueurs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24965656616960
+    m_Localized: "Tour limit\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25129297387520
+    m_Localized: Nombre max. de tours
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25334226886656
+    m_Localized: Temps max. par tour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25816764784640
+    m_Localized: "Nombre de cartes au d\xE9part"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25959266263040
+    m_Localized: "Nombre de cartes limit\xE9 dans la main"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26320953679872
+    m_Localized: Nombre max. de cartes dans la main
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26519948238848
+    m_Localized: "Nombre de cartes \xE0 pioch\xE9 \xE0 la fin du tour"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27134095007744
+    m_Localized: "Nombre de cartes limit\xE9e"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27211651883008
+    m_Localized: Nombre max. de cartes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27325544013824
+    m_Localized: Eloquence max.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27404656975872
+    m_Localized: "Eloquence de d\xE9part"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27453348651008
+    m_Localized: "Eloquence de d\xE9but de tour"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27580960350208
+    m_Localized: "Nombre d'\xE2mes pour gagner"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27797839421440
+    m_Localized: "Nombre max. de cartes \xE0 jouer"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28189360922624
+    m_Localized: "Nombre max. de carte \xE9quipement jouable"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28325352841216
+    m_Localized: Sacrifices max. par tour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28405539545088
+    m_Localized: "Nombre max. de carte dans le march\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28510619443200
+    m_Localized: "Autoriser le m\xE9lange de deck du march\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28652181397504
+    m_Localized: Nombre max. de carte dans la cour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28737187356672
+    m_Localized: "Autoriser le m\xE9lange de deck de la cour"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28820888887296
+    m_Localized: Mode de debug
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28927482929152
+    m_Localized: "Graine de g\xE9n\xE9ration"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30012402573312
+    m_Localized: "Nombre d'\xE2mes de d\xE9part"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30542843617280
+    m_Localized: "Nombre max. de cartes \xE0 jouer par tour"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

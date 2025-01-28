@@ -71,11 +71,11 @@ namespace Vermines
         [Tooltip("Indicates whether the market deck reshuffles when exhausted.")]
         public BoolSetting AllowMarketReshuffle = new BoolSetting("Allow Market Reshuffle", false, "Market Settings");
 
-        // Courtyard  Settings
+        // Courtyard Settings
         [Tooltip("Number of equipment cards a player can attach to their cultist.")]
-        public IntSetting MaxCourtyardCards = new IntSetting("Max Courtyard Cards", 5, 1, 5, "Courtyard  Settings");
+        public IntSetting MaxCourtyardCards = new IntSetting("Max Courtyard Cards", 5, 1, 5, "Courtyard Settings");
         [Tooltip("The cost of reshuffling the deck if required (optional balance setting).")]
-        public BoolSetting AllowCourtyardReshuffle = new BoolSetting("Allow Market Reshuffle", true, "Courtyard  Settings");
+        public BoolSetting AllowCourtyardReshuffle = new BoolSetting("Allow Market Reshuffle", true, "Courtyard Settings");
 
         // Advanced Settings
         [Tooltip("Enable debug mode for additional logs and testing features.")]

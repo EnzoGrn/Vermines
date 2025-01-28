@@ -68,7 +68,11 @@ namespace Vermines
             string category = (settingList.Count > 0 && settingList[0] != null)
                 ? settingList[0].Category : "Other";
 
-            label.GetComponent<TMP_Text>().text = category;
+            // Get First ASetting
+            ASetting setting = settingList[0];
+            Debug.Log("EntryName (before call) -> " + setting.Category);
+            SetEntryForLocalizationText(setting.Category, Title);
+
             Title.transform.SetParent(_Content.transform);
         }
 
@@ -80,6 +84,23 @@ namespace Vermines
                 return;
 
             Space.transform.SetParent(_Content.transform);
+        }
+
+        private void SetEntryForLocalizationText(string entryName, GameObject prefabIntputField)
+        {
+            // Get InputFieldData Script from prefabIntputField
+            GameSettingLocalizeData InputField = prefabIntputField.GetComponent<GameSettingLocalizeData>();
+
+            if (InputField == null)
+                return;
+
+            if (InputField.LocalizeStringEventLabel)
+            {
+                Debug.Log("EntryName -> " + entryName);
+
+                // Set String Reference
+                InputField.LocalizeStringEventLabel.SetEntry(entryName);
+            }
         }
 
         private void LoadUISettings()
@@ -130,7 +151,8 @@ namespace Vermines
                         if (label == null)
                             continue;
 
-                        label.GetComponent<TMP_Text>().text = setting.Name;
+                        SetEntryForLocalizationText(setting.Name, SettingPrefabUI);
+                        //label.GetComponent<TMP_Text>().text = setting.Name;
                     }
 
                     _InputFields[setting.Name] = SettingPrefabUI;

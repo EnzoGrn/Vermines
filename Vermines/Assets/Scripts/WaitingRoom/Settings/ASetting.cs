@@ -1,22 +1,23 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.Localization.Components;
 
+[System.Serializable]
+public abstract class ASetting
+{
     [System.Serializable]
-    public abstract class ASetting
+    public enum SettingType
     {
-        [System.Serializable]
-        public enum SettingType
-        {
-            Bool,
-            Int,
-        }
+        Bool,
+        Int,
+    }
 
-        [SerializeField, HideInInspector] public SettingType Type;
+    [SerializeField, HideInInspector] public SettingType Type;
 
-        [SerializeField, HideInInspector] public string Category;
-        [SerializeField, HideInInspector] public string Name;
+    [SerializeField, HideInInspector] public string Category;
+    [SerializeField, HideInInspector] public string Name;
 
-        public abstract void RestrictionCheck<T>(T Value);
+    public abstract void RestrictionCheck<T>(T Value);
 
 }
