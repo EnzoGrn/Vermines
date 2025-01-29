@@ -44,15 +44,14 @@ namespace Vermines.Player {
 
     public struct PlayerDeck {
 
-        public List<ICard> Deck;
-        public List<ICard> Hand;
-        public List<ICard> Discard;
-        public List<ICard> Graveyard;
+        public List<ICard> Deck { get; set; }
+        public List<ICard> Hand { get; set; }
+        public List<ICard> Discard { get; set; }
+        public List<ICard> Graveyard { get; set; }
 
-        public PlayerDeck(int deckSize = 0)
+        public void Initialize()
         {
-            Deck =  deckSize == 0 ? new List<ICard>() : new List<ICard>(deckSize);
-
+            Deck      = new List<ICard>();
             Hand      = new List<ICard>();
             Discard   = new List<ICard>();
             Graveyard = new List<ICard>();
@@ -75,6 +74,20 @@ namespace Vermines.Player {
             ICard card = Deck.Draw();
 
             Hand.Add(card);
+        }
+
+        #endregion
+
+        #region Copy
+
+        public PlayerDeck DeepCopy()
+        {
+            return new() {
+                Deck      = new List<ICard>(this.Deck),
+                Hand      = new List<ICard>(this.Hand),
+                Discard   = new List<ICard>(this.Discard),
+                Graveyard = new List<ICard>(this.Graveyard)
+            };
         }
 
         #endregion

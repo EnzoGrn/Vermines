@@ -116,7 +116,9 @@ namespace Vermines {
             Dictionary<PlayerRef, PlayerDeck> decks = new();
 
             foreach (var player in storage.PlayerData) {
-                PlayerDeck deck = new(starterDeckLength);
+                PlayerDeck deck = new();
+
+                deck.Initialize();
 
                 for (int i = 0; i < starterDeckLength; i++) {
                     ICard card = starterCards[rand.Next(starterDeckLength - deck.Deck.Count)];

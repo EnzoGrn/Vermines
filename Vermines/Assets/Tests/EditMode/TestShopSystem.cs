@@ -2,13 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using Fusion;
 
 using OMGG.DesignPattern;
 
 #region Vermines ShopSystem namespace
+    using Vermines.ShopSystem.Commands.Internal;
     using Vermines.ShopSystem.Enumerations;
-    using Vermines.ShopSystem.Data;
     using Vermines.ShopSystem.Commands;
+    using Vermines.ShopSystem.Data;
 #endregion
 
 #region Vermines CardSystem namespace
@@ -19,13 +21,17 @@ using Vermines.CardSystem.Enumerations;
 #endregion
 
 using Vermines.Config;
-using Vermines.ShopSystem.Commands.Internal;
+using Vermines.Player;
 
 namespace Test.Vermines.ShopSystem {
 
     public class TestShopSystem {
 
         private GameConfig _Config;
+
+        private PlayerRef _LocalPlayer;
+
+        private Dictionary<PlayerRef, PlayerDeck> _Decks;
 
         #region Setup
 
@@ -46,6 +52,24 @@ namespace Test.Vermines.ShopSystem {
 
             // -- Initialize a card data set for a two players game
             CardSetDatabase.Instance.Initialize(FamilyUtils.GenerateFamilies(_Config.Seed, 2));
+
+            // -- Player initialization
+            _LocalPlayer = PlayerRef.FromEncoded(0x01);
+
+            PlayerDeck localDeck = new PlayerDeck();
+
+            localDeck.Initialize();
+
+            PlayerRef playerTwo = PlayerRef.FromEncoded(0x02);
+            PlayerDeck playerTwoDeck = new PlayerDeck();
+
+            playerTwoDeck.Initialize();
+
+            // -- Initialize the decks for two players game
+            _Decks = new Dictionary<PlayerRef, PlayerDeck> {
+                { _LocalPlayer, localDeck     },
+                { playerTwo   , playerTwoDeck }
+            };
         }
 
         #endregion
@@ -95,6 +119,15 @@ namespace Test.Vermines.ShopSystem {
             return shop;
         }
 
+        private ShopData InitializeAndFillShop(GameConfig config)
+        {
+            ShopData shop = InitializeShop(config);
+
+            FillCommand(shop);
+
+            return shop;
+        }
+
         #endregion
 
         #region Commands
@@ -138,10 +171,7 @@ namespace Test.Vermines.ShopSystem {
         public void FillShopCommand()
         {
             // -- Shop initialization with default settings.
-            ShopData shop = InitializeShop(_Config);
-
-            // -- Fill the shop
-            FillCommand(shop);
+            ShopData shop = InitializeAndFillShop(_Config);
 
             // -- Check if the shop is correctly fill
             foreach (var shopSection in shop.Sections) {
@@ -170,10 +200,7 @@ namespace Test.Vermines.ShopSystem {
         public void ChangeCardInShop()
         {
             // -- Shop initialization with default settings.
-            ShopData shop = InitializeShop(_Config);
-
-            // -- Fill the shop
-            FillCommand(shop);
+            ShopData shop = InitializeAndFillShop(_Config);
 
             // -- Store the card before the change
             ICard cardBeforeTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
@@ -195,6 +222,54 @@ namespace Test.Vermines.ShopSystem {
             cardAfterTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
 
             Assert.AreEqual(cardBeforeTheChange.ID, cardAfterTheChange.ID);
+        }
+
+        /// <summary>
+        /// Local is because it's not the networking buy command, but the command execute locally in each client.
+        /// </summary>
+        [Test]
+        public void BuyCardLocalInShop()
+        {
+            // -- Shop initialization with default settings.
+            ShopData shop = InitializeAndFillShop(_Config);
+
+            // -- Store the card before the buy
+            ICard cardBeforeTheBuy = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+
+            // -- Buy a card in the 'Courtyard' at the place '0'
+            BuyParameters parameters = new() {
+                Decks    = _Decks,
+                Player   = _LocalPlayer,
+                Shop     = shop,
+                ShopType = ShopType.Courtyard,
+                Slot     = 0 // Buy the first card available in the shop
+            };
+
+            ICommand buyCommand = new BuyCommand(parameters);
+
+            CommandInvoker.ExecuteCommand(buyCommand);
+
+            // -- Check if the card is correctly bought
+            ICard cardAfterTheBuy = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+
+            // -- Check that the card after is a null card (because the shop didn't be refilled)
+            Assert.IsNull(cardAfterTheBuy);
+
+            // -- Check that the player have now a new card in his discard deck
+            Assert.AreEqual(1, _Decks[_LocalPlayer].Discard.Count);
+
+            // -- Undo the command
+            CommandInvoker.UndoCommand();
+
+            // -- Check if the card is correctly bought
+            cardAfterTheBuy = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+
+            // -- Check that the card before and after the buy are equals
+            Assert.IsNotNull(cardAfterTheBuy);
+            Assert.AreEqual(cardBeforeTheBuy.ID, cardAfterTheBuy.ID);
+
+            // -- Check that the player have no more card in his discard deck
+            Assert.AreEqual(0, _Decks[_LocalPlayer].Discard.Count);
         }
     }
 }

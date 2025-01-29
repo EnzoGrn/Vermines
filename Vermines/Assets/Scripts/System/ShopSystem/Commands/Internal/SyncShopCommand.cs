@@ -23,11 +23,13 @@ namespace Vermines.ShopSystem.Commands.Internal {
             _Config  = config;
         }
 
-        public void Execute()
+        public bool Execute()
         {
             _OldShop = _Shop?.DeepCopy() ?? null;
             
             SyncShop(_Shop, _Data, _Config);
+
+            return true;
         }
 
         public void Undo()

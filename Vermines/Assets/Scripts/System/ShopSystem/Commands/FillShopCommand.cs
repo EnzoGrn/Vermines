@@ -19,11 +19,13 @@ namespace Vermines.ShopSystem.Commands {
             _OldShop = shopToFill.DeepCopy();
         }
 
-        public void Execute()
+        public bool Execute()
         {
             _OldShop = _Shop.DeepCopy();
 
             _Shop = FillShop();
+
+            return true;
         }
 
         public void Undo()

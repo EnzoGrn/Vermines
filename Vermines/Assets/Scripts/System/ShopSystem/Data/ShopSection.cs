@@ -120,6 +120,11 @@ namespace Vermines.ShopSystem.Data {
             return false;
         }
 
+        public bool HasCardAtSlot(int slot)
+        {
+            return AvailableCards[slot] != null;
+        }
+
         /// <summary>
         /// Call this methods only if the card can be buy, because it's remove it from the shop
         /// </summary>
@@ -135,6 +140,16 @@ namespace Vermines.ShopSystem.Data {
 
                     return card;
                 }
+            }
+            return null;
+        }
+
+        public ICard BuyCardAtSlot(int slot)
+        {
+            if (AvailableCards.TryGetValue(slot, out ICard card)) {
+                AvailableCards[slot] = null;
+
+                return card;
             }
             return null;
         }

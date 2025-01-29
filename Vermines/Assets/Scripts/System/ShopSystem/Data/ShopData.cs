@@ -97,6 +97,15 @@ namespace Vermines.ShopSystem.Data {
             return section.HasCard(cardID);
         }
 
+        public bool HasCardAtSlot(ShopType type, int slot)
+        {
+            ShopSection section = Sections[type];
+
+            if (section == null)
+                return false;
+            return section.HasCardAtSlot(slot);
+        }
+
         /// <summary>
         /// Call this methods only if the card can be buy, because it's remove it from the shop
         /// </summary>
@@ -109,6 +118,15 @@ namespace Vermines.ShopSystem.Data {
             if (section == null)
                 return null;
             return section.BuyCard(cardID);
+        }
+
+        public ICard BuyCardAtSlot(ShopType type, int slot)
+        {
+            ShopSection section = Sections[type];
+
+            if (section == null)
+                return null;
+            return section.BuyCardAtSlot(slot);
         }
 
         public void FillShop(ShopType type, List<ICard> cards)

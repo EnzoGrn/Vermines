@@ -24,11 +24,17 @@ namespace Vermines.ShopSystem.Commands {
             _SlotIndex = slotIndex;
         }
 
-        public void Execute()
+        public bool Execute()
         {
             _OldShop = _Shop.DeepCopy();
 
-            _Shop = ChangeCard(_ShopType, _SlotIndex);
+            ShopData shop = ChangeCard(_ShopType, _SlotIndex);
+
+            if (shop == null)
+                return false;
+            _Shop = shop;
+
+            return true;
         }
 
         public void Undo()
@@ -39,13 +45,13 @@ namespace Vermines.ShopSystem.Commands {
         private ShopData ChangeCard(ShopType type, int slotIndex)
         {
             if (!_Shop.Sections.ContainsKey(type))
-                return _Shop;
+                return null;
             if (!_Shop.Sections[type].AvailableCards.ContainsKey(slotIndex))
-                return _Shop;
+                return null;
             ICard card = _Shop.Sections[type].AvailableCards[slotIndex];
 
             if (card == null)
-                return _Shop;
+                return null;
             _Shop.Sections[type].DiscardDeck.Add(card);
             _Shop.Sections[type].AvailableCards[slotIndex] = DrawCard(_Shop.Sections[type]);
 
