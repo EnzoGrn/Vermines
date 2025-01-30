@@ -5,6 +5,7 @@ using DG.Tweening;
 using Vermines.CardSystem.Enumerations;
 using UnityEngine.UI;
 using TMPro;
+using Fusion;
 
 namespace Vermines.HUD
 {
@@ -33,6 +34,7 @@ namespace Vermines.HUD
         [SerializeField] private GameObject playerBannerPrefab;
         [SerializeField] private GameObject phaseBannerObject;
         [SerializeField] private TextMeshProUGUI buttonText; // Texte associé au bouton
+        [SerializeField] private GameObject _PhaseButton;
         [SerializeField] private bool debugMode = false;
 
         private List<PlayerBanner> playerBanners = new List<PlayerBanner>();
@@ -101,6 +103,14 @@ namespace Vermines.HUD
             phaseBanner.SetPhase(currentPhase);
 
             UpdateButtonText();
+        }
+
+        public void UpdatePhaseButton(bool isInteractable)
+        {
+            _PhaseButton.GetComponent<Button>().interactable = isInteractable;
+
+            if (!isInteractable)
+                buttonText.text = "Wait your turn";
         }
 
         private void UpdateButtonText()

@@ -583,6 +583,7 @@ MonoBehaviour:
   playerBannerPrefab: {fileID: 4772245233492487442, guid: 3ee61d43e4175fa49996444f5273c7f4, type: 3}
   phaseBannerObject: {fileID: 712640999}
   buttonText: {fileID: 2036955056}
+  _PhaseButton: {fileID: 1434051768}
   debugMode: 1
 --- !u!4 &1295497003
 Transform:

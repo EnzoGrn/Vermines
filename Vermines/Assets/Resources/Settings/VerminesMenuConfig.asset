@@ -23,5 +23,8 @@ MonoBehaviour:
   - Name: Game
     ScenePath: Assets/Resources/Scenes/Game.unity
     Preview: {fileID: 21300000, guid: e588dc22046548045a1e83ed469b6d1d, type: 3}
+  - Name: PhaseLogic
+    ScenePath: Assets/Resources/Scenes/PhaseLogicWithUI.unity
+    Preview: {fileID: 21300000, guid: e588dc22046548045a1e83ed469b6d1d, type: 3}
   _machineId: {fileID: -755480892457977500, guid: 14d0ba76e6402554fb21eb7d976871ff, type: 3}
   _codeGenerator: {fileID: 11400000, guid: 2d88136449f10fb4da15557de6b21b72, type: 2}
