@@ -39,7 +39,6 @@ namespace Vermines
 
         public bool IsMyTurn()
         {
-            Debug.Log("IsMyTurn : " + _PlayerTurnIndex + ", " + Runner.LocalPlayer.PlayerId);
             // +1 To adjust to Fusion player ID
             return (_PlayerTurnIndex + 1 == Runner.LocalPlayer.PlayerId);
         }
@@ -82,29 +81,24 @@ namespace Vermines
             }
 
             _PlayerTurnIndex = (_PlayerTurnIndex + 1) % GameDataStorage.Instance.PlayerData.Count;
-
             RPC_UpdatePhaseUI();
-
-            Debug.Log("NextTurn A player complete his turn");
         }
 
         public void ProcessPhase()
         {
-            Debug.Log("ProcessPhase, localPlayer : " + _PlayerTurnIndex + " starts play.");
-
-            // Must check if the actual playerRef is there one compared to the current player index in the list of player Data
+            // Compare the Player turn index with the LocalPlayer ID in the list of player Data to process some logic if needed
             if (Runner.LocalPlayer == _PlayerTurnOrder.Get(_PlayerTurnIndex))
             {
-                Debug.Log("ProcessPhase, you (" + _PlayerTurnIndex + ") are playing the phase + " + _ActualTurnPhase.ToString() + ".");
+                // TODO : Implement game logic
+                Debug.Log("ProcessPhase, you (" + _PlayerTurnIndex + ") are playing the phase " + _ActualTurnPhase.ToString() + ".");
             }
         }
 
         private void PhaseCompleted()
         {
+            // Check if the turn of the actual player is done
             if (_ActualTurnPhase == PhaseType.Resolution)
             {
-                Debug.Log("Phase : " + _ActualTurnPhase.ToString() + " is completed next turn.");
-
                 if (Runner.IsServer)
                 {
                     RPC_NextTurn();
@@ -113,14 +107,13 @@ namespace Vermines
             }
             else
             {
-                Debug.Log("Phase : " + _ActualTurnPhase.ToString() + " is completed.");
+                // A phase is completed, go on next one
                 if (Runner.IsServer)
                 {
                     _ActualTurnPhase = _ActualTurnPhase + 1;
                     RPC_UpdatePhaseUI();
                     RPC_ProcessPhase();
                 }
-                Debug.Log("New Phase Running : " + _ActualTurnPhase.ToString());
             }
         }
 
@@ -141,7 +134,6 @@ namespace Vermines
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
         public void RPC_ProcessPhase()
         {
-            Debug.Log("RPC_ProcessPhase");
             ProcessPhase();
         }
 
@@ -159,26 +151,19 @@ namespace Vermines
         #endregion
 
         #region events
-        // TODO : Call it through the game manager
+        // TODO : Call it using the game manager, this method setUp value for the phase Manager
         public void OnStartPhases()
         {
-            Debug.Log("OnStartPhases");
-
             if (!Runner.IsServer || _IsPlaying)
                 return;
 
             _IsPlaying = true;
 
-            if (HasStateAuthority == false)
-            {
-                Debug.Log("HasStateAuthority is false");
-                return;
-            }
-
             SetUpPhases();
             RPC_ProcessPhase();
         }
 
+        // TODO : Call this function in the game logic
         public void OnPlayerWin()
         {
             // Reset Game
@@ -188,6 +173,7 @@ namespace Vermines
             // TODO : Start the end of the game
         }
 
+        // Called by the Phase Button
         public void OnPhaseCompleted()
         {
             RPC_PhaseCompleted();
