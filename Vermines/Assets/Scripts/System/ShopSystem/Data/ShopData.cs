@@ -10,12 +10,13 @@ namespace Vermines.ShopSystem.Data {
 
     public class ShopData : ScriptableObject {
 
-        public void Initialize(int slots)
+        public void Initialize(ShopType type, int slots)
         {
-            Sections = new Dictionary<ShopType, ShopSection>();
+            Sections ??= new Dictionary<ShopType, ShopSection>();
 
-            for (int i = 0; i < (int)ShopType.Count; i++)
-                Sections.Add((ShopType)i, new ShopSection(slots));
+            if (Sections.ContainsKey(type) == false)
+                Sections.Remove(type);
+            Sections.Add(type, new ShopSection(slots));
         }
 
         public Dictionary<ShopType, ShopSection> Sections;
@@ -152,10 +153,8 @@ namespace Vermines.ShopSystem.Data {
 
         public void Clear()
         {
-            if (Sections == null)
-                return;
-            foreach (ShopSection section in Sections.Values)
-                section.Clear();
+            if (Sections != null)
+                Sections.Clear();
         }
     }
 }

@@ -163,15 +163,6 @@ namespace Vermines.ShopSystem.Data {
             };
         }
 
-        public void Clear()
-        {
-            Deck        = new List<ICard>();
-            DiscardDeck = new List<ICard>();
-
-            foreach (var slot in AvailableCards.ToList())
-                AvailableCards[slot.Key] = null;
-        }
-
         /// <summary>
         /// Current cards available in the shop (e.g. Courtyard or Market).
         /// </summary>

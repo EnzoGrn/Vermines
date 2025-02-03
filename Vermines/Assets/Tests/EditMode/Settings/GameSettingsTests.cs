@@ -1,18 +1,19 @@
 using NUnit.Framework;
 using UnityEngine;
-using Vermines;
 
-namespace Test.Vermines.Settings
-{
-    public class GameSettingsTests
-    {
-        private GameSettings _GameSettings;
+using Vermines.Config;
+
+namespace Test.Vermines.Settings {
+
+    public class GameConfigurationTests {
+
+        private GameConfiguration _GameSettings;
 
         [SetUp]
         public void SetUp()
         {
             // Create a new instance of GameSettings before each test
-            _GameSettings = ScriptableObject.CreateInstance<GameSettings>();
+            _GameSettings = ScriptableObject.CreateInstance<GameConfiguration>();
         }
 
         [Test]
@@ -36,8 +37,8 @@ namespace Test.Vermines.Settings
         [Test]
         public void IsRoundBased_ShouldBeInitializedCorrectly()
         {
-            Assert.IsFalse(_GameSettings.IsRoundBased.Value);
-            Assert.AreEqual("Game Flow Settings", _GameSettings.IsRoundBased.Category);
+            Assert.IsFalse(_GameSettings.IsRoundLimited.Value);
+            Assert.AreEqual("Game Flow Settings", _GameSettings.IsRoundLimited.Category);
         }
 
         [Test]
@@ -70,10 +71,10 @@ namespace Test.Vermines.Settings
         [Test]
         public void MaxCardsToPlay_ShouldBeInitializedCorrectly()
         {
-            Assert.AreEqual(3, _GameSettings.MaxCardsToPlay.Value);
-            Assert.AreEqual(1, _GameSettings.MaxCardsToPlay.MinValue);
-            Assert.AreEqual(3, _GameSettings.MaxCardsToPlay.MaxValue);
-            Assert.AreEqual("Cards Settings", _GameSettings.MaxCardsToPlay.Category);
+            Assert.AreEqual(3, _GameSettings.MaxCardsPartisanToPlay.Value);
+            Assert.AreEqual(1, _GameSettings.MaxCardsPartisanToPlay.MinValue);
+            Assert.AreEqual(3, _GameSettings.MaxCardsPartisanToPlay.MaxValue);
+            Assert.AreEqual("Cards Settings", _GameSettings.MaxCardsPartisanToPlay.Category);
         }
 
         [Test]
@@ -95,11 +96,8 @@ namespace Test.Vermines.Settings
         [Test]
         public void RandomSeed_ShouldBeInitializedCorrectly()
         {
-            Assert.AreEqual(0, _GameSettings.RandomSeed.Value);
-            Assert.AreEqual(0, _GameSettings.RandomSeed.MinValue);
-            Assert.AreEqual(1, _GameSettings.RandomSeed.MaxValue);
+            Assert.AreEqual(true, _GameSettings.RandomSeed.Value);
             Assert.AreEqual("Advanced Settings", _GameSettings.RandomSeed.Category);
         }
     }
 }
-
