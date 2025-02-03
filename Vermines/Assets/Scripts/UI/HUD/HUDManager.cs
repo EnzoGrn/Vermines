@@ -32,6 +32,7 @@ namespace Vermines.HUD
         [SerializeField] private Transform playerListParent; // Le parent contenant les bannières
         [SerializeField] private GameObject playerBannerPrefab;
         [SerializeField] private GameObject phaseBannerObject;
+        [SerializeField] private GameObject deskOverlay;
         [SerializeField] private TextMeshProUGUI buttonText; // Texte associé au bouton
         [SerializeField] private bool debugMode = false;
 
@@ -43,6 +44,8 @@ namespace Vermines.HUD
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
+
+            deskOverlay.SetActive(false);
 
             if (debugMode)
             {
@@ -195,6 +198,16 @@ namespace Vermines.HUD
             {
                 Debug.LogWarning("HUDManager: Debug mode is enabled. Make sure to disable it before building the game.");
             }
+        }
+
+        public void OpenDeskOverlay()
+        {
+            deskOverlay.SetActive(true);
+        }
+
+        public void CloseDeskOverlay()
+        {
+            deskOverlay.SetActive(false);
         }
     }
 }
