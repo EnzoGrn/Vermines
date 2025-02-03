@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
-using Vermines;
+using Vermines.Settings;
 
 namespace Test.Vermines.Settings
 {

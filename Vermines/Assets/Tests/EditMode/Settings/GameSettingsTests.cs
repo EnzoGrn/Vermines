@@ -1,9 +1,11 @@
 using NUnit.Framework;
 using UnityEngine;
-using Vermines;
+
+using Vermines.Settings;
 
 namespace Test.Vermines.Settings
 {
+
     public class GameSettingsTests
     {
         private GameSettings _GameSettings;

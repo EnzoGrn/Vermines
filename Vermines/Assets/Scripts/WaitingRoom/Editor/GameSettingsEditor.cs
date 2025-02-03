@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace Vermines
 {
+    using Vermines.Settings;
+
     [CustomEditor(typeof(GameSettings))]
     public class GameSettingsEditor : Editor
     {
@@ -70,12 +72,12 @@ namespace Vermines
                         continue;
                     }
 
-                    switch (setting.Type)
+                    switch ((SettingType)setting.Type)
                     {
-                        case ASetting.SettingType.Int:
+                        case SettingType.Int:
                             SetUpIntSetting(setting);
                             break;
-                        case ASetting.SettingType.Bool:
+                        case SettingType.Bool:
                             SetUpBoolSetting(setting);
                             break;
                         default:

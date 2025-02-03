@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using System.Reflection;
 using TMPro;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Vermines
 {
+    using Vermines.Settings;
+
     public class GameSettingsUI : MonoBehaviour
     {
         [Header("Button Game Settings")]
@@ -93,7 +93,7 @@ namespace Vermines
                     ASetting setting = settingsList[i];
                     GameObject SettingPrefabUI = null;
 
-                    if (setting.Type == ASetting.SettingType.Int) // Text Input Field
+                    if (setting.Type == SettingType.Int) // Text Input Field
                     {
                         IntSetting intSetting = (IntSetting)setting;
                         SettingPrefabUI = Instantiate(_IntSettingPrefab);
@@ -107,7 +107,7 @@ namespace Vermines
                         inputField.GetComponent<TMP_InputField>().text = intSetting.Value.ToString();
                         SettingPrefabUI.transform.SetParent(_Content.transform);
                     }
-                    else if (setting.Type == ASetting.SettingType.Bool) // Toggle Input Field
+                    else if (setting.Type == SettingType.Bool) // Toggle Input Field
                     {
                         BoolSetting boolSetting = (BoolSetting)setting;
                         SettingPrefabUI = Instantiate(_BoolSettingPrefab);
@@ -156,7 +156,7 @@ namespace Vermines
 
                         if (inputField == null) continue;
 
-                        if (setting.Type == ASetting.SettingType.Int)
+                        if (setting.Type == SettingType.Int)
                         {
                             IntSetting intSetting = (IntSetting)setting;
 
@@ -164,7 +164,7 @@ namespace Vermines
                             
                             inputField.GetComponent<TMP_InputField>().text = intSetting.Value.ToString();
                         }
-                        else if (setting.Type == ASetting.SettingType.Bool)
+                        else if (setting.Type == SettingType.Bool)
                         {
                             BoolSetting boolSetting = (BoolSetting)setting;
 
@@ -217,14 +217,14 @@ namespace Vermines
                         if (inputField == null)
                             continue;
 
-                        switch (setting.Type)
+                        switch ((SettingType)setting.Type)
                         {
-                            case ASetting.SettingType.Int:
+                            case SettingType.Int:
                                 int value = int.Parse(inputField.GetComponent<TMP_InputField>().text);
 
                                 setting.RestrictionCheck(value);
                                 break;
-                            case ASetting.SettingType.Bool:
+                            case SettingType.Bool:
                                 bool boolValue = inputField.GetComponent<Toggle>().isOn;
 
                                 setting.RestrictionCheck(boolValue);
@@ -248,7 +248,7 @@ namespace Vermines
             {
                 foreach (ASetting setting in settingsList)
                 {
-                    if (setting.Type == ASetting.SettingType.Int)
+                    if (setting.Type == SettingType.Int)
                     {
                         IntSetting intSetting = (IntSetting)setting;
 
@@ -260,7 +260,7 @@ namespace Vermines
 
                         intSetting.Value = int.Parse(inputField.GetComponent<TMP_InputField>().text);
                     }
-                    else if (setting.Type == ASetting.SettingType.Bool)
+                    else if (setting.Type == (int)Settings.SettingType.Bool)
                     {
                         BoolSetting boolSetting = (BoolSetting)setting;
 

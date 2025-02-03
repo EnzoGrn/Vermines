@@ -1,7 +1,9 @@
 using NUnit.Framework;
+using Vermines.Settings;
 
 namespace Test.Vermines.Settings
 {
+
     public class IntSettingTests
     {
         private IntSetting intSetting;

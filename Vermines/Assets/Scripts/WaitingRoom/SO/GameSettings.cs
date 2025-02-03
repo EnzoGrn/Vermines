@@ -1,7 +1,10 @@
+using Defective.JSON;
 using System.Collections.Generic;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
+using static System.Collections.Specialized.BitVector32;
 
-namespace Vermines
+namespace Vermines.Settings
 {
     /// <summary>
     /// Game Settings.
@@ -82,6 +85,134 @@ namespace Vermines
         public BoolSetting DebugMode = new BoolSetting("Debug Mode", false, "Advanced Settings");
         [Tooltip("Seed for random number generation (set to 0 for random seed).")]
         public IntSetting RandomSeed = new IntSetting("Random Seed", 0, 0, 1, "Advanced Settings");
+
+        /// <summary>
+        /// Serialize GameSettings.
+        /// </summary>
+        /// <example>
+        /// [
+        ///    {
+        ///        type: 0,
+        ///        name: "Max Players",
+        ///        category: "Player Settings"
+        ///        value: 4,
+        ///        minValue: 2,
+        ///        maxValue: 4,
+        ///    },
+        ///    {
+        ///        type: 1,
+        ///        name: "Is Round Based",
+        ///        category: "Game Flow Settings"
+        ///        value: false, // bool
+        ///    }
+        /// ]
+        /// </example>
+        /// <returns>GameSettings Data.</returns>
+        public JSONObject Serialize()
+        {
+            JSONObject json = new(JSONObject.Type.Array);
+
+            foreach(var field in this.GetType().GetFields())
+            {
+                try
+                {
+                    ASetting setting = (ASetting)field.GetValue(this);
+
+                    if (setting == null)
+                        continue;
+
+                    setting.Serialize(json);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning(e);
+                }
+            }
+            return json;
+        }
+
+        /// <summary>
+        /// Deserialize gameSettings, please use Initialize before calling this method.
+        /// </summary>
+        public void Deserialize(string json, int offset, int numberOfData)
+        {
+            JSONObject data = new(json);
+
+            Debug.Log("DESERIALIZE -> " + data.ToString());
+
+            if (data.type != JSONObject.Type.Array)
+            {
+                Debug.LogError("Invalid JSON format: Expected an array.");
+                return;
+            }
+
+            // Loop through each field in GameSettings
+            for (int i = 0; i < numberOfData; i++)
+            {
+                var field = this.GetType().GetFields()[i + offset];
+                if (field.GetValue(this) is ASetting setting)
+                {
+                    // Check if there's a corresponding JSON object with the same name
+                    if (i < data.list.Count && data.list[i].HasField("name") && data.list[i].GetField("name").stringValue == setting.Name)
+                    {
+                        Debug.Log($"AHAHAHA -> {data.list[i]}");
+
+                        if (data.HasField("type"))
+                        {
+                            Debug.Log($"Type -> {(SettingType)data.GetField("type").intValue}");
+
+                            //Type = (SettingType)serializedGameSettings.GetField("type").intValue; // Convert JSON int to Enum
+                        }
+
+                        if (data.HasField("name"))
+                        {
+                            Debug.Log($"name -> {(SettingType)data.GetField("name").intValue}");
+
+                            //Name = json.GetField("name").stringValue;
+                        }
+
+                        if (data.HasField("category"))
+                        {
+                            Debug.Log($"category -> {(SettingType)data.GetField("category").intValue}");
+
+
+                            //Category = json.GetField("category").stringValue;
+                        }
+
+                        if (data.HasField("value"))
+                        {
+                            Debug.Log($"value -> {(SettingType)data.GetField("value").intValue}");
+
+
+                            //Value = (int)json.GetField("value").intValue;
+                        }
+
+                        if (data.HasField("minValue"))
+                        {
+                            Debug.Log($"minValue -> {(SettingType)data.GetField("minValue").intValue}");
+
+                            //MinValue = (int)json.GetField("minValue").intValue;
+                        }
+
+                        if (data.HasField("maxValue"))
+                        {
+                            Debug.Log($"maxValue -> {(SettingType)data.GetField("maxValue").intValue}");
+
+                            //MaxValue = (int)json.GetField("maxValue").intValue;
+                        }
+
+                        // Deserialize the field using the corresponding JSON object
+                        setting.Deserialize(data.list[i]);
+                    }
+                    else
+                    {
+                        // TODO: Find the date in the json if the don't find it at the right possition
+                        Debug.LogWarning($"Cannot get the data to deserialize for field {field.Name}");
+                    }
+                }
+            }
+        }
+
     }
 }
 
