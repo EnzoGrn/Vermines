@@ -34,6 +34,7 @@ namespace Vermines.HUD
         [SerializeField] private GameObject phaseBannerObject;
         [SerializeField] private GameObject deskOverlay;
         [SerializeField] private GameObject marketOverlay;
+        [SerializeField] private GameObject cardBuyOverlay;
         [SerializeField] private TextMeshProUGUI buttonText; // Texte associé au bouton
         [SerializeField] private bool debugMode = false;
 
@@ -48,6 +49,7 @@ namespace Vermines.HUD
 
             deskOverlay.SetActive(false);
             marketOverlay.SetActive(false);
+            cardBuyOverlay.SetActive(false);
 
             if (debugMode)
             {
@@ -220,6 +222,16 @@ namespace Vermines.HUD
         public void CloseMarketOverlay()
         {
             marketOverlay.SetActive(false);
+        }
+
+        public void OpenCardBuyOverlay()
+        {
+            cardBuyOverlay.SetActive(true);
+        }
+
+        public void CloseCardBuyOverlay()
+        {
+            cardBuyOverlay.SetActive(false);
         }
     }
 }
