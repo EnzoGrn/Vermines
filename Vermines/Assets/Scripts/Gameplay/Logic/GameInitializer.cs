@@ -18,6 +18,7 @@ namespace Vermines {
     using Vermines.ShopSystem.Data;
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
+    using static Fusion.Allocator;
 
     public class GameInitializer : NetworkBehaviour {
 
@@ -89,8 +90,10 @@ namespace Vermines {
 
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
-            shop.Initialize(GameManager.Instance.Config.NumerOfCardsProposed);
-            shop.FillShop(ShopType.Market   , objectCards);
+            shop.Initialize(ShopType.Market, GameManager.Instance.Config.MaxMarketCards.Value);
+            shop.FillShop(ShopType.Market, objectCards);
+
+            shop.Initialize(ShopType.Courtyard, GameManager.Instance.Config.MaxCourtyardCards.Value);
             shop.FillShop(ShopType.Courtyard, partisanCards);
 
             GameDataStorage.Instance.Shop = shop;
@@ -221,6 +224,9 @@ namespace Vermines {
                         CommandInvoker.ExecuteCommand(drawCommand);
                     }
                 }
+
+                Debug.Log($"[SERVER]: Deck after everyone draw their cards:");
+                Debug.Log(GameDataStorage.Instance.SerializeDeck());
             });
         }
 

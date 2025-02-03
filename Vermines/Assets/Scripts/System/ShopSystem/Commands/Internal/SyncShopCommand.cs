@@ -5,6 +5,7 @@ namespace Vermines.ShopSystem.Commands.Internal {
 
     using Vermines.ShopSystem.Data;
     using Vermines.Config;
+    using Vermines.ShopSystem.Enumerations;
 
     public class SyncShopCommand : ICommand {
 
@@ -13,9 +14,9 @@ namespace Vermines.ShopSystem.Commands.Internal {
 
         private readonly string _Data;
 
-        private readonly GameConfig _Config;
+        private readonly GameConfiguration _Config;
 
-        public SyncShopCommand(ShopData shopToSync, string data, GameConfig config)
+        public SyncShopCommand(ShopData shopToSync, string data, GameConfiguration config)
         {
             _Shop    = shopToSync;
             _OldShop = shopToSync?.DeepCopy() ?? null;
@@ -34,15 +35,16 @@ namespace Vermines.ShopSystem.Commands.Internal {
 
         public void Undo()
         {
-            _Shop = _OldShop;
+            _Shop.Sections = _OldShop.Sections;
         }
 
-        private void SyncShop(ShopData shopToSync, string data, GameConfig config)
+        private void SyncShop(ShopData shopToSync, string data, GameConfiguration config)
         {
             if (shopToSync == null)
                 shopToSync = ScriptableObject.CreateInstance<ShopData>();
             shopToSync.Clear();
-            shopToSync.Initialize(config.NumerOfCardsProposed);
+            shopToSync.Initialize(ShopType.Market   , config.MaxMarketCards.Value);
+            shopToSync.Initialize(ShopType.Courtyard, config.MaxCourtyardCards.Value);
             shopToSync.Deserialize(data);
         }
     }

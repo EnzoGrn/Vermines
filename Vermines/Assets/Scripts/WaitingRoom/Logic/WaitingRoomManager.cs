@@ -1,16 +1,16 @@
 using Fusion;
 using FusionUtilsEvents;
 using UnityEngine;
+using Fusion.Menu;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
+namespace Vermines {
 
-namespace Vermines
-{
-    using Fusion.Menu;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using UnityEngine.SceneManagement;
-    using UnityEngine.UI;
+    using Vermines.Config;
     using Vermines.Player;
 
     public class WaitingRoomManager : NetworkBehaviour, IAfterSpawned
@@ -29,7 +29,7 @@ namespace Vermines
         public FusionEvent OnHostMigrationEvent;
 
         [Header("Game Settings")]
-        [SerializeField] private GameSettings _GameSettingsData;
+        [SerializeField] private GameConfiguration _GameSettingsData;
 
         [Header("Network Variable")]
         [Networked, Capacity(10)] public NetworkDictionary<PlayerRef, WaitingRoomPlayerData> Players { get; }

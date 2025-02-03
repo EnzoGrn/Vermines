@@ -22,12 +22,13 @@ using Vermines.CardSystem.Enumerations;
 
 using Vermines.Config;
 using Vermines.Player;
+using Vermines;
 
 namespace Test.Vermines.ShopSystem {
 
     public class TestShopSystem {
 
-        private GameConfig _Config;
+        private GameConfiguration _Config;
 
         private PlayerRef _LocalPlayer;
 
@@ -39,16 +40,9 @@ namespace Test.Vermines.ShopSystem {
         public void Setup()
         {
             // -- Initialize a default game configuration
-            _Config = ScriptableObject.CreateInstance<GameConfig>();
+            _Config = ScriptableObject.CreateInstance<GameConfiguration>();
 
             _Config.Seed = 0x015;
-            _Config.DrawPerTurn = 3;
-            _Config.EloquencePerTurn = 2;
-            _Config.FirstDraw = 3;
-            _Config.FirstEloquence = 0;
-            _Config.MaxEloquence = 20;
-            _Config.WinCondition = 100;
-            _Config.NumerOfCardsProposed = 5;
 
             // -- Initialize a card data set for a two players game
             CardSetDatabase.Instance.Initialize(FamilyUtils.GenerateFamilies(_Config.Seed, 2));
@@ -76,7 +70,7 @@ namespace Test.Vermines.ShopSystem {
 
         #region Initialization
 
-        private ShopData InitializeShop(GameConfig config)
+        private ShopData InitializeShop(GameConfiguration config)
         {
             List<ICard> everyBuyableCard = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.IsStartingCard == false);
 
@@ -108,18 +102,20 @@ namespace Test.Vermines.ShopSystem {
             return ShopBuilder(config, partisanCards, objectCards);
         }
 
-        private ShopData ShopBuilder(GameConfig config, List<ICard> partisans, List<ICard> objects)
+        private ShopData ShopBuilder(GameConfiguration config, List<ICard> partisans, List<ICard> objects)
         {
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
-            shop.Initialize(config.NumerOfCardsProposed);
+            shop.Initialize(ShopType.Market, config.MaxMarketCards.Value);
             shop.FillShop(ShopType.Market, objects);
+
+            shop.Initialize(ShopType.Courtyard, config.MaxCourtyardCards.Value);
             shop.FillShop(ShopType.Courtyard, partisans);
 
             return shop;
         }
 
-        private ShopData InitializeAndFillShop(GameConfig config)
+        private ShopData InitializeAndFillShop(GameConfiguration config)
         {
             ShopData shop = InitializeShop(config);
 
@@ -162,6 +158,15 @@ namespace Test.Vermines.ShopSystem {
 
             // Compare the two serialized data
             Assert.AreEqual(data1, data2);
+
+            // Undo the data synchronization
+            CommandInvoker.UndoCommand();
+
+            // Serialize the shop (third time)
+            data2 = shop2.Serialize();
+
+            // Compare the two serialized data
+            Assert.AreNotEqual(data1, data2);
         }
 
         /// <summary>
