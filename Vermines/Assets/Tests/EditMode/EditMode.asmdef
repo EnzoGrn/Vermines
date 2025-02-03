@@ -10,6 +10,7 @@
         "Defective.JSON",
         "Vermines",
         "Fusion.Unity"
+        "OMGG.Network.Interface",
     ],
     "includePlatforms": [
         "Editor"

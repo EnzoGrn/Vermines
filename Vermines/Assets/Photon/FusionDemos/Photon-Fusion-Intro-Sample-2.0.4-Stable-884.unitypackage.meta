@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b5caa28187bc5974b943f54be1615056
+guid: 13b42dd2ab9c6534691a1076cd3f5e8c
 DefaultImporter:
   externalObjects: {}
   userData: 
@@ -9,6 +9,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 267958
   packageName: Photon Fusion
-  packageVersion: 2.0.3
-  assetPath: Assets/Photon/FusionMenu/Photon-Fusion-Menu-2.0.3-Stable-858.unitypackage
-  uploadId: 691755
+  packageVersion: 2.0.4
+  assetPath: Assets/Photon/FusionDemos/Photon-Fusion-Intro-Sample-2.0.4-Stable-884.unitypackage
+  uploadId: 718271
