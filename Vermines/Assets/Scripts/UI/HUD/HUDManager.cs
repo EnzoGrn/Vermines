@@ -14,7 +14,7 @@ namespace Vermines.HUD
     /// This needs to be replaced by the actual Player class.
     /// Do not remove this class, it is used in debugging.
     /// </summary>
-    public class Player
+    public class PlayerData
     {
         public int Eloquence;
         public int Souls;
@@ -33,6 +33,7 @@ namespace Vermines.HUD
         [SerializeField] private GameObject playerBannerPrefab;
         [SerializeField] private GameObject phaseBannerObject;
         [SerializeField] private GameObject deskOverlay;
+        [SerializeField] private GameObject marketOverlay;
         [SerializeField] private TextMeshProUGUI buttonText; // Texte associé au bouton
         [SerializeField] private bool debugMode = false;
 
@@ -46,22 +47,23 @@ namespace Vermines.HUD
             else Destroy(gameObject);
 
             deskOverlay.SetActive(false);
+            marketOverlay.SetActive(false);
 
             if (debugMode)
             {
-                List<Player> players = new List<Player>
+                List<PlayerData> players = new List<PlayerData>
                 {
-                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 1", Family = CardFamily.None },
-                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 2", Family = CardFamily.None },
-                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 3", Family = CardFamily.None },
-                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 4", Family = CardFamily.None }
+                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 1", Family = CardFamily.None },
+                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 2", Family = CardFamily.None },
+                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 3", Family = CardFamily.None },
+                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 4", Family = CardFamily.None }
                 };
 
                 Initialize(players);
             }
         }
 
-        public void Initialize(List<Player> players) // TODO: Replace Player with the actual Player class
+        public void Initialize(List<PlayerData> players) // TODO: Replace Player with the actual Player class
         {
             foreach (var player in players)
             {
@@ -208,6 +210,16 @@ namespace Vermines.HUD
         public void CloseDeskOverlay()
         {
             deskOverlay.SetActive(false);
+        }
+
+        public void OpenMarketOverlay()
+        {
+            marketOverlay.SetActive(true);
+        }
+
+        public void CloseMarketOverlay()
+        {
+            marketOverlay.SetActive(false);
         }
     }
 }

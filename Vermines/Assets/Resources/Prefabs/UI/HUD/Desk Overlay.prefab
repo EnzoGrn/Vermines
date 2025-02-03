@@ -644,12 +644,12 @@ GameObject:
   - component: {fileID: 734152503501223322}
   - component: {fileID: 2175183819308518408}
   m_Layer: 5
-  m_Name: DeskOverlay
+  m_Name: Desk Overlay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4037791702332399725
 RectTransform:
   m_ObjectHideFlags: 0

@@ -404,7 +404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ShowMaskGraphic: 1
+  m_ShowMaskGraphic: 0
 --- !u!222 &2311639751931251873
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -426,7 +426,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.003921569}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -519,9 +519,10 @@ GameObject:
   - component: {fileID: 8917826809007978540}
   - component: {fileID: 7910434508667064383}
   - component: {fileID: 6078751338380125149}
+  - component: {fileID: -2145041871505033882}
   - component: {fileID: 5722145261315663453}
   m_Layer: 5
-  m_Name: PlayerBanner
+  m_Name: Player Banner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -602,6 +603,21 @@ MonoBehaviour:
   playerEloquenceText: {fileID: 6307927075711677442}
   playerSoulsText: {fileID: 496529015923178744}
   rectTransform: {fileID: 842492557416429263}
+  scale: 1.1
+  activeScale: 1.275
+--- !u!114 &-2145041871505033882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4772245233492487442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e67d10ed6309455468a3279d1eb60fb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectToShow: {fileID: 6528910267033633993}
 --- !u!114 &5722145261315663453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -619,9 +635,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6078751338380125149}
-          m_TargetAssemblyTypeName: Vermines.HUD.PlayerBanner, Vermines
-          m_MethodName: ShowPlayerName
+        - m_Target: {fileID: -2145041871505033882}
+          m_TargetAssemblyTypeName: Tooltip, Vermines
+          m_MethodName: Show
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -635,9 +651,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6078751338380125149}
-          m_TargetAssemblyTypeName: Vermines.HUD.PlayerBanner, Vermines
-          m_MethodName: HidePlayerName
+        - m_Target: {fileID: -2145041871505033882}
+          m_TargetAssemblyTypeName: Tooltip, Vermines
+          m_MethodName: Hide
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
