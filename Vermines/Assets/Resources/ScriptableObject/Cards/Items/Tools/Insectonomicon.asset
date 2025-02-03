@@ -19,4 +19,9 @@ MonoBehaviour:
   IsStartingCard: 0
   Type: 2
   IsFamilyCard: 0
+  _Family: -1
+  _Level: 0
   Eloquence: 8
+  _Souls: 0
+  _SpriteName: 
+  _Sprite: {fileID: 21300000, guid: fefe62ae0b4ae38459e6c370be994b58, type: 3}

@@ -7,6 +7,7 @@ namespace Vermines.Player {
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Utilities;
 
     public struct PlayerData : INetworkStruct {
 
@@ -43,15 +44,14 @@ namespace Vermines.Player {
 
     public struct PlayerDeck {
 
-        public List<ICard> Deck;
-        public List<ICard> Hand;
-        public List<ICard> Discard;
-        public List<ICard> Graveyard;
+        public List<ICard> Deck { get; set; }
+        public List<ICard> Hand { get; set; }
+        public List<ICard> Discard { get; set; }
+        public List<ICard> Graveyard { get; set; }
 
-        public PlayerDeck(int deckSize = 0)
+        public void Initialize()
         {
-            Deck =  deckSize == 0 ? new List<ICard>() : new List<ICard>(deckSize);
-
+            Deck      = new List<ICard>();
             Hand      = new List<ICard>();
             Discard   = new List<ICard>();
             Graveyard = new List<ICard>();
@@ -68,28 +68,33 @@ namespace Vermines.Player {
 
                     return;
                 }
-                Deck.AddRange(Discard);
-                Discard.Clear();
-                Shuffle();
+                Deck.Merge(Discard);
+                Deck.Shuffle(GameManager.Instance.Config.Seed);
             }
-            ICard card = Deck.Last();
+            ICard card = Deck.Draw();
 
-            Deck.Remove(card);
             Hand.Add(card);
-        }
-
-        public void Shuffle()
-        {
-            System.Random rand = GameManager.Instance.Config.Rand;
-
-            Deck = Deck.OrderBy(card => rand.Next()).ToList();
         }
 
         #endregion
 
-            #region Serialization
+        #region Copy
 
-            public readonly string Serialize()
+        public PlayerDeck DeepCopy()
+        {
+            return new() {
+                Deck      = new List<ICard>(this.Deck),
+                Hand      = new List<ICard>(this.Hand),
+                Discard   = new List<ICard>(this.Discard),
+                Graveyard = new List<ICard>(this.Graveyard)
+            };
+        }
+
+        #endregion
+
+        #region Serialization
+
+        public readonly string Serialize()
         {
             string serializedPlayerDeck = string.Empty;
 

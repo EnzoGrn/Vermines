@@ -56,5 +56,9 @@ namespace Vermines.Config {
 
         [Tooltip("The number of cards that players draw at the end of their turn.")]
         public int DrawPerTurn = 3;
+
+        [Header("Shop")]
+        [Tooltip("Represents the number of cards that will be buyable in each shop")]
+        public int NumerOfCardsProposed = 5;
     }
 }

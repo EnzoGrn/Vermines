@@ -50,6 +50,7 @@ namespace Vermines.CardSystem.Data {
         /// <summary>
         /// The family of the card. Only available if the card has a partisan type. (Default: None)
         /// </summary>
+        [SerializeField]
         private CardFamily _Family = CardFamily.None;
 
         /// <summary>
@@ -71,6 +72,7 @@ namespace Vermines.CardSystem.Data {
         /// The level of the card. Only partisan can have levels.
         /// The level is used to determine the power of the card. It can only be between 1 and 2.
         /// </summary>
+        [SerializeField]
         private int _Level = 0;
 
         /// <summary>
@@ -100,6 +102,7 @@ namespace Vermines.CardSystem.Data {
         /// <summary>
         /// The souls of the card (souls represent the points system of the game).
         /// </summary>
+        [SerializeField]
         private int _Souls = 0;
 
         /// <summary>
@@ -125,6 +128,7 @@ namespace Vermines.CardSystem.Data {
         /// The sprite name of the visual, an item, or a character that represents the card.
         /// Given that the card is a family card.
         /// </summary>
+        [SerializeField]
         private string _SpriteName = string.Empty;
 
         /// <summary>
@@ -145,6 +149,7 @@ namespace Vermines.CardSystem.Data {
         /// <summary>
         /// The sprite of the visual, an item, or a character that represents the card.
         /// </summary>
+        [SerializeField]
         private Sprite _Sprite = null;
 
         /// <summary>
