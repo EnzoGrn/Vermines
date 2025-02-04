@@ -1,4 +1,5 @@
 using Defective.JSON;
+using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,12 @@ namespace Vermines.Utils
 {
     public class JsonSerializeUtils
     {
-        public static Dictionary<string, SplittedJsonFragment> SplitSerializedData(JSONObject json, int maxChunkSize = 512)
+        // https://doc-api.photonengine.com/en/fusion/v2/namespace_fusion.html
+        // Not sure that the header is contained in the payload
+        // Substarct the size of the payload by the header size and the the Offset(int) and NumberOdData(int) that we need to send
+        public const int MaxChunckSize = (RpcAttribute.MaxPayloadSize - (NetworkId.SIZE + 2 + 2) - (sizeof(int) * 2)); // 512 - 8 - 8 (bytes)
+
+        public static Dictionary<string, SplittedJsonFragment> SplitSerializedData(JSONObject json, int maxChunkSize = 492)
         {
             Dictionary<string, SplittedJsonFragment> listJsonFragment = new();
             SplittedJsonFragment jsonFragment = new SplittedJsonFragment(0, 0, 0, new(JSONObject.Type.Array));
@@ -39,14 +45,13 @@ namespace Vermines.Utils
 
                 // Actualize the data
                 jsonFragment.Data.Add(json.list[offset]);
-                jsonFragment.Size += jsonSize;
+                jsonFragment.Size = System.Text.Encoding.UTF8.GetByteCount(jsonFragment.Data.ToString());
                 jsonFragment.NumberOfData = iterations;
 
                 offset++;
 
                 listJsonFragment[jsonFragmentIdx.ToString()] = jsonFragment;
             }
-
             return listJsonFragment;
         }
     }

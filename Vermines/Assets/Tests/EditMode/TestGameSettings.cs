@@ -1,18 +1,19 @@
 using NUnit.Framework;
 using UnityEngine;
-using Vermines.Settings;
 
-namespace Test.Vermines.Settings
-{
-    public class TestGameSettings
-    {
-        private GameSettings _GameSettings;
+using Vermines.Config;
+
+namespace Test.Vermines.Settings {
+
+    public class TestGameConfiguration {
+
+        private GameConfiguration _GameSettings;
 
         [SetUp]
         public void SetUp()
         {
             // Create an instance of the ScriptableObject
-            _GameSettings = ScriptableObject.CreateInstance<GameSettings>();
+            _GameSettings = ScriptableObject.CreateInstance<GameConfiguration>();
         }
 
         [TearDown]
@@ -20,9 +21,7 @@ namespace Test.Vermines.Settings
         {
             // Cleanup the ScriptableObject after each test
             if (_GameSettings != null)
-            {
                 ScriptableObject.DestroyImmediate(_GameSettings);
-            }
         }
 
         [Test]

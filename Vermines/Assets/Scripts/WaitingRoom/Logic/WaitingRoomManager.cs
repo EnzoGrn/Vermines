@@ -1,22 +1,21 @@
 using Fusion;
 using FusionUtilsEvents;
 using UnityEngine;
+using Fusion.Menu;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-namespace Vermines
-{
-    using Fusion.Menu;
-    using System;
-    using System.Collections;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using UnityEngine.SceneManagement;
-    using UnityEngine.UI;
+namespace Vermines {
 
-    // Vermines namespace
-    using Vermines.Settings;
+    using Vermines.Config;
     using Vermines.Player;
     using Vermines.Utils;
     using System.Collections.Generic;
+    using System.Text;
+    using Vermines.Config.Utils;
 
     public class WaitingRoomManager : NetworkBehaviour, IAfterSpawned
     {
@@ -34,7 +33,7 @@ namespace Vermines
         public FusionEvent OnHostMigrationEvent;
 
         [Header("Game Settings")]
-        [SerializeField] private GameSettings _GameSettingsData;
+        [SerializeField] private GameConfiguration _GameSettingsData;
 
         [Header("Network Variable")]
         [Networked, Capacity(10)] public NetworkDictionary<PlayerRef, WaitingRoomPlayerData> Players { get; }
@@ -89,19 +88,8 @@ namespace Vermines
                 return;
             }
 
-            // LoadSceneAsync(gameScene.SceneName);
-
             // Load the game scene
-            // Runner.LoadScene(gameScene.SceneName);
-        }
-
-        private IEnumerator LoadSceneAsync(string sceneName)
-        {
-            yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-
-            Debug.Log("Scene Has Been Loaded !");
-
-            // TODO : Deactivate the UI
+            Runner.LoadScene(gameScene.SceneName);
         }
 
         // Fusion Event (not Fusion interface implementation)
@@ -324,22 +312,36 @@ namespace Vermines
             OnHostMigrationEvent.RemoveResponse(UpdateListOnHostMigration);
         }
 
-        
+        private int OffsetForNoneSettingsField()
+        {
+            int offset = 0;
+
+            foreach (var field in _GameSettingsData.GetType().GetFields())
+            {
+                if (field.GetValue(_GameSettingsData) is ASettingBase)
+                {
+                    break;
+                }
+                offset++;
+            }
+
+            Debug.Log($"Offset = {offset}");
+
+            return offset;
+        }
 
         private void SetGameSettings()
         {
             if (!Runner.IsServer)
                 return;
 
-            Debug.Log(_GameSettingsData.Serialize().ToString());
-
             Dictionary<string, SplittedJsonFragment> data = JsonSerializeUtils.SplitSerializedData(_GameSettingsData.Serialize());
 
-            // Dump the list
+            int additionalOffset = OffsetForNoneSettingsField();
+
             foreach (SplittedJsonFragment jsonFragment in data.Values)
             {
-                RPC_SendGameSettings(jsonFragment.Offset, jsonFragment.NumberOfData, jsonFragment.Data.ToString());
-                Debug.Log($"SplittedJsonFragment; Size: {jsonFragment.Size}, Offest: {jsonFragment.Offset}, Data: {jsonFragment.Data}"); 
+                RPC_SendGameSettings((jsonFragment.Offset + additionalOffset), jsonFragment.NumberOfData, jsonFragment.Data.ToString());
             }
         }
 

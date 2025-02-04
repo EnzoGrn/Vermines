@@ -18,4 +18,9 @@ MonoBehaviour:
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 1
+  _Family: -1
+  _Level: 1
   Eloquence: 2
+  _Souls: 5
+  _SpriteName: Villagers
+  _Sprite: {fileID: 0}
