@@ -14,16 +14,14 @@ namespace Vermines.HUD
 
     public class PhaseBanner : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI phaseText; // Référence au composant Text de l'UI
-        [SerializeField] private PhaseType currentPhase; // Phase actuelle
+        [SerializeField] private TextMeshProUGUI phaseText;
+        [SerializeField] private PhaseType currentPhase;
 
-        // Appelé une fois avant la première exécution d'Update
         void Start()
         {
             UpdatePhaseText();
         }
 
-        // Méthode pour mettre à jour le texte affiché
         public void SetPhase(PhaseType newPhase)
         {
             currentPhase = newPhase;

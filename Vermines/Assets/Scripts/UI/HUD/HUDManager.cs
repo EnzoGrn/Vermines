@@ -9,7 +9,6 @@ using TMPro;
 namespace Vermines.HUD
 {
     /// <summary>
-    /// TODO:
     /// This class is only a placeholder for the real Player class.
     /// This needs to be replaced by the actual Player class.
     /// Do not remove this class, it is used in debugging.
@@ -29,18 +28,18 @@ namespace Vermines.HUD
     {
         public static HUDManager Instance;
 
-        [SerializeField] private Transform playerListParent; // Le parent contenant les bannières
+        [SerializeField] private Transform playerListParent;
         [SerializeField] private GameObject playerBannerPrefab;
         [SerializeField] private GameObject phaseBannerObject;
         [SerializeField] private GameObject deskOverlay;
         [SerializeField] private GameObject marketOverlay;
         [SerializeField] private GameObject cardBuyOverlay;
-        [SerializeField] private TextMeshProUGUI buttonText; // Texte associé au bouton
+        [SerializeField] private TextMeshProUGUI buttonText;
         [SerializeField] private bool debugMode = false;
 
         private List<PlayerBanner> playerBanners = new List<PlayerBanner>();
         private int currentPlayerIndex = 0;
-        private PhaseType currentPhase = PhaseType.Sacrifice; // Phase initiale
+        private PhaseType currentPhase = PhaseType.Sacrifice;
 
         void Awake()
         {
@@ -65,7 +64,7 @@ namespace Vermines.HUD
             }
         }
 
-        public void Initialize(List<PlayerData> players) // TODO: Replace Player with the actual Player class
+        public void Initialize(List<PlayerData> players)
         {
             foreach (var player in players)
             {
@@ -79,7 +78,6 @@ namespace Vermines.HUD
             UpdatePhaseBanner();
         }
 
-        // Appelée lorsqu'on clique sur le bouton
         public void NextPhase()
         {
             switch (currentPhase)
@@ -95,7 +93,7 @@ namespace Vermines.HUD
                     break;
                 case PhaseType.Resolution:
                     currentPhase = PhaseType.Sacrifice;
-                    NextPlayer(); // Change de joueur
+                    NextPlayer();
                     break;
             }
 
@@ -140,11 +138,9 @@ namespace Vermines.HUD
 
             float bannerHeight = playerBanners[1].rectTransform.rect.height;
 
-            // Mise à jour de l'index une fois toutes les animations terminées
             currentPlayerIndex = nextPlayerIndex;
             UpdatePlayerDisplay();
 
-            // Replace la bannière active en bas après la montée
             activeBanner.rectTransform.SetSiblingIndex(playerBanners.Count - 1);
 
             /*
@@ -224,8 +220,9 @@ namespace Vermines.HUD
             marketOverlay.SetActive(false);
         }
 
-        public void OpenCardBuyOverlay()
+        public void OpenCardBuyOverlay(CardInMarket card)
         {
+            cardBuyOverlay.GetComponent<CardBuyBanner>().Setup(card.GetCardData());
             cardBuyOverlay.SetActive(true);
         }
 
