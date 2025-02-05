@@ -3,12 +3,12 @@ using UnityEngine.UI;
 
 namespace Vermines.HUD
 {
-    public class CardInMarket : CardBase
+    public class CardInShop : CardBase
     {
         public void OpenOverlay()
         {
             Debug.Log("Affichage de l'overlay d'achat");
-            HUDManager.Instance.OpenCardBuyOverlay(this);
+            ShopManager.instance.GetShop().OpenCardBuyOverlay(this);
         }
     }
 }

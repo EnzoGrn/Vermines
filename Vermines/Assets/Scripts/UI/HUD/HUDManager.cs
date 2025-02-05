@@ -26,15 +26,15 @@ namespace Vermines.HUD
     /// </summary>
     public class HUDManager : MonoBehaviour
     {
-        public static HUDManager Instance;
+        public static HUDManager instance;
 
         [SerializeField] private Transform playerListParent;
         [SerializeField] private GameObject playerBannerPrefab;
         [SerializeField] private GameObject phaseBannerObject;
         [SerializeField] private GameObject deskOverlay;
-        [SerializeField] private GameObject marketOverlay;
-        [SerializeField] private GameObject cardBuyOverlay;
         [SerializeField] private TextMeshProUGUI buttonText;
+
+        [Header("Debug")]
         [SerializeField] private bool debugMode = false;
 
         private List<PlayerBanner> playerBanners = new List<PlayerBanner>();
@@ -43,12 +43,10 @@ namespace Vermines.HUD
 
         void Awake()
         {
-            if (Instance == null) Instance = this;
+            if (instance == null) instance = this;
             else Destroy(gameObject);
 
             deskOverlay.SetActive(false);
-            marketOverlay.SetActive(false);
-            cardBuyOverlay.SetActive(false);
 
             if (debugMode)
             {
@@ -208,27 +206,6 @@ namespace Vermines.HUD
         public void CloseDeskOverlay()
         {
             deskOverlay.SetActive(false);
-        }
-
-        public void OpenMarketOverlay()
-        {
-            marketOverlay.SetActive(true);
-        }
-
-        public void CloseMarketOverlay()
-        {
-            marketOverlay.SetActive(false);
-        }
-
-        public void OpenCardBuyOverlay(CardInMarket card)
-        {
-            cardBuyOverlay.GetComponent<CardBuyBanner>().Setup(card.GetCardData());
-            cardBuyOverlay.SetActive(true);
-        }
-
-        public void CloseCardBuyOverlay()
-        {
-            cardBuyOverlay.SetActive(false);
         }
     }
 }

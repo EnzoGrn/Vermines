@@ -8,7 +8,7 @@ namespace Vermines.HUD
     public class CardSpawner : MonoBehaviour
     {
         public GameObject cardPrefab;
-        public Transform handContainer, marketContainer, tableContainer;
+        public Transform handContainer, marketContainer, courtyardContainer, tableContainer;
 
         [Header("Debug")]
         public bool debugMode = false;
@@ -34,6 +34,7 @@ namespace Vermines.HUD
                     { 4, debugCardList[4] }
                 };
                 SpawnCardsFromDictionary(debugCardDictionary, "Market");
+                SpawnCardsFromDictionary(debugCardDictionary, "Courtyard");
             }
         }
 
@@ -54,8 +55,12 @@ namespace Vermines.HUD
                 //    newCard.transform.SetParent(handContainer, false);
                 //    break;
                 case "Market":
-                    newCard.AddComponent<CardInMarket>();
+                    newCard.AddComponent<CardInShop>();
                     newCard.transform.SetParent(marketContainer, false);
+                    break;
+                case "Courtyard":
+                    newCard.AddComponent<CardInShop>();
+                    newCard.transform.SetParent(courtyardContainer, false);
                     break;
                 //case "Table":
                 //    newCard.AddComponent<CardOnTable>();

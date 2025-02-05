@@ -13,7 +13,7 @@ namespace Vermines.HUD
 
         private void HandleClick()
         {
-            if (TryGetComponent<CardInMarket>(out var marketCard))
+            if (TryGetComponent<CardInShop>(out var marketCard))
             {
                 marketCard.OpenOverlay();
             }

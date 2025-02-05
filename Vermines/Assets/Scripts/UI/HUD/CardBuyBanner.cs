@@ -66,7 +66,7 @@ namespace Vermines.HUD
         {
             Debug.Log("Card bought!");
             // TODO: add the logic to buy the card in network
-            HUDManager.Instance.CloseCardBuyOverlay();
+            ShopManager.instance.GetShop().CloseCardBuyOverlay();
         }
 
         private void OnValidate()
