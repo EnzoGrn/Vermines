@@ -73,10 +73,10 @@ namespace Vermines.HUD
         {
             if (debugMode)
             {
-                Debug.LogWarning("CardBuyBanner is in debug mode. Don't forget to disable it before building the game.");
+                Debug.LogWarning("CardBuyBanner: Debug mode is enabled. Make sure to disable it before building the game.");
             }
 
-            if (card == null)
+            if (card != null && debugMode)
             {
                 Setup(card);
             }
