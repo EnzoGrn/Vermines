@@ -14,8 +14,8 @@ namespace Vermines {
     using Vermines.Player;
     using Vermines.Utils;
     using System.Collections.Generic;
-    using System.Text;
     using Vermines.Config.Utils;
+    using OMGG.Network.Fusion;
 
     public class WaitingRoomManager : NetworkBehaviour, IAfterSpawned
     {
@@ -40,6 +40,12 @@ namespace Vermines {
 
         [Header("Scene References")]
         [SerializeField] private FusionMenuConfig _SceneConfig;
+
+        #region Private Fields
+        private NetworkQueue _Queue = new NetworkQueue();
+        private int _RpcCounter = 0;
+        [Networked] private int _TotalRpc {  get; set; }
+        #endregion
 
         public override void Spawned()
         {
@@ -75,21 +81,13 @@ namespace Vermines {
             if (!Runner.IsServer)
                 return;
 
-            // TODO : Maybe use the Rpc Queue
-            SetGameSettings();
-
-            // Load the game scene
-            PhotonMenuSceneInfo gameScene = _SceneConfig.AvailableScenes.Find(scene => scene.SceneName == "Game");
-
-            // Check if the game scene is available
-            if (gameScene.Equals(null))
+            if (_GameSettingsData.RandomSeed.Value)
             {
-                Debug.LogError("WaitingRoomManager Game scene not found.");
-                return;
+                _GameSettingsData.Seed = UnityEngine.Random.Range(0, int.MaxValue);
             }
 
-            // Load the game scene
-            Runner.LoadScene(gameScene.SceneName);
+            // TODO : Maybe use the Rpc Queue
+            SetGameSettings();
         }
 
         // Fusion Event (not Fusion interface implementation)
@@ -330,8 +328,18 @@ namespace Vermines {
             return offset;
         }
 
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
+        private void RPC_AddListenerToAllClients()
+        {
+            _Queue.EnqueueRPC(() => {
+                _Queue.OnQueueProcessingDone.AddListener(IsClientReady);
+            });
+        }
+
         private void SetGameSettings()
         {
+            RPC_AddListenerToAllClients();
+
             if (!Runner.IsServer)
                 return;
 
@@ -339,17 +347,114 @@ namespace Vermines {
 
             int additionalOffset = OffsetForNoneSettingsField();
 
+            _TotalRpc = data.Values.Count;
+            Debug.LogWarning("_TotalRpc -> " + _TotalRpc);
+
             foreach (SplittedJsonFragment jsonFragment in data.Values)
             {
                 RPC_SendGameSettings((jsonFragment.Offset + additionalOffset), jsonFragment.NumberOfData, jsonFragment.Data.ToString());
             }
         }
 
+        private void IsClientReady()
+        {
+            Debug.LogWarning($"_RpcCounter -> {_RpcCounter}, _TotalRpc {_TotalRpc}");
+
+            if (_RpcCounter != _TotalRpc)
+            {
+                Debug.LogWarning("Cannot load the game not all rpc as been executed");
+                return;
+            }
+
+            // Set the isReady of the playerRef to true
+            WaitingRoomPlayerData playerData = Players.Get(Runner.LocalPlayer);
+            playerData.IsReady = true;
+            Players.Set(Runner.LocalPlayer, playerData);
+
+            if (Runner.IsServer)
+            {
+                TryToLoadGameScene();
+            }
+            else
+            {
+                // Remove the listener
+
+                //_Queue.OnQueueProcessingDone.RemoveListener(IsClientReady);
+                Debug.Log("Call RPC_NotifyHostClientIsReady");
+                Debug.Log($"Is this object networked? {Object != null}");
+                Debug.Log($"Is this object is valid? {Object.IsValid}");
+
+                Debug.Log($"Does it have StateAuthority? {Object.HasStateAuthority}");
+                Debug.Log($"Does it have InputAuthority? {Object.HasInputAuthority}");
+                // Call an RPC to notify the host that the client is ready
+                RPC_NotifyHostClientIsReady();
+                Debug.Log("Call RPC_NotifyHostClientIsReady as been done !");
+
+            }
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
+        private void RPC_NotifyHostClientIsReady()
+        {
+            Debug.Log("sfjsdkfjsdjfslkdjf");
+
+            _Queue.EnqueueRPC(() =>
+            {
+                Debug.Log($"RPC_NotifyHostClientIsReady: RPC RECEIVED ARE YOU THE HOST : {Runner.IsServer}");
+
+                if (!Runner.IsServer)
+                    return;
+
+                Debug.LogWarning("Server Will TryToLoadGameScene");
+                TryToLoadGameScene();
+            });
+        }
+
+        private void TryToLoadGameScene()
+        {
+            Debug.Log("TryToLoadGameScene");
+
+            if (!Runner.IsServer)
+                return;
+
+            // Check if all clients are ready
+            foreach (var player in Players)
+            {
+                if (!player.Value.IsReady)
+                {
+                    Debug.LogWarning("Not all the players are ready");
+                    return;
+                }
+            }
+
+            _Queue.OnQueueProcessingDone.RemoveListener(IsClientReady);
+            Debug.LogWarning("OK Done");
+
+            //// Load the game scene
+            //PhotonMenuSceneInfo gameScene = _SceneConfig.AvailableScenes.Find(scene => scene.SceneName == "Game");
+
+            //// Check if the game scene is available
+            //if (gameScene.Equals(null))
+            //{
+            //    Debug.LogError("WaitingRoomManager Game scene not found.");
+            //    return;
+            //}
+
+            //_Queue.OnQueueProcessingDone.RemoveListener(LoadGameScene);
+
+            //// Load the game scene
+            //Runner.LoadScene(gameScene.SceneName);
+        }
+
         #region RPC
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
         private void RPC_SendGameSettings(int offset, int numberOfData, string serializedGameSettings)
         {
-            _GameSettingsData.Deserialize(serializedGameSettings, offset, numberOfData);
+            _RpcCounter++;
+            _Queue.EnqueueRPC(() => {
+                _GameSettingsData.Deserialize(serializedGameSettings, offset, numberOfData);
+            });
+            Debug.LogWarning("_RpcCounter -> " + _RpcCounter);
         }
         #endregion
     }

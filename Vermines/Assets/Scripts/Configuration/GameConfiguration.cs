@@ -30,6 +30,7 @@ namespace Vermines.Config {
                 {
                     _Seed = value;
                     Rand = new System.Random(value);
+                    GameSeed.Value = _Seed;
                 }
             }
         }
@@ -189,6 +190,7 @@ namespace Vermines.Config {
         [Tooltip("Seed for random number generation (set to 0 for random seed).")]
         public BoolSetting RandomSeed = new("Random Seed", true, "Advanced Settings");
 
+        public IntSetting GameSeed = new("Seed", 0, 0, int.MaxValue, "Advanced Settings");
         #endregion
 
         #region Method

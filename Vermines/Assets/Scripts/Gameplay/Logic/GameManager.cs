@@ -68,8 +68,9 @@ namespace Vermines {
         {
             if (HasStateAuthority == false)
                 return;
-            if (Config.RandomSeed.Value == true)
-                Config.Seed = Random.Range(0, int.MaxValue);
+            // Now directly handle by the Waiting Room.
+            //if (Config.RandomSeed.Value == true)
+            //    Config.Seed = Random.Range(0, int.MaxValue);
             if (_Initializer.InitializePlayers(Config.Seed, Config.EloquenceToStartWith.Value) == -1)
                 return;
             if (_Initializer.DeckDistribution(Config.Rand) == -1)

@@ -60,6 +60,8 @@ namespace Vermines.Config.Utils {
             {
                 Value = (int)json.GetField("value").intValue;
             }
+
+            Debug.Log("Name -> " + Name + ", Value" +  Value);
         }
     }
 }
