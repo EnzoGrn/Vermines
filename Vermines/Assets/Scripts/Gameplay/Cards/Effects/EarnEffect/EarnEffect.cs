@@ -1,0 +1,126 @@
+using System.Collections.Generic;
+using OMGG.DesignPattern;
+using UnityEngine;
+using Fusion;
+
+namespace Vermines.Gameplay.Cards.Effect {
+
+    using Vermines.CardSystem.Data.Effect;
+    using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Commands.Cards.Effects;
+
+    [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Earn/Earn data.")]
+    public class EarnEffect : AEffect {
+
+        #region Constants
+
+        private static readonly string eloquenceTemplate   = "<b><color=purple>{0}E</color></b>";
+        private static readonly string soulTemplate        = "<b><color=red>{0}A</color></b>";
+        private static readonly string descriptionTemplate = "Earn ";
+
+        #endregion
+
+        #region Properties
+
+        [SerializeField]
+        private string _Description;
+
+        public override string Description
+        {
+            get => _Description;
+            set
+            {
+                _Description = value;
+            }
+        }
+
+        [SerializeField]
+        private int _Amount = 1;
+
+        public int Amount
+        {
+            get => _Amount;
+            set
+            {
+                _Amount = value;
+
+                UpdateDescription();
+            }
+        }
+
+        [SerializeField]
+        private DataType _DataToEarn = DataType.Eloquence;
+
+        public DataType DataToEarn
+        {
+            get => _DataToEarn;
+            set
+            {
+                _DataToEarn = value;
+
+                UpdateDescription();
+            }
+        }
+
+        #endregion
+
+        #region UI Elements
+
+        public Sprite EloquenceIcon = null;
+        public Sprite SoulIcon      = null;
+
+        #endregion
+
+        public override void Play(PlayerRef player)
+        {
+            ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
+
+            CommandInvoker.ExecuteCommand(earnCommand);
+
+            base.Play(player);
+        }
+
+        public override List<(string, Sprite)> Draw()
+        {
+            List<(string, Sprite)> elements = new();
+
+            if (DataToEarn == DataType.Eloquence) {
+                elements.Add(($"+{Amount}E", EloquenceIcon));
+                elements.Add((null, EloquenceIcon));
+            } else if (DataToEarn == DataType.Soul) {
+                elements.Add(($"+{Amount}A", SoulIcon));
+                elements.Add((null, SoulIcon));
+            }
+
+            return elements;
+        }
+
+        protected override void UpdateDescription()
+        {
+            if (DataToEarn == DataType.Eloquence)
+                Description = $"{descriptionTemplate}{string.Format(eloquenceTemplate, Amount)}";
+            else if (DataToEarn == DataType.Soul)
+                Description = $"{descriptionTemplate}{string.Format(soulTemplate, Amount)}";
+            Description += ".";
+        }
+
+        private void OnEnable()
+        {
+            UpdateDescription();
+
+            if (EloquenceIcon == null)
+                EloquenceIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Eloquence");
+            if (SoulIcon == null)
+                SoulIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Souls");
+        }
+
+        #region Editor Editor
+
+        public override void OnValidate()
+        {
+            UpdateDescription();
+        }
+
+        #endregion
+    }
+}

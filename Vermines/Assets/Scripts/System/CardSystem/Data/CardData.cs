@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.CardSystem.Data {
 
     using Vermines.CardSystem.Enumerations;
+    using Vermines.CardSystem.Data.Effect;
 
     [CreateAssetMenu(fileName = "New Card", menuName = "Vermines/Card System/Create a new card")]
     public class CardData : ScriptableObject {
@@ -89,6 +91,12 @@ namespace Vermines.CardSystem.Data {
                     _Level = 0;
             }
         }
+
+        #endregion
+
+        #region Effects
+
+        public List<IEffect> Effects;
 
         #endregion
 

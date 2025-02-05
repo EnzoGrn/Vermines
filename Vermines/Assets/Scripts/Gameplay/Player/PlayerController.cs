@@ -31,6 +31,10 @@ namespace Vermines.Player {
                 ShopType = shopType,
                 Slot     = slot
             };
+            // TODO: Check if the player can buy the card
+            // Because I think, only the host can buy without problem
+            // Wait the shop is implemented to try to buy a card
+            // If it's not work, it's because the CheckBuyCommand edit the data of the player and only the host can (I think)
             ICommand buyCommand = new CheckBuyCommand(parameters);
 
             CommandInvoker.ExecuteCommand(buyCommand);

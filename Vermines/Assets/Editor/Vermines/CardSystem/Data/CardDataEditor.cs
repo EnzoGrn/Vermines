@@ -3,11 +3,11 @@ using UnityEngine;
 using System.IO;
 
 namespace Vermines.CardSystem.Data {
-
+    using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
 
     [CustomEditor(typeof(CardData))]
-    public class CardDataEditor : Editor {
+    public class CardDataEditor : UnityEditor.Editor {
 
         private bool _ShowProperties = true;
         private bool _ShowStats      = true;
@@ -33,7 +33,7 @@ namespace Vermines.CardSystem.Data {
             cardData.Description = EditorGUILayout.TextField(new GUIContent("Card Description", "The description of every action that the card can perform."), cardData.Description);
 
             GUILayout.Space(5);
-            DrawDescriptionPreview(cardData.Description);
+            Vermines.Editor.Utils.DescriptionUtils.DrawDescriptionPreview(cardData.Description);
             GUILayout.Space(5);
 
             // [Tooltip("Number of exemplars of the card. (Use in Editing mode and when the cards are loading)")]
