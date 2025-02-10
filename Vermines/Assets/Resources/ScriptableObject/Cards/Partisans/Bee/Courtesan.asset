@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Courtesan
   m_EditorClassIdentifier: 
   Name: Courtesan
-  Description: Draw two cards
   Exemplars: 1
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 0
   _Level: 2
+  Effects:
+  - {fileID: 11400000, guid: a7156f45f60511d4e96ca1d0bcd3ac12, type: 2}
   Eloquence: 12
   _Souls: 20
   _SpriteName: 

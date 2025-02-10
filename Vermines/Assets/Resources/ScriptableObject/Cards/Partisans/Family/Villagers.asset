@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Villagers
   m_EditorClassIdentifier: 
   Name: Villagers
-  Description: Discard the <b>villager</b> to earn <b><color=purple>2E</color></b>.
   Exemplars: 2
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 1
   _Family: -1
   _Level: 1
+  Effects:
+  - {fileID: 11400000, guid: d9211d323b393e14b95463cb72c961d5, type: 2}
   Eloquence: 2
   _Souls: 5
   _SpriteName: Villagers

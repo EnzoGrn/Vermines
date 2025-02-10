@@ -102,7 +102,7 @@ namespace Vermines {
         public void SetEloquence(PlayerRef player, int eloquence)
         {
             if (HasStateAuthority == false)
-                    return;
+                return;
             if (PlayerData.TryGet(player, out PlayerData data) == true) {
                 data.Eloquence = eloquence;
 

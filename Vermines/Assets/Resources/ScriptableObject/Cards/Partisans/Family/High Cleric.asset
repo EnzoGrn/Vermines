@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: High Cleric
   m_EditorClassIdentifier: 
   Name: High Cleric
-  Description: Earn <b><color=purple>4E</color></b>.
   Exemplars: 1
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 1
   _Family: -1
   _Level: 2
+  Effects:
+  - {fileID: 11400000, guid: 19ea749eb0e80834f984c4196ee7f658, type: 2}
   Eloquence: 8
   _Souls: 20
   _SpriteName: Archbishop

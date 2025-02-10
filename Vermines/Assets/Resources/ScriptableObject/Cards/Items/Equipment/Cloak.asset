@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Cloak
   m_EditorClassIdentifier: 
   Name: Cloak
-  Description: Earn <b><color=purple>2E</color></b>.
   Exemplars: 2
   IsStartingCard: 0
   Type: 1
   IsFamilyCard: 0
   _Family: -1
   _Level: 0
+  Effects:
+  - {fileID: 11400000, guid: 9551e3acdbfcd04409fa20e813879934, type: 2}
   Eloquence: 5
   _Souls: 0
   _SpriteName: 

@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Bard
   m_EditorClassIdentifier: 
   Name: Bard
-  Description: Earn <b><color=purple>8E</color></b>.
   Exemplars: 1
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 0
   _Level: 2
+  Effects:
+  - {fileID: 11400000, guid: ebb6ac8cc7ba7454d8173dce0441b3eb, type: 2}
   Eloquence: 14
   _Souls: 25
   _SpriteName: 

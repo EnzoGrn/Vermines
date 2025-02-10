@@ -20,6 +20,8 @@ MonoBehaviour:
   IsFamilyCard: 0
   _Family: -1
   _Level: 0
+  Effects:
+  - {fileID: 11400000, guid: a7a1257fc81adb54897727cc4870201b, type: 2}
   Eloquence: 3
   _Souls: 0
   _SpriteName: 

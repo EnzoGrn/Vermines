@@ -128,8 +128,10 @@ namespace Vermines.CardSystem.Data {
         /// Becare, if a card is anonyme you can't access it, so at beginning every card are not anonyme for access everything
         /// </summary>
         /// <returns>Every card wanted with the request</returns>
-        public List<ICard> GetEveryCardWith(Func<ICard, bool> filter)
+        public List<ICard> GetEveryCardWith(Func<ICard, bool> filter = null)
         {
+            if (filter == null)
+                return _Cards;
             return _Cards.Where(filter).ToList();
         }
 
@@ -164,8 +166,20 @@ namespace Vermines.CardSystem.Data {
 
             log.AppendLine("[SERVER][DEBUG]: Database information:");
 
-            foreach (ICard card in _Cards)
-                log.AppendLine($"{card.ID} | {card.Data.name}");
+            foreach (ICard card in _Cards) {
+                if (card == null || card.Data == null)
+                    continue;
+                string description = string.Empty;
+
+                for (int i = 0; i < card.Data.Effects.Count; i++) {
+                    if (card.Data.Effects[i] == null)
+                        continue;
+                    description += card.Data.Effects[i].Description + (i + 1 == card.Data.Effects.Count ? "" : "\n");
+                }
+
+                log.AppendLine($"{card.ID}[{card.Data.Name}]:\n{description}");
+            }
+
             Debug.Log(log.ToString());
         }
     }
