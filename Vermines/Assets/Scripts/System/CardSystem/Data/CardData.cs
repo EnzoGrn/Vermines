@@ -96,7 +96,7 @@ namespace Vermines.CardSystem.Data {
 
         #region Effects
 
-        public List<IEffect> Effects;
+        public List<AEffect> Effects;
 
         #endregion
 

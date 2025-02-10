@@ -92,6 +92,8 @@ namespace Vermines.Gameplay.Cards.Effect {
                     Description = $"{string.Format(descriptionTemplate, "{card_name}")}{linkerTemplate}{subDescription}";
                 }
             }
+
+            Description += ".";
         }
 
         private void OnEnable()

@@ -7,16 +7,15 @@ namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Gameplay.Commands.Cards.Effects;
+    using Vermines.Gameplay.Commands.Deck;
 
-    [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Earn/Earn data.")]
-    public class EarnEffect : AEffect {
+    [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Draw/Draw cards.")]
+    public class DrawEffect : AEffect {
 
         #region Constants
 
-        private static readonly string eloquenceTemplate   = "<b><color=purple>{0}E</color></b>";
-        private static readonly string soulTemplate        = "<b><color=red>{0}A</color></b>";
-        private static readonly string descriptionTemplate = "Earn ";
+        private static readonly string drawTemplate = "Draw {0} card";
+        private static readonly string linkerTemplate = " then ";
 
         #endregion
 
@@ -66,30 +65,32 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #region UI Elements
 
-        public Sprite EloquenceIcon = null;
-        public Sprite SoulIcon      = null;
+        public Sprite DrawIcon = null;
+        public Sprite Then = null;
 
         #endregion
 
         public override void Play(PlayerRef player)
         {
-            ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
+            for (int i = 0; i < Amount; i++) {
+                ICommand drawCommand = new DrawCommand(player);
 
-            CommandInvoker.ExecuteCommand(earnCommand);
+                CommandInvoker.ExecuteCommand(drawCommand);
+            }
 
             base.Play(player);
         }
 
         public override List<(string, Sprite)> Draw()
         {
-            List<(string, Sprite)> elements = new();
+            List<(string, Sprite)> elements = new() {
+                { (null       , DrawIcon) },
+                { ($"{Amount}", null) }
+            };
 
-            if (DataToEarn == DataType.Eloquence) {
-                elements.Add(($"+{Amount}E", EloquenceIcon));
-                elements.Add((null, EloquenceIcon));
-            } else if (DataToEarn == DataType.Soul) {
-                elements.Add(($"+{Amount}A", SoulIcon));
-                elements.Add((null, SoulIcon));
+            if (SubEffect != null) {
+                elements.Add((null, Then));
+                elements.AddRange(SubEffect.Draw());
             }
 
             return elements;
@@ -97,20 +98,27 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         protected override void UpdateDescription()
         {
-            if (DataToEarn == DataType.Eloquence)
-                Description = $"{descriptionTemplate}{string.Format(eloquenceTemplate, Amount)}";
-            else if (DataToEarn == DataType.Soul)
-                Description = $"{descriptionTemplate}{string.Format(soulTemplate, Amount)}";
+            Description = $"{string.Format(drawTemplate, Amount)}";
+
+            if (Amount > 1)
+                Description += "s";
+            if (SubEffect != null) {
+                string subDescription = SubEffect.Description;
+
+                if (subDescription.Length > 0)
+                    subDescription = char.ToLower(subDescription[0]) + subDescription[1..];
+                Description += $" {linkerTemplate} {subDescription}";
+            }
         }
 
         private void OnEnable()
         {
             UpdateDescription();
 
-            if (EloquenceIcon == null)
-                EloquenceIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Eloquence");
-            if (SoulIcon == null)
-                SoulIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Souls");
+            if (DrawIcon == null)
+                DrawIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Draw");
+            if (Then == null)
+                Then = Resources.Load<Sprite>("Sprites/UI/Effects/Then");
         }
 
         #region Editor Editor

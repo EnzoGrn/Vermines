@@ -3,6 +3,7 @@ using UnityEngine;
 using System.IO;
 
 namespace Vermines.CardSystem.Data {
+    using UnityEngine.TextCore.Text;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
 
@@ -30,11 +31,29 @@ namespace Vermines.CardSystem.Data {
             cardData.Name = EditorGUILayout.TextField(new GUIContent("Card Name", "The name of the card."), cardData.Name);
 
             // [Tooltip("The description of every action that the card can perform.")]
-            cardData.Description = EditorGUILayout.TextField(new GUIContent("Card Description", "The description of every action that the card can perform."), cardData.Description);
+            string description = string.Empty;
+
+            for (int i = 0; i <  cardData.Effects.Count; i++) {
+                if (cardData.Effects[i] == null)
+                    continue;
+                description += cardData.Effects[i].Description + (i + 1 == cardData.Effects.Count ? "" : "\n");
+            }
 
             GUILayout.Space(5);
-            Vermines.Editor.Utils.DescriptionUtils.DrawDescriptionPreview(cardData.Description);
+            Vermines.Editor.Utils.DescriptionUtils.DrawDescriptionPreview(description);
             GUILayout.Space(5);
+
+            if (cardData.Effects.Count > 0) {
+                EditorGUILayout.LabelField("Effect Preview :", EditorStyles.boldLabel);
+
+                EditorGUILayout.BeginHorizontal();
+
+                for (int i = 0; i < cardData.Effects.Count; i++)
+                    DrawEffect(cardData.Effects[i], (i + 1) == cardData.Effects.Count);
+
+                GUILayout.EndVertical();
+                GUILayout.Space(5);
+            }
 
             // [Tooltip("Number of exemplars of the card. (Use in Editing mode and when the cards are loading)")]
             cardData.Exemplars = EditorGUILayout.IntField(new GUIContent("Exemplars", "Number of exemplars of the card. (Use in Editing mode and when the cards are loading).\nThis value must be superior to 0."), cardData.Exemplars);
@@ -86,6 +105,20 @@ namespace Vermines.CardSystem.Data {
             }
             // -- EOF --
 
+            // -- [Header("Card Effects")]
+            GUILayout.Space(10);
+            GUILayout.BeginVertical(EditorStyles.helpBox);
+
+            // [Tooltip("The effects of the card.")]
+            SerializedProperty effects = serializedObject.FindProperty("Effects");
+
+            EditorGUILayout.PropertyField(effects, new GUIContent("Effects"), true);
+
+            GUILayout.EndVertical();
+
+            serializedObject.ApplyModifiedProperties();
+            // -- EOF --
+
             // -- [Header("Card Stats")]
             if (cardData.IsStartingCard == false || cardData.Type == CardType.Partisan) {
                 _ShowStats = EditorGUILayout.Foldout(_ShowStats, "Card Stats", true);
@@ -129,7 +162,6 @@ namespace Vermines.CardSystem.Data {
 
                 DrawAllSpritePreview(cardData.SpriteName);
             }
-
             GUILayout.EndVertical();
             // -- EOF --
 
@@ -138,38 +170,33 @@ namespace Vermines.CardSystem.Data {
                 EditorUtility.SetDirty(cardData);
         }
 
-        private void DrawDescriptionPreview(string description)
+        private void DrawEffect(AEffect effect, bool last = true)
         {
-            if (description.Equals(string.Empty))
+            if (effect == null)
                 return;
-            GUILayout.BeginVertical(EditorStyles.helpBox);
-            GUILayout.Label("Description Preview", EditorStyles.boldLabel);
-            GUILayout.Space(10);
-
-            // Transform the description into a rich text preview
-            string preview = FormatDescription(description);
-
-            // Display the formatted description
-            GUIStyle richTextStyle = new(EditorStyles.label) {
-                richText = true,
-                wordWrap = true
+            GUIStyle textStyle = new(EditorStyles.boldLabel) {
+                fontSize = 24
             };
-            GUILayout.Label(preview, richTextStyle);
 
-            GUILayout.EndVertical();
-        }
+            foreach (var element in effect.Draw()) {
+                if (element.Item1 != null) { // -- Text
+                    GUILayout.Label(element.Item1, textStyle, GUILayout.ExpandWidth(false));
+                } else { // -- Icon
+                    Texture2D iconTexture = AssetPreview.GetAssetPreview(element.Item2);
+                    Rect iconRect = GUILayoutUtility.GetRect(32, 32, GUILayout.Width(32), GUILayout.Height(32));
 
-        private string FormatDescription(string description)
-        {
-            // Red color for '{number}A'
-            description = System.Text.RegularExpressions.Regex.Replace(description, @"\{(\d+)A\}", "<color=red>{$1A}</color>");
+                    if (iconTexture != null)
+                        GUI.DrawTexture(iconRect, iconTexture, ScaleMode.ScaleToFit);
+                }
+            }
 
-            // Purple color for '{number}E' 
-            description = System.Text.RegularExpressions.Regex.Replace(description, @"\{(\d+)E\}", "<color=purple>{$1E}</color>");
-
-            description = description.Replace("<br>", "<b><br></b>");
-
-            return description;
+            if (!last) {
+                GUILayout.EndHorizontal();
+                EditorGUILayout.Space(1);
+                EditorGUILayout.LabelField("-------------", EditorStyles.boldLabel);
+                EditorGUILayout.Space(1);
+                EditorGUILayout.BeginHorizontal();
+            }
         }
 
         private void DrawSpritePreview(Sprite sprite, CardType type, CardFamily family)

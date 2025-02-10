@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bb757b4499f6c1429a162d44d6a92ad, type: 3}
-  m_Name: Earn1E
+  m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
+  m_Name: ScepterEffect
   m_EditorClassIdentifier: 
+  _Type: 0
   _Description: Earn <b><color=purple>1E</color></b>.
-  _Amount: 1
-  _DataToEarn: 0
-  EloquenceIcon: {fileID: 21300000, guid: 4bfc719361e4f1f49a3001672b1d6bca, type: 3}
-  SoulIcon: {fileID: 21300000, guid: a3c4b0860b11f9145b70a7d40201e163, type: 3}
+  _SubEffect: {fileID: 11400000, guid: b808e43bd63549a42aa6f6db8c9d6ee3, type: 2}

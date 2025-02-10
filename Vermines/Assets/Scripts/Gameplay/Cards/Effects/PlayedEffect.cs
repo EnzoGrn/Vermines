@@ -52,6 +52,14 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        protected override void UpdateDescription()
+        {
+            base.UpdateDescription();
+
+            if (SubEffect != null)
+                Description += ".";
+        }
+
         public override List<(string, Sprite)> Draw()
         {
             if (SubEffect != null)
