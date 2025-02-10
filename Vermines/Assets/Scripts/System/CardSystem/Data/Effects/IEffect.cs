@@ -48,7 +48,7 @@ namespace Vermines.CardSystem.Data.Effect {
         /// <summary>
         /// The reference of the card.
         /// </summary>
-        protected ICard Card { get; set; }
+        public ICard Card { get; set; }
 
         /// <summary>
         /// The description of the effect.
@@ -70,6 +70,8 @@ namespace Vermines.CardSystem.Data.Effect {
         public void Initialize(ICard card)
         {
             Card = card;
+        
+            UpdateDescription();
         }
 
         public virtual void Play(PlayerRef player)

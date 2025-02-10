@@ -9,11 +9,18 @@ namespace Vermines.Player {
 
     public class PlayerController : NetworkBehaviour {
 
+        public static PlayerController Local { get; private set; }
+
+        public PlayerRef PlayerRef => Object.InputAuthority;
+
         #region Override Methods
 
         public override void Spawned()
         {
             name = NetworkNameTools.GiveNetworkingObjectName(Object.InputAuthority, HasInputAuthority, HasStateAuthority);
+
+            if (HasInputAuthority)
+                Local = this;
         }
 
         #endregion

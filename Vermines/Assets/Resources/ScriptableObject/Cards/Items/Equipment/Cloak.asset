@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Cloak
   m_EditorClassIdentifier: 
   Name: Cloak
-  Description: Earn <b><color=purple>2E</color></b>.
   Exemplars: 2
   IsStartingCard: 0
   Type: 1

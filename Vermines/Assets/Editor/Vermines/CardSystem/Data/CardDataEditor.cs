@@ -3,9 +3,13 @@ using UnityEngine;
 using System.IO;
 
 namespace Vermines.CardSystem.Data {
+    using NUnit.Framework;
+    using System.Collections.Generic;
+    using System.Xml.Linq;
     using UnityEngine.TextCore.Text;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Cards.Effect;
 
     [CustomEditor(typeof(CardData))]
     public class CardDataEditor : UnityEditor.Editor {
@@ -48,8 +52,7 @@ namespace Vermines.CardSystem.Data {
 
                 EditorGUILayout.BeginHorizontal();
 
-                for (int i = 0; i < cardData.Effects.Count; i++)
-                    DrawEffect(cardData.Effects[i], (i + 1) == cardData.Effects.Count);
+                DrawEffect(cardData.Draw());
 
                 GUILayout.EndVertical();
                 GUILayout.Space(5);
@@ -170,16 +173,25 @@ namespace Vermines.CardSystem.Data {
                 EditorUtility.SetDirty(cardData);
         }
 
-        private void DrawEffect(AEffect effect, bool last = true)
+        private void DrawEffect(List<(string, Sprite)> effects)
         {
-            if (effect == null)
+            if (effects == null)
                 return;
             GUIStyle textStyle = new(EditorStyles.boldLabel) {
-                fontSize = 24
+                fontSize = 24,
             };
 
-            foreach (var element in effect.Draw()) {
-                if (element.Item1 != null) { // -- Text
+            foreach (var element in effects) {
+                if (element.Item1 == "Separator") { // -- Effect separator
+                    GUILayout.EndHorizontal();
+                    Texture2D separator = AssetPreview.GetAssetPreview(Resources.Load<Sprite>("Sprites/UI/Effects/Separator"));
+
+                    Rect iconRect = GUILayoutUtility.GetRect(125, 16, GUILayout.Width(125), GUILayout.Height(16));
+
+                    if (separator != null)
+                        GUI.DrawTexture(iconRect, separator);
+                    EditorGUILayout.BeginHorizontal();
+                } else if (element.Item1 != null) { // -- Text
                     GUILayout.Label(element.Item1, textStyle, GUILayout.ExpandWidth(false));
                 } else { // -- Icon
                     Texture2D iconTexture = AssetPreview.GetAssetPreview(element.Item2);
@@ -188,14 +200,6 @@ namespace Vermines.CardSystem.Data {
                     if (iconTexture != null)
                         GUI.DrawTexture(iconRect, iconTexture, ScaleMode.ScaleToFit);
                 }
-            }
-
-            if (!last) {
-                GUILayout.EndHorizontal();
-                EditorGUILayout.Space(1);
-                EditorGUILayout.LabelField("-------------", EditorStyles.boldLabel);
-                EditorGUILayout.Space(1);
-                EditorGUILayout.BeginHorizontal();
             }
         }
 
