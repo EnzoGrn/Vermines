@@ -2,7 +2,6 @@ using OMGG.DesignPattern;
 using Fusion;
 
 namespace Vermines.Player {
-
     using Vermines.Network.Utilities;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;

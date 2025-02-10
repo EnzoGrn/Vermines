@@ -16,6 +16,7 @@ namespace Vermines {
     using System.Collections.Generic;
     using Vermines.Config.Utils;
     using OMGG.Network.Fusion;
+    using System.Collections;
 
     public class WaitingRoomManager : NetworkBehaviour, IAfterSpawned
     {
@@ -98,13 +99,16 @@ namespace Vermines {
             // Add player in the list if the player is the host
             if (networkRunner.IsServer)
             {
-                WaitingRoomPlayerData playerData = new WaitingRoomPlayerData
-                {
-                    Nickname = "Player " + player.PlayerId,
-                    PlayerRef = player,
-                    IsHost = (networkRunner.LocalPlayer == player)
-                };
+                WaitingRoomPlayerData playerData = new WaitingRoomPlayerData(player, networkRunner.LocalPlayer == player);
                 Players.Set(player, playerData);
+
+                //WaitingRoomPlayerData playerData = new WaitingRoomPlayerData
+                //{
+                //    Nickname = "Player " + player.PlayerId,
+                //    PlayerRef = player,
+                //    IsHost = (networkRunner.LocalPlayer == player)
+                //};
+                //playerData.OnIsReadyUpdated = new UnityEngine.Events.UnityEvent();
 
                 UpdateStartButtonState();
             }
@@ -163,12 +167,15 @@ namespace Vermines {
                         continue;
                     }
 
-                    WaitingRoomPlayerData newPlayerData = new WaitingRoomPlayerData
-                    {
-                        Nickname = "Player " + playerData.Value.PlayerRef,
-                        PlayerRef = playerData.Value.PlayerRef,
-                        IsHost = (networkRunner.LocalPlayer == playerData.Value.PlayerRef)
-                    };
+                    WaitingRoomPlayerData newPlayerData = new WaitingRoomPlayerData(playerData.Value.PlayerRef, playerData.Value.IsHost);
+
+                    //WaitingRoomPlayerData newPlayerData = new WaitingRoomPlayerData
+                    //{
+                    //    Nickname = "Player " + playerData.Value.PlayerRef,
+                    //    PlayerRef = playerData.Value.PlayerRef,
+                    //    IsHost = (networkRunner.LocalPlayer == playerData.Value.PlayerRef),
+                    //    OnIsReadyUpdated = new()
+                    //};
 
                     // Update the player data by setting the new player data
                     Players.Set(playerData.Value.PlayerRef, newPlayerData);
@@ -343,6 +350,23 @@ namespace Vermines {
             if (!Runner.IsServer)
                 return;
 
+            //foreach (var player in Players)
+            //{
+            //    // TODO : Do it when we instantiate the player
+            //    WaitingRoomPlayerData playerData = player.Value; // Copy the struct
+
+            //    //playerData.OnIsReadyUpdated = new UnityEngine.Events.UnityEvent();
+
+            //    if (playerData.OnIsReadyUpdated == null)
+            //    {
+            //        Debug.LogWarning("playerData.OnIsReadyUpdated is null !");
+            //        continue;
+            //    }
+
+            //    playerData.OnIsReadyUpdated.AddListener(TryToLoadGameScene);
+            //    Players.Set(player.Key, playerData); // Assign it back to the dictionary
+            //}
+
             Dictionary<string, SplittedJsonFragment> data = JsonSerializeUtils.SplitSerializedData(_GameSettingsData.Serialize());
 
             int additionalOffset = OffsetForNoneSettingsField();
@@ -352,10 +376,12 @@ namespace Vermines {
 
             foreach (SplittedJsonFragment jsonFragment in data.Values)
             {
+                // Use RpcLocalInvokeResult  for the last one to know when every Rpc are done, thanks to the Reliable Channel
                 RPC_SendGameSettings((jsonFragment.Offset + additionalOffset), jsonFragment.NumberOfData, jsonFragment.Data.ToString());
             }
         }
 
+        // TODO : Find a better way to get notified when a client is ready.
         private void IsClientReady()
         {
             Debug.LogWarning($"_RpcCounter -> {_RpcCounter}, _TotalRpc {_TotalRpc}");
@@ -368,82 +394,136 @@ namespace Vermines {
 
             // Set the isReady of the playerRef to true
             WaitingRoomPlayerData playerData = Players.Get(Runner.LocalPlayer);
+            
             playerData.IsReady = true;
-            Players.Set(Runner.LocalPlayer, playerData);
+            
+            Players.Set(playerData.PlayerRef, playerData);
+
+            foreach (var player in Players)
+            {
+                // Display player is ready
+                Debug.Log($" Player name : {player.Value.Nickname}, is Ready {player.Value.IsReady}" );
+            }
 
             if (Runner.IsServer)
             {
-                TryToLoadGameScene();
+                // Start TryToLoadGameScene
+                //Rpc_MyStaticRpc(Runner, playerData.PlayerRef.PlayerId);
+
+                StartCoroutine(TryToLoadGameScene());
+                //StopAllCoroutines();
             }
             else
             {
-                // Remove the listener
+                if (!Object.HasStateAuthority) // Only request if we don't already have authority
+                {
+                    Debug.LogWarning("!Object.HasStateAuthority");
+                    Object.RequestStateAuthority();
+                    Object.RequestStateAuthority();
+                }
 
-                //_Queue.OnQueueProcessingDone.RemoveListener(IsClientReady);
-                Debug.Log("Call RPC_NotifyHostClientIsReady");
-                Debug.Log($"Is this object networked? {Object != null}");
-                Debug.Log($"Is this object is valid? {Object.IsValid}");
+                // Send RPC from the local client to the host
+                Rpc_MyStaticRpc(Runner, playerData.PlayerRef.PlayerId);
 
-                Debug.Log($"Does it have StateAuthority? {Object.HasStateAuthority}");
-                Debug.Log($"Does it have InputAuthority? {Object.HasInputAuthority}");
-                // Call an RPC to notify the host that the client is ready
-                RPC_NotifyHostClientIsReady();
-                Debug.Log("Call RPC_NotifyHostClientIsReady as been done !");
+                Debug.LogWarning($"Object.HasStateAuthority: {Object.HasStateAuthority}");
 
+                _Queue.OnQueueProcessingDone.RemoveListener(IsClientReady);
             }
+
+            //else
+            //{
+            //    // Remove the listener
+            //    Debug.Log("Ready To Call RPC_NotifyHostClientIsReady");
+            //    if (Runner.Mode == SimulationModes.Server)
+            //        return;
+            //    Debug.Log($"Is this object networked? {Object != null}");
+            //    Debug.Log($"Is this object is valid? {Object.IsValid}");
+            //    Debug.Log($"Does it have StateAuthority? {Object.HasStateAuthority}");
+            //    Debug.Log($"Does it have InputAuthority? {Object.HasInputAuthority}");
+            //    // Call an RPC to notify the host that the client is ready
+            //    //PlayerRef.None
+            //    RPC_NotifyHostClientIsReady(); // None referer to the server
+            //    Debug.Log("Call RPC_NotifyHostClientIsReady as been done !");
+            //}
         }
 
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
-        private void RPC_NotifyHostClientIsReady()
+        [Rpc]
+        public static void Rpc_MyStaticRpc(NetworkRunner runner, int a)
         {
-            Debug.Log("sfjsdkfjsdjfslkdjf");
-
-            _Queue.EnqueueRPC(() =>
-            {
-                Debug.Log($"RPC_NotifyHostClientIsReady: RPC RECEIVED ARE YOU THE HOST : {Runner.IsServer}");
-
-                if (!Runner.IsServer)
-                    return;
-
-                Debug.LogWarning("Server Will TryToLoadGameScene");
-                TryToLoadGameScene();
-            });
+            Debug.LogError($"Rpc_MyStaticRpc : {a}.");
         }
 
-        private void TryToLoadGameScene()
+        //[Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
+        //private void RPC_NotifyHostClientIsReady()
+        //{
+        //    //[RpcTarget] PlayerRef player
+        //    Debug.Log("sfjsdkfjsdjfslkdjf");
+
+        //    _Queue.EnqueueRPC(() =>
+        //    {
+        //        Debug.Log($"RPC_NotifyHostClientIsReady: RPC RECEIVED ARE YOU THE HOST : {Runner.IsServer}");
+
+        //        if (!Runner.IsServer)
+        //            return;
+
+        //        Debug.LogWarning("Server Will TryToLoadGameScene");
+        //        TryToLoadGameScene();
+        //    });
+        //}
+
+        private IEnumerator TryToLoadGameScene()
         {
+            bool areClientsReady = true;
             Debug.Log("TryToLoadGameScene");
-
-            if (!Runner.IsServer)
-                return;
 
             // Check if all clients are ready
             foreach (var player in Players)
             {
+                Debug.Log($"TryToLoadGameScene Player name : {player.Value.Nickname}, is Ready {player.Value.IsReady}");
+
                 if (!player.Value.IsReady)
                 {
-                    Debug.LogWarning("Not all the players are ready");
-                    return;
+                    areClientsReady = false;
+                    break;
                 }
             }
 
-            _Queue.OnQueueProcessingDone.RemoveListener(IsClientReady);
-            Debug.LogWarning("OK Done");
-
-            //// Load the game scene
-            //PhotonMenuSceneInfo gameScene = _SceneConfig.AvailableScenes.Find(scene => scene.SceneName == "Game");
-
-            //// Check if the game scene is available
-            //if (gameScene.Equals(null))
+            //if (!areClientsReady)
             //{
-            //    Debug.LogError("WaitingRoomManager Game scene not found.");
-            //    return;
+            //    // Start the coroutine again in 2 seconds
+            //    Debug.LogWarning("Not all the players are ready");
+            //    yield return new WaitForSeconds(4f);
+            //    StartCoroutine(TryToLoadGameScene()); // Restart the coroutine
+            //    yield break; // Exit the current coroutine execution
+            //}
+            //else
+            //{
+            //    // All clients are ready load the game scene
+            //    Debug.LogWarning("OK Done");
             //}
 
-            //_Queue.OnQueueProcessingDone.RemoveListener(LoadGameScene);
+            //yield break;
 
-            //// Load the game scene
-            //Runner.LoadScene(gameScene.SceneName);
+            if (!areClientsReady)
+            {
+                yield return new WaitForSeconds(4f);
+            }
+
+            // Load the game scene
+            PhotonMenuSceneInfo gameScene = _SceneConfig.AvailableScenes.Find(scene => scene.SceneName == "Game");
+
+            // Check if the game scene is available
+            if (gameScene.Equals(null))
+            {
+                Debug.LogError("WaitingRoomManager Game scene not found.");
+            }
+
+            _Queue.OnQueueProcessingDone.RemoveListener(IsClientReady);
+
+            // Load the game scene
+            Runner.LoadScene(gameScene.SceneName);
+
+            yield break; // Explicitly return to satisfy IEnumerator
         }
 
         #region RPC

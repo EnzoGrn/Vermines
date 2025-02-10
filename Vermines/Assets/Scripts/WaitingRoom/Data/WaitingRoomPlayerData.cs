@@ -1,6 +1,8 @@
 using Fusion;
 using System.Diagnostics;
+using UnityEditor;
 using UnityEngine.Events;
+using Vermines.CardSystem.Enumerations;
 namespace Vermines.Player
 {
     public struct WaitingRoomPlayerData : INetworkStruct
@@ -12,32 +14,55 @@ namespace Vermines.Player
             set { }
         }
 
-        [Networked]
+        [Networked, 
+            //OnChangedRender(nameof(TestFunction))
+        ]
         public bool IsReady
         {
             get => default;
-            set {
-                //OnIsReadyUpdated.Invoke();
-            }
+            set {}
         }
 
-        // Expose this through a property, if you want
-        //public bool IsReady
+        //public void TestFunction()
         //{
-        //    get => IsReadyNetwork;
-        //    set
+        //    if (OnIsReadyUpdated == null)
         //    {
-        //        if (IsReady != value)
-        //        {
-        //            IsReadyNetwork = value;
-        //            Log.DebugWarn($"IsReady Just changed right now (nickname: {Nickname})");
-        //        }
+        //        Log.DebugWarn("Ca Update mais c'est nul !");
         //    }
+
+        //    Log.DebugWarn("OUIIIIIIIIII ca UPDATE");
+        //    OnIsReadyUpdated.Invoke();
         //}
 
         //public UnityEvent OnIsReadyUpdated;
-
         public PlayerRef PlayerRef;
         public bool IsHost;
+
+        //private UnityEvent _OnIsReadyUpdated
+        //{
+        //    get {  return _OnIsReadyUpdated; }
+        //    set { _OnIsReadyUpdated = value; }
+        //}
+
+        //public UnityEvent OnIsReadyUpdated
+        //{
+        //    get => _OnIsReadyUpdated;
+        //    set
+        //    {
+        //        _OnIsReadyUpdated = value;
+        //        //OnIsReadyUpdated = value;
+        //    }
+        //}
+
+        public WaitingRoomPlayerData(PlayerRef player, bool isHost)
+        {
+            //OnIsReadyUpdated = new UnityEvent();
+            PlayerRef = player;
+            IsHost = isHost;
+
+            //_OnIsReadyUpdated = new UnityEvent();
+            Nickname = "Player " + player.PlayerId;
+            IsReady = false;
+        }
     }
 }
