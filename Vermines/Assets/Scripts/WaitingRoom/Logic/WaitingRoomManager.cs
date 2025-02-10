@@ -88,7 +88,8 @@ namespace Vermines {
             }
 
             // TODO : Maybe use the Rpc Queue
-            SetGameSettings();
+            // SetGameSettings();
+            StartCoroutine(TryToLoadGameScene());
         }
 
         // Fusion Event (not Fusion interface implementation)
@@ -473,20 +474,20 @@ namespace Vermines {
 
         private IEnumerator TryToLoadGameScene()
         {
-            bool areClientsReady = true;
-            Debug.Log("TryToLoadGameScene");
+            //bool areClientsReady = true;
+            //Debug.Log("TryToLoadGameScene");
 
             // Check if all clients are ready
-            foreach (var player in Players)
-            {
-                Debug.Log($"TryToLoadGameScene Player name : {player.Value.Nickname}, is Ready {player.Value.IsReady}");
+            //foreach (var player in Players)
+            //{
+            //    Debug.Log($"TryToLoadGameScene Player name : {player.Value.Nickname}, is Ready {player.Value.IsReady}");
 
-                if (!player.Value.IsReady)
-                {
-                    areClientsReady = false;
-                    break;
-                }
-            }
+            //    if (!player.Value.IsReady)
+            //    {
+            //        areClientsReady = false;
+            //        break;
+            //    }
+            //}
 
             //if (!areClientsReady)
             //{
@@ -504,10 +505,10 @@ namespace Vermines {
 
             //yield break;
 
-            if (!areClientsReady)
-            {
-                yield return new WaitForSeconds(4f);
-            }
+            //if (!areClientsReady)
+            //{
+            //    yield return new WaitForSeconds(4f);
+            //}
 
             // Load the game scene
             PhotonMenuSceneInfo gameScene = _SceneConfig.AvailableScenes.Find(scene => scene.SceneName == "Game");
