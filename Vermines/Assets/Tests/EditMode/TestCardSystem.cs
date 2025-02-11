@@ -1,6 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
+using System.Reflection;
 
 #region Vermines CardSystem namespace
     using Vermines.CardSystem.Data;
@@ -11,15 +14,16 @@ using UnityEngine;
 
 namespace Test.Vermines.CardSystem {
 
+
     public class TestCardSetDatabase {
 
-        private static readonly int Seed = 123456789;
+        private static int Seed = 123456789;
 
-        private static readonly int NumberOfCardsForTwoPlayers   = 91;
-        private static readonly int NumberOfCardsForThreePlayers = 102;
-        private static readonly int NumberOfCardsForFourPlayers  = 113;
+        private static int NumberOfCardsForTwoPlayers = 91;
+        private static int NumberOfCardsForThreePlayers = 102;
+        private static int NumberOfCardsForFourPlayers = 113;
 
-        private static readonly int NumberOfStarterCardsForThreePlayers = 15;
+        private static int NumberOfStarterCardsForThreePlayers = 15;
 
         [Test]
         public void TwoPlayersSet()
@@ -114,16 +118,6 @@ namespace Test.Vermines.CardSystem {
             Assert.AreEqual(0, CardSetDatabase.Instance.GetCardByIds("     ").Count);
 
             CardSetDatabase.Instance.Clear();
-        }
-
-        [Test]
-        public void Debug_PrintDatabase()
-        {
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 1);
-
-            CardSetDatabase.Instance.Initialize(families);
-            CardSetDatabase.Instance.Print();
-            CardSetDatabase.Instance.Reset();
         }
     }
 

@@ -7,7 +7,6 @@ namespace Vermines.Player {
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
-    using Vermines.CardSystem.Utilities;
 
     public struct PlayerData : INetworkStruct {
 
@@ -44,14 +43,15 @@ namespace Vermines.Player {
 
     public struct PlayerDeck {
 
-        public List<ICard> Deck { get; set; }
-        public List<ICard> Hand { get; set; }
-        public List<ICard> Discard { get; set; }
-        public List<ICard> Graveyard { get; set; }
+        public List<ICard> Deck;
+        public List<ICard> Hand;
+        public List<ICard> Discard;
+        public List<ICard> Graveyard;
 
-        public void Initialize()
+        public PlayerDeck(int deckSize = 0)
         {
-            Deck      = new List<ICard>();
+            Deck =  deckSize == 0 ? new List<ICard>() : new List<ICard>(deckSize);
+
             Hand      = new List<ICard>();
             Discard   = new List<ICard>();
             Graveyard = new List<ICard>();
@@ -68,33 +68,28 @@ namespace Vermines.Player {
 
                     return;
                 }
-                Deck.Merge(Discard);
-                Deck.Shuffle(GameManager.Instance.Config.Seed);
+                Deck.AddRange(Discard);
+                Discard.Clear();
+                Shuffle();
             }
-            ICard card = Deck.Draw();
+            ICard card = Deck.Last();
 
+            Deck.Remove(card);
             Hand.Add(card);
         }
 
-        #endregion
-
-        #region Copy
-
-        public PlayerDeck DeepCopy()
+        public void Shuffle()
         {
-            return new() {
-                Deck      = new List<ICard>(this.Deck),
-                Hand      = new List<ICard>(this.Hand),
-                Discard   = new List<ICard>(this.Discard),
-                Graveyard = new List<ICard>(this.Graveyard)
-            };
+            System.Random rand = GameManager.Instance.Config.Rand;
+
+            Deck = Deck.OrderBy(card => rand.Next()).ToList();
         }
 
         #endregion
 
-        #region Serialization
+            #region Serialization
 
-        public readonly string Serialize()
+            public readonly string Serialize()
         {
             string serializedPlayerDeck = string.Empty;
 

@@ -9,13 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Priest
+  m_Script: {fileID: 11500000, guid: 05aecd8f7db8165428d4eaa124e6d8b7, type: 3}
+  m_Name: DefaultGameSettings
   m_EditorClassIdentifier: 
-  Name: Priest
-  Description: Earn <b><color=purple>2E</color></b>.
-  Exemplars: 1
-  IsStartingCard: 0
-  Type: 0
-  IsFamilyCard: 1
-  Eloquence: 5
+  WinCondition: 100
+  MaxEloquence: 20
+  FirstEloquence: 0
+  FirstDraw: 3
+  EloquencePerTurn: 2
+  DrawPerTurn: 3

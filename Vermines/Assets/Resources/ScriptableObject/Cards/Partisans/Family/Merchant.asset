@@ -18,9 +18,4 @@ MonoBehaviour:
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 1
-  _Family: -1
-  _Level: 1
   Eloquence: 5
-  _Souls: 15
-  _SpriteName: Merchant
-  _Sprite: {fileID: 0}

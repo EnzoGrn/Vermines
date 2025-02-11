@@ -19,11 +19,9 @@ namespace Vermines.Gameplay.Commands.Internal {
             _Families = families;
         }
 
-        public bool Execute()
+        public void Execute()
         {
             CardSetDatabase.Instance.Initialize(_Families);
-
-            return true;
         }
 
         public void Undo()
@@ -50,7 +48,7 @@ namespace Vermines.Gameplay.Commands.Internal {
             _PlayersData = data.Split('|', StringSplitOptions.RemoveEmptyEntries);
         }
 
-        public bool Execute()
+        public void Execute()
         {
             _OldDecks = GameDataStorage.Instance.PlayerDeck;
 
@@ -67,8 +65,6 @@ namespace Vermines.Gameplay.Commands.Internal {
                     continue;
                 }
             }
-
-            return true;
         }
 
         public void Undo()
@@ -81,7 +77,7 @@ namespace Vermines.Gameplay.Commands.Internal {
             PlayerRef playerRef = PlayerRef.FromEncoded(int.Parse(playerData));
             PlayerDeck     deck = PlayerDeck.Deserialize(deckData);
 
-            GameDataStorage.Instance.PlayerDeck[playerRef] = deck;
+            GameDataStorage.Instance.PlayerDeck.Add(playerRef, deck);
         }
     }
 }

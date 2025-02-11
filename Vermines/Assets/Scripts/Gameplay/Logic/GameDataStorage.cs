@@ -6,7 +6,6 @@ using Fusion;
 namespace Vermines {
 
     using Vermines.Player;
-    using Vermines.ShopSystem.Data;
 
     public class GameDataStorage : NetworkBehaviour {
 
@@ -32,13 +31,7 @@ namespace Vermines {
         [HideInInspector]
         public NetworkDictionary<PlayerRef, PlayerData> PlayerData { get; }
 
-        public Dictionary<PlayerRef, PlayerDeck> PlayerDeck { get; set; } = new Dictionary<PlayerRef, PlayerDeck>();
-
-        #endregion
-
-        #region Shop's Data
-
-        public ShopData Shop { get; set; }
+        public Dictionary<PlayerRef, PlayerDeck> PlayerDeck { get; set; }
 
         #endregion
 
@@ -62,8 +55,6 @@ namespace Vermines {
 
         public void SpawnPlayer(PlayerRef playerRef)
         {
-            if (HasStateAuthority == false)
-                return;
             if (PlayerData.TryGet(playerRef, out PlayerData data) == false)
                 data = new PlayerData(playerRef);
             if (data.IsConnected == true) // Already connected
@@ -82,8 +73,6 @@ namespace Vermines {
 
         public void DespawnPlayer(PlayerRef playerRef, PlayerController player)
         {
-            if (HasStateAuthority == false)
-                return;
             if (PlayerData.TryGet(playerRef, out PlayerData data) == true) {
                 if (data.IsConnected == true)
                     Debug.LogWarning($"[SERVER]: {playerRef} disconnected.");
@@ -93,32 +82,6 @@ namespace Vermines {
             }
 
             Runner.Despawn(player.Object);
-        }
-
-        #endregion
-
-        #region Player's Data Methods
-
-        public void SetEloquence(PlayerRef player, int eloquence)
-        {
-            if (HasStateAuthority == false)
-                return;
-            if (PlayerData.TryGet(player, out PlayerData data) == true) {
-                data.Eloquence = eloquence;
-
-                PlayerData.Set(player, data);
-            }
-        }
-
-        public void SetSouls(PlayerRef player, int souls)
-        {
-            if (HasStateAuthority == false)
-                return;
-            if (PlayerData.TryGet(player, out PlayerData data) == true) {
-                data.Souls = souls;
-
-                PlayerData.Set(player, data);
-            }
         }
 
         #endregion
@@ -141,16 +104,7 @@ namespace Vermines {
             }
 
             if (debugging == true)
-                Debug.LogWarning($"[SERVER]: Player's deck - {data}");
-            return data;
-        }
-
-        public string SerializeShop(bool debugging = false)
-        {
-            string data = Shop.Serialize();
-
-            if (debugging == true)
-                Debug.LogWarning($"[SERVER]: Shop - {data}");
+                Debug.LogWarning($"[SERVER]: {data}");
             return data;
         }
 

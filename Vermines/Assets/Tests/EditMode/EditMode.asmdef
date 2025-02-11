@@ -6,11 +6,9 @@
         "UnityEditor.TestRunner",
         "Singleton",
         "Command",
-        "CardSystem",
-        "Defective.JSON",
+        "OMGG.Network.Interface",
         "Vermines",
-        "Fusion.Unity",
-        "OMGG.Network.Interface"
+        "CardSystem"
     ],
     "includePlatforms": [
         "Editor"
@@ -19,8 +17,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll",
-        "Fusion.Runtime.dll"
+        "nunit.framework.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

@@ -6,7 +6,6 @@ namespace Vermines.CardSystem.Utilities {
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
-    using Vermines.CardSystem.Data.Effect;
 
     public class CardLoader {
 
@@ -60,8 +59,8 @@ namespace Vermines.CardSystem.Utilities {
                 int nbExemplar = data.Exemplars;
 
                 for (int i = 0; i < nbExemplar; i++) {
-                    CardData copy = CreateCopy(data);
-                    ICard    card = CardFactory.CreateCard(copy);
+                    CardData copy = Object.Instantiate(data);
+                    ICard card = CardFactory.CreateCard(copy);
 
                     card = SetIdentity(card);
 
@@ -83,8 +82,12 @@ namespace Vermines.CardSystem.Utilities {
                 Sprite  sprite = Resources.Load<Sprite>($"Sprites/Card/{family.ToString()}/{data.SpriteName}.png");
 
                 for (int i = 0; i < nbExemplar; i++) {
-                    CardData copy = CreateCopy(data, family, sprite);
-                    ICard card    = CardFactory.CreateCard(copy);
+                    CardData copy = Object.Instantiate(data);
+
+                    copy.Family = family;
+                    copy.Sprite = sprite;
+
+                    ICard card = CardFactory.CreateCard(copy);
 
                     card = SetIdentity(card);
 
@@ -94,23 +97,6 @@ namespace Vermines.CardSystem.Utilities {
             return cards;
         }
 
-        private CardData CreateCopy(CardData data, CardFamily family = CardFamily.None, Sprite sprite = null)
-        {
-            CardData copy = Object.Instantiate(data);
-
-            if (family != CardFamily.None)
-                copy.Family = family;
-            if (sprite != null)
-                copy.Sprite = sprite;
-            for (int i = 0; i < copy.Effects.Count; i++) {
-                AEffect effect = Object.Instantiate(copy.Effects[i]);
-
-                effect.Initialize(null);
-                copy.Effects[i] = effect;
-            }
-            return copy;
-        }
-
         private ICard SetIdentity(ICard card)
         {
             if (card == null)
@@ -118,8 +104,6 @@ namespace Vermines.CardSystem.Utilities {
             card.ID        = CardFactory.CardCount;
             card.IsAnonyme = false;
 
-            foreach (AEffect effect in card.Data.Effects)
-                effect.Initialize(card);
             return card;
         }
 

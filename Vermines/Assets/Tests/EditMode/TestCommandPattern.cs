@@ -25,11 +25,9 @@ namespace Test.OMGG.Pattern {
             _Movement = movement;
         }
 
-        public bool Execute()
+        public void Execute()
         {
             _Player.PlayerMove(_Movement);
-
-            return true;
         }
 
         public void Undo()

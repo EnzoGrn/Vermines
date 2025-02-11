@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.CardSystem.Data {
 
     using Vermines.CardSystem.Enumerations;
-    using Vermines.CardSystem.Data.Effect;
 
     [CreateAssetMenu(fileName = "New Card", menuName = "Vermines/Card System/Create a new card")]
     public class CardData : ScriptableObject {
@@ -15,6 +13,11 @@ namespace Vermines.CardSystem.Data {
         /// The name of the card.
         /// </summary>
         public string Name;
+
+        /// <summary>
+        /// The description of every action that the card can perform.
+        /// </summary>
+        public string Description;
 
         /// <summary>
         /// Number of exemplars of the card.
@@ -47,7 +50,6 @@ namespace Vermines.CardSystem.Data {
         /// <summary>
         /// The family of the card. Only available if the card has a partisan type. (Default: None)
         /// </summary>
-        [SerializeField]
         private CardFamily _Family = CardFamily.None;
 
         /// <summary>
@@ -69,7 +71,6 @@ namespace Vermines.CardSystem.Data {
         /// The level of the card. Only partisan can have levels.
         /// The level is used to determine the power of the card. It can only be between 1 and 2.
         /// </summary>
-        [SerializeField]
         private int _Level = 0;
 
         /// <summary>
@@ -89,12 +90,6 @@ namespace Vermines.CardSystem.Data {
 
         #endregion
 
-        #region Effects
-
-        public List<AEffect> Effects;
-
-        #endregion
-
         #region Stats
 
         /// <summary>
@@ -105,7 +100,6 @@ namespace Vermines.CardSystem.Data {
         /// <summary>
         /// The souls of the card (souls represent the points system of the game).
         /// </summary>
-        [SerializeField]
         private int _Souls = 0;
 
         /// <summary>
@@ -131,7 +125,6 @@ namespace Vermines.CardSystem.Data {
         /// The sprite name of the visual, an item, or a character that represents the card.
         /// Given that the card is a family card.
         /// </summary>
-        [SerializeField]
         private string _SpriteName = string.Empty;
 
         /// <summary>
@@ -152,7 +145,6 @@ namespace Vermines.CardSystem.Data {
         /// <summary>
         /// The sprite of the visual, an item, or a character that represents the card.
         /// </summary>
-        [SerializeField]
         private Sprite _Sprite = null;
 
         /// <summary>
@@ -165,24 +157,6 @@ namespace Vermines.CardSystem.Data {
             {
                 _Sprite = value;
             }
-        }
-
-        public List<(string, Sprite)> Draw()
-        {
-            if (Effects == null || Effects.Count == 0)
-                return null;
-            if (Effects.Count == 1)
-                return Effects[0].Draw();
-            List<(string, Sprite)> elements  = new();
-            Sprite                 separator = Resources.Load<Sprite>("Sprites/UI/Effects/separator");
-
-            for (int i = 0; i < Effects.Count; i++) {
-                elements.AddRange(Effects[i].Draw());
-
-                if (i < Effects.Count - 1)
-                    elements.Add(("Separator", separator));
-            }
-            return elements;
         }
 
         #endregion

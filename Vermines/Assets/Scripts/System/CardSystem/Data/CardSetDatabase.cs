@@ -1,12 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System;
 using OMGG.DesignPattern;
-using UnityEngine;
 
 namespace Vermines.CardSystem.Data {
-
+    using System;
+    using System.Linq;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
@@ -128,10 +125,8 @@ namespace Vermines.CardSystem.Data {
         /// Becare, if a card is anonyme you can't access it, so at beginning every card are not anonyme for access everything
         /// </summary>
         /// <returns>Every card wanted with the request</returns>
-        public List<ICard> GetEveryCardWith(Func<ICard, bool> filter = null)
+        public List<ICard> GetEveryCardWith(Func<ICard, bool> filter)
         {
-            if (filter == null)
-                return _Cards;
             return _Cards.Where(filter).ToList();
         }
 
@@ -155,32 +150,6 @@ namespace Vermines.CardSystem.Data {
         public void Clear()
         {
             _Cards.Clear();
-        }
-
-        /// <summary>
-        /// Print the database.
-        /// </summary>
-        public void Print()
-        {
-            StringBuilder log = new();
-
-            log.AppendLine("[SERVER][DEBUG]: Database information:");
-
-            foreach (ICard card in _Cards) {
-                if (card == null || card.Data == null)
-                    continue;
-                string description = string.Empty;
-
-                for (int i = 0; i < card.Data.Effects.Count; i++) {
-                    if (card.Data.Effects[i] == null)
-                        continue;
-                    description += card.Data.Effects[i].Description + (i + 1 == card.Data.Effects.Count ? "" : "\n");
-                }
-
-                log.AppendLine($"{card.ID}[{card.Data.Name}]:\n{description}");
-            }
-
-            Debug.Log(log.ToString());
         }
     }
 }
