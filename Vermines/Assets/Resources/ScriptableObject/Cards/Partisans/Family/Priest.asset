@@ -13,9 +13,15 @@ MonoBehaviour:
   m_Name: Priest
   m_EditorClassIdentifier: 
   Name: Priest
-  Description: Earn <b><color=purple>2E</color></b>.
   Exemplars: 1
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 1
+  _Family: -1
+  _Level: 1
+  Effects:
+  - {fileID: 11400000, guid: a39c30c992c0a2d45a6099d2a1db54ca, type: 2}
   Eloquence: 5
+  _Souls: 15
+  _SpriteName: Priest
+  _Sprite: {fileID: 0}

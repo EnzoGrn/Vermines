@@ -20,5 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Resources/Scenes/WaitingRoom.unity
     guid: 85b889bd3fb86d14aa12441d33786323
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: afec51d4b81b25e469e3b14e73b7ca78, type: 2}
+    com.unity.localization.settings: {fileID: 11400000, guid: 28be21c4cbc6a884fb2fbf7e4de09393, type: 2}
   m_UseUCBPForAssetBundles: 0
