@@ -50,7 +50,21 @@ namespace Vermines.HUD
             souls.gameObject.SetActive(card.Type == CardType.Partisan);
             type.text = card.Type == CardType.Partisan ? card.Family.ToString() : card.Type.ToString();
             LoadTypeIcon(card.Type);
-            effectDescription.text = card.Description;
+            LoadEffects(card);
+        }
+
+        private void LoadEffects(CardData card)
+        {
+            effectDescription.text = string.Empty;
+            for (int i = 0; i < card.Effects.Count; i++)
+            {
+                Debug.Log(card.Effects[i].Description);
+                effectDescription.text += card.Effects[i].Description;
+                if (i < card.Effects.Count - 1)
+                {
+                    effectDescription.text += "\n";
+                }
+            }
         }
 
         private void LoadTypeIcon(CardType type)
