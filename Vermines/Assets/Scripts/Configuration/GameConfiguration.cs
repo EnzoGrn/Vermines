@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace Vermines.Config {
-
+    using Defective.JSON;
     using Vermines.Config.Utils;
 
     /// <summary>
@@ -30,6 +30,7 @@ namespace Vermines.Config {
                 {
                     _Seed = value;
                     Rand = new System.Random(value);
+                    GameSeed.Value = _Seed;
                 }
             }
         }
@@ -38,6 +39,7 @@ namespace Vermines.Config {
 
         #endregion
 
+        // Other field in this scriptable object must be at the top of player configuration
         #region Player configuration
 
         [Header("Player Settings")]
@@ -188,6 +190,101 @@ namespace Vermines.Config {
         [Tooltip("Seed for random number generation (set to 0 for random seed).")]
         public BoolSetting RandomSeed = new("Random Seed", true, "Advanced Settings");
 
+        public IntSetting GameSeed = new("Seed", 0, 0, int.MaxValue, "Advanced Settings");
+        #endregion
+
+        #region Method
+        /// <summary>
+        /// Serialize GameSettings.
+        /// </summary>
+        /// <example>
+        /// [
+        ///    {
+        ///        type: 0,
+        ///        name: "Max Players",
+        ///        category: "Player Settings"
+        ///        value: 4,
+        ///        minValue: 2,
+        ///        maxValue: 4,
+        ///    },
+        ///    {
+        ///        type: 1,
+        ///        name: "Is Round Based",
+        ///        category: "Game Flow Settings"
+        ///        value: false, // bool
+        ///    }
+        /// ]
+        /// </example>
+        /// <returns>GameSettings Data.</returns>
+        public JSONObject Serialize()
+        {
+            JSONObject json = new(JSONObject.Type.Array);
+
+            foreach (var field in this.GetType().GetFields())
+            {
+                try
+                {
+                    ASettingBase setting = (ASettingBase)field.GetValue(this);
+
+                    if (setting == null)
+                        continue;
+
+                    setting.Serialize(json);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning(e);
+                    continue;
+                }
+            }
+            return json;
+        }
+
+        /// <summary>
+        /// Deserialize gameSettings, please use Initialize before calling this method.
+        /// </summary>
+        public int Deserialize(string json, int offset, int numberOfData)
+        {
+            JSONObject data = new(json);
+            int nbrOfNoneSettingsFields = 0;
+
+            if (data.type != JSONObject.Type.Array)
+            {
+                Debug.LogError("Invalid JSON format: Expected an array.");
+                return 0;
+            }
+
+            // Loop through each field in GameSettings
+            for (int i = 0; i < numberOfData; i++)
+            {
+                var field = this.GetType().GetFields()[i + offset];
+
+                if (field.GetValue(this) is ASettingBase setting)
+                {
+                    Debug.Log($"DESERIALIZE -> HasField(name): {data.list[i].HasField("name")}, Get Field{data.list[i].GetField("name").stringValue}");
+
+                    // Check if there's a corresponding JSON object with the same name
+                    if (i < data.list.Count && data.list[i].HasField("name") && data.list[i].GetField("name").stringValue == setting.Name)
+                    {
+                        // Deserialize the field using the corresponding JSON object
+                        setting.Deserialize(data.list[i]);
+                    }
+                    else
+                    {
+                        // TODO: Find the date in the json if the don't find it at the right possition
+                        Debug.LogWarning($"Cannot get the data to deserialize for field {field.Name}");
+                    }
+                }
+                else
+                {
+                    nbrOfNoneSettingsFields++;
+                    offset++;
+                    i--;
+                    continue;
+                }
+            }
+            return nbrOfNoneSettingsFields;
+        }
         #endregion
     }
 }

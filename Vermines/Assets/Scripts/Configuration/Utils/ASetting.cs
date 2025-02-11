@@ -1,3 +1,4 @@
+using Defective.JSON;
 using System;
 using UnityEngine;
 
@@ -20,6 +21,10 @@ namespace Vermines.Config.Utils {
 
         [SerializeField, HideInInspector]
         public SettingType Type;
+
+        public abstract void Serialize(JSONObject json);
+
+        public abstract void Deserialize(JSONObject json);
     }
 
     [System.Serializable]

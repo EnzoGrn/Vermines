@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System;
+using UnityEngine;
+using UnityEngine.Events;
 
 namespace OMGG.Network.Fusion {
 
@@ -14,6 +16,8 @@ namespace OMGG.Network.Fusion {
         private readonly Queue<Action> _RPCQueue = new();
 
         private bool _IsProcessing = false;
+
+        public UnityEvent OnQueueProcessingDone = new();
 
         public void EnqueueRPC(Action rpcAction)
         {
@@ -37,6 +41,10 @@ namespace OMGG.Network.Fusion {
                 _IsProcessing = false;
 
                 ProcessNextRPC();
+            }
+            else
+            {
+                OnQueueProcessingDone.Invoke();
             }
         }
     }

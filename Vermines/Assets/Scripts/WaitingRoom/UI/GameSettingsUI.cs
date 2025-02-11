@@ -87,6 +87,7 @@ namespace Vermines {
                     GameObject settingPrefabUI = null;
 
                     if (setting.Type == ASettingBase.SettingType.Int) { // Text Input Field
+                        Debug.Log($"setting -> {setting.Name}");
                         IntSetting intSetting = (IntSetting)setting;
 
                         settingPrefabUI = Instantiate(_IntSettingPrefab);
