@@ -1,14 +1,15 @@
 using System.Collections.Generic;
-using System.Reflection;
 using TMPro;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Vermines
-{
-    public class GameSettingsUI : MonoBehaviour
-    {
+namespace Vermines {
+
+    using Vermines.Config.Utils;
+    using Vermines.Config;
+
+    public class GameSettingsUI : MonoBehaviour {
+
         [Header("Button Game Settings")]
         [SerializeField] private Button _ResetButton;
         [SerializeField] private Button _ApplyButton;
@@ -26,23 +27,19 @@ namespace Vermines
         [SerializeField] private GameObject _Title;
 
         [Header("Resources")]
-        [SerializeField] private GameSettings _GameSettings;
-        [SerializeField] private GameSettings _DefaultGameSettings;
+        [SerializeField] private GameConfiguration _GameSettings;
+        [SerializeField] private GameConfiguration _DefaultGameSettings;
 
         private Dictionary<string, GameObject> _InputFields;
-        private Dictionary<string, List<ASetting>> _SettingsByCategory;
-        private Dictionary<string, List<ASetting>> _DefaultSettingsByCategory;
-
+        private Dictionary<string, List<ASettingBase>> _SettingsByCategory;
+        private Dictionary<string, List<ASettingBase>> _DefaultSettingsByCategory;
 
         private void Awake()
         {
             if (_GameSettings == null)
-            {
                 Debug.LogError("GameSettings scriptable object not found");
-            }
-
-            _InputFields = new();
-            _SettingsByCategory = SettingsUtils.GetSettingsByCategory(_GameSettings);
+            _InputFields               = new();
+            _SettingsByCategory        = SettingsUtils.GetSettingsByCategory(_GameSettings);
             _DefaultSettingsByCategory = SettingsUtils.GetSettingsByCategory(_DefaultGameSettings);
         }
 
@@ -51,39 +48,37 @@ namespace Vermines
             LoadUISettings();
         }
 
-        private void SetTitle(List<ASetting> settingList)
+        private void SetTitle(List<ASettingBase> settingList)
         {
-            GameObject Title = Instantiate(_Title);
+            GameObject title = Instantiate(_Title);
 
-            if (Title == null)
+            if (title == null)
                 return;
 
             // Find Label game object
-            GameObject label = Title.transform.Find("Label").gameObject;
+            GameObject label = title.transform.Find("Label").gameObject;
 
             if (label == null)
                 return;
 
             // Label name of the category
-            string category = (settingList.Count > 0 && settingList[0] != null)
-                ? settingList[0].Category : "Other";
+            string category = (settingList.Count > 0 && settingList[0] != null) ? settingList[0].Category : "Other";
 
             // Get First ASetting
-            ASetting setting = settingList[0];
+            ASettingBase setting = settingList[0];
             Debug.Log("EntryName (before call) -> " + setting.Category);
-            SetEntryForLocalizationText(setting.Category, Title);
+            SetEntryForLocalizationText(setting.Category, title);
 
-            Title.transform.SetParent(_Content.transform);
+            title.transform.SetParent(_Content.transform);
         }
 
         private void SetSpace()
         {
-            GameObject Space = Instantiate(_Space);
+            GameObject space = Instantiate(_Space);
 
-            if (Space == null)
+            if (space == null)
                 return;
-
-            Space.transform.SetParent(_Content.transform);
+            space.transform.SetParent(_Content.transform);
         }
 
         private void SetEntryForLocalizationText(string entryName, GameObject prefabIntputField)
@@ -105,160 +100,144 @@ namespace Vermines
 
         private void LoadUISettings()
         {
-            foreach (List<ASetting> settingsList in _SettingsByCategory.Values)
-            {
+            foreach (List<ASettingBase> settingsList in _SettingsByCategory.Values) {
                 SetTitle(settingsList);
 
-                for (int i = 0; i < settingsList.Count; i++)
-                {
-                    ASetting setting = settingsList[i];
-                    GameObject SettingPrefabUI = null;
+                for (int i = 0; i < settingsList.Count; i++) {
+                    ASettingBase setting         = settingsList[i];
+                    GameObject settingPrefabUI = null;
 
-                    if (setting.Type == ASetting.SettingType.Int) // Text Input Field
-                    {
+                    if (setting.Type == ASettingBase.SettingType.Int) { // Text Input Field
+                        Debug.Log($"setting -> {setting.Name}");
                         IntSetting intSetting = (IntSetting)setting;
-                        SettingPrefabUI = Instantiate(_IntSettingPrefab);
+
+                        settingPrefabUI = Instantiate(_IntSettingPrefab);
 
                         // Find Input Field game object
-                        GameObject inputField = SettingPrefabUI.transform.Find("InputSettings").gameObject;
+                        GameObject inputField = settingPrefabUI.transform.Find("InputSettings").gameObject;
 
                         if (inputField == null)
                             continue;
 
                         inputField.GetComponent<TMP_InputField>().text = intSetting.Value.ToString();
-                        SettingPrefabUI.transform.SetParent(_Content.transform);
-                    }
-                    else if (setting.Type == ASetting.SettingType.Bool) // Toggle Input Field
-                    {
+                        settingPrefabUI.transform.SetParent(_Content.transform);
+                    } else if (setting.Type == ASettingBase.SettingType.Bool) { // Toggle Input Field
                         BoolSetting boolSetting = (BoolSetting)setting;
-                        SettingPrefabUI = Instantiate(_BoolSettingPrefab);
+
+                        settingPrefabUI = Instantiate(_BoolSettingPrefab);
 
                         // Find Input Field game object
-                        GameObject inputField = SettingPrefabUI.transform.Find("InputSettings").gameObject;
+                        GameObject inputField = settingPrefabUI.transform.Find("InputSettings").gameObject;
 
                         if (inputField == null)
                             continue;
 
                         inputField.GetComponent<Toggle>().isOn = (bool)boolSetting.Value;
-                        SettingPrefabUI.transform.SetParent(_Content.transform);
+                        settingPrefabUI.transform.SetParent(_Content.transform);
                     }
 
-                    if (SettingPrefabUI != null)
-                    {
+                    if (settingPrefabUI != null) {
                         // Find Label game object
-                        GameObject label = SettingPrefabUI.transform.Find("Label").gameObject;
+                        GameObject label = settingPrefabUI.transform.Find("Label").gameObject;
 
                         if (label == null)
                             continue;
 
-                        SetEntryForLocalizationText(setting.Name, SettingPrefabUI);
+                        SetEntryForLocalizationText(setting.Name, settingPrefabUI);
                         //label.GetComponent<TMP_Text>().text = setting.Name;
                     }
 
-                    _InputFields[setting.Name] = SettingPrefabUI;
+                    _InputFields[setting.Name] = settingPrefabUI;
                 }
                 SetSpace();
             }
 
-            Dictionary<string, List<ASetting>> _SettingsByCategoryTest = SettingsUtils.GetSettingsByCategory(_GameSettings);
+            Dictionary<string, List<ASettingBase>> _SettingsByCategoryTest = SettingsUtils.GetSettingsByCategory(_GameSettings);
         }
 
         public void ResetGameSettings()
         {
-            foreach (List<ASetting> settingsList in _SettingsByCategory.Values)
-            {
-                for (int i = 0; i < settingsList.Count; i++)
-                {
-                    try
-                    {
-                        ASetting setting = settingsList[i];
+            foreach (List<ASettingBase> settingsList in _SettingsByCategory.Values) {
+                for (int i = 0; i < settingsList.Count; i++) {
+                    try {
+                        ASettingBase setting = settingsList[i];
 
                         // Find Input Field game object
                         GameObject inputField = _InputFields[setting.Name].transform.Find("InputSettings").gameObject;
 
-                        if (inputField == null) continue;
-
-                        if (setting.Type == ASetting.SettingType.Int)
-                        {
+                        if (inputField == null)
+                            continue;
+                        if (setting.Type == ASettingBase.SettingType.Int) {
                             IntSetting intSetting = (IntSetting)setting;
 
                             intSetting.Value = ((IntSetting)_DefaultSettingsByCategory[intSetting.Category][i]).Value;
                             
                             inputField.GetComponent<TMP_InputField>().text = intSetting.Value.ToString();
-                        }
-                        else if (setting.Type == ASetting.SettingType.Bool)
-                        {
+                        } else if (setting.Type == ASettingBase.SettingType.Bool) {
                             BoolSetting boolSetting = (BoolSetting)setting;
 
                             boolSetting.Value = ((BoolSetting)_DefaultSettingsByCategory[boolSetting.Category][i]).Value;
 
                             inputField.GetComponent<Toggle>().isOn = (bool)boolSetting.Value;
                         }
-                    }
-                    catch (System.Exception e)
-                    {
+                    } catch (System.Exception e) {
                         _InfoStateGameSettings.text = e.Message;
                         _InfoStateGameSettings.color = Color.red;
                     }
                 }
             }
 
-            _InfoStateGameSettings.text = "Game settings reset to default";
+            _InfoStateGameSettings.text  = "Game settings reset to default";
             _InfoStateGameSettings.color = Color.white;
         }
 
         public void ApplyGameSettings()
         {
-            try
-            {
+            try {
                 CheckGameSettings();
                 ApplyChangesToGameSettings();
-                _InfoStateGameSettings.text = "Game settings applied successfully";
+                
+                _InfoStateGameSettings.text  = "Game settings applied successfully";
                 _InfoStateGameSettings.color = Color.green;
-            }
-            catch (System.Exception e)
-            {
-                _InfoStateGameSettings.text = e.Message;
+            } catch (System.Exception e) {
+                _InfoStateGameSettings.text  = e.Message;
                 _InfoStateGameSettings.color = Color.red;
             }
         }
 
         private void CheckGameSettings()
         {
-            try
-            {
-                foreach (List<ASetting> settingsList in _SettingsByCategory.Values)
-                {
-                    for (int i = 0; i < settingsList.Count; i++)
-                    {
-                        ASetting setting = settingsList[i];
+            try {
+                foreach (List<ASettingBase> settingsList in _SettingsByCategory.Values) {
+                    for (int i = 0; i < settingsList.Count; i++) {
+                        ASettingBase setting = settingsList[i];
 
                         // Find Input Field game object
                         GameObject inputField = _InputFields[setting.Name].transform.Find("InputSettings").gameObject;
 
                         if (inputField == null)
                             continue;
+                        switch (setting.Type) {
+                            case ASettingBase.SettingType.Int:
+                                IntSetting intSetting = (IntSetting)setting;
+                                int        intValue   = int.Parse(inputField.GetComponent<TMP_InputField>().text);
 
-                        switch (setting.Type)
-                        {
-                            case ASetting.SettingType.Int:
-                                int value = int.Parse(inputField.GetComponent<TMP_InputField>().text);
+                                intSetting.RestrictionCheck(intValue);
 
-                                setting.RestrictionCheck(value);
                                 break;
-                            case ASetting.SettingType.Bool:
-                                bool boolValue = inputField.GetComponent<Toggle>().isOn;
+                            case ASettingBase.SettingType.Bool:
+                                BoolSetting boolSetting = (BoolSetting)setting;
+                                bool        boolValue   = inputField.GetComponent<Toggle>().isOn;
 
-                                setting.RestrictionCheck(boolValue);
+                                boolSetting.RestrictionCheck(boolValue);
+
                                 break;
                             default:
                                 break;
                         }
                     }
                 }
-            }
-            catch (System.Exception e)
-            {
+            } catch (System.Exception e) {
                 throw e;
             }
         }
@@ -266,12 +245,9 @@ namespace Vermines
         private void ApplyChangesToGameSettings()
         {
             // To Apply Changes I need to loop over the ui elements and update the dictionary
-            foreach (List<ASetting> settingsList in _SettingsByCategory.Values)
-            {
-                foreach (ASetting setting in settingsList)
-                {
-                    if (setting.Type == ASetting.SettingType.Int)
-                    {
+            foreach (List<ASettingBase> settingsList in _SettingsByCategory.Values) {
+                foreach (ASettingBase setting in settingsList) {
+                    if (setting.Type == ASettingBase.SettingType.Int) {
                         IntSetting intSetting = (IntSetting)setting;
 
                         // Find Input Field game object
@@ -279,11 +255,8 @@ namespace Vermines
 
                         if (inputField == null)
                             continue;
-
                         intSetting.Value = int.Parse(inputField.GetComponent<TMP_InputField>().text);
-                    }
-                    else if (setting.Type == ASetting.SettingType.Bool)
-                    {
+                    } else if (setting.Type == ASettingBase.SettingType.Bool) {
                         BoolSetting boolSetting = (BoolSetting)setting;
 
                         // Find Input Field game object
@@ -291,7 +264,6 @@ namespace Vermines
 
                         if (inputField == null)
                             continue;
-
                         boolSetting.Value = inputField.GetComponent<Toggle>().isOn;
                     }
                 }

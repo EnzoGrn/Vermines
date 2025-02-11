@@ -13,10 +13,15 @@ MonoBehaviour:
   m_Name: Relic
   m_EditorClassIdentifier: 
   Name: Relic
-  Description: <b>Draw 3</b> cards.<br>You can only play one <b>relic</b> card per
-    turn.
   Exemplars: 8
   IsStartingCard: 0
   Type: 2
   IsFamilyCard: 0
+  _Family: -1
+  _Level: 0
+  Effects:
+  - {fileID: 11400000, guid: be9f3f9c342b79c4db0b9667d1cd49fc, type: 2}
   Eloquence: 3
+  _Souls: 0
+  _SpriteName: 
+  _Sprite: {fileID: 21300000, guid: 5ea369731b633c74398a4b56f8fabb4b, type: 3}

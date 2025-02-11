@@ -8,7 +8,7 @@ namespace OMGG.DesignPattern {
         /*
          * @brief Execute the command.
          */
-        void Execute();
+        bool Execute();
 
         /*
          * @brief Function to undo the command.

@@ -18,4 +18,9 @@ MonoBehaviour:
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 1
+  _Family: -1
+  _Level: 2
   Eloquence: 8
+  _Souls: 20
+  _SpriteName: Apothecary
+  _Sprite: {fileID: 0}
