@@ -5,6 +5,9 @@ using DG.Tweening;
 using Vermines.CardSystem.Enumerations;
 using UnityEngine.UI;
 using TMPro;
+using Fusion;
+
+using OMGG.DesignPattern;
 
 namespace Vermines.HUD
 {
@@ -32,7 +35,8 @@ namespace Vermines.HUD
         [SerializeField] private GameObject playerBannerPrefab;
         [SerializeField] private GameObject phaseBannerObject;
         [SerializeField] private GameObject deskOverlay;
-        [SerializeField] private TextMeshProUGUI buttonText;
+        [SerializeField] private TextMeshProUGUI buttonText; // Texte associé au bouton
+        [SerializeField] private GameObject _PhaseButton;
 
         [Header("Debug")]
         [SerializeField] private bool debugMode = false;
@@ -43,8 +47,10 @@ namespace Vermines.HUD
 
         void Awake()
         {
-            if (instance == null) instance = this;
-            else Destroy(gameObject);
+            if (instance == null)
+                instance = this;
+            else
+                Destroy(gameObject);
 
             deskOverlay.SetActive(false);
 
@@ -66,6 +72,7 @@ namespace Vermines.HUD
         {
             foreach (var player in players)
             {
+                // Create a prefab
                 GameObject bannerObject = Instantiate(playerBannerPrefab, playerListParent);
                 PlayerBanner banner = bannerObject.GetComponent<PlayerBanner>();
                 banner.Setup(player);
@@ -104,6 +111,14 @@ namespace Vermines.HUD
             phaseBanner.SetPhase(currentPhase);
 
             UpdateButtonText();
+        }
+
+        public void UpdatePhaseButton(bool isInteractable)
+        {
+            _PhaseButton.GetComponent<Button>().interactable = isInteractable;
+
+            if (!isInteractable)
+                buttonText.text = "Wait your turn";
         }
 
         private void UpdateButtonText()

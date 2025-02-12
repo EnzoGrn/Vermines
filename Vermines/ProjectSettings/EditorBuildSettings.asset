@@ -19,6 +19,11 @@ EditorBuildSettings:
     guid: a45fb4c356ba9d241a28d641679fb411
   - enabled: 1
     path: Assets/Resources/Scenes/WaitingRoom.unity
+    guid: 3540b3ac9eae6514f8b41f565643be47
+  - enabled: 1
+    path: Assets/Resources/Scenes/PhaseLogicWithUI.unity
+    guid: 1e79986309a378b40b498ebc05109f0f
+  m_configObjects: {}
     guid: 85b889bd3fb86d14aa12441d33786323
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: afec51d4b81b25e469e3b14e73b7ca78, type: 2}

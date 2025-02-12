@@ -4,14 +4,6 @@ using TMPro;
 
 namespace Vermines.HUD
 {
-    public enum PhaseType
-    {
-        Sacrifice,
-        Gain,
-        Action,
-        Resolution
-    }
-
     public class PhaseBanner : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI phaseText;
