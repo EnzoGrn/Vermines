@@ -23,9 +23,9 @@ namespace Vermines {
 
         #region Game Rules
 
-        public GameConfig Config;
+        public GameConfiguration Config;
 
-        public void SetNewConfiguration(GameConfig newConfig)
+        public void SetNewConfiguration(GameConfiguration newConfig)
         {
             // -- Check if the game is already started
             if (Start)
@@ -68,12 +68,16 @@ namespace Vermines {
         {
             if (HasStateAuthority == false)
                 return;
-            Config.Seed = Random.Range(0, int.MaxValue);
-
-            if (_Initializer.Initialize(Config.Seed, Config.FirstEloquence) == -1)
+            // Now directly handle by the Waiting Room.
+            //if (Config.RandomSeed.Value == true)
+            //    Config.Seed = Random.Range(0, int.MaxValue);
+            if (_Initializer.InitializePlayers(Config.Seed, Config.EloquenceToStartWith.Value) == -1)
                 return;
-            _Initializer.DeckDistribution(Config.Rand);
-            _Initializer.StartingDraw(Config.FirstDraw);
+            if (_Initializer.DeckDistribution(Config.Rand) == -1)
+                return;
+            if (_Initializer.InitializeShop(Config.Seed) == -1)
+                return;
+            _Initializer.StartingDraw(Config.NumberOfCardsToStartWith.Value);
 
             Start = true;
         }

@@ -16,10 +16,10 @@ namespace Vermines.Gameplay.Commands.Deck {
             _Player = player;
         }
 
-        public void Execute()
+        public bool Execute()
         {
             if (GameDataStorage.Instance.PlayerDeck.TryGetValue(_Player, out _) == false)
-                return;
+                return false;
             PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[_Player];
 
             _OldDeck = deck;
@@ -27,6 +27,8 @@ namespace Vermines.Gameplay.Commands.Deck {
             deck.Draw();
 
             GameDataStorage.Instance.PlayerDeck[_Player] = deck;
+
+            return true;
         }
 
         public void Undo()

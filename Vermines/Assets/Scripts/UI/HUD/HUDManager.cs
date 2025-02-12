@@ -7,15 +7,16 @@ using UnityEngine.UI;
 using TMPro;
 using Fusion;
 
+using OMGG.DesignPattern;
+
 namespace Vermines.HUD
 {
     /// <summary>
-    /// TODO:
     /// This class is only a placeholder for the real Player class.
     /// This needs to be replaced by the actual Player class.
     /// Do not remove this class, it is used in debugging.
     /// </summary>
-    public class Player
+    public class PlayerData
     {
         public int Eloquence;
         public int Souls;
@@ -28,42 +29,50 @@ namespace Vermines.HUD
     /// </summary>
     public class HUDManager : MonoBehaviour
     {
-        public static HUDManager Instance;
+        public static HUDManager instance;
 
-        [SerializeField] private Transform playerListParent; // Le parent contenant les bannières
+        [SerializeField] private Transform playerListParent;
         [SerializeField] private GameObject playerBannerPrefab;
         [SerializeField] private GameObject phaseBannerObject;
+        [SerializeField] private GameObject deskOverlay;
         [SerializeField] private TextMeshProUGUI buttonText; // Texte associé au bouton
         [SerializeField] private GameObject _PhaseButton;
+
+        [Header("Debug")]
         [SerializeField] private bool debugMode = false;
 
         private List<PlayerBanner> playerBanners = new List<PlayerBanner>();
         private int currentPlayerIndex = 0;
-        private PhaseType currentPhase = PhaseType.Sacrifice; // Phase initiale
+        private PhaseType currentPhase = PhaseType.Sacrifice;
 
         void Awake()
         {
-            if (Instance == null) Instance = this;
-            else Destroy(gameObject);
+            if (instance == null)
+                instance = this;
+            else
+                Destroy(gameObject);
+
+            deskOverlay.SetActive(false);
 
             if (debugMode)
             {
-                List<Player> players = new List<Player>
+                List<PlayerData> players = new List<PlayerData>
                 {
-                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 1", Family = CardFamily.None },
-                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 2", Family = CardFamily.None },
-                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 3", Family = CardFamily.None },
-                    new Player { Eloquence = 20, Souls = 100, Nickname = "Player 4", Family = CardFamily.None }
+                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 1", Family = CardFamily.None },
+                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 2", Family = CardFamily.None },
+                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 3", Family = CardFamily.None },
+                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 4", Family = CardFamily.None }
                 };
 
                 Initialize(players);
             }
         }
 
-        public void Initialize(List<Player> players) // TODO: Replace Player with the actual Player class
+        public void Initialize(List<PlayerData> players)
         {
             foreach (var player in players)
             {
+                // Create a prefab
                 GameObject bannerObject = Instantiate(playerBannerPrefab, playerListParent);
                 PlayerBanner banner = bannerObject.GetComponent<PlayerBanner>();
                 banner.Setup(player);
@@ -74,7 +83,6 @@ namespace Vermines.HUD
             UpdatePhaseBanner();
         }
 
-        // Appelée lorsqu'on clique sur le bouton
         public void NextPhase()
         {
             switch (currentPhase)
@@ -90,7 +98,7 @@ namespace Vermines.HUD
                     break;
                 case PhaseType.Resolution:
                     currentPhase = PhaseType.Sacrifice;
-                    NextPlayer(); // Change de joueur
+                    NextPlayer();
                     break;
             }
 
@@ -143,11 +151,9 @@ namespace Vermines.HUD
 
             float bannerHeight = playerBanners[1].rectTransform.rect.height;
 
-            // Mise à jour de l'index une fois toutes les animations terminées
             currentPlayerIndex = nextPlayerIndex;
             UpdatePlayerDisplay();
 
-            // Replace la bannière active en bas après la montée
             activeBanner.rectTransform.SetSiblingIndex(playerBanners.Count - 1);
 
             /*
@@ -205,6 +211,16 @@ namespace Vermines.HUD
             {
                 Debug.LogWarning("HUDManager: Debug mode is enabled. Make sure to disable it before building the game.");
             }
+        }
+
+        public void OpenDeskOverlay()
+        {
+            deskOverlay.SetActive(true);
+        }
+
+        public void CloseDeskOverlay()
+        {
+            deskOverlay.SetActive(false);
         }
     }
 }

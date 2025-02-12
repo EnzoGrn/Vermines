@@ -501,7 +501,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 635368057}
   m_OnClick:
     m_PersistentCalls:
@@ -810,7 +810,7 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2028731910178975094, guid: eb55402effb0b84438d25cb9f23122ee, type: 3}
   m_PrefabInstance: {fileID: 1003515106}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1003515109 stripped
+--- !u!1 &1003515108 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4830914215506196948, guid: eb55402effb0b84438d25cb9f23122ee, type: 3}
   m_PrefabInstance: {fileID: 1003515106}
@@ -1218,7 +1218,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1759437693}
-  - component: {fileID: 1759437692}
+  - component: {fileID: 1759437694}
   m_Layer: 0
   m_Name: HUDManager
   m_TagString: Untagged
@@ -1226,24 +1226,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1759437692
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1759437691}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01ae758f0f087cd4683c8cca57c7ac26, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerListParent: {fileID: 1948775363}
-  playerBannerPrefab: {fileID: 4772245233492487442, guid: 3ee61d43e4175fa49996444f5273c7f4, type: 3}
-  phaseBannerObject: {fileID: 1003515109}
-  buttonText: {fileID: 500247124}
-  _PhaseButton: {fileID: 635368054}
-  debugMode: 1
 --- !u!4 &1759437693
 Transform:
   m_ObjectHideFlags: 0
@@ -1259,6 +1241,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1759437694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1759437691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01ae758f0f087cd4683c8cca57c7ac26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerListParent: {fileID: 1948775363}
+  playerBannerPrefab: {fileID: 4772245233492487442, guid: 3ee61d43e4175fa49996444f5273c7f4, type: 3}
+  phaseBannerObject: {fileID: 1003515108}
+  deskOverlay: {fileID: 4492695741882877103, guid: 10696178048e41b45b074dc816b0abd7, type: 3}
+  buttonText: {fileID: 500247124}
+  _PhaseButton: {fileID: 635368054}
+  debugMode: 1
 --- !u!1 &1795815915
 GameObject:
   m_ObjectHideFlags: 0
@@ -1446,6 +1447,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gameplay
       objectReference: {fileID: 0}
+    - target: {fileID: 1456946192299027768, guid: cb80c6d807127d443947e5dff2466b3b, type: 3}
+      propertyPath: Config
+      value: 
+      objectReference: {fileID: 11400000, guid: 8069901c398771d47a75633e0b5584f4, type: 2}
     - target: {fileID: 2676703785937154257, guid: cb80c6d807127d443947e5dff2466b3b, type: 3}
       propertyPath: SortKey
       value: 545779987

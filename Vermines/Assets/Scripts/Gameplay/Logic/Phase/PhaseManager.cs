@@ -55,10 +55,11 @@ namespace Vermines
                 return;
             }
 
+            int idx = 0;
+
             _ActualTurnPhase = PhaseType.Sacrifice;
             _PlayerTurnIndex = 0;
             _PlayerTurnCount = 0;
-            int idx = 0;
 
             foreach (var playerDate in GameDataStorage.Instance.PlayerData)
             {
@@ -121,14 +122,14 @@ namespace Vermines
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
         public void RPC_SetUpUI()
         {
-            HUDManager.Instance.UpdatePhaseButton(IsMyTurn());
+            HUDManager.instance.UpdatePhaseButton(IsMyTurn());
         }
 
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
         public void RPC_UpdatePhaseUI()
         {
-            HUDManager.Instance.NextPhase();
-            HUDManager.Instance.UpdatePhaseButton(IsMyTurn());
+            HUDManager.instance.NextPhase();
+            HUDManager.instance.UpdatePhaseButton(IsMyTurn());
         }
 
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]

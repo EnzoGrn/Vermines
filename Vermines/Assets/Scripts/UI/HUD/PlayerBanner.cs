@@ -13,31 +13,7 @@ namespace Vermines.HUD
         public float scale = 1.1f;
         public float activeScale = 1.275f;
 
-        private void Start()
-        {
-            if (playerNameObject != null)
-            {
-                playerNameObject.SetActive(false);
-            }
-        }
-
-        public void ShowPlayerName()
-        {
-            if (playerNameObject != null)
-            {
-                playerNameObject.SetActive(true);
-            }
-        }
-
-        public void HidePlayerName()
-        {
-            if (playerNameObject != null)
-            {
-                playerNameObject.SetActive(false);
-            }
-        }
-
-        public void Setup(Player player)
+        public void Setup(PlayerData player)
         {
             playerNameObject.GetComponent<TextMeshProUGUI>().text = player.Nickname;
             playerEloquenceText.text = player.Eloquence.ToString();

@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Vermines/Assets/Resources/Scenes/UI.unity.meta
+guid: e3c3553cd6c45c3489e1633ddeecac9b
+========
+guid: 85b889bd3fb86d14aa12441d33786323
+>>>>>>>> feature/issue-48/refactor-project-to-fusion:Vermines/Assets/Resources/Scenes/WaitingRoom.unity.meta
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
