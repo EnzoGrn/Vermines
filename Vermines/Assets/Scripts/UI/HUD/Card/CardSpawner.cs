@@ -53,14 +53,19 @@ namespace Vermines.HUD.Card
                 case "Hand":
                     newCard.AddComponent<CardInHand>();
                     newCard.transform.SetParent(handContainer, false);
+                    newCard.tag = "HandCard";
                     break;
                 case "Market":
                     newCard.AddComponent<CardInShop>();
+                    newCard.GetComponent<CardInShop>().SetCardBase(newCard.GetComponent<CardBase>());
                     newCard.transform.SetParent(marketContainer, false);
+                    newCard.tag = "ShopCard";
                     break;
                 case "Courtyard":
                     newCard.AddComponent<CardInShop>();
+                    newCard.GetComponent<CardInShop>().SetCardBase(newCard.GetComponent<CardBase>());
                     newCard.transform.SetParent(courtyardContainer, false);
+                    newCard.tag = "ShopCard";
                     break;
                 //case "Table":
                 //    newCard.AddComponent<CardOnTable>();

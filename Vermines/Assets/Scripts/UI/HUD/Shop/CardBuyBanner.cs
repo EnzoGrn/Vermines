@@ -6,6 +6,7 @@ namespace Vermines.HUD
 {
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.HUD.Card;
 
     public class CardBuyBanner : MonoBehaviour
     {
@@ -16,10 +17,11 @@ namespace Vermines.HUD
         [SerializeField] private TextMeshProUGUI cost;
         [SerializeField] private TextMeshProUGUI souls;
         [SerializeField] private TextMeshProUGUI effectDescription;
+        [SerializeField] private GameObject card;
         #endregion
 
         #region Debug
-        [SerializeField] private CardData card;
+        [SerializeField] private CardData cardData;
         [SerializeField] private bool debugMode = false;
         #endregion
 
@@ -27,7 +29,7 @@ namespace Vermines.HUD
         {
             if (debugMode)
             {
-                Setup(card);
+                Setup(cardData);
             }
         }
 
@@ -35,22 +37,27 @@ namespace Vermines.HUD
         /// Setup the card buy banner by loading the card data.
         /// It need to be called before the banner is displayed.
         /// </summary>
-        /// <param name="card"></param>
-        public void Setup(CardData card)
+        /// <param name="cardData"></param>
+        public void Setup(CardData cardData)
         {
-            if (card == null)
+            if (cardData == null)
             {
                 Debug.LogError("Card is null!");
                 return;
             }
 
-            cardName.text = card.Name;
-            cost.text = $"Coût: {card.Eloquence} éloquences";
-            souls.text = $"+{card.Souls} âmes si sacrifié";
-            souls.gameObject.SetActive(card.Type == CardType.Partisan);
-            type.text = card.Type == CardType.Partisan ? card.Family.ToString() : card.Type.ToString();
-            LoadTypeIcon(card.Type);
-            LoadEffects(card);
+            CardBase cardBase = card.GetComponent<CardBase>();
+            if (cardBase)
+            {
+                cardBase.Setup(cardData);
+            }
+            cardName.text = cardData.Name;
+            cost.text = $"Coût: {cardData.Eloquence} éloquences";
+            souls.text = $"+{cardData.Souls} âmes si sacrifié";
+            souls.gameObject.SetActive(cardData.Type == CardType.Partisan);
+            type.text = cardData.Type == CardType.Partisan ? cardData.Family.ToString() : cardData.Type.ToString();
+            LoadTypeIcon(cardData.Type);
+            LoadEffects(cardData);
         }
 
         private void LoadEffects(CardData card)
@@ -92,7 +99,7 @@ namespace Vermines.HUD
 
             if (card != null && debugMode)
             {
-                Setup(card);
+                Setup(cardData);
             }
         }
     }
