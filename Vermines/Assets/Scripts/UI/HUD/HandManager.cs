@@ -5,6 +5,9 @@ using DG.Tweening;
 
 namespace Vermines.HUD
 {
+    using Vermines.CardSystem.Elements;
+    using Vermines.HUD.Card;
+
     public class HandManager : MonoBehaviour
     {
         [SerializeField] private int maxHandSize = 5; // TODO: Link this with game configuration
@@ -13,7 +16,7 @@ namespace Vermines.HUD
         [SerializeField] private Transform spawnPoint;
         [SerializeField] private Transform handContainer;
 
-        private List<GameObject> handCards = new List<GameObject>();
+        private List<GameObject> handCards = new List<GameObject>(); // TODO: Link this with player's hand
 
         [Header("Debug")]
         [SerializeField] private bool debugMode;
@@ -28,18 +31,63 @@ namespace Vermines.HUD
             }
         }
 
+        /// <summary>
+        /// This method is used to draw a card from the deck.
+        /// It will instantiate a new card and add it to the hand.
+        /// </summary>
         public void DrawCard()
         {
             if (handCards.Count >= maxHandSize) return;
             GameObject card = Instantiate(cardPrefab, spawnPoint.position, spawnPoint.rotation, handContainer.transform);
-            card.transform.localScale = 1.5f * Vector3.one;
+            card.name = GenerateCardName(handCards);
+            card.AddComponent<CardHover>();
+            card.AddComponent<CardDraggable>();
+            CardDraggable cardScript = card.GetComponent<CardDraggable>();
+            if (cardScript != null)
+            {
+                cardScript.SetHandManager(this);
+            }
             handCards.Add(card);
             UpdateCardPosition();
         }
 
-        private void UpdateCardPosition()
+        public void DrawCard(ICard cardObject)
+        {
+            // TODO: Generate card from card data
+        }
+
+        public void DrawCards(List<ICard> cards)
+        {
+            foreach (var card in cards)
+            {
+                DrawCard(card);
+            }
+        }
+
+        /// <summary>
+        /// This method is used to remove a card from the hand.
+        /// </summary>
+        public void RemoveCard(GameObject card)
+        {
+            handCards.Remove(card);
+            UpdateCardPosition();
+        }
+
+        /// <summary>
+        /// This method is used to add a card to the hand.
+        /// Called only if you want to add a card to the hand without drawing it.
+        /// </summary>
+        public void AddCard(GameObject card)
+        {
+            handCards.Add(card);
+            UpdateCardPosition();
+        }
+
+        public void UpdateCardPosition()
         {
             if (handCards.Count == 0) return;
+
+            LockAllCards(true);
 
             float cardSpacing = 1f / maxHandSize;
             float firstCardPosition = 0.5f - (handCards.Count - 1) * cardSpacing / 2;
@@ -58,11 +106,44 @@ namespace Vermines.HUD
                 handCards[i].transform.DOMove(splinePosition, 0.25f);
                 handCards[i].transform.DORotateQuaternion(rotation, 0.25f);
 
-                // 🔹 Met à jour la position initiale après l'animation
                 int index = i;
                 DOVirtual.DelayedCall(0.25f, () => handCards[index].GetComponent<CardHover>().SetInitialPosition());
+
+            }
+            DOVirtual.DelayedCall(0.3f, () => LockAllCards(false));
+        }
+
+        public void LockAllCards(bool state)
+        {
+            foreach (var card in handCards)
+            {
+                var hover = card.GetComponent<CardHover>();
+                if (hover != null)
+                {
+                    hover.SetLocked(state);
+                }
             }
         }
 
+        private string GenerateCardName(List<GameObject> cards)
+        {
+            return $"Card_{cards.Count + 1}";
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (splineContainer == null) return;
+
+            Spline spline = splineContainer.Spline;
+            if (spline == null) return;
+
+            Gizmos.color = Color.red;
+            for (int i = 0; i < 100; i++)
+            {
+                float t = i / 100f;
+                Vector3 position = spline.EvaluatePosition(t);
+                Gizmos.DrawSphere(position, 0.1f);
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Vermines.HUD
+namespace Vermines.HUD.Card
 {
     using Vermines.CardSystem.Data;
 
@@ -50,10 +50,10 @@ namespace Vermines.HUD
 
             switch (location)
             {
-                //case "Hand":
-                //    newCard.AddComponent<CardInHand>();
-                //    newCard.transform.SetParent(handContainer, false);
-                //    break;
+                case "Hand":
+                    newCard.AddComponent<CardInHand>();
+                    newCard.transform.SetParent(handContainer, false);
+                    break;
                 case "Market":
                     newCard.AddComponent<CardInShop>();
                     newCard.transform.SetParent(marketContainer, false);

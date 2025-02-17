@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 
-public class HandHover : MonoBehaviour
+public class HandHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Transform handContainer;
     [SerializeField] private float hiddenY = -2f; // Position hors écran
@@ -15,12 +15,12 @@ public class HandHover : MonoBehaviour
         handContainer.localPosition = new Vector3(handContainer.localPosition.x, hiddenY, handContainer.localPosition.z);
     }
 
-    public void OnMouseEnter()
+    public void OnPointerEnter(PointerEventData eventData)
     {
         handContainer.DOLocalMoveY(visibleY, duration);
     }
 
-    public void OnMouseExit()
+    public void OnPointerExit(PointerEventData eventData)
     {
         handContainer.DOLocalMoveY(hiddenY, duration);
     }

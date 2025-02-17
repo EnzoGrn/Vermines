@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-namespace Vermines.HUD
+namespace Vermines.HUD.Card
 {
     using Vermines.CardSystem.Data;
 
@@ -12,7 +12,7 @@ namespace Vermines.HUD
         [SerializeField] protected TextMeshProUGUI effectDescription;
 
         [SerializeField]
-        [Tooltip("Fill this only in debug mode.")]
+        [Tooltip("Fill this only in debug mode. Otherwise, it will be filled by the HandManager.")]
         protected CardData cardData;
 
         public virtual void Setup(CardData newCardData)
