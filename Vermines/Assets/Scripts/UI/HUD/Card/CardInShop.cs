@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Vermines.HUD
+namespace Vermines.HUD.Card
 {
     public class CardInShop : CardBase
     {

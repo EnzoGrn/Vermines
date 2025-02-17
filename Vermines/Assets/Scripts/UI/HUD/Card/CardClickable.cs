@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Vermines.HUD
+namespace Vermines.HUD.Card
 {
     public class CardClickable : MonoBehaviour, IPointerClickHandler
     {
