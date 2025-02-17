@@ -129,21 +129,5 @@ namespace Vermines.HUD
         {
             return $"Card_{cards.Count + 1}";
         }
-
-        private void OnDrawGizmos()
-        {
-            if (splineContainer == null) return;
-
-            Spline spline = splineContainer.Spline;
-            if (spline == null) return;
-
-            Gizmos.color = Color.red;
-            for (int i = 0; i < 100; i++)
-            {
-                float t = i / 100f;
-                Vector3 position = spline.EvaluatePosition(t);
-                Gizmos.DrawSphere(position, 0.1f);
-            }
-        }
     }
 }

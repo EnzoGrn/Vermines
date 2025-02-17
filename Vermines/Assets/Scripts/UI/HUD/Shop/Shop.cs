@@ -68,7 +68,7 @@ namespace Vermines.HUD
             }
         }
 
-        public void OpenCardBuyOverlay(CardInShop card)
+        public void OpenCardBuyOverlay(CardBase card)
         {
             cardBuyOverlay.GetComponent<CardBuyBanner>().Setup(card.GetCardData());
             cardBuyOverlay.SetActive(true);

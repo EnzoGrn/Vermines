@@ -13,14 +13,27 @@ namespace Vermines.HUD.Card
 
         private void HandleClick()
         {
-            if (TryGetComponent<CardInShop>(out var marketCard))
+            if (CompareTag("ShopCard"))
             {
-                marketCard.OpenOverlay();
+                if (TryGetComponent<CardInShop>(out var marketCard))
+                {
+                    marketCard.OpenOverlay();
+                }
             }
-            //else if (TryGetComponent<CardOnTable>(out var tableCard))
+            //else if (CompareTag("TableCard"))
             //{
-            //    tableCard.OpenDetailsOverlay();
+            //    if (TryGetComponent<CardOnTable>(out var tableCard))
+            //    {
+            //        tableCard.OpenDetailsOverlay();
+            //    }
             //}
+            else if (CompareTag("HandCard"))
+            {
+                if (TryGetComponent<CardInHand>(out var inventoryCard))
+                {
+                    //inventoryCard.OpenInventoryDetails();
+                }
+            }
             // Ajoute d'autres conditions si nécessaire
         }
     }
