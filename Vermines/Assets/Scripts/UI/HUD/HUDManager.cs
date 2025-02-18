@@ -8,6 +8,8 @@ using TMPro;
 using Fusion;
 
 using OMGG.DesignPattern;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using System.Linq;
 
 namespace Vermines.HUD
 {
@@ -22,6 +24,22 @@ namespace Vermines.HUD
         public int Souls;
         public string Nickname;
         public CardFamily Family;
+
+        public PlayerData() {}
+
+        public PlayerData(Vermines.Player.PlayerData playerData)
+        {
+            Eloquence = playerData.Eloquence;
+            Souls = playerData.Souls;
+            Nickname = playerData.Nickname;
+            Family = playerData.Family;
+        }
+
+        public void UpdatePlayerData(Vermines.Player.PlayerData playerData)
+        {
+            Eloquence = playerData.Eloquence;
+            Souls = playerData.Souls;
+        }
     }
 
     /// <summary>
@@ -41,9 +59,13 @@ namespace Vermines.HUD
         [Header("Debug")]
         [SerializeField] private bool debugMode = false;
 
-        private List<PlayerBanner> playerBanners = new List<PlayerBanner>();
+        //private List<PlayerBanner> playerBanners = new List<PlayerBanner>();
         private int currentPlayerIndex = 0;
         private PhaseType currentPhase = PhaseType.Sacrifice;
+
+        private List<int> playerIds;
+        private Dictionary<int, PlayerData> players;
+        private Dictionary<int, PlayerBanner> playerBanners = new();
 
         void Awake()
         {
@@ -56,31 +78,86 @@ namespace Vermines.HUD
 
             if (debugMode)
             {
-                List<PlayerData> players = new List<PlayerData>
+                players = new Dictionary<int, PlayerData>
                 {
-                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 1", Family = CardFamily.None },
-                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 2", Family = CardFamily.None },
-                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 3", Family = CardFamily.None },
-                    new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 4", Family = CardFamily.None }
+                    { 1, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 1", Family = CardFamily.None } },
+                    { 2, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 2", Family = CardFamily.None } },
+                    { 3, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 3", Family = CardFamily.None } },
+                    { 4, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 4", Family = CardFamily.None } }
                 };
 
-                Initialize(players);
+                playerIds = players.Keys.ToList();
+
+                Initialize();
             }
         }
 
-        public void Initialize(List<PlayerData> players)
+        public void Initialize()
         {
             foreach (var player in players)
             {
                 // Create a prefab
                 GameObject bannerObject = Instantiate(playerBannerPrefab, playerListParent);
                 PlayerBanner banner = bannerObject.GetComponent<PlayerBanner>();
-                banner.Setup(player);
-                playerBanners.Add(banner);
+                banner.Setup(player.Value);
+                playerBanners[player.Key] = banner;
             }
 
             UpdatePlayerDisplay();
             UpdatePhaseBanner();
+        }
+
+        public void SetPlayers(NetworkDictionary<PlayerRef, Vermines.Player.PlayerData> playerData)
+        {
+            players = new Dictionary<int, PlayerData>();
+            
+            // Set all the data of the player
+            foreach (var data in playerData)
+            {
+                players[data.Value.PlayerRef.PlayerId] = new PlayerData(data.Value);
+            }
+
+            playerIds = players.Keys.ToList();
+
+            Initialize();
+        }
+
+        public void UpdatePlayers(NetworkDictionary<PlayerRef, Vermines.Player.PlayerData> playerData)
+        {
+            foreach (var data in playerData)
+            {
+                players[data.Value.PlayerRef.PlayerId].UpdatePlayerData(data.Value);
+            }
+
+            UpdatePlayerBannerData();
+        }
+
+        public void UpdateSpecificPlayer(Vermines.Player.PlayerData player)
+        {
+            players[player.PlayerRef.PlayerId].UpdatePlayerData(player);
+
+            UpdateSpecificPlayerBannerData(player.PlayerRef.PlayerId, players[player.PlayerRef.PlayerId]);
+        }
+
+        public void AttemptToNextPhase()
+        {
+            switch (currentPhase)
+            {
+                case PhaseType.Sacrifice:
+                    SacrificePhase.Instance.EndPhase();
+                    break;
+                case PhaseType.Gain:
+                    GainPhase.Instance.EndPhase();
+                    break;
+                case PhaseType.Action:
+                    ActionPhase.Instance.EndPhase();
+                    break;
+                case PhaseType.Resolution:
+                    ResolutionPhase.Instance.EndPhase();
+                    break;
+            }
+
+            //GameEvents.OnAttemptNextPhase.Invoke();
         }
 
         public void NextPhase()
@@ -146,7 +223,10 @@ namespace Vermines.HUD
         public void NextPlayer()
         {
             float screenWidth = Screen.width;
-            PlayerBanner activeBanner = playerBanners[currentPlayerIndex];
+
+            int playerId = playerIds[currentPlayerIndex];
+
+            PlayerBanner activeBanner = playerBanners[playerId];
             int nextPlayerIndex = (currentPlayerIndex + 1) % playerBanners.Count;
 
             float bannerHeight = playerBanners[1].rectTransform.rect.height;
@@ -197,12 +277,33 @@ namespace Vermines.HUD
             */
         }
 
+        private void UpdatePlayerBannerData()
+        {
+            foreach (var player in players)
+            {
+                playerBanners[player.Key].UpdateData(player.Value);
+            }
+        }
+
+        private void UpdateSpecificPlayerBannerData(int playerKey, PlayerData playerData)
+        {
+            playerBanners[playerKey].UpdateData(playerData);
+        }
+
         private void UpdatePlayerDisplay()
         {
-            for (int i = 0; i < playerBanners.Count; i++)
+            int idx = 0;
+
+            foreach (var player in players)
             {
-                playerBanners[i].SetSize(i == currentPlayerIndex);
+                playerBanners[player.Key].SetSize(idx == currentPlayerIndex);
+                idx++;
             }
+
+            //for (int i = 0; i < playerBanners.Count; i++)
+            //{
+            //    playerBanners[i].SetSize(i == currentPlayerIndex);
+            //}
         }
 
         private void OnValidate()

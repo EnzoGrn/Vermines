@@ -25,5 +25,11 @@ namespace Vermines.HUD
         {
             rectTransform.localScale = isActive ? Vector3.one * activeScale : Vector3.one * scale;
         }
+
+        public void UpdateData(PlayerData playerData)
+        {
+            playerEloquenceText.text = playerData.Eloquence.ToString();
+            playerSoulsText.text = playerData.Souls.ToString();
+        }
     }
 }

@@ -68,9 +68,9 @@ namespace Vermines {
         {
             if (HasStateAuthority == false)
                 return;
-            // Now directly handle by the Waiting Room.
-            //if (Config.RandomSeed.Value == true)
-            //    Config.Seed = Random.Range(0, int.MaxValue);
+            // TODO: need to handle it with the Waiting Room (before sending the Game Configuration to clients). // WIP
+            if (Config.RandomSeed.Value == true)
+                Config.Seed = Random.Range(0, int.MaxValue);
             if (_Initializer.InitializePlayers(Config.Seed, Config.EloquenceToStartWith.Value) == -1)
                 return;
             if (_Initializer.DeckDistribution(Config.Rand) == -1)

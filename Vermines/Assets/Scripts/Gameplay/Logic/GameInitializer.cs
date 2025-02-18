@@ -4,6 +4,7 @@ using OMGG.Network.Fusion;
 using OMGG.DesignPattern;
 using Fusion;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Vermines {
 
@@ -18,6 +19,7 @@ namespace Vermines {
     using Vermines.ShopSystem.Data;
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
+    using Vermines.Utils;
     using static Fusion.Allocator;
 
     public class GameInitializer : NetworkBehaviour {
@@ -25,6 +27,16 @@ namespace Vermines {
         private NetworkQueue _Queue = new NetworkQueue();
 
         #region Methods
+
+        public override void Spawned()
+        {
+            // Load UI Scene
+            if (Runner.IsServer)
+            {
+                Debug.Log("LoadYourAsyncScene.");
+                Runner.LoadScene("UI", LoadSceneMode.Additive);
+            }
+        }
 
         public int InitializePlayers(int seed, int startingEloquence)
         {

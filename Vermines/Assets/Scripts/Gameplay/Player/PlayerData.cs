@@ -48,13 +48,15 @@ namespace Vermines.Player {
         public List<ICard> Hand { get; set; }
         public List<ICard> Discard { get; set; }
         public List<ICard> Graveyard { get; set; }
+        public List<ICard> PlayedCards { get; set; }
 
         public void Initialize()
         {
-            Deck      = new List<ICard>();
-            Hand      = new List<ICard>();
-            Discard   = new List<ICard>();
-            Graveyard = new List<ICard>();
+            Deck        = new List<ICard>();
+            Hand        = new List<ICard>();
+            Discard     = new List<ICard>();
+            Graveyard   = new List<ICard>();
+            PlayedCards = new List<ICard>();
         }
 
         #region Deck Manipulation
@@ -86,7 +88,8 @@ namespace Vermines.Player {
                 Deck      = new List<ICard>(this.Deck),
                 Hand      = new List<ICard>(this.Hand),
                 Discard   = new List<ICard>(this.Discard),
-                Graveyard = new List<ICard>(this.Graveyard)
+                Graveyard = new List<ICard>(this.Graveyard),
+                PlayedCards = new List<ICard>(this.PlayedCards)
             };
         }
 
@@ -103,6 +106,7 @@ namespace Vermines.Player {
             serializedPlayerDeck += $";Hand[{string.Join(","     , Hand.Select(card      => card.ID))}]";
             serializedPlayerDeck += $";Discard[{string.Join(","  , Discard.Select(card   => card.ID))}]";
             serializedPlayerDeck += $";Graveyard[{string.Join(",", Graveyard.Select(card => card.ID))}]";
+            serializedPlayerDeck += $";PlayedCards[{string.Join(",", PlayedCards.Select(card => card.ID))}]";
 
             return serializedPlayerDeck;
         }
@@ -115,23 +119,37 @@ namespace Vermines.Player {
             string[] sections = data.Split(';');
 
             // Parse each section
-            foreach (string deckSection in sections) {
-                if (deckSection.StartsWith("Deck[") && deckSection.EndsWith("]")) {
+            foreach (string deckSection in sections)
+            {
+                if (deckSection.StartsWith("Deck[") && deckSection.EndsWith("]"))
+                {
                     string content = deckSection[5..^1];
 
                     deck.Deck = CardSetDatabase.Instance.GetCardByIds(content);
-                } else if (deckSection.StartsWith("Hand[") && deckSection.EndsWith("]")) {
+                }
+                else if (deckSection.StartsWith("Hand[") && deckSection.EndsWith("]"))
+                {
                     string content = deckSection[5..^1];
 
                     deck.Hand = CardSetDatabase.Instance.GetCardByIds(content);
-                } else if (deckSection.StartsWith("Discard[") && deckSection.EndsWith("]")) {
+                }
+                else if (deckSection.StartsWith("Discard[") && deckSection.EndsWith("]"))
+                {
                     string content = deckSection[8..^1];
 
                     deck.Discard = CardSetDatabase.Instance.GetCardByIds(content);
-                } else if (deckSection.StartsWith("Graveyard[") && deckSection.EndsWith("]")) {
+                }
+                else if (deckSection.StartsWith("Graveyard[") && deckSection.EndsWith("]"))
+                {
                     string content = deckSection[10..^1];
 
                     deck.Graveyard = CardSetDatabase.Instance.GetCardByIds(content);
+                }
+                else if (deckSection.StartsWith("PlayedCards[") && deckSection.EndsWith("]"))
+                {
+                    string content = deckSection[12..^1];
+
+                    deck.PlayedCards = CardSetDatabase.Instance.GetCardByIds(content);
                 }
             }
 
