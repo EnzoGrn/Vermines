@@ -1,54 +1,29 @@
-using Fusion;
-using OMGG.Network.Fusion;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.SocialPlatforms;
-using Vermines.Network.Utilities;
+using Fusion;
 
-namespace Vermines
-{
-    public class ResolutionPhase : NetworkBehaviour
-    {
-        public PhaseType PhaseType;
+namespace Vermines.Gameplay.Phases {
 
-        // Singleton
-        public static ResolutionPhase Instance => NetworkSingleton<ResolutionPhase>.Instance;
-        public override void Spawned()
+    using Vermines.Gameplay.Phases.Enumerations;
+
+    public class ResolutionPhase : APhase {
+
+        #region Type
+
+        public override PhaseType Type => PhaseType.Resolution;
+
+        #endregion
+
+        #region Override Methods
+
+        public override void Run(PlayerRef player)
         {
-            name = NetworkNameTools.GiveNetworkingObjectName(Object.InputAuthority, HasInputAuthority, HasStateAuthority);
+            Debug.Log($"Phase {Type} is now running");
+
+            // TODO: Check if that cause a problem when client & server are simulated the turn of someone else.
+
+            //OnPhaseEnding(player, true); // Here true, because everyone know that the phase is over.
         }
 
-        public ResolutionPhase()
-        {
-            PhaseType = PhaseType.Resolution;
-            //OnEndPhase = new UnityEvent();
-        }
-
-        public void RunPhase(PlayerRef playerRef)
-        {
-            Debug.Log($"Phase {PhaseType} is now running");
-            return;
-        }
-
-        public void EndPhase()
-        {
-            // Notify the PhaseManager that the phase is completed
-            //OnEndPhase.Invoke();
-            GameEvents.OnAttemptNextPhase.Invoke();
-
-            //GameEvents.AttemptNextPhase();
-
-            Debug.Log($"End of the {PhaseType.ToString()} OnEndPhase.");
-        }
-
-        //public void EndPhase()
-        //{
-        //    // For effect based on the end of the turn maybe do something?
-
-        //    // Discard all the cards
-
-        //    // Draw cards
-
-        //}
+        #endregion
     }
 }

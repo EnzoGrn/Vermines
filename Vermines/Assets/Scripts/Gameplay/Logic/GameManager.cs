@@ -5,6 +5,7 @@ using Fusion;
 namespace Vermines {
 
     using Vermines.Config;
+    using Vermines.Gameplay.Phases;
 
     public class GameManager : NetworkBehaviour {
 
@@ -43,18 +44,34 @@ namespace Vermines {
                 Application.targetFrameRate = TickRate.Resolve(Runner.Config.Simulation.TickRateSelection).Server;
         }
 
-        public override void FixedUpdateNetwork()
+        #endregion
+
+        #region Player Order
+
+        // TODO: Change depending of the number of players max (possible in the settings)
+        // TODO: Currently the game initialize in order of connexion, maybe create a random of the first player and next etc...
+        [Networked, Capacity(4)]
+        public NetworkArray<PlayerRef> PlayerTurnOrder { get; }
+
+        /// <summary>
+        /// The total amount of turn that has been played.
+        /// </summary>
+        [Networked]
+        public int TotalTurnPlayed { get; set; } = 0;
+
+        /// <summary>
+        /// Do PlayerTurnOrder[CurrentPlayerIndex] to get the current player.
+        /// </summary>
+        [Networked]
+        public int CurrentPlayerIndex { get; set; } = 0;
+
+        public bool IsMyTurn()
         {
-            if (HasStateAuthority == false)
-                return;
-            if (!Start) {
-                if (GameDataStorage.Instance.PlayerData.Count >= 2)
-                    StartGame();
-                return;
-            }
+            return (PlayerTurnOrder.Get(CurrentPlayerIndex) == Runner.LocalPlayer);
         }
 
         #endregion
+
 
         [Networked]
         [HideInInspector]
@@ -73,6 +90,9 @@ namespace Vermines {
                 Config.Seed = Random.Range(0, int.MaxValue);
             if (_Initializer.InitializePlayers(Config.Seed, Config.EloquenceToStartWith.Value) == -1)
                 return;
+            InitializePlayerOrder();
+            if (_Initializer.InitalizePhase() == -1)
+                return;
             if (_Initializer.DeckDistribution(Config.Rand) == -1)
                 return;
             if (_Initializer.InitializeShop(Config.Seed) == -1)
@@ -80,6 +100,19 @@ namespace Vermines {
             _Initializer.StartingDraw(Config.NumberOfCardsToStartWith.Value);
 
             Start = true;
+
+            PhaseManager.Instance.OnStartPhases();
+        }
+
+        private void InitializePlayerOrder()
+        {
+            int orderIndex = 0;
+
+            foreach (var playerData in GameDataStorage.Instance.PlayerData) {
+                PlayerTurnOrder.Set(orderIndex, playerData.Key);
+
+                orderIndex++;
+            }
         }
     }
 }

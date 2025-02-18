@@ -19,12 +19,11 @@ namespace Vermines {
     using Vermines.ShopSystem.Data;
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
-    using Vermines.Utils;
-    using static Fusion.Allocator;
+    using Vermines.Gameplay.Phases;
 
     public class GameInitializer : NetworkBehaviour {
 
-        private NetworkQueue _Queue = new NetworkQueue();
+        private readonly NetworkQueue _Queue = new();
 
         #region Methods
 
@@ -69,6 +68,13 @@ namespace Vermines {
             }
 
             RPC_InitializeGame(seed, FamilyUtils.FamiliesListToIds(families));
+        }
+
+        public int InitalizePhase()
+        {
+            RPC_InitializePhase();
+
+            return 0;
         }
 
         public int InitializeShop(int seed)
@@ -199,7 +205,7 @@ namespace Vermines {
         {
             _Queue.EnqueueRPC(() => {
                 Debug.Log($"[SERVER]: Deck initialization:");
-                Debug.Log($"{data}");
+                Debug.Log($"[SERVER]: {data}");
 
                 ICommand initializeCommand = new InitializeDeckCommand(data);
 
@@ -212,7 +218,7 @@ namespace Vermines {
         {
             _Queue.EnqueueRPC(() => {
                 Debug.Log($"[SERVER]: Shop initialization:");
-                Debug.Log(data);
+                Debug.Log($"[SERVER]: {data}");
 
                 // Ignore the host because it's shop is already initialized (it's just synchronising the shop with others)
                 if (HasStateAuthority == false) {
@@ -238,7 +244,15 @@ namespace Vermines {
                 }
 
                 Debug.Log($"[SERVER]: Deck after everyone draw their cards:");
-                Debug.Log(GameDataStorage.Instance.SerializeDeck());
+                Debug.Log($"[SERVER]: {GameDataStorage.Instance.SerializeDeck()}");
+            });
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPC_InitializePhase()
+        {
+            _Queue.EnqueueRPC(() => {
+                PhaseManager.Instance.Initialize();
             });
         }
 

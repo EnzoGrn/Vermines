@@ -1,18 +1,16 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
-using Vermines.CardSystem.Enumerations;
 using UnityEngine.UI;
 using TMPro;
 using Fusion;
 
-using OMGG.DesignPattern;
-using static UnityEditor.Experimental.GraphView.GraphView;
 using System.Linq;
 
-namespace Vermines.HUD
-{
+namespace Vermines.HUD {
+
+    using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.CardSystem.Enumerations;
+
     /// <summary>
     /// This class is only a placeholder for the real Player class.
     /// This needs to be replaced by the actual Player class.
@@ -141,23 +139,7 @@ namespace Vermines.HUD
 
         public void AttemptToNextPhase()
         {
-            switch (currentPhase)
-            {
-                case PhaseType.Sacrifice:
-                    SacrificePhase.Instance.EndPhase();
-                    break;
-                case PhaseType.Gain:
-                    GainPhase.Instance.EndPhase();
-                    break;
-                case PhaseType.Action:
-                    ActionPhase.Instance.EndPhase();
-                    break;
-                case PhaseType.Resolution:
-                    ResolutionPhase.Instance.EndPhase();
-                    break;
-            }
-
-            //GameEvents.OnAttemptNextPhase.Invoke();
+            GameEvents.OnAttemptNextPhase.Invoke();
         }
 
         public void NextPhase()

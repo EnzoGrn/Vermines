@@ -1,29 +1,46 @@
 using Fusion;
-using System;
-using UnityEngine;
-using UnityEngine.Events;
 
-namespace Vermines
-{
-    //[Serializable]
-    //public abstract class APhaseBase : NetworkBehaviour
-    //{
-    //    public PhaseType PhaseType;
-    //    //public UnityEvent OnEndPhase;
+namespace Vermines.Gameplay.Phases {
 
-    //    public virtual void RunPhase(PlayerRef playerRef)
-    //    {
-    //        Debug.Log($"Phase {PhaseType} is now running");
-    //        return;
-    //    }
+    using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.Player;
 
-    //    public virtual void EndPhase()
-    //    {
-    //        // Notify the PhaseManager that the phase is completed
-    //        //OnEndPhase.Invoke();
-    //        GameEvents.OnAttemptNextPhase.Invoke();
+    public interface IPhase {
 
-    //        Debug.Log($"End of the {PhaseType.ToString()} OnEndPhase.");
-    //    }
-    //}
+        PhaseType Type { get; }
+
+        void Run(PlayerRef player);
+
+        void Reset();
+
+        void OnPhaseEnding(PlayerRef player, bool logic);
+    }
+
+    public abstract class APhase : IPhase {
+
+        public abstract PhaseType Type { get; }
+
+        public abstract void Run(PlayerRef player);
+
+        public virtual void Reset() {}
+
+        /// <summary>
+        /// Event that end the phase.
+        /// The logic value here represent if the function is called by the logic of the game or by the player.
+        /// - True: The function is called by the logic of the game.
+        /// - False: The function is called by the player.
+        /// </summary>
+        /// <param name="logic">If the function is called by the logic of the game or by the player.</param>
+        /// <param name="player">The player that end the phase.</param>
+        public virtual void OnPhaseEnding(PlayerRef player, bool logic = false)
+        {
+            if (logic == true) {
+                PhaseManager.Instance.PhaseCompleted();
+            } else {
+                if (player != PlayerController.Local.PlayerRef)
+                    return;
+                GameEvents.OnAttemptNextPhase.Invoke();
+            }
+        }
+    }
 }

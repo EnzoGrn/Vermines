@@ -1,90 +1,82 @@
-using Fusion;
-using OMGG.Network.Fusion;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using Vermines.CardSystem.Elements;
-using Vermines.Network.Utilities;
+using Fusion;
 
-namespace Vermines
-{
-    public class SacrificePhase : NetworkBehaviour
-    {
-        private int _MaxNumberOfCardsToSacrifice;
-        private int _NumberOfCardSacrified;
+namespace Vermines.Gameplay.Phases {
 
-        public PhaseType PhaseType;
+    using Vermines.CardSystem.Elements;
+    using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.Player;
 
-        // Singleton
-        public static SacrificePhase Instance => NetworkSingleton<SacrificePhase>.Instance;
+    public class SacrificePhase : APhase {
 
-        public override void Spawned()
+        #region Type
+
+        public override PhaseType Type => PhaseType.Sacrifice;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// The current number of cards the player sacrificed during this phase.
+        /// </summary>
+        private int _NumberOfCardSacrified = 0;
+
+        #endregion
+
+        #region Override Methods
+
+        public override void Run(PlayerRef player)
         {
-            name = NetworkNameTools.GiveNetworkingObjectName(Object.InputAuthority, HasInputAuthority, HasStateAuthority);
-        }
+            Reset();
 
-        public SacrificePhase()
-        {
-            PhaseType = PhaseType.Sacrifice;
-        }
-        //{
-        //    PhaseType = PhaseType.Sacrifice;
-        //    //OnEndPhase = new UnityEvent();
-        //}
+            Debug.LogWarning($"Phase {Type} is now running");
 
-        public void RunPhase(PlayerRef playerRef)
-        {
-            Debug.Log($"Phase {PhaseType} is now running");
+            List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[player].PlayedCards;
 
-            _MaxNumberOfCardsToSacrifice = GameManager.Instance.Config.MaxSacrificesPerTurn.Value;
-            _NumberOfCardSacrified = 0;
-
-            // Get PlayedCards Deck
-            List<ICard> PlayedCards = GameDataStorage.Instance.PlayerDeck[playerRef].PlayedCards;
-
-            // Check if the player has some cards in the PlayedCards that can go to the graveyard
-            if (PlayedCards.Count > 0)
-            {
-                // Invite the player to pick one played card and sacrifice it
-                // TODO: Use the HUDManager.
-
-                Debug.Log($"You can pick a card to sacrifice, scrifice left ({_MaxNumberOfCardsToSacrifice - _NumberOfCardSacrified}).");
-            }
+            if (playedCards.Count > 0)
+                Sacrifice(player);
             else
-            {
-                EndPhase();
-            }
+                OnPhaseEnding(player, true);
         }
 
-        public void EndPhase()
+        public override void Reset()
         {
-            // Notify the PhaseManager that the phase is completed
-            //OnEndPhase.Invoke();
-            GameEvents.OnAttemptNextPhase.Invoke();
-
-            //GameEvents.AttemptNextPhase();
-
-            Debug.Log($"End of the {PhaseType.ToString()} OnEndPhase.");
+            _NumberOfCardSacrified = 0;
         }
+
+        #endregion
+
+        #region Methods
+
+        private void Sacrifice(PlayerRef player)
+        {
+            // TODO: Check if that cause a problem when client & server are simulated the turn of someone else.
+            // Here: it's a unique player phase, only the current player can simulate this phase.
+            // He will send every command needed to the server to simulate the phase.
+            if (player != PlayerController.Local.PlayerRef)
+                return;
+
+            // TODO: Implement the logic to pick a card to sacrifice. And to allow the player to choose if they want to sacrifice another card or not.
+            Debug.Log($"[TODO | DEBUG]: You can pick a card to sacrifice it. (Cards left {GameManager.Instance.Config.MaxSacrificesPerTurn.Value - _NumberOfCardSacrified}).");
+        }
+
+        #endregion
 
         #region Events
-        public void OnCardSacrified()
+
+        public void OnCardSacrified(PlayerRef player)
         {
             _NumberOfCardSacrified++;
 
-            if (_NumberOfCardSacrified < _MaxNumberOfCardsToSacrifice)
-            {
-                // Invite the player to pick one played card and sacrifice it
-                // TODO: Use the HUDManager.
-
-                Debug.Log($"You can pick a card to sacrifice, scrifice left ({_MaxNumberOfCardsToSacrifice - _NumberOfCardSacrified}).");
-            }
-            else
-            {
-                EndPhase();
-
+            if (_NumberOfCardSacrified < GameManager.Instance.Config.MaxSacrificesPerTurn.Value) {
+                Sacrifice(player);
+            } else {
+                OnPhaseEnding(player, true);
             }
         }
+
         #endregion
     }
 }

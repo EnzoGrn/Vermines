@@ -1,66 +1,36 @@
-using Fusion;
-using OMGG.Network.Fusion;
+using OMGG.DesignPattern;
 using UnityEngine;
-using UnityEngine.Events;
-using Vermines.Network.Utilities;
+using Fusion;
 
-namespace Vermines
-{
-    /// <summary>
-    /// The Gain phase corresponds to the phase that distribute the eloquence of a new turn
-    /// </summary>
-    public class GainPhase : NetworkBehaviour
-    {
-        public PhaseType PhaseType;
+namespace Vermines.Gameplay.Phases {
 
-        // Singleton
-        public static GainPhase Instance => NetworkSingleton<GainPhase>.Instance;
+    using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Commands.Cards.Effects;
+    using Vermines.Gameplay.Phases.Enumerations;
 
+    public class GainPhase : APhase {
 
-        public override void Spawned()
+        #region Type
+
+        public override PhaseType Type => PhaseType.Gain;
+
+        #endregion
+
+        #region Override Methods
+
+        public override void Run(PlayerRef player)
         {
-            name = NetworkNameTools.GiveNetworkingObjectName(Object.InputAuthority, HasInputAuthority, HasStateAuthority);
+            Debug.Log($"Phase {Type} is now running");
+
+            // EarnCommand call a function of GameDataStorage that give an amount of value to the player.
+            // It's important to know that if the StateAuthority is the server, the value will be set to the player, if it's a client, nothing will happend.
+            ICommand earnCommand = new EarnCommand(player, GameManager.Instance.Config.NumberOfEloquencesToStartTheTurnWith.Value, DataType.Eloquence);
+
+            CommandInvoker.ExecuteCommand(earnCommand);
+
+            OnPhaseEnding(player, true);
         }
 
-        public GainPhase()
-        {
-            PhaseType = PhaseType.Gain;
-        }
-        //{
-        //    PhaseType = PhaseType.Gain;
-        //    //OnEndPhase = new UnityEvent();
-        //}
-
-        public void RunPhase(PlayerRef playerRef)
-        {
-            Debug.Log($"Phase {PhaseType} is now running");
-
-            int eloquence = GameDataStorage.Instance.PlayerData[playerRef].Eloquence;
-
-            eloquence += GameManager.Instance.Config.NumberOfEloquencesToStartTheTurnWith.Value;
-
-            Debug.Log($"New Value of Eloquence to gain {eloquence}");
-
-            RPC_SetEloquence(playerRef, eloquence);
-        }
-
-        public void EndPhase()
-        {
-            // Notify the PhaseManager that the phase is completed
-            //OnEndPhase.Invoke();
-            GameEvents.OnAttemptNextPhase.Invoke();
-
-            //GameEvents.AttemptNextPhase();
-
-            Debug.Log($"End of the {PhaseType.ToString()} OnEndPhase.");
-        }
-
-        [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
-        public void RPC_SetEloquence(PlayerRef playerRef, int eloquence)
-        {
-            Debug.LogWarning($"RPC_SetEloquence Received is runner.IsServer {Runner.IsServer} by {playerRef}");
-            GameDataStorage.Instance.SetEloquence(Runner.LocalPlayer, eloquence);
-            EndPhase();
-        }
+        #endregion
     }
 }
