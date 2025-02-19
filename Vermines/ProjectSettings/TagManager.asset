@@ -6,6 +6,7 @@ TagManager:
   tags:
   - HandCard
   - ShopCard
+  - TableCard
   layers:
   - Default
   - TransparentFX

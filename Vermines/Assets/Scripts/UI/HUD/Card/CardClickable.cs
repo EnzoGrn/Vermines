@@ -11,6 +11,10 @@ namespace Vermines.HUD.Card
             HandleClick();
         }
 
+        /// <summary>
+        /// Handles the click on the card.
+        /// It will open the overlay for a card in the shop and select the card for a card in the hand.
+        /// </summary>
         private void HandleClick()
         {
             if (CompareTag("ShopCard"))
@@ -20,21 +24,21 @@ namespace Vermines.HUD.Card
                     marketCard.OpenOverlay();
                 }
             }
-            //else if (CompareTag("TableCard"))
-            //{
-            //    if (TryGetComponent<CardOnTable>(out var tableCard))
-            //    {
-            //        tableCard.OpenDetailsOverlay();
-            //    }
-            //}
             else if (CompareTag("HandCard"))
             {
                 if (TryGetComponent<CardInHand>(out var inventoryCard))
                 {
-                    //inventoryCard.OpenInventoryDetails();
+                    // TODO: implement card selection
                 }
             }
-            // Ajoute d'autres conditions si nécessaire
+            else if (CompareTag("TableCard"))
+            {
+                if (TryGetComponent<CardInTable>(out var tableCard))
+                {
+                    tableCard.OpenOverlay();
+                }
+            }
+            // Add more cases here
         }
     }
 }

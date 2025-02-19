@@ -28,6 +28,7 @@ namespace Vermines.HUD.Card
             card.transform.DOMove(transform.position, 0.3f);
             card.transform.SetParent(transform);
             Destroy(card.GetComponent<CardDraggable>());
+            Destroy(card.GetComponent<CardHover>());
             Debug.Log("Card dropped on Discard Area");
 
             // TODO: Add card to discard list, remove it from hand, and play effect

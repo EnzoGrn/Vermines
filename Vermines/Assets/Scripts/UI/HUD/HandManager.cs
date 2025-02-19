@@ -10,6 +10,7 @@ namespace Vermines.HUD
 
     public class HandManager : MonoBehaviour
     {
+        public static HandManager instance;
         [SerializeField] private int maxHandSize = 5; // TODO: Link this with game configuration
         [SerializeField] private GameObject cardPrefab;
         [SerializeField] private SplineContainer splineContainer;
@@ -20,6 +21,18 @@ namespace Vermines.HUD
 
         [Header("Debug")]
         [SerializeField] private bool debugMode;
+
+        private void Awake()
+        {
+            if (instance == null)
+            {
+                instance = this;
+            }
+            else
+            {
+                Destroy(this);
+            }
+        }
 
         private void Update()
         {
@@ -43,10 +56,6 @@ namespace Vermines.HUD
             card.AddComponent<CardHover>();
             card.AddComponent<CardDraggable>();
             CardDraggable cardScript = card.GetComponent<CardDraggable>();
-            if (cardScript != null)
-            {
-                cardScript.SetHandManager(this);
-            }
             handCards.Add(card);
             UpdateCardPosition();
         }

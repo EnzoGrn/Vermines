@@ -50,11 +50,6 @@ namespace Vermines.HUD.Card
 
             switch (location)
             {
-                case "Hand":
-                    newCard.AddComponent<CardInHand>();
-                    newCard.transform.SetParent(handContainer, false);
-                    newCard.tag = "HandCard";
-                    break;
                 case "Market":
                     newCard.AddComponent<CardInShop>();
                     newCard.GetComponent<CardInShop>().SetCardBase(newCard.GetComponent<CardBase>());
@@ -67,10 +62,6 @@ namespace Vermines.HUD.Card
                     newCard.transform.SetParent(courtyardContainer, false);
                     newCard.tag = "ShopCard";
                     break;
-                //case "Table":
-                //    newCard.AddComponent<CardOnTable>();
-                //    newCard.transform.SetParent(tableContainer, false);
-                //    break;
                 default:
                     Debug.LogError("Location not found");
                     break;

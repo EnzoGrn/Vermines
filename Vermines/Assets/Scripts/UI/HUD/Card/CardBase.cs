@@ -52,6 +52,9 @@ namespace Vermines.HUD.Card
             return cardData;
         }
 
+        /// <summary>
+        /// Update the UI with the card data.
+        /// </summary>
         private void UpdateUI()
         {
             cardName.text = cardData.Name;
@@ -74,6 +77,11 @@ namespace Vermines.HUD.Card
             }
         }
 
+        /// <summary>
+        /// Load the sprite from the string.
+        /// </summary>
+        /// <param name="characterName"></param>
+        /// <param name="family"></param>
         private void LoadFromString(string characterName, string family)
         {
             if (characterName == null) return;
@@ -102,6 +110,14 @@ namespace Vermines.HUD.Card
             }
 
             background.GetComponent<Image>().sprite = backgroundSprite;
+        }
+
+        private void OnValidate()
+        {
+            if (debugMode)
+            {
+                Debug.Log("CardBase: Debug mode is enabled. Make sure to disable it before testing anything.");
+            }
         }
     }
 }

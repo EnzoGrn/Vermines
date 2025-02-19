@@ -134,8 +134,8 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1934306017456278012, guid: fc5567da22cc5474faa6623c9bd499db, type: 3}
   m_PrefabInstance: {fileID: 7457695536389052869}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &366325651 stripped
-Transform:
+--- !u!224 &366325651 stripped
+RectTransform:
   m_CorrespondingSourceObject: {fileID: 4562761363084677306, guid: dffe08522f019e74e8bb4f442147137c, type: 3}
   m_PrefabInstance: {fileID: 8327874716710148941}
   m_PrefabAsset: {fileID: 0}

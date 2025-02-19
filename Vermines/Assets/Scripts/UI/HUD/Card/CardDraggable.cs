@@ -4,23 +4,20 @@ using UnityEngine.EventSystems;
 
 namespace Vermines.HUD.Card
 {
+    using Vermines.HUD;
+
     public class CardDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         [SerializeField] private Transform originalParent;
-        private HandManager handManager;
+        
         private CardHover cardHover;
 
         private float xOffset;
         private float yOffset;
 
-        public void SetHandManager(HandManager manager)
-        {
-            handManager = manager;
-            cardHover = GetComponent<CardHover>();
-        }
-
         private void Start()
         {
+            cardHover = GetComponent<CardHover>();
             originalParent = transform.parent;
         }
 
@@ -30,7 +27,7 @@ namespace Vermines.HUD.Card
             //transform.DOKill();
             //transform.SetParent(null);
             transform.rotation = Quaternion.identity;
-            handManager.RemoveCard(gameObject);
+            HandManager.instance.RemoveCard(gameObject);
             cardHover.SetLocked(true);
             xOffset = this.transform.position.x - eventData.position.x;
             yOffset = this.transform.position.y - eventData.position.y;
@@ -56,9 +53,9 @@ namespace Vermines.HUD.Card
         private void ReturnToHand()
         {
             //transform.SetParent(originalParent); // On remet la carte dans la main
-            handManager.AddCard(gameObject); // On ajoute la carte à la main
-                                             //transform.DOKill();
-            handManager.UpdateCardPosition();
+            HandManager.instance.AddCard(gameObject); // On ajoute la carte à la main
+            //transform.DOKill();
+            HandManager.instance.UpdateCardPosition();
         }
     }
 }
