@@ -29,9 +29,10 @@ namespace Vermines.Gameplay.Phases {
 
         public override void Run(PlayerRef player)
         {
-            Reset();
+            Debug.Log($"Phase {Type} is now running");
 
-            Debug.LogWarning($"Phase {Type} is now running");
+
+            Reset();
 
             List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[player].PlayedCards;
 

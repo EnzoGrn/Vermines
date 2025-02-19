@@ -77,13 +77,13 @@ namespace Vermines.Gameplay.Phases {
             RPC_UpdatePhaseUI();
         }
 
-        public void ProcessPhase()
+        public void ProcessPhase(PhaseType currentPhase)
         {
             PlayerRef playerRef = GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex);
 
-            Debug.Log($"[SERVER]: Processing the phase for {playerRef}, currently playing {CurrentPhase}");
+            Debug.Log($"[SERVER]: Processing the phase for {playerRef}, currently playing {currentPhase}");
 
-            _Phases[CurrentPhase].Run(playerRef);
+            _Phases[currentPhase].Run(playerRef);
         }
 
         public void PhaseCompleted()
@@ -104,7 +104,7 @@ namespace Vermines.Gameplay.Phases {
                 RPC_UpdatePhaseUI();
             }
 
-            RPC_ProcessPhase();
+            RPC_ProcessPhase(CurrentPhase);
         }
 
         #region RPC
@@ -116,13 +116,17 @@ namespace Vermines.Gameplay.Phases {
             HUDManager.instance.UpdatePhaseButton(GameManager.Instance.IsMyTurn());
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentPhase">The currentPhase may intefer since it is a network variable, this argument avoid desync between clients</param>
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
-        public void RPC_ProcessPhase()
+        public void RPC_ProcessPhase(PhaseType currentPhase)
         {
-            ProcessPhase();
+            ProcessPhase(currentPhase);
         }
 
-        [Rpc(sources: RpcSources.All, targets: RpcTargets.All, Channel = RpcChannel.Reliable)]
+        [Rpc(sources: RpcSources.All, targets: RpcTargets.All)]
         public void RPC_PhaseCompleted()
         {
             PhaseCompleted();
@@ -136,7 +140,7 @@ namespace Vermines.Gameplay.Phases {
         {
             if (!Runner.IsServer || !GameManager.Instance.Start || Runner.ActivePlayers.Count() < GameManager.Instance.Config.MinPlayers.Value)
                 return;
-            RPC_ProcessPhase();
+            RPC_ProcessPhase(CurrentPhase);
         }
 
         public void OnPhaseCompleted()

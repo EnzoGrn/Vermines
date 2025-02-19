@@ -20,6 +20,7 @@ namespace Vermines.Gameplay.Phases {
         {
             Debug.Log($"Phase {Type} is now running");
 
+
             // TODO: Check if that cause a problem when client & server are simulated the turn of someone else.
         }
 
