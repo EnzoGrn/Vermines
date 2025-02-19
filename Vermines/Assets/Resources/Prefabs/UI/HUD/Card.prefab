@@ -399,7 +399,6 @@ MonoBehaviour:
   effectDescription: {fileID: 0}
   character: {fileID: 6797222475460496817}
   background: {fileID: 6641272224189884911}
-  cardData: {fileID: 11400000, guid: f4cabad8d973f264a9851eb899649f82, type: 2}
   debugMode: 1
 --- !u!1 &716538002797232710
 GameObject:

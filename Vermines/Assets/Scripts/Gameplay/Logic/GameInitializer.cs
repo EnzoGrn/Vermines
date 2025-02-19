@@ -116,7 +116,7 @@ namespace Vermines {
 
             GameDataStorage.Instance.Shop = shop;
 
-            FillShop();
+            //FillShop();
 
             // -- RPC Command for sync initialization
             RPC_InitializeShop(GameDataStorage.Instance.Shop.Serialize());
@@ -222,10 +222,18 @@ namespace Vermines {
 
                 // Ignore the host because it's shop is already initialized (it's just synchronising the shop with others)
                 if (HasStateAuthority == false) {
+                    GameDataStorage.Instance.Shop = ScriptableObject.CreateInstance<ShopData>();
                     ICommand initializeCommand = new SyncShopCommand(GameDataStorage.Instance.Shop, data, GameManager.Instance.Config);
 
                     CommandInvoker.ExecuteCommand(initializeCommand);
                 }
+
+                ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
+
+                CommandInvoker.ExecuteCommand(fillCommand);
+
+                if (GameDataStorage.Instance.Shop == null)
+                    Debug.LogError("Shop is null");
             });
         }
 

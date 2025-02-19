@@ -9,8 +9,7 @@
         "CardSystem",
         "Defective.JSON",
         "Vermines",
-        "Fusion.Unity",
-        "OMGG.Network.Interface"
+        "Fusion.Unity"
     ],
     "includePlatforms": [
         "Editor"

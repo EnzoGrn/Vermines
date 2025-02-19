@@ -8,6 +8,7 @@ using Vermines.HUD;
 namespace Vermines.Gameplay.Phases {
 
     using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.Player;
 
     public class PhaseManager : NetworkBehaviour {
 
@@ -24,6 +25,9 @@ namespace Vermines.Gameplay.Phases {
 
         private Dictionary<PhaseType, IPhase> _Phases;
 
+        #endregion
+
+        #region Fields
         #endregion
 
         #region Methods

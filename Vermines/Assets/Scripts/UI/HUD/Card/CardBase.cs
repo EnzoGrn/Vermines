@@ -2,8 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+
 namespace Vermines.HUD.Card
 {
+    using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Enumerations;
 
@@ -23,33 +25,33 @@ namespace Vermines.HUD.Card
 
         [SerializeField]
         [Tooltip("Fill this only in debug mode. Otherwise, it will be filled by the HandManager.")]
-        private CardData cardData;
+        public ICard Card;
 
         [Header("Debug")]
         [SerializeField] private bool debugMode;
 
         private void Start()
         {
-            if (debugMode)
-            {
-                Setup(cardData);
-            }
+            //if (debugMode)
+            //{
+            //    Setup(cardData);
+            //}
         }
 
-        public void Setup(CardData newCardData)
+        public void Setup(ICard newCard)
         {
-            if (newCardData == null)
+            if (newCard == null)
             {
                 Debug.LogError("Card data is null!");
                 return;
             }
-            cardData = newCardData;
+            Card = newCard;
             UpdateUI();
         }
 
-        public CardData GetCardData()
+        public ICard GetCard()
         {
-            return cardData;
+            return Card;
         }
 
         /// <summary>
@@ -57,20 +59,20 @@ namespace Vermines.HUD.Card
         /// </summary>
         private void UpdateUI()
         {
-            cardName.text = cardData.Name;
-            eloquence.text = cardData.Eloquence.ToString();
-            souls.text = cardData.Souls.ToString();
-            //effectDescription.text = cardData.Effects[0].Description;
-            switch (cardData.Type)
+            cardName.text = Card.Data.Name;
+            eloquence.text = Card.Data.Name.ToString();
+            souls.text = Card.Data.Name.ToString();
+            //effectDescription.text = Card.Effects[0].Description;
+            switch (Card.Data.Type)
             {
                 case CardType.Partisan:
-                    LoadFromString(cardData.Name, cardData.Family.ToString());
+                    LoadFromString(Card.Data.Name, Card.Data.Family.ToString());
                     break;
                 case CardType.Equipment:
-                    LoadFromString(cardData.Name, "Equipment");
+                    LoadFromString(Card.Data.Name, "Equipment");
                     break;
                 case CardType.Tools:
-                    LoadFromString(cardData.Name, "Tools");
+                    LoadFromString(Card.Data.Name, "Tools");
                     break;
                 default:
                 break;

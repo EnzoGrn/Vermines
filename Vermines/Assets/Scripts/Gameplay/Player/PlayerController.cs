@@ -1,5 +1,6 @@
 using OMGG.DesignPattern;
 using Fusion;
+using UnityEngine;
 
 namespace Vermines.Player {
     using Vermines.Network.Utilities;
@@ -26,27 +27,14 @@ namespace Vermines.Player {
 
         #region Methods
 
-        public void Buy(ShopType shopType, int slot)
+        public void OnBuy(ShopType shopType, int slot)
         {
-            if (!HasStateAuthority)
-                return;
-            BuyParameters parameters = new() {
-                Decks    = GameDataStorage.Instance.PlayerDeck,
-                Player   = Object.InputAuthority,
-                Shop     = GameDataStorage.Instance.Shop,
-                ShopType = shopType,
-                Slot     = slot
-            };
-            // TODO: Check if the player can buy the card
-            // Because I think, only the host can buy without problem
-            // Wait the shop is implemented to try to buy a card
-            // If it's not work, it's because the CheckBuyCommand edit the data of the player and only the host can (I think)
-            ICommand buyCommand = new CheckBuyCommand(parameters);
+            GameManager.Instance.RPC_BuyCard(shopType, slot, Object.InputAuthority.RawEncoded);
+        }
 
-            CommandInvoker.ExecuteCommand(buyCommand);
-
-            if (CommandInvoker.State == true)
-                RPC_BuyCard(Object.InputAuthority.RawEncoded, shopType, slot);
+        public void BuyCard(ShopType shopType, int slot)
+        {
+            RPC_BuyCard(Object.InputAuthority.RawEncoded, shopType, slot);
         }
 
         #endregion
@@ -65,9 +53,17 @@ namespace Vermines.Player {
                 ShopType = shopType,
                 Slot     = slot
             };
+
+            if (parameters.Shop == null)
+            {
+                Debug.LogError("Shop is null");
+            }
+
             ICommand buyCommand = new BuyCommand(parameters);
 
             CommandInvoker.ExecuteCommand(buyCommand);
+
+            Debug.Log($"[SERVER]: Player {playerRef} bought a card at slot {slot} in {shopType}");
         }
 
         #endregion

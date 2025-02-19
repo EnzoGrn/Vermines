@@ -22,7 +22,7 @@ namespace Vermines.HUD.Card
                 Debug.Log("CardBase component not found on card object.");
                 return false;
             }
-            CardData cardData = cardBase.GetCardData();
+            CardData cardData = cardBase.Card.Data;
             if (cardData == null)
             {
                 Debug.Log("CardData not found on card object.");

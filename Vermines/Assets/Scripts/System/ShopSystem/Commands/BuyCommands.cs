@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using OMGG.DesignPattern;
 using Fusion;
+using UnityEngine;
 
 namespace Vermines.ShopSystem.Commands {
 
@@ -56,7 +57,11 @@ namespace Vermines.ShopSystem.Commands {
             _Parameters   = parameters;
 
             _OriginalShop = parameters.Shop;
-            _OldShop      = parameters.Shop.DeepCopy();
+
+            if (_OriginalShop != null)
+            {
+                _OldShop = parameters.Shop.DeepCopy();
+            }
 
             if (parameters.Decks.TryGetValue(parameters.Player, out PlayerDeck playerDeck))
                 _OldPlayerDeck = playerDeck.DeepCopy();
@@ -64,11 +69,15 @@ namespace Vermines.ShopSystem.Commands {
 
         public bool Execute()
         {
-            _OldShop = _Parameters.Shop.DeepCopy();
+            if (_OriginalShop != null)
+            {
+                _OldShop = _Parameters.Shop.DeepCopy();
+            }
 
             if (!_Parameters.Decks.TryGetValue(_Parameters.Player, out PlayerDeck playerDeck))
                 return false;
             _OldPlayerDeck = playerDeck.DeepCopy();
+
             if (!_Parameters.Shop.Sections.ContainsKey(_Parameters.ShopType) || !_Parameters.Shop.Sections[_Parameters.ShopType].AvailableCards.ContainsKey(_Parameters.Slot))
                 return false;
             ICard card = _Parameters.Shop.BuyCardAtSlot(_Parameters.ShopType, _Parameters.Slot);
@@ -80,7 +89,10 @@ namespace Vermines.ShopSystem.Commands {
 
         public void Undo()
         {
-            _OriginalShop.Sections = _OldShop.Sections;
+            if (_OriginalShop != null)
+            {
+                _OriginalShop.Sections = _OldShop.Sections;
+            }
 
             if (_OldPlayerDeck != null) {
                 PlayerDeck old = (PlayerDeck)_OldPlayerDeck;
@@ -129,7 +141,7 @@ namespace Vermines.ShopSystem.Commands {
 
         public void Undo() {}
 
-        private bool CanPurchase(PlayerData playerData, ICard card)
+        private bool CanPurchase(Vermines.Player.PlayerData playerData, ICard card)
         {
             int playerEloquence = GameDataStorage.Instance.PlayerData[_Parameters.Player].Eloquence;
             int cardCost        = card.Data.Eloquence;
@@ -137,7 +149,7 @@ namespace Vermines.ShopSystem.Commands {
             return playerEloquence >= cardCost;
         }
 
-        private void Purchase(PlayerData playerData, ICard card)
+        private void Purchase(Vermines.Player.PlayerData playerData, ICard card)
         {
             int newEloquence = playerData.Eloquence - card.Data.Eloquence;
 

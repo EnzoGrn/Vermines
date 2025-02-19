@@ -34,6 +34,11 @@ namespace Vermines.HUD
             }
         }
 
+        private void Start()
+        {
+            GameEvents.OnDrawCard.AddListener(DrawCard);
+        }
+
         private void Update()
         {
             if (debugMode)
@@ -55,21 +60,38 @@ namespace Vermines.HUD
             card.name = GenerateCardName(handCards);
             card.AddComponent<CardHover>();
             card.AddComponent<CardDraggable>();
-            CardDraggable cardScript = card.GetComponent<CardDraggable>();
             handCards.Add(card);
             UpdateCardPosition();
         }
 
         public void DrawCard(ICard cardObject)
         {
-            // TODO: Generate card from card data
+            if (handCards.Count >= maxHandSize) return;
+
+            GameObject card = Instantiate(cardPrefab, spawnPoint.position, spawnPoint.rotation, handContainer.transform);
+            card.name = GenerateCardName(handCards);
+            card.AddComponent<CardHover>();
+            card.AddComponent<CardDraggable>();
+
+            // Set card data
+            if (card.TryGetComponent<CardBase>(out var cardBase))
+            {
+                cardBase.Setup(cardObject);
+            }
+            else
+            {
+                Debug.LogWarning("CardBase is null cannot load cardData!");
+            }
+
+            handCards.Add(card);
+            UpdateCardPosition();
         }
 
-        public void DrawCards(List<ICard> cards)
+        public void DrawCards(List<ICard> cards, int nbrOfCardsToDraw)
         {
-            foreach (var card in cards)
+            for (int i = 0; i < nbrOfCardsToDraw; i++)
             {
-                DrawCard(card);
+                DrawCard(cards[i]);
             }
         }
 

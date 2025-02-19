@@ -3,9 +3,11 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines {
-
+    using OMGG.DesignPattern;
     using Vermines.Config;
     using Vermines.Gameplay.Phases;
+    using Vermines.ShopSystem.Commands;
+    using Vermines.ShopSystem.Enumerations;
 
     public class GameManager : NetworkBehaviour {
 
@@ -114,5 +116,34 @@ namespace Vermines {
                 orderIndex++;
             }
         }
+
+        #region Rpcs
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_BuyCard(ShopType shopType, int slot, int playerId)
+        {
+            BuyParameters parameters = new()
+            {
+                Decks = GameDataStorage.Instance.PlayerDeck,
+                Player = PlayerRef.FromEncoded(playerId),
+                Shop = GameDataStorage.Instance.Shop,
+                ShopType = shopType,
+                Slot = slot
+            };
+            // TODO: Check if the player can buy the card
+            // Because I think, only the host can buy without problem
+            // Wait the shop is implemented to try to buy a card
+            // If it's not work, it's because the CheckBuyCommand edit the data of the player and only the host can (I think)
+            ICommand buyCommand = new CheckBuyCommand(parameters);
+
+            CommandInvoker.ExecuteCommand(buyCommand);
+
+            if (CommandInvoker.State == true)
+                Player.PlayerController.Local.RPC_BuyCard(playerId, shopType, slot);
+            else
+                Debug.LogWarning($"[Host]: Player {playerId} can't buy the card at slot {slot} in {shopType}");
+        }
+
+        #endregion
     }
 }

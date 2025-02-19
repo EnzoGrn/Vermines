@@ -23,6 +23,8 @@ using Vermines.CardSystem.Enumerations;
 using Vermines.Config;
 using Vermines.Player;
 using Vermines;
+using UnityEngine.SceneManagement;
+using Vermines.HUD.Card;
 
 namespace Test.Vermines.ShopSystem {
 

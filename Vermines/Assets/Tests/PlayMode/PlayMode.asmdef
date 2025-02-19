@@ -7,17 +7,20 @@
         "OMGG.Optimizer.Interface",
         "OMGG.Optimizer.Manager",
         "Singleton",
-        "OMGG.Network.Presenter",
-        "OMGG.Network.Interface",
         "OMGG.Network.Fusion",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Vermines",
+        "CardSystem",
+        "Fusion.Unity",
+        "Command"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "Fusion.Runtime.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

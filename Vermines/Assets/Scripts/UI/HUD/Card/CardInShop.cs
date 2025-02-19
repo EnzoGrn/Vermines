@@ -5,17 +5,16 @@ namespace Vermines.HUD.Card
 {
     public class CardInShop : MonoBehaviour
     {
-        CardBase cardBase;
+        public CardBase CardBase;
+
+        public void Initialize(CardBase cardBase)
+        {
+            CardBase = cardBase;
+        }
 
         public void OpenOverlay()
         {
-            Debug.Log("Affichage de l'overlay d'achat");
-            ShopManager.instance.GetShop().OpenCardBuyOverlay(cardBase);
-        }
-
-        public void SetCardBase(CardBase cardBase)
-        {
-            this.cardBase = cardBase;
+            ShopManager.instance.GetShop().OpenCardBuyOverlay(CardBase);
         }
     }
 }

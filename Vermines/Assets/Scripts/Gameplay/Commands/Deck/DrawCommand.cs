@@ -2,7 +2,7 @@ using OMGG.DesignPattern;
 using Fusion;
 
 namespace Vermines.Gameplay.Commands.Deck {
-
+    using System.Linq;
     using Vermines.Player;
 
     public class DrawCommand : ICommand {
@@ -26,8 +26,12 @@ namespace Vermines.Gameplay.Commands.Deck {
 
             deck.Draw();
 
-            GameDataStorage.Instance.PlayerDeck[_Player] = deck;
+            if (PlayerController.Local.PlayerRef == _Player)
+            {
+                GameEvents.InvokeOnDrawCard(deck.Hand.Last());
+            }
 
+            GameDataStorage.Instance.PlayerDeck[_Player] = deck;
             return true;
         }
 

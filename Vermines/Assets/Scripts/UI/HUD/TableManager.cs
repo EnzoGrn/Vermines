@@ -39,7 +39,7 @@ namespace Vermines.HUD
         {
             if (selectedCard != null)
             {
-                Debug.Log("Sacrificing card: " + selectedCard.GetCardData().Name);
+                Debug.Log("Sacrificing card: " + selectedCard.Card.Data.Name);
                 // TODO: Implement card sacrifice logic
                 Destroy(selectedCard.gameObject);
                 CloseSacrificeOverlay();

@@ -497,8 +497,7 @@ MonoBehaviour:
   cost: {fileID: 4959240888561777231}
   souls: {fileID: 4324853638543917052}
   effectDescription: {fileID: 4624443755133851041}
-  card: {fileID: 9164130589891510734}
-  cardData: {fileID: 0}
+  CardGameObject: {fileID: 9164130589891510734}
   debugMode: 0
 --- !u!1 &1194269985591714280
 GameObject:

@@ -5,8 +5,10 @@ using TMPro;
 namespace Vermines.HUD
 {
     using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.HUD.Card;
+    using Vermines.ShopSystem.Enumerations;
 
     public class CardBuyBanner : MonoBehaviour
     {
@@ -17,47 +19,51 @@ namespace Vermines.HUD
         [SerializeField] private TextMeshProUGUI cost;
         [SerializeField] private TextMeshProUGUI souls;
         [SerializeField] private TextMeshProUGUI effectDescription;
-        [SerializeField] private GameObject card;
+        [SerializeField] private GameObject CardGameObject;
         #endregion
 
         #region Debug
-        [SerializeField] private CardData cardData;
+        [SerializeField] private ICard _Card;
         [SerializeField] private bool debugMode = false;
         #endregion
 
         void Start()
         {
-            if (debugMode)
-            {
-                Setup(cardData);
-            }
+            //if (debugMode)
+            //{
+            //    Setup(cardData, 0);
+            //}
         }
 
         /// <summary>
         /// Setup the card buy banner by loading the card data.
         /// It need to be called before the banner is displayed.
         /// </summary>
-        /// <param name="cardData"></param>
-        public void Setup(CardData cardData)
+        /// <param name="card"></param>
+        public void Setup(ICard card)
         {
-            if (cardData == null)
+            if (card == null)
             {
                 Debug.LogError("Card is null!");
                 return;
             }
 
-            CardBase cardBase = card.GetComponent<CardBase>();
+            CardBase cardBase = CardGameObject.GetComponent<CardBase>();
             if (cardBase)
             {
-                cardBase.Setup(cardData);
+                cardBase.Setup(card);
             }
-            cardName.text = cardData.Name;
-            cost.text = $"Coût: {cardData.Eloquence} éloquences";
-            souls.text = $"+{cardData.Souls} âmes si sacrifié";
-            souls.gameObject.SetActive(cardData.Type == CardType.Partisan);
-            type.text = cardData.Type == CardType.Partisan ? cardData.Family.ToString() : cardData.Type.ToString();
-            LoadTypeIcon(cardData.Type);
-            LoadEffects(cardData);
+
+            cardName.text = card.Data.Name;
+            cost.text = $"Coût: {card.Data.Eloquence} éloquences";
+            souls.text = $"+{card.Data.Souls} âmes si sacrifié";
+            souls.gameObject.SetActive(card.Data.Type == CardType.Partisan);
+            type.text = card.Data.Type == CardType.Partisan ? card.Data.Family.ToString() : card.Data.Type.ToString();
+            
+            LoadTypeIcon(card.Data.Type);
+            LoadEffects(card.Data);
+
+            _Card = card;
         }
 
         private void LoadEffects(CardData card)
@@ -86,7 +92,17 @@ namespace Vermines.HUD
         public void Buy()
         {
             Debug.Log("Card bought!");
-            // TODO: add the logic to buy the card in network
+
+            (ShopType, int)? cardInfo = CardSpawner.Instance.GetCard(_Card.ID);
+
+            if (cardInfo == null)
+            {
+                Debug.LogError("Card not found!");
+                return;
+            }
+
+            GameEvents.OnCardBought.Invoke(cardInfo.Value.Item1, cardInfo.Value.Item2);
+
             ShopManager.instance.GetShop().CloseCardBuyOverlay();
         }
 
@@ -97,9 +113,9 @@ namespace Vermines.HUD
                 Debug.LogWarning("CardBuyBanner: Debug mode is enabled. Make sure to disable it before building the game.");
             }
 
-            if (card != null && debugMode)
+            if (CardGameObject != null && debugMode)
             {
-                Setup(cardData);
+                Setup(_Card);
             }
         }
     }

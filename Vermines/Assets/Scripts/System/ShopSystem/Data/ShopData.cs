@@ -143,6 +143,9 @@ namespace Vermines.ShopSystem.Data {
         {
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
+            if (this.Sections == null)
+                return shop;
+
             shop.Sections = this.Sections.ToDictionary(
                 entry => entry.Key,
                 entry => entry.Value.DeepCopy()
