@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 namespace Vermines.HUD
 {
+    using Vermines.HUD.Card;
+    
     public class Shop : MonoBehaviour
     {
         [SerializeField] private GameObject cardBuyOverlay;
@@ -66,7 +68,7 @@ namespace Vermines.HUD
             }
         }
 
-        public void OpenCardBuyOverlay(CardInShop card)
+        public void OpenCardBuyOverlay(CardBase card)
         {
             cardBuyOverlay.GetComponent<CardBuyBanner>().Setup(card.GetCardData());
             cardBuyOverlay.SetActive(true);

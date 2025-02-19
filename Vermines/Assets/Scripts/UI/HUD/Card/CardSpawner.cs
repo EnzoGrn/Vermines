@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Vermines.HUD
+namespace Vermines.HUD.Card
 {
     using Vermines.CardSystem.Data;
 
@@ -50,22 +50,18 @@ namespace Vermines.HUD
 
             switch (location)
             {
-                //case "Hand":
-                //    newCard.AddComponent<CardInHand>();
-                //    newCard.transform.SetParent(handContainer, false);
-                //    break;
                 case "Market":
                     newCard.AddComponent<CardInShop>();
+                    newCard.GetComponent<CardInShop>().SetCardBase(newCard.GetComponent<CardBase>());
                     newCard.transform.SetParent(marketContainer, false);
+                    newCard.tag = "ShopCard";
                     break;
                 case "Courtyard":
                     newCard.AddComponent<CardInShop>();
+                    newCard.GetComponent<CardInShop>().SetCardBase(newCard.GetComponent<CardBase>());
                     newCard.transform.SetParent(courtyardContainer, false);
+                    newCard.tag = "ShopCard";
                     break;
-                //case "Table":
-                //    newCard.AddComponent<CardOnTable>();
-                //    newCard.transform.SetParent(tableContainer, false);
-                //    break;
                 default:
                     Debug.LogError("Location not found");
                     break;

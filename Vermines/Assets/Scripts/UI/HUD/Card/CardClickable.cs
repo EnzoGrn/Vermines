@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Vermines.HUD
+namespace Vermines.HUD.Card
 {
     public class CardClickable : MonoBehaviour, IPointerClickHandler
     {
@@ -11,17 +11,34 @@ namespace Vermines.HUD
             HandleClick();
         }
 
+        /// <summary>
+        /// Handles the click on the card.
+        /// It will open the overlay for a card in the shop and select the card for a card in the hand.
+        /// </summary>
         private void HandleClick()
         {
-            if (TryGetComponent<CardInShop>(out var marketCard))
+            if (CompareTag("ShopCard"))
             {
-                marketCard.OpenOverlay();
+                if (TryGetComponent<CardInShop>(out var marketCard))
+                {
+                    marketCard.OpenOverlay();
+                }
             }
-            //else if (TryGetComponent<CardOnTable>(out var tableCard))
-            //{
-            //    tableCard.OpenDetailsOverlay();
-            //}
-            // Ajoute d'autres conditions si nécessaire
+            else if (CompareTag("HandCard"))
+            {
+                if (TryGetComponent<CardInHand>(out var inventoryCard))
+                {
+                    // TODO: implement card selection
+                }
+            }
+            else if (CompareTag("TableCard"))
+            {
+                if (TryGetComponent<CardInTable>(out var tableCard))
+                {
+                    tableCard.OpenOverlay();
+                }
+            }
+            // Add more cases here
         }
     }
 }

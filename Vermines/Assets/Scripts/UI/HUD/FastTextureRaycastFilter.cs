@@ -24,8 +24,7 @@ public class FastTextureRaycastFilter : MonoBehaviour, ICanvasRaycastFilter
         }
         else
         {
-            // TODO : Remove the comment
-            //Debug.LogError("FastTextureRaycastFilter: Aucun Sprite valide trouvé sur " + gameObject.name);
+            Debug.LogWarning("FastTextureRaycastFilter: Aucun Sprite valide trouvé sur " + gameObject.name);
         }
     }
 
