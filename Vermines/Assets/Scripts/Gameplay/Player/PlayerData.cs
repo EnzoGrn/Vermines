@@ -77,9 +77,30 @@ namespace Vermines.Player {
             Hand.Add(card);
         }
 
+        public void DiscardCard(int cardId)
+        {
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+            
+            if (card != null && Hand.Contains(card))
+            {
+                Hand.Remove(card);
+                Discard.Add(card);
+            }
+        }
+
+        public void PlayCard(int cardId)
+        {
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+            if (card != null && Hand.Contains(card))
+            {
+                Hand.Remove(card);
+                PlayedCards.Add(card);
+            }
+        }
+
         #endregion
 
-        #region Copy
+            #region Copy
 
         public PlayerDeck DeepCopy()
         {

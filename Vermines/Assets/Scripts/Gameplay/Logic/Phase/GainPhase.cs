@@ -3,7 +3,9 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Phases {
-
+    using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Data.Effect;
+    using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Gameplay.Phases.Enumerations;
@@ -23,7 +25,6 @@ namespace Vermines.Gameplay.Phases {
         public override void Run(PlayerRef player)
         {
             Debug.Log($"Phase {Type} is now running");
-
 
             ExecutePlayedCardsEffect(player);
 
@@ -47,12 +48,25 @@ namespace Vermines.Gameplay.Phases {
             // Check if the effect is a passive effect or an active effect.
             // If it's a passive effect, the effect is already applied to the player.
 
-            if (player != PlayerController.Local.PlayerRef)
-                return;
+            foreach (ICard card in GameDataStorage.Instance.PlayerDeck[player].PlayedCards)
+            {
+                foreach (AEffect effect in card.Data.Effects)
+                {
+                    if (effect.Type is CardSystem.Enumerations.EffectType.Play)
+                    {
+                        effect.Play(player);
+                        HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[player]);
 
-            // If it's an active effect, the player can choose to activate it or not.
-
+                        Debug.Log($"[Client]: Card {card.ID} is {card.Data.Name}, effect played");
+                    }
+                }
+            }
             return;
+        }
+
+        public void OnEffectActivated()
+        {
+            // TODO: Handle effect activation
         }
 
         #endregion

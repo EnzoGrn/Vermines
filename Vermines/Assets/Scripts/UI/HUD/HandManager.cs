@@ -160,5 +160,19 @@ namespace Vermines.HUD
         {
             return $"Card_{cards.Count + 1}";
         }
+
+        public int GetCardSlotId(int cartId)
+        {
+            foreach (var card in handCards)
+            {
+                Debug.Log("Client card ID: " + card.GetComponent<CardBase>().GetCard().ID);
+                Debug.Log("Server card ID: " + cartId);
+                if (card.GetComponent<CardBase>().GetCard().ID == cartId)
+                {
+                    return handCards.IndexOf(card);
+                }
+            }
+            return -1;
+        }
     }
 }

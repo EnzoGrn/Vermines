@@ -63,6 +63,13 @@ namespace Vermines.HUD.Card
             Debug.Log("Card dropped on Discard Area");
 
             // TODO: Add card to active card list, remove it from hand, and play effect
+            CardBase cardBase = card.GetComponent<CardBase>();
+
+            if (cardBase != null)
+            {
+                // TODO: Add card to discard list, remove it from hand, and play effect
+                GameEvents.InvokeOnCardPlayed(cardBase.Card.ID);
+            }
         }
     }
 }

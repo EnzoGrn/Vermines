@@ -62,7 +62,7 @@ namespace Vermines.HUD {
         private PhaseType currentPhase = PhaseType.Sacrifice;
 
         private List<int> playerIds;
-        private Dictionary<int, PlayerData> players;
+        private Dictionary<int, Vermines.Player.PlayerData> players;
         private Dictionary<int, PlayerBanner> playerBanners = new();
 
         void Awake()
@@ -76,13 +76,13 @@ namespace Vermines.HUD {
 
             if (debugMode)
             {
-                players = new Dictionary<int, PlayerData>
-                {
-                    { 1, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 1", Family = CardFamily.None } },
-                    { 2, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 2", Family = CardFamily.None } },
-                    { 3, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 3", Family = CardFamily.None } },
-                    { 4, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 4", Family = CardFamily.None } }
-                };
+                //players = new Dictionary<int, PlayerData>
+                //{
+                //    { 1, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 1", Family = CardFamily.None } },
+                //    { 2, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 2", Family = CardFamily.None } },
+                //    { 3, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 3", Family = CardFamily.None } },
+                //    { 4, new PlayerData { Eloquence = 20, Souls = 100, Nickname = "Player 4", Family = CardFamily.None } }
+                //};
 
                 playerIds = players.Keys.ToList();
 
@@ -107,12 +107,12 @@ namespace Vermines.HUD {
 
         public void SetPlayers(NetworkDictionary<PlayerRef, Vermines.Player.PlayerData> playerData)
         {
-            players = new Dictionary<int, PlayerData>();
+            players = new Dictionary<int, Vermines.Player.PlayerData>();
             
             // Set all the data of the player
             foreach (var data in playerData)
             {
-                players[data.Value.PlayerRef.PlayerId] = new PlayerData(data.Value);
+                players[data.Value.PlayerRef.PlayerId] = new Vermines.Player.PlayerData(data.Value.PlayerRef);
             }
 
             playerIds = players.Keys.ToList();
@@ -120,21 +120,20 @@ namespace Vermines.HUD {
             Initialize();
         }
 
-        public void UpdatePlayers(NetworkDictionary<PlayerRef, Vermines.Player.PlayerData> playerData)
-        {
-            foreach (var data in playerData)
-            {
-                players[data.Value.PlayerRef.PlayerId].UpdatePlayerData(data.Value);
-            }
+        //public void UpdatePlayers(NetworkDictionary<PlayerRef, Vermines.Player.PlayerData> playerData)
+        //{
+        //    foreach (var data in playerData)
+        //    {
+        //        players[data.Key.PlayerId] = data.Value;
+        //    }
 
-            UpdatePlayerBannerData();
-        }
+        //    UpdatePlayerBannerData();
+        //}
 
         public void UpdateSpecificPlayer(Vermines.Player.PlayerData player)
         {
-            players[player.PlayerRef.PlayerId].UpdatePlayerData(player);
-
-            UpdateSpecificPlayerBannerData(player.PlayerRef.PlayerId, players[player.PlayerRef.PlayerId]);
+            players[player.PlayerRef.PlayerId] = player;
+            UpdateSpecificPlayerBannerData(player.PlayerRef.PlayerId);
         }
 
         public void AttemptToNextPhase()
@@ -259,17 +258,17 @@ namespace Vermines.HUD {
             */
         }
 
-        private void UpdatePlayerBannerData()
-        {
-            foreach (var player in players)
-            {
-                playerBanners[player.Key].UpdateData(player.Value);
-            }
-        }
+        //private void UpdatePlayerBannerData()
+        //{
+        //    foreach (var player in players)
+        //    {
+        //        playerBanners[player.Key].UpdateData(player.Value);
+        //    }
+        //}
 
-        private void UpdateSpecificPlayerBannerData(int playerKey, PlayerData playerData)
+        private void UpdateSpecificPlayerBannerData(int playerKey)
         {
-            playerBanners[playerKey].UpdateData(playerData);
+            playerBanners[playerKey].UpdateData(players[playerKey]);
         }
 
         private void UpdatePlayerDisplay()

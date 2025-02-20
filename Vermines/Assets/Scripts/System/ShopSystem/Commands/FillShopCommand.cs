@@ -51,7 +51,7 @@ namespace Vermines.ShopSystem.Commands {
                     GameEvents.OnShopsEvents[shopSection.Key].Invoke(slot.Key, card);
                 }
             
-                CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key.ToString());
+                CardSpawner.Instance.UpdateSpecificShop(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
             }
 
             return _Shop;

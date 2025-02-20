@@ -3,7 +3,9 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Phases {
+    using Vermines.Gameplay.Commands.Deck;
     using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.Player;
     using Vermines.ShopSystem.Commands;
 
     public class ResolutionPhase : APhase {
@@ -20,12 +22,19 @@ namespace Vermines.Gameplay.Phases {
         {
             Debug.Log($"Phase {Type} is now running");
 
-            //ICommand fillShopCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
+            // Refill Shop
+            ICommand refillShopCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 
-            //CommandInvoker.ExecuteCommand(fillShopCommand);
+            CommandInvoker.ExecuteCommand(refillShopCommand);
+
+            // Refill Hand
+            for (int i = 0; i < GameManager.Instance.Config.NumberOfCardsToDrawAtEndOfTurn.Value; i++)
+            {
+                ICommand drawCardCommand = new DrawCommand(player);
+                CommandInvoker.ExecuteCommand(drawCardCommand);
+            }
 
             // TODO: Check if that cause a problem when client & server are simulated the turn of someone else.
-
             OnPhaseEnding(player, true); // Here true, because everyone know that the phase is over.
         }
 

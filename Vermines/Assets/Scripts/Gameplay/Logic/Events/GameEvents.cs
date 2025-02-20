@@ -1,3 +1,4 @@
+using Fusion;
 using System;
 using System.Collections.Generic;
 using UnityEngine.Events;
@@ -10,6 +11,9 @@ public static class GameEvents
     public static UnityEvent<ICard> OnDrawCard = new ();
     public static Dictionary<ShopType, UnityEvent<int, ICard>> OnShopsEvents = new();
     public static UnityEvent<ShopType, int> OnCardBought = new();
+    public static UnityEvent<int> OnDiscard = new();
+    public static UnityEvent<int> OnCardPlayed = new();
+    public static UnityEvent<int> OnCardSacrified = new();
 
     static GameEvents()
     {
@@ -31,9 +35,15 @@ public static class GameEvents
         return;
     }
 
-    public static void InvokeOnFillShop(int id, ICard card)
+    public static void InvokeOnDiscard(int cardId)
     {
-        OnShopsEvents[ShopType.Market].Invoke(id, card);
+        OnDiscard.Invoke(cardId);
+        return;
+    }
+
+    public static void InvokeOnCardPlayed(int cardId)
+    {
+        OnCardPlayed.Invoke(cardId);
         return;
     }
 }

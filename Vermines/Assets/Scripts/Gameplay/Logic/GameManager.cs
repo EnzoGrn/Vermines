@@ -4,6 +4,7 @@ using Fusion;
 
 namespace Vermines {
     using OMGG.DesignPattern;
+    using UnityEditor.Graphs;
     using Vermines.Config;
     using Vermines.Gameplay.Phases;
     using Vermines.ShopSystem.Commands;
@@ -144,6 +145,23 @@ namespace Vermines {
                 Debug.LogWarning($"[Host]: Player {playerId} can't buy the card at slot {slot} in {shopType}");
         }
 
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_CardPlayed(int playerId, int cardId)
+        {
+            Player.PlayerController.Local.RPC_CardPlayed(playerId, cardId);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_DiscardCard(int playerId, int cardID)
+        {
+            Player.PlayerController.Local.RPC_DiscardCard(playerId, cardID);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_CardSacrified(int playerId, int cardId)
+        {
+            Player.PlayerController.Local.RPC_CardSacrified(playerId, cardId);
+        }
         #endregion
     }
 }

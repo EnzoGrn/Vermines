@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.EventSystems;
+using Vermines.Player;
 namespace Vermines.HUD.Card
 {
     public class DiscardArea : MonoBehaviour, ICardDropArea, IDropHandler
@@ -31,7 +32,13 @@ namespace Vermines.HUD.Card
             Destroy(card.GetComponent<CardHover>());
             Debug.Log("Card dropped on Discard Area");
 
-            // TODO: Add card to discard list, remove it from hand, and play effect
+            CardBase cardBase = card.GetComponent<CardBase>();
+
+            if (cardBase != null)
+            {
+                // TODO: Add card to discard list, remove it from hand, and play effect
+                GameEvents.InvokeOnDiscard(cardBase.Card.ID);
+            }
         }
     }
 }

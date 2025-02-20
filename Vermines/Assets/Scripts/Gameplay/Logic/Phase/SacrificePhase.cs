@@ -3,9 +3,13 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Phases {
-
+    using OMGG.DesignPattern;
+    using System.ComponentModel.Design;
     using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.HUD;
     using Vermines.Player;
 
     public class SacrificePhase : APhase {
@@ -23,23 +27,31 @@ namespace Vermines.Gameplay.Phases {
         /// </summary>
         private int _NumberOfCardSacrified = 0;
 
+        private PlayerRef _CurrentPlayer;
+
         #endregion
+
+        public SacrificePhase()
+        {
+            GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
+        }
 
         #region Override Methods
 
         public override void Run(PlayerRef player)
         {
-            Debug.Log($"Phase {Type} is now running");
+            _CurrentPlayer = player;
 
+            Debug.Log($"Phase {Type} is now running");
 
             Reset();
 
-            List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[player].PlayedCards;
+            List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
 
-            if (playedCards.Count > 0)
-                Sacrifice(player);
+            if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
+                HUDManager.instance.OpenDeskOverlay();
             else
-                OnPhaseEnding(player, true);
+                OnPhaseEnding(_CurrentPlayer, true);
         }
 
         public override void Reset()
@@ -49,32 +61,31 @@ namespace Vermines.Gameplay.Phases {
 
         #endregion
 
-        #region Methods
-
-        private void Sacrifice(PlayerRef player)
-        {
-            // TODO: Check if that cause a problem when client & server are simulated the turn of someone else.
-            // Here: it's a unique player phase, only the current player can simulate this phase.
-            // He will send every command needed to the server to simulate the phase.
-            if (player != PlayerController.Local.PlayerRef)
-                return;
-
-            // TODO: Implement the logic to pick a card to sacrifice. And to allow the player to choose if they want to sacrifice another card or not.
-            Debug.Log($"[TODO | DEBUG]: You can pick a card to sacrifice it. (Cards left {GameManager.Instance.Config.MaxSacrificesPerTurn.Value - _NumberOfCardSacrified}).");
-        }
-
-        #endregion
-
         #region Events
 
-        public void OnCardSacrified(PlayerRef player)
+        public void OnCardSacrified(int cardId)
         {
+            Debug.Log("[Client]: Card Sacrified");
+            if (_CurrentPlayer == PlayerController.Local.PlayerRef)
+            {
+                ICard card = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Find(card => card.ID == cardId);
+
+                Debug.Log($"[Client]: Card {card.ID} is now sacrificed");
+
+                if (card != null)
+                {
+                    PlayerController.Local.OnCardSacrified(card.ID);
+                }
+                else
+                {
+                    return;
+                }
+            }
+
             _NumberOfCardSacrified++;
 
-            if (_NumberOfCardSacrified < GameManager.Instance.Config.MaxSacrificesPerTurn.Value) {
-                Sacrifice(player);
-            } else {
-                OnPhaseEnding(player, true);
+            if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value) {
+                OnPhaseEnding(_CurrentPlayer, true);
             }
         }
 

@@ -3,6 +3,7 @@ using UnityEngine;
 namespace Vermines.HUD
 {
     using Vermines.HUD.Card;
+    using Vermines.ShopSystem.Enumerations;
 
     public class TableManager : MonoBehaviour
     {
@@ -41,6 +42,9 @@ namespace Vermines.HUD
             {
                 Debug.Log("Sacrificing card: " + selectedCard.Card.Data.Name);
                 // TODO: Implement card sacrifice logic
+
+                GameEvents.OnCardSacrified.Invoke(selectedCard.Card.ID);
+
                 Destroy(selectedCard.gameObject);
                 CloseSacrificeOverlay();
             }

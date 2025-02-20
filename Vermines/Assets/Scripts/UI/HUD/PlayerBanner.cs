@@ -13,7 +13,7 @@ namespace Vermines.HUD
         public float scale = 1.1f;
         public float activeScale = 1.275f;
 
-        public void Setup(PlayerData player)
+        public void Setup(Vermines.Player.PlayerData player)
         {
             playerNameObject.GetComponent<TextMeshProUGUI>().text = player.Nickname;
             playerEloquenceText.text = player.Eloquence.ToString();
@@ -26,7 +26,7 @@ namespace Vermines.HUD
             rectTransform.localScale = isActive ? Vector3.one * activeScale : Vector3.one * scale;
         }
 
-        public void UpdateData(PlayerData playerData)
+        public void UpdateData(Vermines.Player.PlayerData playerData)
         {
             playerEloquenceText.text = playerData.Eloquence.ToString();
             playerSoulsText.text = playerData.Souls.ToString();

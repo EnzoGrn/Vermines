@@ -5,15 +5,17 @@ namespace Vermines.Gameplay.Commands.Deck {
     using System.Linq;
     using Vermines.Player;
 
-    public class DrawCommand : ICommand {
+    public class DiscardCommand : ICommand {
 
         private readonly PlayerRef _Player;
+        private readonly int _CardId;
 
         private PlayerDeck? _OldDeck = null;
 
-        public DrawCommand(PlayerRef player)
+        public DiscardCommand(PlayerRef player, int cardID)
         {
             _Player = player;
+            _CardId = cardID;
         }
 
         public bool Execute()
@@ -22,15 +24,9 @@ namespace Vermines.Gameplay.Commands.Deck {
                 return false;
             PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[_Player];
 
-            _OldDeck = deck;
+            _OldDeck = deck.DeepCopy();
 
-            deck.Draw();
-
-            // TODO: Check why it is working on every clients
-            if (PlayerController.Local.PlayerRef == _Player)
-            {
-                GameEvents.InvokeOnDrawCard(deck.Hand.Last());
-            }
+            deck.DiscardCard(_CardId);
 
             GameDataStorage.Instance.PlayerDeck[_Player] = deck;
             return true;
