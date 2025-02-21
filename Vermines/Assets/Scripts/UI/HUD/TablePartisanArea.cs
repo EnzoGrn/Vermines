@@ -12,26 +12,40 @@ namespace Vermines.HUD.Card
         public bool IsDropAllowed(CardDraggable card)
         {
             if (card == null) {
+                Debug.LogWarning($"[CLIENT] [{gameObject.name}] ({nameof(TabelPartisanArea)}) Card not found.", this);
                 return false;
             }
+
+            if (GameManager.Instance == null)
+            {
+                Debug.LogWarning($"[CLIENT] [{gameObject.name}] ({nameof(TabelPartisanArea)}) GameManager not found.", this);
+                return false;
+            }
+
+            if (GameManager.Instance.IsMyTurn() == false)
+            {
+                Debug.Log($"[CLIENT] [{gameObject.name}] ({nameof(TabelPartisanArea)}) Action not allowed: Not your turn.", this);
+                return false;
+            }
+
             // Get gameObject from card
             GameObject cardGameObject = card.gameObject;
             CardBase cardBase = cardGameObject.GetComponent<CardBase>();
             if (cardBase == null)
             {
-                Debug.Log("CardBase component not found on card object.");
+                Debug.LogWarning($"[CLIENT] [{gameObject.name}] ({nameof(TabelPartisanArea)}) CardBase not found.", this);
                 return false;
             }
             CardData cardData = cardBase.Card.Data;
             if (cardData == null)
             {
-                Debug.Log("CardData not found on card object.");
+                Debug.LogWarning($"[CLIENT] [{gameObject.name}] ({nameof(TabelPartisanArea)}) CardData not found.", this);
                 return false;
             }
             // Check if card is a partisan
             if (cardData.Type != CardType.Partisan)
             {
-                Debug.Log("Card is not a partisan.");
+                Debug.Log($"[CLIENT] [{gameObject.name}] ({nameof(TabelPartisanArea)}) Action not allowed: Card is not a partisan.", this);
                 return false;
             }
             return true;
@@ -39,7 +53,7 @@ namespace Vermines.HUD.Card
 
         public void OnDrop(PointerEventData eventData)
         {
-            Debug.Log(eventData.pointerDrag.name + " was dropped on " + gameObject.name);
+            Debug.Log($"[CLIENT] [{gameObject.name}] ({nameof(TabelPartisanArea)}) {eventData.pointerDrag.name} was dropped on {gameObject.name}");
             CardDraggable card = eventData.pointerDrag.GetComponent<CardDraggable>();
             if (card != null)
             {
@@ -62,12 +76,10 @@ namespace Vermines.HUD.Card
             card.gameObject.tag = "TableCard";
             Debug.Log("Card dropped on Discard Area");
 
-            // TODO: Add card to active card list, remove it from hand, and play effect
             CardBase cardBase = card.GetComponent<CardBase>();
 
             if (cardBase != null)
             {
-                // TODO: Add card to discard list, remove it from hand, and play effect
                 GameEvents.InvokeOnCardPlayed(cardBase.Card.ID);
             }
         }

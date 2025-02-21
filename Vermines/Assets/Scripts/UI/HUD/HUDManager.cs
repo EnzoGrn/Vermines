@@ -10,6 +10,7 @@ namespace Vermines.HUD {
 
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Phases;
 
     /// <summary>
     /// This class is only a placeholder for the real Player class.
@@ -297,6 +298,13 @@ namespace Vermines.HUD {
 
         public void OpenDeskOverlay()
         {
+            if (PhaseManager.Instance && PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice)
+            {
+                TableManager.instance.EnableDiscard(false);
+            } else
+            {
+                TableManager.instance.EnableDiscard(true);
+            }
             deskOverlay.SetActive(true);
         }
 

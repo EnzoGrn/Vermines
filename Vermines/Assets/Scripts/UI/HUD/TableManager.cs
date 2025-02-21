@@ -30,15 +30,11 @@ namespace Vermines.HUD
         {
             selectedCard = cardBase;
             sacrificeOverlay.SetActive(true);
-            discardObject.SetActive(false);
-            discardBanner.SetActive(false);
         }
 
         public void CloseSacrificeOverlay()
         {
             sacrificeOverlay.SetActive(false);
-            discardObject.SetActive(true);
-            discardBanner.SetActive(true);
             selectedCard = null;
         }
 
@@ -58,6 +54,12 @@ namespace Vermines.HUD
             {
                 Debug.LogError("No card selected to sacrifice.");
             }
+        }
+
+        public void EnableDiscard(bool state)
+        {
+            discardObject.SetActive(state);
+            discardBanner.SetActive(state);
         }
     }
 }

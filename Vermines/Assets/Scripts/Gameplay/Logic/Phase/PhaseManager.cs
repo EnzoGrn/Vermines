@@ -21,7 +21,7 @@ namespace Vermines.Gameplay.Phases {
         #region Phases
 
         [Networked]
-        private PhaseType CurrentPhase { get; set; }
+        public PhaseType CurrentPhase { get; set; }
 
         private Dictionary<PhaseType, IPhase> _Phases;
 
