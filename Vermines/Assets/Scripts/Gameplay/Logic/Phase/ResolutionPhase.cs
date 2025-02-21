@@ -30,8 +30,13 @@ namespace Vermines.Gameplay.Phases {
             // Refill Hand
             for (int i = 0; i < GameManager.Instance.Config.NumberOfCardsToDrawAtEndOfTurn.Value; i++)
             {
+                Debug.Log($"Player {player} is tying to draw a card");
                 ICommand drawCardCommand = new DrawCommand(player);
                 CommandInvoker.ExecuteCommand(drawCardCommand);
+
+                // Dump all the deck of the user
+                Debug.Log($"Player {player} draw a card");
+                Debug.Log($"Player {player} Decks: {GameDataStorage.Instance.PlayerDeck[player].Serialize()}");
             }
 
             // TODO: Check if that cause a problem when client & server are simulated the turn of someone else.

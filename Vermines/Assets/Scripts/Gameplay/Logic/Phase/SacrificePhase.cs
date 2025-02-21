@@ -66,26 +66,23 @@ namespace Vermines.Gameplay.Phases {
         public void OnCardSacrified(int cardId)
         {
             Debug.Log("[Client]: Card Sacrified");
-            if (_CurrentPlayer == PlayerController.Local.PlayerRef)
+            ICard card = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Find(card => card.ID == cardId);
+
+            Debug.Log($"[Client]: Card {card.ID} is now sacrificed");
+
+            if (card != null)
             {
-                ICard card = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Find(card => card.ID == cardId);
-
-                Debug.Log($"[Client]: Card {card.ID} is now sacrificed");
-
-                if (card != null)
+                if (_CurrentPlayer == PlayerController.Local.PlayerRef)
                 {
                     PlayerController.Local.OnCardSacrified(card.ID);
                 }
-                else
+
+                _NumberOfCardSacrified++;
+
+                if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value)
                 {
-                    return;
+                    OnPhaseEnding(_CurrentPlayer, true);
                 }
-            }
-
-            _NumberOfCardSacrified++;
-
-            if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value) {
-                OnPhaseEnding(_CurrentPlayer, true);
             }
         }
 
