@@ -176,20 +176,24 @@ namespace Vermines {
             GameManager.Instance.Config.Seed = seed;
         }
 
-        private void FillShop()
-        {
-            ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
+        //private void FillShop()
+        //{
+        //    ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 
-            CommandInvoker.ExecuteCommand(fillCommand);
+        //    CommandInvoker.ExecuteCommand(fillCommand);
 
-            if (CommandInvoker.State == true)
-            {
-                foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
-                {
-                    CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
-                }
-            }
-        }
+        //    // Dump shop
+        //    Debug.Log($"[SERVER]: Shop after fill:");
+        //    Debug.Log($"[SERVER]: {GameDataStorage.Instance.Shop.Serialize()}");
+
+        //    if (CommandInvoker.State == true)
+        //    {
+        //        foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
+        //        {
+        //            CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
+        //        }
+        //    }
+        //}
 
         #endregion
 
@@ -244,6 +248,14 @@ namespace Vermines {
 
                 if (GameDataStorage.Instance.Shop == null)
                     Debug.LogError("Shop is null");
+
+                if (CommandInvoker.State == true)
+                {
+                    foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
+                    {
+                        CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
+                    }
+                }
             });
         }
 
