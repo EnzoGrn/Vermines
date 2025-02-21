@@ -1,14 +1,20 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Vermines.HUD
+namespace Vermines.HUD.Card
 {
-    public class CardInShop : CardBase
+    public class CardInShop : MonoBehaviour
     {
+        public CardBase CardBase;
+
+        public void Initialize(CardBase cardBase)
+        {
+            CardBase = cardBase;
+        }
+
         public void OpenOverlay()
         {
-            Debug.Log("Affichage de l'overlay d'achat");
-            ShopManager.instance.GetShop().OpenCardBuyOverlay(this);
+            ShopManager.instance.GetShop().OpenCardBuyOverlay(CardBase);
         }
     }
 }

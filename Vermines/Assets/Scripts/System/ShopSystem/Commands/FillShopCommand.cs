@@ -6,6 +6,7 @@ namespace Vermines.ShopSystem.Commands {
 
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Utilities;
+    using Vermines.HUD.Card;
     using Vermines.ShopSystem.Data;
 
     public class FillShopCommand : ICommand {
@@ -38,16 +39,16 @@ namespace Vermines.ShopSystem.Commands {
         /// </note>
         private ShopData FillShop()
         {
-            List<ShopSection> shopSections = _Shop.Sections.Values.ToList();
-
-            foreach (ShopSection shopSection in shopSections) {
-                foreach (var slot in shopSection.AvailableCards.ToList()) {
+            foreach (var shopSection in _Shop.Sections) {
+                foreach (var slot in shopSection.Value.AvailableCards.ToList()) {
                     if (slot.Value != null)
                         continue; // Already have a card in the slots.
 
-                    ICard card = DrawCard(shopSection);
+                    ICard card = DrawCard(shopSection.Value);
 
-                    shopSection.AvailableCards[slot.Key] = card;
+                    shopSection.Value.AvailableCards[slot.Key] = card;
+
+                    GameEvents.OnShopsEvents[shopSection.Key].Invoke(slot.Key, card);
                 }
             }
 

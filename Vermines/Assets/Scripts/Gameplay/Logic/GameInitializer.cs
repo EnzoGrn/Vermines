@@ -4,6 +4,7 @@ using OMGG.Network.Fusion;
 using OMGG.DesignPattern;
 using Fusion;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Vermines {
 
@@ -18,13 +19,25 @@ namespace Vermines {
     using Vermines.ShopSystem.Data;
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
-    using static Fusion.Allocator;
+    using Vermines.Gameplay.Phases;
+    using Vermines.HUD;
+    using Vermines.HUD.Card;
 
     public class GameInitializer : NetworkBehaviour {
 
-        private NetworkQueue _Queue = new NetworkQueue();
+        private readonly NetworkQueue _Queue = new();
 
         #region Methods
+
+        public override void Spawned()
+        {
+            // Load UI Scene
+            if (Runner.IsServer)
+            {
+                Debug.Log("LoadYourAsyncScene.");
+                Runner.LoadScene("UI", LoadSceneMode.Additive);
+            }
+        }
 
         public int InitializePlayers(int seed, int startingEloquence)
         {
@@ -46,7 +59,7 @@ namespace Vermines {
             int orderIndex = 0;
 
             foreach (var player in GameDataStorage.Instance.PlayerData) {
-                PlayerData data = player.Value;
+                Vermines.Player.PlayerData data = player.Value;
 
                 data.Family = families[orderIndex];
                 data.Eloquence = GiveEloquence(orderIndex, startingEloquence);
@@ -57,6 +70,13 @@ namespace Vermines {
             }
 
             RPC_InitializeGame(seed, FamilyUtils.FamiliesListToIds(families));
+        }
+
+        public int InitalizePhase()
+        {
+            RPC_InitializePhase();
+
+            return 0;
         }
 
         public int InitializeShop(int seed)
@@ -98,7 +118,7 @@ namespace Vermines {
 
             GameDataStorage.Instance.Shop = shop;
 
-            FillShop();
+            //FillShop();
 
             // -- RPC Command for sync initialization
             RPC_InitializeShop(GameDataStorage.Instance.Shop.Serialize());
@@ -156,12 +176,24 @@ namespace Vermines {
             GameManager.Instance.Config.Seed = seed;
         }
 
-        private void FillShop()
-        {
-            ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
+        //private void FillShop()
+        //{
+        //    ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 
-            CommandInvoker.ExecuteCommand(fillCommand);
-        }
+        //    CommandInvoker.ExecuteCommand(fillCommand);
+
+        //    // Dump shop
+        //    Debug.Log($"[SERVER]: Shop after fill:");
+        //    Debug.Log($"[SERVER]: {GameDataStorage.Instance.Shop.Serialize()}");
+
+        //    if (CommandInvoker.State == true)
+        //    {
+        //        foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
+        //        {
+        //            CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
+        //        }
+        //    }
+        //}
 
         #endregion
 
@@ -187,7 +219,7 @@ namespace Vermines {
         {
             _Queue.EnqueueRPC(() => {
                 Debug.Log($"[SERVER]: Deck initialization:");
-                Debug.Log($"{data}");
+                Debug.Log($"[SERVER]: {data}");
 
                 ICommand initializeCommand = new InitializeDeckCommand(data);
 
@@ -200,13 +232,29 @@ namespace Vermines {
         {
             _Queue.EnqueueRPC(() => {
                 Debug.Log($"[SERVER]: Shop initialization:");
-                Debug.Log(data);
+                Debug.Log($"[SERVER]: {data}");
 
                 // Ignore the host because it's shop is already initialized (it's just synchronising the shop with others)
                 if (HasStateAuthority == false) {
+                    GameDataStorage.Instance.Shop = ScriptableObject.CreateInstance<ShopData>();
                     ICommand initializeCommand = new SyncShopCommand(GameDataStorage.Instance.Shop, data, GameManager.Instance.Config);
 
                     CommandInvoker.ExecuteCommand(initializeCommand);
+                }
+
+                ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
+
+                CommandInvoker.ExecuteCommand(fillCommand);
+
+                if (GameDataStorage.Instance.Shop == null)
+                    Debug.LogError("Shop is null");
+
+                if (CommandInvoker.State == true)
+                {
+                    foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
+                    {
+                        CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
+                    }
                 }
             });
         }
@@ -226,7 +274,15 @@ namespace Vermines {
                 }
 
                 Debug.Log($"[SERVER]: Deck after everyone draw their cards:");
-                Debug.Log(GameDataStorage.Instance.SerializeDeck());
+                Debug.Log($"[SERVER]: {GameDataStorage.Instance.SerializeDeck()}");
+            });
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPC_InitializePhase()
+        {
+            _Queue.EnqueueRPC(() => {
+                PhaseManager.Instance.Initialize();
             });
         }
 

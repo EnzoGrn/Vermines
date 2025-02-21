@@ -171,8 +171,10 @@ namespace Vermines.CardSystem.Data {
         {
             if (Effects == null || Effects.Count == 0)
                 return null;
-            if (Effects.Count == 1)
+            if (Effects.Count == 1 && Effects[0] != null)
                 return Effects[0].Draw();
+            else
+                return null;
             List<(string, Sprite)> elements  = new();
             Sprite                 separator = Resources.Load<Sprite>("Sprites/UI/Effects/separator");
 

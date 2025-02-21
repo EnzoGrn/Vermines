@@ -527,6 +527,8 @@ namespace Vermines {
             yield break; // Explicitly return to satisfy IEnumerator
         }
 
+        
+
         #region RPC
         [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
         private void RPC_SendGameSettings(int offset, int numberOfData, string serializedGameSettings)

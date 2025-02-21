@@ -1,9 +1,10 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
-namespace Vermines.HUD
-{
+namespace Vermines.HUD {
+
+    using Vermines.Gameplay.Phases.Enumerations;
+
     public class PhaseBanner : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI phaseText;

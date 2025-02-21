@@ -80,3 +80,7 @@ crashlytics-build.properties
 **/CodeCoverage/*-opencov/
 **/CodeCoverage/Report/*
 !**/CodeCoverage/Report/badge_linecoverage.png
+
+# Unwanted Packages
+**/Packages/*
+!**/Packages/*.json

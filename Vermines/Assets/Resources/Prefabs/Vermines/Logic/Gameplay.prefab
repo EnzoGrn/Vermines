@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1456946192299027768}
   - component: {fileID: 1249932418643325045}
   - component: {fileID: 6441156129286385912}
+  - component: {fileID: 6454688113405763615}
   - component: {fileID: 2676703785937154257}
   m_Layer: 0
   m_Name: Gameplay
@@ -48,9 +49,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Initializer: {fileID: 6441156129286385912}
-  Config: {fileID: 11400000, guid: 5f08fb16073037943b19151cbb6a4c0c, type: 2}
+  Config: {fileID: 11400000, guid: 8069901c398771d47a75633e0b5584f4, type: 2}
+  _PlayerTurnOrder: []
+  _TotalTurnPlayed: 0
+  _CurrentPlayerIndex: 0
   _Start: 0
-  _Seed: 0
 --- !u!114 &1249932418643325045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,6 +81,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fbab24ad2de97f4d85b215e6924af52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6454688113405763615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 222937835093749848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd71a62a739ffa74cb90c79f0c584fc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2676703785937154257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,3 +113,4 @@ MonoBehaviour:
   - {fileID: 1456946192299027768}
   - {fileID: 1249932418643325045}
   - {fileID: 6441156129286385912}
+  - {fileID: 6454688113405763615}

@@ -28,7 +28,13 @@ namespace Vermines.ShopSystem.Commands.Internal {
         {
             _OldShop = _Shop?.DeepCopy() ?? null;
             
-            SyncShop(_Shop, _Data, _Config);
+            _Shop = SyncShop(_Shop, _Data, _Config);
+
+            if (_Shop == null)
+            {
+                Debug.LogError("Shop is null after sync.");
+                return false;
+            }
 
             return true;
         }
@@ -38,7 +44,7 @@ namespace Vermines.ShopSystem.Commands.Internal {
             _Shop.Sections = _OldShop.Sections;
         }
 
-        private void SyncShop(ShopData shopToSync, string data, GameConfiguration config)
+        private ShopData SyncShop(ShopData shopToSync, string data, GameConfiguration config)
         {
             if (shopToSync == null)
                 shopToSync = ScriptableObject.CreateInstance<ShopData>();
@@ -46,6 +52,8 @@ namespace Vermines.ShopSystem.Commands.Internal {
             shopToSync.Initialize(ShopType.Market   , config.MaxMarketCards.Value);
             shopToSync.Initialize(ShopType.Courtyard, config.MaxCourtyardCards.Value);
             shopToSync.Deserialize(data);
+
+            return shopToSync;
         }
     }
 }

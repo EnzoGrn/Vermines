@@ -3,8 +3,11 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines {
-
+    using OMGG.DesignPattern;
     using Vermines.Config;
+    using Vermines.Gameplay.Phases;
+    using Vermines.ShopSystem.Commands;
+    using Vermines.ShopSystem.Enumerations;
 
     public class GameManager : NetworkBehaviour {
 
@@ -43,18 +46,34 @@ namespace Vermines {
                 Application.targetFrameRate = TickRate.Resolve(Runner.Config.Simulation.TickRateSelection).Server;
         }
 
-        public override void FixedUpdateNetwork()
+        #endregion
+
+        #region Player Order
+
+        // TODO: Change depending of the number of players max (possible in the settings)
+        // TODO: Currently the game initialize in order of connexion, maybe create a random of the first player and next etc...
+        [Networked, Capacity(4)]
+        public NetworkArray<PlayerRef> PlayerTurnOrder { get; }
+
+        /// <summary>
+        /// The total amount of turn that has been played.
+        /// </summary>
+        [Networked]
+        public int TotalTurnPlayed { get; set; } = 0;
+
+        /// <summary>
+        /// Do PlayerTurnOrder[CurrentPlayerIndex] to get the current player.
+        /// </summary>
+        [Networked]
+        public int CurrentPlayerIndex { get; set; } = 0;
+
+        public bool IsMyTurn()
         {
-            if (HasStateAuthority == false)
-                return;
-            if (!Start) {
-                if (GameDataStorage.Instance.PlayerData.Count >= 2)
-                    StartGame();
-                return;
-            }
+            return (PlayerTurnOrder.Get(CurrentPlayerIndex) == Runner.LocalPlayer);
         }
 
         #endregion
+
 
         [Networked]
         [HideInInspector]
@@ -68,10 +87,13 @@ namespace Vermines {
         {
             if (HasStateAuthority == false)
                 return;
-            // Now directly handle by the Waiting Room.
-            //if (Config.RandomSeed.Value == true)
-            //    Config.Seed = Random.Range(0, int.MaxValue);
+            // TODO: need to handle it with the Waiting Room (before sending the Game Configuration to clients). // WIP
+            if (Config.RandomSeed.Value == true)
+                Config.Seed = Random.Range(0, int.MaxValue);
             if (_Initializer.InitializePlayers(Config.Seed, Config.EloquenceToStartWith.Value) == -1)
+                return;
+            InitializePlayerOrder();
+            if (_Initializer.InitalizePhase() == -1)
                 return;
             if (_Initializer.DeckDistribution(Config.Rand) == -1)
                 return;
@@ -80,6 +102,62 @@ namespace Vermines {
             _Initializer.StartingDraw(Config.NumberOfCardsToStartWith.Value);
 
             Start = true;
+
+            PhaseManager.Instance.OnStartPhases();
         }
+
+        private void InitializePlayerOrder()
+        {
+            int orderIndex = 0;
+
+            foreach (var playerData in GameDataStorage.Instance.PlayerData) {
+                PlayerTurnOrder.Set(orderIndex, playerData.Key);
+
+                orderIndex++;
+            }
+        }
+
+        #region Rpcs
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_BuyCard(ShopType shopType, int slot, int playerId)
+        {
+            BuyParameters parameters = new()
+            {
+                Decks = GameDataStorage.Instance.PlayerDeck,
+                Player = PlayerRef.FromEncoded(playerId),
+                Shop = GameDataStorage.Instance.Shop,
+                ShopType = shopType,
+                Slot = slot
+            };
+            
+            ICommand buyCommand = new CheckBuyCommand(parameters);
+
+            CommandInvoker.ExecuteCommand(buyCommand);
+
+            if (CommandInvoker.State == true)
+                Player.PlayerController.Local.RPC_BuyCard(playerId, shopType, slot);
+            else
+                Debug.LogWarning($"[Host]: Player {playerId} can't buy the card at slot {slot} in {shopType}");
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_CardPlayed(int playerId, int cardId)
+        {
+            Player.PlayerController.Local.RPC_CardPlayed(playerId, cardId);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_DiscardCard(int playerId, int cardID)
+        {
+            Player.PlayerController.Local.RPC_DiscardCard(playerId, cardID);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_CardSacrified(int playerId, int cardId)
+        {
+            Player.PlayerController.Local.RPC_CardSacrified(playerId, cardId);
+        }
+        #endregion
     }
 }

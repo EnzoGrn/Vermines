@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Worker
   m_EditorClassIdentifier: 
   Name: Worker
-  Description: Discard the <b>worker</b> to earn <b><color=purple>1E</color></b>.<br>If
-    you have sacrificed <b>3 workers</b> during the game, earn <b><color=red>10A</color></b>.
   Exemplars: 3
   IsStartingCard: 1
   Type: 0
   IsFamilyCard: 0
   _Family: 0
   _Level: 1
+  Effects:
+  - {fileID: 11400000, guid: d9211d323b393e14b95463cb72c961d5, type: 2}
   Eloquence: 0
   _Souls: 0
   _SpriteName: 
