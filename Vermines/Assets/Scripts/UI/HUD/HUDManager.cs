@@ -121,15 +121,13 @@ namespace Vermines.HUD {
             Initialize();
         }
 
-        //public void UpdatePlayers(NetworkDictionary<PlayerRef, Vermines.Player.PlayerData> playerData)
-        //{
-        //    foreach (var data in playerData)
-        //    {
-        //        players[data.Key.PlayerId] = data.Value;
-        //    }
-
-        //    UpdatePlayerBannerData();
-        //}
+        public void UpdatePlayers(NetworkDictionary<PlayerRef, Vermines.Player.PlayerData> playerData)
+        {
+            foreach (var data in playerData)
+            {
+                UpdateSpecificPlayer(data.Value);
+            }
+        }
 
         public void UpdateSpecificPlayer(Vermines.Player.PlayerData player)
         {

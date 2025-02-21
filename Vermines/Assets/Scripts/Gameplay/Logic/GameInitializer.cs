@@ -20,6 +20,7 @@ namespace Vermines {
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
     using Vermines.Gameplay.Phases;
+    using Vermines.HUD;
 
     public class GameInitializer : NetworkBehaviour {
 
@@ -57,7 +58,7 @@ namespace Vermines {
             int orderIndex = 0;
 
             foreach (var player in GameDataStorage.Instance.PlayerData) {
-                PlayerData data = player.Value;
+                Vermines.Player.PlayerData data = player.Value;
 
                 data.Family = families[orderIndex];
                 data.Eloquence = GiveEloquence(orderIndex, startingEloquence);
