@@ -22,6 +22,8 @@ namespace Vermines.Gameplay.Phases {
         {
             Debug.Log($"Phase {Type} is now running");
 
+            Debug.Log($"[SERVER]: Player hand deck at resolution: {GameDataStorage.Instance.PlayerDeck[player].Serialize()}");
+
             // Refill Shop
             ICommand refillShopCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 

@@ -91,6 +91,8 @@ namespace Vermines.Player {
             }
 
             Debug.Log($"[SERVER]: Player {playerRef} bought a card at slot {slot} in {shopType}");
+            // Debug the decks of the player
+            Debug.Log($"[SERVER]: Player hand deck: {GameDataStorage.Instance.PlayerDeck[PlayerRef.FromEncoded(playerRef)].Serialize()}");
         }
 
         #endregion

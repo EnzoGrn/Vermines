@@ -11,6 +11,8 @@ namespace Vermines.HUD
 
         [SerializeField] private GameObject sacrificeOverlay;
         [SerializeField] private CardBase selectedCard;
+        [SerializeField] private GameObject discardObject;
+        [SerializeField] private GameObject discardBanner;
 
         private void Awake()
         {
@@ -28,11 +30,15 @@ namespace Vermines.HUD
         {
             selectedCard = cardBase;
             sacrificeOverlay.SetActive(true);
+            discardObject.SetActive(false);
+            discardBanner.SetActive(false);
         }
 
         public void CloseSacrificeOverlay()
         {
             sacrificeOverlay.SetActive(false);
+            discardObject.SetActive(true);
+            discardBanner.SetActive(true);
             selectedCard = null;
         }
 

@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Vermines.Gameplay.Phases {
     using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.HUD;
     using Vermines.Player;
     using Vermines.ShopSystem.Enumerations;
 
@@ -35,6 +36,9 @@ namespace Vermines.Gameplay.Phases {
             Debug.Log($"Phase {Type} is now running");
 
             // TODO: Check if that cause a problem when client & server are simulated the turn of someone else.
+
+            if (HUDManager.instance)
+                HUDManager.instance.EnablePhaseButton(false);
         }
 
         private void OnCardBought(ShopType type, int id)

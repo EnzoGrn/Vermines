@@ -950,6 +950,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sacrificeOverlay: {fileID: 6834585315287434300}
   selectedCard: {fileID: 0}
+  discardObject: {fileID: 8606206319283034678}
+  discardBanner: {fileID: 4411813962358036263}
 --- !u!1 &4555698793713484139
 GameObject:
   m_ObjectHideFlags: 0

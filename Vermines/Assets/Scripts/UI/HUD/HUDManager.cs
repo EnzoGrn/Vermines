@@ -304,5 +304,10 @@ namespace Vermines.HUD {
         {
             deskOverlay.SetActive(false);
         }
+
+        public void EnablePhaseButton(bool state)
+        {
+            _PhaseButton.GetComponent<Button>().interactable = state;
+        }
     }
 }
