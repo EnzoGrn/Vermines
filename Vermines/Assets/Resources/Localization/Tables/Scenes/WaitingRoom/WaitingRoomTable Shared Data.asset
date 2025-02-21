@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: WaitingRoomTable Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: WaitingRoomTable
+  m_TableCollectionNameGuidString: a48bdd0fff1a6a9408418cd287ef0a83
+  m_Entries:
+  - m_Id: 21933596672
+    m_Key: Player List Label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2908319391744
+    m_Key: Leave Button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2951864655872
+    m_Key: Start Button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3048669192192
+    m_Key: Reset Button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3160720023552
+    m_Key: Apply Button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3210946813952
+    m_Key: Game Settings Label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4591560695808
+    m_Key: Host Tag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5021921452032
+    m_Key: Me Tag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 343348000333824
+    m_Key: StatusText
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1479866301859496310
+  references:
+    version: 2
+    RefIds:
+    - rid: 1479866301859496310
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1737965665771

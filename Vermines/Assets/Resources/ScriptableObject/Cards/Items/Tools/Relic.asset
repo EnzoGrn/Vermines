@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
+  m_Name: Relic
+  m_EditorClassIdentifier: 
+  Name: Relic
+  Exemplars: 8
+  IsStartingCard: 0
+  Type: 2
+  IsFamilyCard: 0
+  _Family: -1
+  _Level: 0
+  Effects:
+  - {fileID: 11400000, guid: be9f3f9c342b79c4db0b9667d1cd49fc, type: 2}
+  Eloquence: 3
+  _Souls: 0
+  _SpriteName: 
+  _Sprite: {fileID: 21300000, guid: 5ea369731b633c74398a4b56f8fabb4b, type: 3}
