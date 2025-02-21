@@ -41,7 +41,6 @@ namespace Vermines.Gameplay.Phases {
                 Debug.Log($"Player {player} Decks: {GameDataStorage.Instance.PlayerDeck[player].Serialize()}");
             }
 
-            // TODO: Check if that cause a problem when client & server are simulated the turn of someone else.
             OnPhaseEnding(player, true); // Here true, because everyone know that the phase is over.
         }
 

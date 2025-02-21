@@ -17,7 +17,7 @@ namespace Vermines.HUD
         [SerializeField] private Transform spawnPoint;
         [SerializeField] private Transform handContainer;
 
-        private List<GameObject> handCards = new List<GameObject>(); // TODO: Link this with player's hand
+        private List<GameObject> handCards = new List<GameObject>();
 
         [Header("Debug")]
         [SerializeField] private bool debugMode;

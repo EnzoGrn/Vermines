@@ -29,7 +29,6 @@ namespace Vermines.Gameplay.Commands.Deck {
 
             Debug.LogWarning($"[SERVER]: {_Player}, draw card is {resDraw}. Is {_Player} the same as the executor {PlayerController.Local.PlayerRef}");
 
-            // TODO: Check why it is working on every clients
             if (resDraw)
             {
                 GameDataStorage.Instance.PlayerDeck[_Player] = deck;

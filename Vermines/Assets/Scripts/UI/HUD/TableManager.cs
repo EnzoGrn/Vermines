@@ -43,7 +43,6 @@ namespace Vermines.HUD
             if (selectedCard != null)
             {
                 Debug.Log("Sacrificing card: " + selectedCard.Card.Data.Name);
-                // TODO: Implement card sacrifice logic
 
                 GameEvents.OnCardSacrified.Invoke(selectedCard.Card.ID);
 

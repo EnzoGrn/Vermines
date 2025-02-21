@@ -36,7 +36,6 @@ namespace Vermines.HUD.Card
 
             if (cardBase != null)
             {
-                // TODO: Add card to discard list, remove it from hand, and play effect
                 GameEvents.InvokeOnDiscard(cardBase.Card.ID);
             }
         }
