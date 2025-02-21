@@ -6,14 +6,21 @@
         "UnityEditor.TestRunner",
         "OMGG.Optimizer.Interface",
         "OMGG.Optimizer.Manager",
-        "Singleton"
+        "Singleton",
+        "OMGG.Network.Fusion",
+        "Unity.TextMeshPro",
+        "Vermines",
+        "CardSystem",
+        "Fusion.Unity",
+        "Command"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "Fusion.Runtime.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
