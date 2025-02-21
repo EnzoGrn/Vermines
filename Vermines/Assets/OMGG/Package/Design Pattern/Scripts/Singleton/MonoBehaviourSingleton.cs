@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 namespace OMGG.DesignPattern {
@@ -22,7 +23,7 @@ namespace OMGG.DesignPattern {
                 // If the instance is null, we try to find it in the scene.
                 if (_Instance == null) {
                     lock (_Lock) {
-                        _Instance = FindObjectOfType<T>();
+                        _Instance = (T)FindAnyObjectByType(typeof(T));
 
                         // If the instance is still null, we create a new GameObject with the name: "Auto-generated {className}", and we add the component to it.
                         if (_Instance == null) {
@@ -63,6 +64,15 @@ namespace OMGG.DesignPattern {
 
                 DontDestroyOnLoad(gameObject);
             }
+        }
+
+        /*
+         * @brief Function for destroy the instance when the object is destroyed.
+         */
+        public void OnDestroy()
+        {
+            if (_Instance == this)
+                _Instance = null;
         }
     }
 }

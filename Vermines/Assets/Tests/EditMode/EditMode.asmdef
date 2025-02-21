@@ -1,16 +1,15 @@
 {
-    "name": "EditMode",
+    "name": "Tests1",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "NetworkRoomManagerAssembly",
-        "PhotonUnityNetworking",
-        "NetworkUtilsAssembly",
-        "NetworkSettingsAssembly",
-        "Vermine",
         "Singleton",
-        "Command"
+        "Command",
+        "CardSystem",
+        "Defective.JSON",
+        "Vermines",
+        "Fusion.Unity"
     ],
     "includePlatforms": [
         "Editor"
@@ -19,7 +18,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "Fusion.Runtime.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

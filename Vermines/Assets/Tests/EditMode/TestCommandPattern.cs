@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using OMGG.DesignPattern;
 
-namespace Test.Pattern {
+namespace Test.OMGG.Pattern {
 
     public class Player {
 
@@ -25,9 +25,11 @@ namespace Test.Pattern {
             _Movement = movement;
         }
 
-        public void Execute()
+        public bool Execute()
         {
             _Player.PlayerMove(_Movement);
+
+            return true;
         }
 
         public void Undo()

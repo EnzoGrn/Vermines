@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 using System.Collections.Generic;
 using OMGG.Optimizer;
 
-namespace Test.Optimizer {
+namespace Test.OMGG.Optimizer {
 
     public class TestObservedObject : MonoBehaviour, IUpdateObserver, IFixedUpdateObserver, ILateUpdateObserver {
 
@@ -65,7 +65,7 @@ namespace Test.Optimizer {
         [TearDown]
         public void Teardown()
         {
-            var objects = GameObject.FindObjectsOfType<GameObject>();
+            var objects = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
 
             // Destroy properly the objects.
             foreach (var obj in objects)

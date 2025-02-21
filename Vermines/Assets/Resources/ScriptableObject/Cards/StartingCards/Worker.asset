@@ -9,21 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cee0671a97a168439e12e4cecfe767c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Worker
   m_EditorClassIdentifier: 
-  ID: 3
   Name: Worker
-  Description: Discard the worker to earn <b>1E</b>.<br>If you have sacrificed 3
-    workers during the game, earn <b>10A</b>.
+  Exemplars: 3
+  IsStartingCard: 1
   Type: 0
-  Eloquence: -1
-  Souls: 0
-  SpriteName: Worker
-  Sprite: {fileID: 21300000, guid: 85ef01b5136459c47b17371ad327412b, type: 3}
-  PassiveEffect: {fileID: 0}
-  TurnStartEffect: {fileID: 0}
-  PlayedEffect: {fileID: 0}
-  DiscardEffect: {fileID: 0}
-  SacrificeEffect: {fileID: 0}
-  IsAnonyme: 0
+  IsFamilyCard: 0
+  _Family: 0
+  _Level: 1
+  Effects:
+  - {fileID: 11400000, guid: d9211d323b393e14b95463cb72c961d5, type: 2}
+  Eloquence: 0
+  _Souls: 0
+  _SpriteName: 
+  _Sprite: {fileID: 21300000, guid: 85ef01b5136459c47b17371ad327412b, type: 3}
