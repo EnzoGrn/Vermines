@@ -8,6 +8,7 @@ namespace Vermines.Player {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Utilities;
+    using UnityEngine;
 
     public struct PlayerData : INetworkStruct {
 
@@ -61,20 +62,21 @@ namespace Vermines.Player {
 
         #region Deck Manipulation
 
-        public void Draw()
+        public bool Draw()
         {
             // -- Check if I can take a card from the deck
             if (Deck.Count == 0) {
                 if (Discard.Count == 0) {
                     // TODO: Maybe alert the player that is no more have card in his deck.
-
-                    return;
+                    Debug.LogWarning("No more cards in the deck and discard pile.");
+                    return false;
                 }
                 Deck.Merge(Discard);
                 Deck.Shuffle(GameManager.Instance.Config.Seed);
             }
             ICard card = Deck.Draw();
             Hand.Add(card);
+            return true;
         }
 
         public void DiscardCard(int cardId)

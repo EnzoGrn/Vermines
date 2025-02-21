@@ -3,6 +3,7 @@ using Fusion;
 
 namespace Vermines.Gameplay.Commands.Deck {
     using System.Linq;
+    using UnityEngine;
     using Vermines.Player;
 
     public class DrawCommand : ICommand {
@@ -24,15 +25,23 @@ namespace Vermines.Gameplay.Commands.Deck {
 
             _OldDeck = deck;
 
-            deck.Draw();
+            bool resDraw = deck.Draw();
+
+            Debug.LogWarning($"[SERVER]: {_Player}, draw card is {resDraw}. Is {_Player} the same as the executor {PlayerController.Local.PlayerRef}");
 
             // TODO: Check why it is working on every clients
-            if (PlayerController.Local.PlayerRef == _Player)
+            if (resDraw)
             {
-                GameEvents.InvokeOnDrawCard(deck.Hand.Last());
+                GameDataStorage.Instance.PlayerDeck[_Player] = deck;
+
+                if (PlayerController.Local.PlayerRef == _Player)
+                    GameEvents.InvokeOnDrawCard(deck.Hand.Last());
+            }
+            else
+            {
+                return false;
             }
 
-            GameDataStorage.Instance.PlayerDeck[_Player] = deck;
             return true;
         }
 

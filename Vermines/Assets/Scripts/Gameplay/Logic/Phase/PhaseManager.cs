@@ -81,10 +81,8 @@ namespace Vermines.Gameplay.Phases {
             RPC_UpdatePhaseUI();
         }
 
-        public void ProcessPhase(PhaseType currentPhase)
+        public void ProcessPhase(PhaseType currentPhase, PlayerRef playerRef)
         {
-            PlayerRef playerRef = GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex);
-
             Debug.Log($"[SERVER]: Processing the phase for {playerRef}, currently playing {currentPhase}");
 
             _Phases[currentPhase].Run(playerRef);
@@ -108,7 +106,7 @@ namespace Vermines.Gameplay.Phases {
                 RPC_UpdatePhaseUI();
             }
 
-            RPC_ProcessPhase(CurrentPhase);
+            RPC_ProcessPhase(CurrentPhase, GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex));
         }
 
         #region RPC
@@ -125,9 +123,9 @@ namespace Vermines.Gameplay.Phases {
         /// </summary>
         /// <param name="currentPhase">The currentPhase may intefer since it is a network variable, this argument avoid desync between clients</param>
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
-        public void RPC_ProcessPhase(PhaseType currentPhase)
+        public void RPC_ProcessPhase(PhaseType currentPhase, PlayerRef playeRef)
         {
-            ProcessPhase(currentPhase);
+            ProcessPhase(currentPhase, playeRef);
         }
 
         [Rpc(sources: RpcSources.All, targets: RpcTargets.All)]
@@ -144,7 +142,7 @@ namespace Vermines.Gameplay.Phases {
         {
             if (!Runner.IsServer || !GameManager.Instance.Start || Runner.ActivePlayers.Count() < GameManager.Instance.Config.MinPlayers.Value)
                 return;
-            RPC_ProcessPhase(CurrentPhase);
+            RPC_ProcessPhase(CurrentPhase, GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex));
         }
 
         public void OnPhaseCompleted()
