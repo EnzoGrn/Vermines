@@ -192,7 +192,7 @@ jobs:
           echo "TAG=$TAG" | tee -a $GITHUB_ENV
 
       - name: Download binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: build
       - name: List files in build directory # Debug for showing all the files that contains the Unity build.
