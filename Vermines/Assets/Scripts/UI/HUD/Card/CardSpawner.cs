@@ -82,7 +82,7 @@ namespace Vermines.HUD.Card
             Debug.Log($"SetShopCardDictionnary type {type}, id {id}, marketCard {marketCard.ID}");
             //ShopCardDictionaries[type].Add(id, marketCard);
             // Remove the card from the spawned card dictionary and card dictionary
-            // TODO: Set a null la carte détruite pour remplacer la carte par une autre plus tard, en faisant une boucle sur les places nulles
+            // TODO: Set a null la carte dï¿½truite pour remplacer la carte par une autre plus tard, en faisant une boucle sur les places nulles
             if (_ShopSpawnedCardDictionaries[type].ContainsKey(id))
             {
                 Destroy(_ShopSpawnedCardDictionaries[type][id]);

@@ -11,7 +11,7 @@ namespace Vermines.HUD
     public class HandManager : MonoBehaviour
     {
         public static HandManager instance;
-        [SerializeField] private int maxHandSize = 5; // TODO: Link this with game configuration
+        [SerializeField] private int maxHandSize = 50;
         [SerializeField] private GameObject cardPrefab;
         [SerializeField] private SplineContainer splineContainer;
         [SerializeField] private Transform spawnPoint;
@@ -116,7 +116,11 @@ namespace Vermines.HUD
 
         public void UpdateCardPosition()
         {
-            if (handCards.Count == 0) return;
+            if (handCards.Count == 0)
+            {
+                HUDManager.instance.EnablePhaseButton(true);
+                return;
+            }
 
             LockAllCards(true);
 

@@ -103,6 +103,9 @@ namespace Vermines.HUD
 
             GameEvents.OnCardBought.Invoke(cardInfo.Value.Item1, cardInfo.Value.Item2);
 
+            // Destroy the card bought
+            CardSpawner.Instance.DestroyCard(_Card.ID);
+
             ShopManager.instance.GetShop().CloseCardBuyOverlay();
         }
 
