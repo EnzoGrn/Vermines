@@ -3,8 +3,10 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Phases {
+    using System.Linq;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.HUD.Card;
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
 
@@ -28,6 +30,14 @@ namespace Vermines.Gameplay.Phases {
             ICommand refillShopCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 
             CommandInvoker.ExecuteCommand(refillShopCommand);
+
+            if (CommandInvoker.State == true)
+            {
+                foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
+                {
+                    CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
+                }
+            }
 
             // Refill Hand
             for (int i = 0; i < GameManager.Instance.Config.NumberOfCardsToDrawAtEndOfTurn.Value; i++)

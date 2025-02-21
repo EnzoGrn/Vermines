@@ -21,6 +21,7 @@ namespace Vermines {
     using Vermines.ShopSystem.Commands;
     using Vermines.Gameplay.Phases;
     using Vermines.HUD;
+    using Vermines.HUD.Card;
 
     public class GameInitializer : NetworkBehaviour {
 
@@ -180,6 +181,14 @@ namespace Vermines {
             ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 
             CommandInvoker.ExecuteCommand(fillCommand);
+
+            if (CommandInvoker.State == true)
+            {
+                foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
+                {
+                    CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
+                }
+            }
         }
 
         #endregion

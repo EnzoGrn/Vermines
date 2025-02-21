@@ -45,35 +45,29 @@ namespace Vermines.HUD.Card
 
         void Start()
         {
+            Initialize();
+        }
+
+        public void Initialize()
+        {
+            foreach (var shopEvent in GameEvents.OnShopsEvents)
+            {
+                if (!ShopCardDictionaries.ContainsKey(shopEvent.Key))
+                {
+                    ShopCardDictionaries.Add(shopEvent.Key, new());
+                    shopEvent.Value.AddListener((id, card) => SetShopCardDictionnary(shopEvent.Key, id, card));
+                }
+
+                if (!_ShopSpawnedCardDictionaries.ContainsKey(shopEvent.Key))
+                {
+                    _ShopSpawnedCardDictionaries.Add(shopEvent.Key, new());
+                }
+            }
+
             if (cardPrefab == null)
             {
                 Debug.LogError("Card prefab is null!");
                 return;
-            }
-
-            //if (debugMode)
-            //{
-            //    debugCardDictionary = new Dictionary<int, CardData>
-            //    {
-            //        { 0, debugCardList[0] },
-            //        { 1, debugCardList[1] },
-            //        { 2, debugCardList[2] },
-            //        { 3, debugCardList[3] },
-            //        { 4, debugCardList[4] }
-            //    };
-            //    SpawnCardsFromDictionary(debugCardDictionary, "Market");
-            //    SpawnCardsFromDictionary(debugCardDictionary, "Courtyard");
-            //}
-
-            foreach (var shopEvent in GameEvents.OnShopsEvents)
-            {
-                ShopCardDictionaries.Add(shopEvent.Key, new ());
-                shopEvent.Value.AddListener((id, card) => SetShopCardDictionnary(shopEvent.Key, id, card));
-            }
-
-            foreach (var shopEvent in GameEvents.OnShopsEvents)
-            {
-                _ShopSpawnedCardDictionaries.Add(shopEvent.Key, new());
             }
         }
 
