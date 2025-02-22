@@ -22,15 +22,16 @@ namespace Vermines.HUD.Card
 
         public (ShopType, int)? GetCard(int id)
         {
-            Debug.Log($"[CLIENT] [{gameObject.name}] [{nameof(GetCard)}] Check if card exist with id: {id}.", this);
+            Debug.Log("GetCard Id: " + id);
 
             foreach (KeyValuePair<ShopType, Dictionary<int, ICard>> dictionary in ShopCardDictionaries)
             {
-                Debug.Log($"[CLIENT] [{gameObject.name}] [{nameof(GetCard)}] ShopType: {dictionary.Key}, Count Value: {dictionary.Value.Count}.", this);
+                Debug.Log($"ShopType: {dictionary.Key}, Count Value: {dictionary.Value.Count}");
 
                 foreach (KeyValuePair<int, ICard> slot in dictionary.Value)
                 {
-                    Debug.Log($"[CLIENT] [{gameObject.name}] [{nameof(GetCard)}] Card ID: {slot.Value.ID}, Card Name: {slot.Value.Data.Name}.", this);
+                    Debug.Log("Slot id: " + slot.Key + ", Id: " + slot.Value.ID);
+
 
                     if (slot.Value.ID == id)
                     {
@@ -54,7 +55,7 @@ namespace Vermines.HUD.Card
                 if (!ShopCardDictionaries.ContainsKey(shopEvent.Key))
                 {
                     ShopCardDictionaries.Add(shopEvent.Key, new());
-                    //shopEvent.Value.AddListener((id, card) => SetShopCardDictionnary(shopEvent.Key, id, card));
+                    shopEvent.Value.AddListener((id, card) => SetShopCardDictionnary(shopEvent.Key, id, card));
                 }
 
                 if (!_ShopSpawnedCardDictionaries.ContainsKey(shopEvent.Key))
@@ -76,15 +77,15 @@ namespace Vermines.HUD.Card
             //ShopCardDictionaries[type].Add(id, marketCard);
             // Remove the card from the spawned card dictionary and card dictionary
             // TODO: Set a null la carte d�truite pour remplacer la carte par une autre plus tard, en faisant une boucle sur les places nulles
-            //if (_ShopSpawnedCardDictionaries[type].ContainsKey(id))
-            //{
-            //    Destroy(_ShopSpawnedCardDictionaries[type][id]);
-            //    _ShopSpawnedCardDictionaries[type].Remove(id);
-            //}
-            //if (ShopCardDictionaries[type].ContainsKey(id))
-            //{
-            //    ShopCardDictionaries[type].Remove(id);
-            //}
+            if (_ShopSpawnedCardDictionaries[type].ContainsKey(id))
+            {
+                Destroy(_ShopSpawnedCardDictionaries[type][id]);
+                _ShopSpawnedCardDictionaries[type].Remove(id);
+            }
+            if (ShopCardDictionaries[type].ContainsKey(id))
+            {
+                ShopCardDictionaries[type].Remove(id);
+            }
         }
 
         public void SpawnCard(ICard cardData, ShopType shopType)
@@ -101,8 +102,18 @@ namespace Vermines.HUD.Card
                 return;
             }
 
-            // TODO: If the card is already in the shop, in the same slot, don't spawn it again
+            // If the card is already in the shop, don't spawn it again
             
+            foreach (var cardObject in _ShopSpawnedCardDictionaries[shopType])
+            {
+                CardBase card = cardObject.Value.GetComponent<CardBase>();
+                if (cardData.ID == card.Card.ID)
+                {
+                    Debug.Log("Card already exists in the shop.");
+                    return;
+                }
+            }
+
             GameObject newCard = Instantiate(cardPrefab);
             CardInShop cardInShop;
 
@@ -134,21 +145,16 @@ namespace Vermines.HUD.Card
         {
             if (cardDictionary == null)
             {
-                Debug.LogError($"[CLIENT] [{gameObject.name}] [{nameof(SpawnCardsFromDictionary)}] Card dictionary is null.", this);
+                Debug.LogError("Card dictionary is null!");
                 return;
             }
 
             int quantity = cardDictionary.Count;
-            Debug.Log($"[CLIENT] [{gameObject.name}] [{nameof(SpawnCardsFromDictionary)}] Spawn {quantity} cards from dictionary in {shopType}.", this);
+            Debug.Log($"Spawning {quantity} cards from the dictionary.");
 
             for (int i = 0; i < quantity; i++)
             {
                 ICard cardData = cardDictionary[i];
-                if (cardData == null) {
-                    Debug.LogError($"[CLIENT] [{gameObject.name}] [{nameof(SpawnCardsFromDictionary)}] Card data is null.", this);
-                    continue;
-                }
-                Debug.Log($"[CLIENT] [{gameObject.name}] [{nameof(SpawnCardsFromDictionary)}] Card ID: {cardData.ID}, Card Name: {cardData.Data.Name}.", this);
                 SpawnCard(cardData, shopType);
             }
         }
