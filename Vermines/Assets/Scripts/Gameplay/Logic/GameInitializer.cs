@@ -249,6 +249,10 @@ namespace Vermines {
                 if (GameDataStorage.Instance.Shop == null)
                     Debug.LogError("Shop is null");
 
+                // Dump shop
+                Debug.Log($"[SERVER]: Shop after fill:");
+                Debug.Log($"[SERVER]: {GameDataStorage.Instance.Shop.Serialize()}");
+
                 if (CommandInvoker.State == true)
                 {
                     foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
