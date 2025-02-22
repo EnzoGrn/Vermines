@@ -91,7 +91,7 @@ jobs:
           targetPlatform: ${{ matrix.targetPlatform }}
           buildName: ${{ env.projectPath }}
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Build-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
@@ -147,13 +147,13 @@ jobs:
           checkName: ${{ matrix.testMode }} Test Results
           coverageOption: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport'
       - name: Store test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Test results for ${{ matrix.targetPlatform }}
           path: ${{ steps.tests.outputs.artifactsPath }}
       - name: Code Coverage Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Coverage results for ${{ matrix.targetPlatform }}
@@ -173,7 +173,7 @@ jobs:
           - StandaloneWindows64
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Get last commit message
         id: get_commit_message
         run: |
@@ -189,10 +189,16 @@ jobs:
             exit 1
           fi
           TAG="v$TAG"  # Ajoute le préfixe 'v'
-          echo "TAG=$TAG" | tee -a $GITHUB_ENV
+
+          echo "$TAG" | cat -A
+
+          TAG=$(echo "$TAG" | tr -d '\n' | tr -d '\r' | xargs)
+
+          echo "Final TAG: '$TAG'"
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: Download binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: build
       - name: List files in build directory # Debug for showing all the files that contains the Unity build.
