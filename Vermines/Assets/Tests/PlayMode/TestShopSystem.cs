@@ -20,11 +20,12 @@ using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Elements;
 #endregion
 
+#region Vermines Test namespace
+using Vermines.Test;
+#endregion
+
 using Vermines.Config;
 using Vermines.Player;
-using Vermines;
-using UnityEngine.SceneManagement;
-using Vermines.HUD.Card;
 
 namespace Test.Vermines.ShopSystem {
 
@@ -66,8 +67,19 @@ namespace Test.Vermines.ShopSystem {
                 { _LocalPlayer, localDeck     },
                 { playerTwo   , playerTwoDeck }
             };
+
+            // -- Active the test mode to bypass the HUD system
+            TestMode.IsTesting = true;
         }
 
+        #endregion
+
+        #region Teardown
+        [TearDown]
+        public void Teardown()
+        {
+            TestMode.IsTesting = false;
+        }
         #endregion
 
         #region Initialization
