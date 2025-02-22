@@ -1,9 +1,10 @@
 using OMGG.DesignPattern;
+using System.Linq;
 using Fusion;
 
 namespace Vermines.Gameplay.Commands.Deck {
-    using System.Linq;
-    using UnityEngine;
+
+    using Vermines.CardSystem.Elements;
     using Vermines.Player;
 
     public class DrawCommand : ICommand {
@@ -17,31 +18,21 @@ namespace Vermines.Gameplay.Commands.Deck {
             _Player = player;
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
             if (GameDataStorage.Instance.PlayerDeck.TryGetValue(_Player, out _) == false)
-                return false;
+                return new CommandResponse(CommandStatus.Invalid, $"Player {_Player} does not have a deck.");
             PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[_Player];
 
             _OldDeck = deck;
 
-            bool resDraw = deck.Draw();
+            ICard card = deck.Draw();
 
-            Debug.LogWarning($"[SERVER]: {_Player}, draw card is {resDraw}. Is {_Player} the same as the executor {PlayerController.Local.PlayerRef}");
+            if (card == null)
+                return new CommandResponse(CommandStatus.Failure, $"Player {_Player} does not have any card left in his deck.");
+            GameDataStorage.Instance.PlayerDeck[_Player] = deck;
 
-            if (resDraw)
-            {
-                GameDataStorage.Instance.PlayerDeck[_Player] = deck;
-
-                if (PlayerController.Local.PlayerRef == _Player)
-                    GameEvents.InvokeOnDrawCard(deck.Hand.Last());
-            }
-            else
-            {
-                return false;
-            }
-
-            return true;
+            return new CommandResponse(CommandStatus.Success, $"Player {_Player} drew a card.");
         }
 
         public void Undo()

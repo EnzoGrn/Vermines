@@ -28,8 +28,6 @@ namespace Vermines.Gameplay.Phases {
 
             ExecutePlayedCardsEffect(player);
 
-            // EarnCommand call a function of GameDataStorage that give an amount of value to the player.
-            // It's important to know that if the StateAuthority is the server, the value will be set to the player, if it's a client, nothing will happend.
             ICommand earnCommand = new EarnCommand(player, GameManager.Instance.Config.NumberOfEloquencesToStartTheTurnWith.Value, DataType.Eloquence);
 
             CommandInvoker.ExecuteCommand(earnCommand);

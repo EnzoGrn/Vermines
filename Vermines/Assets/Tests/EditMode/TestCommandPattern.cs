@@ -25,11 +25,11 @@ namespace Test.OMGG.Pattern {
             _Movement = movement;
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
             _Player.PlayerMove(_Movement);
 
-            return true;
+            return new CommandResponse(CommandStatus.Success, "Player moved.");
         }
 
         public void Undo()
@@ -48,8 +48,10 @@ namespace Test.OMGG.Pattern {
 
             ICommand movePlayer = new MovePlayer(player, movement);
 
-            CommandInvoker.ExecuteCommand(movePlayer);
+            CommandResponse response = CommandInvoker.ExecuteCommand(movePlayer);
 
+            if (response.Status != CommandStatus.Success)
+                Assert.Fail("Command failed.");
             Assert.AreEqual(new Vector3(1, 0, 0), player.Position);
 
             CommandInvoker.UndoCommand();

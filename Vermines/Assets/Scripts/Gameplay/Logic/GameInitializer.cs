@@ -118,8 +118,6 @@ namespace Vermines {
 
             GameDataStorage.Instance.Shop = shop;
 
-            //FillShop();
-
             // -- RPC Command for sync initialization
             RPC_InitializeShop(GameDataStorage.Instance.Shop.Serialize());
 
@@ -176,25 +174,6 @@ namespace Vermines {
             GameManager.Instance.Config.Seed = seed;
         }
 
-        //private void FillShop()
-        //{
-        //    ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
-
-        //    CommandInvoker.ExecuteCommand(fillCommand);
-
-        //    // Dump shop
-        //    Debug.Log($"[SERVER]: Shop after fill:");
-        //    Debug.Log($"[SERVER]: {GameDataStorage.Instance.Shop.Serialize()}");
-
-        //    if (CommandInvoker.State == true)
-        //    {
-        //        foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
-        //        {
-        //            CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
-        //        }
-        //    }
-        //}
-
         #endregion
 
         #region Commands
@@ -206,11 +185,15 @@ namespace Vermines {
                 SetGameSeed(seed);
 
                 List<CardFamily> familiesList = FamilyUtils.FamiliesIdsToList(familiesIds);
+
                 ICommand initializeCommand = new InitializeGameCommand(familiesList);
 
-                CommandInvoker.ExecuteCommand(initializeCommand);
+                CommandResponse response = CommandInvoker.ExecuteCommand(initializeCommand);
 
-                Debug.Log($"[SERVER]: {CardSetDatabase.Instance.Size} cards instantiated!");
+                if (response.Status == CommandStatus.Success)
+                    Debug.Log($"[SERVER]: {CardSetDatabase.Instance.Size} cards instantiated!");
+                else
+                    Debug.LogWarning($"[SERVER]: {response.Message}");
             });
         }
 
@@ -237,24 +220,24 @@ namespace Vermines {
                 // Ignore the host because it's shop is already initialized (it's just synchronising the shop with others)
                 if (HasStateAuthority == false) {
                     GameDataStorage.Instance.Shop = ScriptableObject.CreateInstance<ShopData>();
+
                     ICommand initializeCommand = new SyncShopCommand(GameDataStorage.Instance.Shop, data, GameManager.Instance.Config);
 
-                    CommandInvoker.ExecuteCommand(initializeCommand);
-                }
+                    CommandResponse syncStatus = CommandInvoker.ExecuteCommand(initializeCommand);
 
+                    if (syncStatus.Status != CommandStatus.Success)
+                        Debug.LogWarning($"[SERVER]: {syncStatus.Message}");
+                }
                 ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 
-                CommandInvoker.ExecuteCommand(fillCommand);
+                CommandResponse response = CommandInvoker.ExecuteCommand(fillCommand);
 
-                if (GameDataStorage.Instance.Shop == null)
-                    Debug.LogError("Shop is null");
-
-                if (CommandInvoker.State == true)
-                {
-                    foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
-                    {
+                if (response.Status == CommandStatus.Success) {
+                    foreach (var shopSection in GameDataStorage.Instance.Shop.Sections) {
                         CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
                     }
+                } else {
+                    Debug.LogWarning($"[SERVER]: {response.Message}");
                 }
             });
         }
@@ -269,7 +252,13 @@ namespace Vermines {
                     foreach (var player in deckCopy) {
                         ICommand drawCommand = new DrawCommand(player.Key);
 
-                        CommandInvoker.ExecuteCommand(drawCommand);
+                        CommandResponse command = CommandInvoker.ExecuteCommand(drawCommand);
+
+                        if (command.Status == CommandStatus.Success && PlayerController.Local.PlayerRef == player.Key) {
+                            PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player.Key];
+
+                            GameEvents.InvokeOnDrawCard(deck.Hand.Last());
+                        }
                     }
                 }
 

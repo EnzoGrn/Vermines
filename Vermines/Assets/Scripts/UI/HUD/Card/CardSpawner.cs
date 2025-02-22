@@ -50,18 +50,14 @@ namespace Vermines.HUD.Card
 
         public void Initialize()
         {
-            foreach (var shopEvent in GameEvents.OnShopsEvents)
-            {
-                if (!ShopCardDictionaries.ContainsKey(shopEvent.Key))
-                {
+            foreach (var shopEvent in GameEvents.OnShopsEvents) {
+                if (!ShopCardDictionaries.ContainsKey(shopEvent.Key)) {
                     ShopCardDictionaries.Add(shopEvent.Key, new());
                     shopEvent.Value.AddListener((id, card) => SetShopCardDictionnary(shopEvent.Key, id, card));
                 }
 
                 if (!_ShopSpawnedCardDictionaries.ContainsKey(shopEvent.Key))
-                {
                     _ShopSpawnedCardDictionaries.Add(shopEvent.Key, new());
-                }
             }
 
             if (cardPrefab == null)
@@ -86,30 +82,26 @@ namespace Vermines.HUD.Card
             {
                 ShopCardDictionaries[type].Remove(id);
             }
-        }
+            }
 
         public void SpawnCard(ICard cardData, ShopType shopType)
         {
-            if (cardData == null)
-            {
+            if (cardData == null) {
                 Debug.LogError("Card data is null!");
-                return;
-            }
 
-            if (cardPrefab == null)
-            {
+                return;
+            } if (cardPrefab == null) {
                 Debug.LogWarning("Card prefab is null!");
                 return;
             }
 
             // If the card is already in the shop, don't spawn it again
-            
-            foreach (var cardObject in _ShopSpawnedCardDictionaries[shopType])
-            {
+            foreach (var cardObject in _ShopSpawnedCardDictionaries[shopType]) {
                 CardBase card = cardObject.Value.GetComponent<CardBase>();
-                if (cardData.ID == card.Card.ID)
-                {
+
+                if (cardData.ID == card.Card.ID) {
                     Debug.Log("Card already exists in the shop.");
+
                     return;
                 }
             }
@@ -117,14 +109,14 @@ namespace Vermines.HUD.Card
             GameObject newCard = Instantiate(cardPrefab);
             CardInShop cardInShop;
 
-            switch (shopType)
-            {
+            switch (shopType) {
                 case ShopType.Market:
                     cardInShop = newCard.AddComponent<CardInShop>();
                     cardInShop.Initialize(newCard.GetComponent<CardBase>());
                     newCard.transform.SetParent(marketContainer, false);
                     newCard.tag = "ShopCard";
                     _ShopSpawnedCardDictionaries[shopType].Add(cardData.ID, newCard);
+                    Debug.LogWarning($"Spawning card {cardData.ID} in the shop {shopType}");
                     break;
                 case ShopType.Courtyard:
                     cardInShop = newCard.AddComponent<CardInShop>();
@@ -132,6 +124,7 @@ namespace Vermines.HUD.Card
                     newCard.transform.SetParent(courtyardContainer, false);
                     newCard.tag = "ShopCard";
                     _ShopSpawnedCardDictionaries[shopType].Add(cardData.ID, newCard);
+                    Debug.LogWarning($"Spawning card {cardData.ID} in the shop {shopType}");
                     break;
                 default:
                     Debug.LogError("Location not found");

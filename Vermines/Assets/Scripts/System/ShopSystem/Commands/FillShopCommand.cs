@@ -1,12 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
 using OMGG.DesignPattern;
+using System.Linq;
 
 namespace Vermines.ShopSystem.Commands {
 
-    using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Utilities;
-    using Vermines.HUD.Card;
+    using Vermines.CardSystem.Elements;
     using Vermines.ShopSystem.Data;
 
     public class FillShopCommand : ICommand {
@@ -20,13 +18,15 @@ namespace Vermines.ShopSystem.Commands {
             _OldShop = shopToFill.DeepCopy();
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
             _OldShop = _Shop.DeepCopy();
 
             _Shop = FillShop();
 
-            return true;
+            if (_Shop == null)
+                return new CommandResponse(CommandStatus.Failure, $"Failed to fill the shop.");
+            return new CommandResponse(CommandStatus.Success, $"Shop filled.");
         }
 
         public void Undo()
@@ -43,9 +43,10 @@ namespace Vermines.ShopSystem.Commands {
                 foreach (var slot in shopSection.Value.AvailableCards.ToList()) {
                     if (slot.Value != null)
                         continue; // Already have a card in the slots.
-
                     ICard card = DrawCard(shopSection.Value);
 
+                    if (card == null)
+                        break;
                     shopSection.Value.AvailableCards[slot.Key] = card;
 
                     GameEvents.OnShopsEvents[shopSection.Key].Invoke(slot.Key, card);

@@ -19,15 +19,15 @@ namespace Vermines.Gameplay.Commands.Cards.Effects {
             _DataType = dataType;
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
             if (!GameDataStorage.Instance.PlayerData.TryGet(_Player, out PlayerData playerData))
-                return false;
+                return new CommandResponse(CommandStatus.Invalid, $"Player {_Player} does not have any data.");
             if (_DataType == DataType.Eloquence)
                 GameDataStorage.Instance.SetEloquence(_Player, playerData.Eloquence + _Amount);
             else if (_DataType == DataType.Soul)
                 GameDataStorage.Instance.SetSouls(_Player, playerData.Souls + _Amount);
-            return true;
+            return new CommandResponse(CommandStatus.Success, $"Player {_Player} earned {_Amount} {_DataType}.");
         }
 
         public void Undo()
