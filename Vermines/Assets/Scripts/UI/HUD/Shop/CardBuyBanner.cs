@@ -55,8 +55,8 @@ namespace Vermines.HUD
             }
 
             cardName.text = card.Data.Name;
-            cost.text = $"Coût: {card.Data.Eloquence} éloquences";
-            souls.text = $"+{card.Data.Souls} âmes si sacrifié";
+            cost.text = $"Cost: {card.Data.Eloquence} eloquences";
+            souls.text = $"+{card.Data.Souls} souls on sacrifice";
             souls.gameObject.SetActive(card.Data.Type == CardType.Partisan);
             type.text = card.Data.Type == CardType.Partisan ? card.Data.Family.ToString() : card.Data.Type.ToString();
             
