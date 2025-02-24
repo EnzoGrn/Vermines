@@ -62,42 +62,53 @@ namespace Vermines.Player {
 
         #region Deck Manipulation
 
-        public bool Draw()
+        public ICard Draw()
         {
             // -- Check if I can take a card from the deck
             if (Deck.Count == 0) {
                 if (Discard.Count == 0) {
                     // TODO: Maybe alert the player that is no more have card in his deck.
                     Debug.LogWarning("No more cards in the deck and discard pile.");
-                    return false;
+
+                    return null;
                 }
+
                 Deck.Merge(Discard);
                 Deck.Shuffle(GameManager.Instance.Config.Seed);
             }
+
             ICard card = Deck.Draw();
+
             Hand.Add(card);
-            return true;
+
+            return card;
         }
 
-        public void DiscardCard(int cardId)
+        public ICard DiscardCard(int cardId)
         {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
             
-            if (card != null && Hand.Contains(card))
-            {
+            if (card != null && Hand.Contains(card)) {
                 Hand.Remove(card);
                 Discard.Add(card);
+
+                return card;
             }
+            return null;
         }
 
-        public void PlayCard(int cardId)
+        public ICard PlayCard(int cardId)
         {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-            if (card != null && Hand.Contains(card))
-            {
+
+            if (card != null && Hand.Contains(card)) {
                 Hand.Remove(card);
                 PlayedCards.Add(card);
+
+                return card;
             }
+
+            return null;
         }
 
         #endregion

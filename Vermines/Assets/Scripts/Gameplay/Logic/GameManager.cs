@@ -133,12 +133,12 @@ namespace Vermines {
             
             ICommand buyCommand = new CheckBuyCommand(parameters);
 
-            CommandInvoker.ExecuteCommand(buyCommand);
+            CommandResponse response = CommandInvoker.ExecuteCommand(buyCommand);
 
-            if (CommandInvoker.State == true)
+            if (response.Status == CommandStatus.Success)
                 Player.PlayerController.Local.RPC_BuyCard(playerId, shopType, slot);
             else
-                Debug.LogWarning($"[Host]: Player {playerId} can't buy the card at slot {slot} in {shopType}");
+                Debug.LogWarning($"[SERVER]: {response.Message}");
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

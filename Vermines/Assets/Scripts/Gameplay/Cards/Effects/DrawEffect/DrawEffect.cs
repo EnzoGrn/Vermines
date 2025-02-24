@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using OMGG.DesignPattern;
 using UnityEngine;
 using Fusion;
@@ -8,6 +9,7 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Deck;
+    using Vermines.Player;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Draw/Draw cards.")]
     public class DrawEffect : AEffect {
@@ -75,7 +77,13 @@ namespace Vermines.Gameplay.Cards.Effect {
             for (int i = 0; i < Amount; i++) {
                 ICommand drawCommand = new DrawCommand(player);
 
-                CommandInvoker.ExecuteCommand(drawCommand);
+                CommandResponse command = CommandInvoker.ExecuteCommand(drawCommand);
+
+                if (command.Status == CommandStatus.Success && PlayerController.Local.PlayerRef == player) {
+                    PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
+
+                    GameEvents.InvokeOnDrawCard(deck.Hand.Last());
+                }
             }
 
             base.Play(player);

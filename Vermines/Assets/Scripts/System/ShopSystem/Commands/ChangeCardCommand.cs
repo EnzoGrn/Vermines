@@ -19,22 +19,18 @@ namespace Vermines.ShopSystem.Commands {
         public ChangeCardCommand(ShopData shop, ShopType shopType, int slotIndex)
         {
             _Shop      = shop;
-            _OldShop   = shop.DeepCopy();
+            _OldShop   = shop?.DeepCopy() ?? null;
             _ShopType  = shopType;
             _SlotIndex = slotIndex;
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
-            _OldShop = _Shop.DeepCopy();
+            _OldShop = _Shop?.DeepCopy() ?? null;
 
-            ShopData shop = ChangeCard(_ShopType, _SlotIndex);
+            CommandResponse response = ChangeCard(_ShopType, _SlotIndex);
 
-            if (shop == null)
-                return false;
-            _Shop = shop;
-
-            return true;
+            return response;
         }
 
         public void Undo()
@@ -42,20 +38,20 @@ namespace Vermines.ShopSystem.Commands {
             _Shop.Sections = _OldShop.Sections;
         }
 
-        private ShopData ChangeCard(ShopType type, int slotIndex)
+        private CommandResponse ChangeCard(ShopType type, int slotIndex)
         {
             if (!_Shop.Sections.ContainsKey(type))
-                return null;
+                return new CommandResponse(CommandStatus.Invalid, $"Shop does not have a section of type {type}.");
             if (!_Shop.Sections[type].AvailableCards.ContainsKey(slotIndex))
-                return null;
+                return new CommandResponse(CommandStatus.Invalid, $"Shop does not have a slot {slotIndex} in section {type}.");
             ICard card = _Shop.Sections[type].AvailableCards[slotIndex];
 
             if (card == null)
-                return null;
+                return new CommandResponse(CommandStatus.Invalid, $"Shop does not have a card in slot {slotIndex} in section {type}.");
             _Shop.Sections[type].DiscardDeck.Add(card);
             _Shop.Sections[type].AvailableCards[slotIndex] = DrawCard(_Shop.Sections[type]);
 
-            return _Shop;
+            return new CommandResponse(CommandStatus.Success, $"Card in slot {slotIndex} in section {type} has been changed.");
         }
 
         private ICard DrawCard(ShopSection shopSection)
@@ -63,8 +59,13 @@ namespace Vermines.ShopSystem.Commands {
             if (shopSection.Deck.Count == 0) {
                 shopSection.DiscardDeck.Reverse();
                 shopSection.Deck.Merge(shopSection.DiscardDeck);
-            }
 
+                if (shopSection.Deck.Count == 0) {
+                    // TODO: Notify UI, there is no more card available in this sections
+
+                    return null;
+                }
+            }
             return shopSection.Deck.Draw();
         }
     }

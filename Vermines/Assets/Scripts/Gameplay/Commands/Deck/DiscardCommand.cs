@@ -2,7 +2,8 @@ using OMGG.DesignPattern;
 using Fusion;
 
 namespace Vermines.Gameplay.Commands.Deck {
-    using System.Linq;
+
+    using Vermines.CardSystem.Elements;
     using Vermines.Player;
 
     public class DiscardCommand : ICommand {
@@ -18,18 +19,21 @@ namespace Vermines.Gameplay.Commands.Deck {
             _CardId = cardID;
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
             if (GameDataStorage.Instance.PlayerDeck.TryGetValue(_Player, out _) == false)
-                return false;
+                return new CommandResponse(CommandStatus.Invalid, $"Player {_Player} does not have a deck.");
             PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[_Player];
 
             _OldDeck = deck.DeepCopy();
 
-            deck.DiscardCard(_CardId);
+            ICard card = deck.DiscardCard(_CardId);
 
+            if (card == null)
+                return new CommandResponse(CommandStatus.Invalid, $"Player {_Player} tried to discard a card that he does not have.");
             GameDataStorage.Instance.PlayerDeck[_Player] = deck;
-            return true;
+
+            return new CommandResponse(CommandStatus.Success, $"Player {_Player} discarded the card {_CardId}.");
         }
 
         public void Undo()

@@ -83,16 +83,13 @@ namespace Vermines.Player {
 
             ICommand buyCommand = new BuyCommand(parameters);
 
-            CommandInvoker.ExecuteCommand(buyCommand);
+            CommandResponse response = CommandInvoker.ExecuteCommand(buyCommand);
 
-            if (HUDManager.instance != null)
-            {
-                HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[PlayerRef.FromEncoded(playerRef)]);
+            if (response.Status == CommandStatus.Success) {
+                if (HUDManager.instance != null)
+                    HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[PlayerRef.FromEncoded(playerRef)]);
+                Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[PlayerRef.FromEncoded(playerRef)].Serialize()}");
             }
-
-            Debug.Log($"[SERVER]: Player {playerRef} bought a card at slot {slot} in {shopType}");
-            // Debug the decks of the player
-            Debug.Log($"[SERVER]: Player hand deck: {GameDataStorage.Instance.PlayerDeck[PlayerRef.FromEncoded(playerRef)].Serialize()}");
         }
 
         #endregion
@@ -103,22 +100,22 @@ namespace Vermines.Player {
             PlayerRef player = PlayerRef.FromEncoded(playerId);
             ICommand discardCommand = new DiscardCommand(player, cardId);
 
-            CommandInvoker.ExecuteCommand(discardCommand);
+            CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
 
-            Debug.Log($"[SERVER]: Player {player} discarded card {cardId}");
+            if (response.Status == CommandStatus.Success) {
+                Debug.Log($"[SERVER]: {response.Message}");
 
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
-            Debug.Log($"[SERVER]: Card {cardId} is {card.Data.Name}");
+                foreach (AEffect effect in card.Data.Effects) {
+                    if (effect.Type is CardSystem.Enumerations.EffectType.Discard) {
+                        effect.Play(player);
 
-            foreach (AEffect effect in card.Data.Effects)
-            {
-                if (effect.Type is CardSystem.Enumerations.EffectType.Discard)
-                {
-                    effect.Play(player);
-                    Debug.Log("[SERVER]: Effect played");
-                    HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[player]);
+                        HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[player]);
+                    }
                 }
+            } else {
+                Debug.LogWarning($"[SERVER]: {response.Message}");
             }
         }
 
@@ -129,37 +126,39 @@ namespace Vermines.Player {
 
             ICommand cardPlayedCommand = new CardPlayedCommand(player, cardId);
 
-            CommandInvoker.ExecuteCommand(cardPlayedCommand);
+            CommandResponse response = CommandInvoker.ExecuteCommand(cardPlayedCommand);
 
-            Debug.Log($"[SERVER]: Player {player} played card {cardId}");
+            if (response.Status == CommandStatus.Invalid)
+                Debug.LogWarning($"[SERVER]: {response.Message}");
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_CardSacrified(int playerId, int cardId)
         {
             PlayerRef player = PlayerRef.FromEncoded(playerId);
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+            ICard card       = CardSetDatabase.Instance.GetCardByID(cardId);
 
-            if (card == null)
-            {
-                Debug.LogError($"[SERVER]: Card {cardId} not found");
+            if (card == null) {
+                Debug.LogError($"[SERVER]: Player {player} tried to sacrify a card that doesn't exist.");
+
                 return;
             }
 
             ICommand cardSacrifiedCommand = new CardSacrifiedCommand(player, cardId);
 
-            CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
+            CommandResponse response = CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
 
-            if (CommandInvoker.State)
-            {
-                Debug.Log($"[SERVER]: Player {player} sacrified a card");
-
+            if (response.Status == CommandStatus.Success) {
                 ICommand earnCommand = new EarnCommand(player, card.Data.Souls, DataType.Soul);
 
-                CommandInvoker.ExecuteCommand(earnCommand);
+                response = CommandInvoker.ExecuteCommand(earnCommand);
 
-                GameDataStorage.Instance.PlayerData.TryGet(player, out Vermines.Player.PlayerData playerData);
-                HUDManager.instance.UpdateSpecificPlayer(playerData);
+                if (response.Status == CommandStatus.Success) {
+                    GameDataStorage.Instance.PlayerData.TryGet(player, out PlayerData playerData);
+                    HUDManager.instance.UpdateSpecificPlayer(playerData);
+                }
+            } else {
+                Debug.LogWarning($"[SERVER]: {response.Message}");
             }
         }
 
