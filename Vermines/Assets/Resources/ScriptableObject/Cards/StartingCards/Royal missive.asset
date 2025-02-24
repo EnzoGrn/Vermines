@@ -13,15 +13,13 @@ MonoBehaviour:
   m_Name: Royal missive
   m_EditorClassIdentifier: 
   Name: Royal missive
-  Description: Choose one :<br>- Replace <b>1 market</b> and <b>yard</b> card.<br>-
-    Gain <b><color=purple>1E</color></b>,  you can only do this effect before refilling
-    your hand.
   Exemplars: 2
   IsStartingCard: 1
   Type: 2
   IsFamilyCard: 0
   _Family: -1
   _Level: 0
+  Effects: []
   Eloquence: 0
   _Souls: 0
   _SpriteName: 

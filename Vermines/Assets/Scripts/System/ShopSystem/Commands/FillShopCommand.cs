@@ -1,13 +1,16 @@
 using OMGG.DesignPattern;
 using System.Linq;
 
-namespace Vermines.ShopSystem.Commands {
+namespace Vermines.ShopSystem.Commands
+{
 
     using Vermines.CardSystem.Utilities;
     using Vermines.CardSystem.Elements;
     using Vermines.ShopSystem.Data;
+    using Vermines.Test;
 
-    public class FillShopCommand : ICommand {
+    public class FillShopCommand : ICommand
+    {
 
         private ShopData _Shop;
         private ShopData _OldShop;
@@ -51,6 +54,9 @@ namespace Vermines.ShopSystem.Commands {
 
                     GameEvents.OnShopsEvents[shopSection.Key].Invoke(slot.Key, card);
                 }
+
+                if (!TestMode.IsTesting)
+                    CardSpawner.Instance.UpdateSpecificShop(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
             }
 
             return _Shop;
@@ -58,11 +64,13 @@ namespace Vermines.ShopSystem.Commands {
 
         private ICard DrawCard(ShopSection shopSection)
         {
-            if (shopSection.Deck.Count == 0) {
+            if (shopSection.Deck.Count == 0)
+            {
                 shopSection.DiscardDeck.Reverse();
                 shopSection.Deck.Merge(shopSection.DiscardDeck);
 
-                if (shopSection.Deck.Count == 0) {
+                if (shopSection.Deck.Count == 0)
+                {
                     // TODO: Notify UI, there is no more card available in this sections
 
                     return null;
