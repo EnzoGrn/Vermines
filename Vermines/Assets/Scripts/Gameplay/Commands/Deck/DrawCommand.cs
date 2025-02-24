@@ -24,7 +24,7 @@ namespace Vermines.Gameplay.Commands.Deck {
                 return new CommandResponse(CommandStatus.Invalid, $"Player {_Player} does not have a deck.");
             PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[_Player];
 
-            _OldDeck = deck;
+            _OldDeck = deck.DeepCopy();
 
             ICard card = deck.Draw();
 

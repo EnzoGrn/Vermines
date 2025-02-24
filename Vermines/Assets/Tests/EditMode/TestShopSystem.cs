@@ -22,11 +22,6 @@ using Vermines.CardSystem.Enumerations;
 
 using Vermines.Config;
 using Vermines.Player;
-using Vermines;
-using UnityEngine.SceneManagement;
-using Vermines.HUD.Card;
-using Vermines.HUD;
-using System.Security.Cryptography;
 
 namespace Test.Vermines.ShopSystem {
 
