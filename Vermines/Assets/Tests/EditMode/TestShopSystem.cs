@@ -25,6 +25,8 @@ using Vermines.Player;
 using Vermines;
 using UnityEngine.SceneManagement;
 using Vermines.HUD.Card;
+using Vermines.HUD;
+using System.Security.Cryptography;
 
 namespace Test.Vermines.ShopSystem {
 
@@ -177,18 +179,28 @@ namespace Test.Vermines.ShopSystem {
         [Test]
         public void FillShopCommand()
         {
+            // -- Invalid parameters
+            ICommand fillCommand = new FillShopCommand(null);
+
+            CommandInvoker.ExecuteCommand(fillCommand);
+
+            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
+            Assert.AreEqual("Failed to fill the shop.", CommandInvoker.State.Message);
+
             // -- Shop initialization with default settings.
             ShopData shop = InitializeAndFillShop(_Config);
 
-            // -- Check if the shop is correctly fill
-            foreach (var shopSection in shop.Sections) {
-                foreach (var slot in shopSection.Value.AvailableCards) {
-                    if (slot.Value == null)
-                        Assert.Fail($"The slot {slot.Key} in the {shopSection.Key} should be filled.");
-                }
-            }
+            Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
+            Assert.AreEqual("Shop filled.", CommandInvoker.State.Message);
 
-            // -- Undo the command
+            // -- Fill again, when it's full
+            FillCommand(shop);
+
+            Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
+            Assert.AreEqual("Shop filled.", CommandInvoker.State.Message);
+
+            // -- Undo all the fill command
+            CommandInvoker.UndoCommand();
             CommandInvoker.UndoCommand();
 
             // -- Check if the shop is empty
@@ -198,6 +210,14 @@ namespace Test.Vermines.ShopSystem {
                         Assert.Fail($"The slot {slot.Key} in the {shopSection.Key} should be empty.");
                 }
             }
+
+            // -- Fill a shop with an empty deck & discard deck
+            ShopData emptyShop = ShopBuilder(_Config, new List<ICard>(), new List<ICard>());
+
+            FillCommand(emptyShop);
+
+            Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
+            Assert.AreEqual("Shop filled.", CommandInvoker.State.Message);
         }
 
         /// <summary>
@@ -206,6 +226,32 @@ namespace Test.Vermines.ShopSystem {
         [Test]
         public void ChangeCardInShop()
         {
+            ShopData emptyShop = ShopBuilder(_Config, new List<ICard>(), new List<ICard>());
+
+            // -- Run a change card in a unknow section
+            ICommand unknowSectionChange = new ChangeCardCommand(emptyShop, (ShopType)3, 0);
+
+            CommandInvoker.ExecuteCommand(unknowSectionChange);
+
+            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
+            Assert.AreEqual("Shop does not have a section of type 3.", CommandInvoker.State.Message);
+
+            // -- Run a change card in a unknow slot
+            ICommand unknowSlotChange = new ChangeCardCommand(emptyShop, ShopType.Courtyard, 10);
+
+            CommandInvoker.ExecuteCommand(unknowSlotChange);
+
+            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
+            Assert.AreEqual("Shop does not have a slot 10 in section Courtyard.", CommandInvoker.State.Message);
+
+            // -- Normal change, but the card wanted doesn't exist
+            ICommand emptyShopChangeCard = new ChangeCardCommand(emptyShop, ShopType.Courtyard, 0);
+
+            CommandInvoker.ExecuteCommand(emptyShopChangeCard);
+
+            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
+            Assert.AreEqual("Shop does not have a card in slot 0 in section Courtyard.", CommandInvoker.State.Message);
+
             // -- Shop initialization with default settings.
             ShopData shop = InitializeAndFillShop(_Config);
 
@@ -229,6 +275,19 @@ namespace Test.Vermines.ShopSystem {
             cardAfterTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
 
             Assert.AreEqual(cardBeforeTheChange.ID, cardAfterTheChange.ID);
+
+            // -- Remove every card of the shop deck and discard and try to change a card
+            foreach (var shopSection in shop.Sections) {
+                shopSection.Value.Deck.Clear();
+                shopSection.Value.DiscardDeck.Clear();
+            }
+
+            ICommand emptyDeckChangeCard = new ChangeCardCommand(shop, ShopType.Courtyard, 0);
+
+            CommandInvoker.ExecuteCommand(emptyDeckChangeCard);
+
+            Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
+            Assert.AreEqual("Card in slot 0 in section Courtyard has been changed.", CommandInvoker.State.Message);
         }
 
         /// <summary>
@@ -245,11 +304,11 @@ namespace Test.Vermines.ShopSystem {
 
             // -- Buy a card in the 'Courtyard' at the place '0'
             BuyParameters parameters = new() {
-                Decks    = _Decks,
-                Player   = _LocalPlayer,
-                Shop     = shop,
+                Decks = _Decks,
+                Player = _LocalPlayer,
+                Shop = shop,
                 ShopType = ShopType.Courtyard,
-                Slot     = 0 // Buy the first card available in the shop
+                Slot = 0 // Buy the first card available in the shop
             };
 
             ICommand buyCommand = new BuyCommand(parameters);
@@ -277,6 +336,40 @@ namespace Test.Vermines.ShopSystem {
 
             // -- Check that the player have no more card in his discard deck
             Assert.AreEqual(0, _Decks[_LocalPlayer].Discard.Count);
+
+            // Buy a card with an unknow player
+            parameters.Player = PlayerRef.FromEncoded(0x03);
+
+            ICommand buyUnknowPlayerCommand = new BuyCommand(parameters);
+
+            CommandInvoker.ExecuteCommand(buyUnknowPlayerCommand);
+
+            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
+            Assert.AreEqual("Player [Player:2] does not have a deck.", CommandInvoker.State.Message);
+
+            // Buy a card with an unknow shop type and slot
+            parameters.Player = _LocalPlayer;
+            parameters.ShopType = (ShopType)3;
+            parameters.Slot = 10;
+
+            ICommand buyUnknowShopCommand = new BuyCommand(parameters);
+
+            CommandInvoker.ExecuteCommand(buyUnknowShopCommand);
+
+            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
+            Assert.AreEqual("Shop 3 and slot 10 does not exist.", CommandInvoker.State.Message);
+
+            // Buy a empty slot in the shop
+            parameters.Shop.Sections[ShopType.Courtyard].AvailableCards[0] = null;
+            parameters.ShopType = ShopType.Courtyard;
+            parameters.Slot = 0;
+
+            ICommand buyEmptySlotCommand = new BuyCommand(parameters);
+
+            CommandInvoker.ExecuteCommand(buyEmptySlotCommand);
+
+            Assert.AreEqual(CommandStatus.Failure, CommandInvoker.State.Status);
+            Assert.AreEqual("Shop Courtyard have slot 0 empty.", CommandInvoker.State.Message);
         }
     }
 }

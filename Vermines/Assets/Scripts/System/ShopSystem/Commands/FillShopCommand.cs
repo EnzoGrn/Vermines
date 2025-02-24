@@ -15,17 +15,17 @@ namespace Vermines.ShopSystem.Commands {
         public FillShopCommand(ShopData shopToFill)
         {
             _Shop    = shopToFill;
-            _OldShop = shopToFill.DeepCopy();
+            _OldShop = shopToFill?.DeepCopy() ?? null;
         }
 
         public CommandResponse Execute()
         {
-            _OldShop = _Shop.DeepCopy();
-
-            _Shop = FillShop();
+            _OldShop = _Shop?.DeepCopy() ?? null;
 
             if (_Shop == null)
-                return new CommandResponse(CommandStatus.Failure, $"Failed to fill the shop.");
+                return new CommandResponse(CommandStatus.Invalid, $"Failed to fill the shop.");
+            _Shop = FillShop();
+
             return new CommandResponse(CommandStatus.Success, $"Shop filled.");
         }
 

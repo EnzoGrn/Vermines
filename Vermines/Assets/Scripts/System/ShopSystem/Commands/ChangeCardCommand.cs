@@ -19,14 +19,14 @@ namespace Vermines.ShopSystem.Commands {
         public ChangeCardCommand(ShopData shop, ShopType shopType, int slotIndex)
         {
             _Shop      = shop;
-            _OldShop   = shop.DeepCopy();
+            _OldShop   = shop?.DeepCopy() ?? null;
             _ShopType  = shopType;
             _SlotIndex = slotIndex;
         }
 
         public CommandResponse Execute()
         {
-            _OldShop = _Shop.DeepCopy();
+            _OldShop = _Shop?.DeepCopy() ?? null;
 
             CommandResponse response = ChangeCard(_ShopType, _SlotIndex);
 
@@ -59,8 +59,13 @@ namespace Vermines.ShopSystem.Commands {
             if (shopSection.Deck.Count == 0) {
                 shopSection.DiscardDeck.Reverse();
                 shopSection.Deck.Merge(shopSection.DiscardDeck);
-            }
 
+                if (shopSection.Deck.Count == 0) {
+                    // TODO: Notify UI, there is no more card available in this sections
+
+                    return null;
+                }
+            }
             return shopSection.Deck.Draw();
         }
     }
