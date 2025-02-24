@@ -6,9 +6,7 @@ using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Vermines
-{
-
+namespace Vermines {
     using Vermines.Gameplay.Commands.Internal;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.CardSystem.Enumerations;
@@ -19,22 +17,12 @@ namespace Vermines
     using Vermines.ShopSystem.Enumerations;
     using Vermines.ShopSystem.Data;
     using Vermines.Player;
-<<<<<<< HEAD
     using Vermines.ShopSystem.Commands;
     using Vermines.Gameplay.Phases;
     using Vermines.HUD;
     using Vermines.HUD.Card;
 
     public class GameInitializer : NetworkBehaviour {
-=======
-    using Vermines.ShopSystem.Commands;
-    using Vermines.Gameplay.Phases;
-    using Vermines.HUD;
-    using Vermines.HUD.Card;
-
-    public class GameInitializer : NetworkBehaviour
-    {
->>>>>>> 4a60e20eca08fad69a1fbb0d229f5ba81fc98a2a
 
         private readonly NetworkQueue _Queue = new();
 

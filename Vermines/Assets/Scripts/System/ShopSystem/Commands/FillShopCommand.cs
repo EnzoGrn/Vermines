@@ -8,6 +8,7 @@ namespace Vermines.ShopSystem.Commands
     using Vermines.CardSystem.Elements;
     using Vermines.ShopSystem.Data;
     using Vermines.Test;
+    using Vermines.HUD.Card;
 
     public class FillShopCommand : ICommand
     {
