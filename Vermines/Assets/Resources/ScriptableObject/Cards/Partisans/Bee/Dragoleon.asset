@@ -13,15 +13,16 @@ MonoBehaviour:
   m_Name: Dragoleon
   m_EditorClassIdentifier: 
   Name: Dragoleon
-  Description: Play the power of a <b>partisan</b> played by an opponent or present
-    in the courtyard.
   Exemplars: 1
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 0
   _Level: 2
-  Eloquence: 12
+  Effects: []
+  _Eloquence: 12
+  CurrentEloquence: 12
   _Souls: 20
+  CurrentSouls: 20
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: 722e2cb09d177014a85aa256106da5cf, type: 3}

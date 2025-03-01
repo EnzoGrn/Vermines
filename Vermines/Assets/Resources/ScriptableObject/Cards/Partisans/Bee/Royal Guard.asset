@@ -13,15 +13,16 @@ MonoBehaviour:
   m_Name: Royal Guard
   m_EditorClassIdentifier: 
   Name: Royal Guard
-  Description: When you sacrifice the <b>Royal Guard</b>, you gain an extra <b><color=red>5A</color></b>
-    for every other <b>bee</b> you've already sacrificed.
   Exemplars: 4
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 0
   _Level: 1
-  Eloquence: 8
+  Effects: []
+  _Eloquence: 8
+  CurrentEloquence: 8
   _Souls: 0
+  CurrentSouls: 0
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: dcf05c7d8c75e914b874dff93bbb6e4d, type: 3}

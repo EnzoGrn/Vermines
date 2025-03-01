@@ -145,7 +145,7 @@ namespace Vermines.ShopSystem.Commands {
 
         private void Purchase(PlayerData playerData, ICard card)
         {
-            int newEloquence = playerData.Eloquence - card.Data.Eloquence;
+            int newEloquence = playerData.Eloquence - card.Data.CurrentEloquence;
 
             GameDataStorage.Instance.SetEloquence(playerData.PlayerRef, newEloquence);
         }

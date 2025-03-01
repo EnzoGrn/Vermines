@@ -20,7 +20,9 @@ MonoBehaviour:
   _Family: -1
   _Level: 0
   Effects: []
-  Eloquence: 6
+  _Eloquence: 6
+  CurrentEloquence: 6
   _Souls: 0
+  CurrentSouls: 0
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: 25819aae299af834bb7e86b8b9ce62c7, type: 3}

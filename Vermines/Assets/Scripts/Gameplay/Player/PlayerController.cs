@@ -152,6 +152,22 @@ namespace Vermines.Player {
             CommandResponse response = CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
 
             if (response.Status == CommandStatus.Success) {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Sacrifice)
+                        effect.Play(player);
+                    else if (effect.Type == EffectType.Passive)
+                        effect.Stop(player);
+                }
+
+                foreach (Card playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
+                    if (playedCard.Data.Effects != null) {
+                        foreach (AEffect effect in playedCard.Data.Effects) {
+                            if (effect.Type == EffectType.OnOtherSacrifice)
+                                effect.Play(player);
+                        }
+                    }
+                }
+
                 ICommand earnCommand = new EarnCommand(player, card.Data.Souls, DataType.Soul);
 
                 response = CommandInvoker.ExecuteCommand(earnCommand);

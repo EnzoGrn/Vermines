@@ -1,9 +1,13 @@
 using OMGG.DesignPattern;
 using UnityEngine;
+using System.Linq;
 using Fusion;
 
 namespace Vermines.Gameplay.Phases {
-    using System.Linq;
+
+    using Vermines.CardSystem.Data.Effect;
+    using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.HUD.Card;
@@ -48,6 +52,13 @@ namespace Vermines.Gameplay.Phases {
 
                 // Dump all the deck of the user
                 Debug.Log($"[SERVER]: (Resolution Phase) Player {player} refill his hand: {GameDataStorage.Instance.PlayerDeck[player].Serialize()}");
+            }
+
+            foreach (ICard card in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Passive)
+                        effect.Stop(player);
+                }
             }
 
             OnPhaseEnding(player, true); // Here true, because everyone know that the phase is over.

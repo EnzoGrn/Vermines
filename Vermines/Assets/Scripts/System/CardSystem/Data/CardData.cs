@@ -100,7 +100,66 @@ namespace Vermines.CardSystem.Data {
         /// <summary>
         /// The cost of the card (with Eloquence as the currency).
         /// </summary>
-        public int Eloquence = 0;
+        [SerializeField]
+        private int _Eloquence = 0;
+
+        /// <summary>
+        /// Get or set the cost of the card (with Eloquence as the currency).
+        /// </summary>
+        public int Eloquence
+        {
+            get => IsStartingCard ? 0 : _Eloquence;
+            set
+            {
+                if (IsStartingCard)
+                    _Eloquence = 0;
+                else
+                    _Eloquence = value;
+                CurrentEloquence = _Eloquence;
+            }
+        }
+
+        /// <summary>
+        /// The current eloquence value of the card.
+        /// Use it in the UI, for know if the value has changed or not.
+        /// </summary>
+        public int CurrentEloquence = 0;
+
+        /// <summary>
+        /// The eloquence that are not reduced because the card is already at the minimum cost.
+        /// </summary>
+        private int _ExcessiveEloquence = 0;
+
+        /// <summary>
+        /// Function for reducing the eloquence of the card.
+        /// </summary>
+        public void EloquenceReduction(int amount)
+        {
+            if (CurrentEloquence - amount < 1) {
+                _ExcessiveEloquence = Mathf.Abs(CurrentEloquence - 1);
+
+                CurrentEloquence = 1;
+            } else {
+                CurrentEloquence -= amount;
+            }
+        }
+
+        /// <summary>
+        /// Function that remove the reduction of the eloquence of the card.
+        /// </summary>
+        public void RemoveReduction(int amount)
+        {
+            if (_ExcessiveEloquence > 0 && amount < _ExcessiveEloquence) {
+                _ExcessiveEloquence -= amount;
+            } else if (_ExcessiveEloquence > 0) {
+                amount -= _ExcessiveEloquence;
+
+                CurrentEloquence   += amount;
+                _ExcessiveEloquence = 0;
+            } else {
+                CurrentEloquence += amount;
+            }
+        }
 
         /// <summary>
         /// The souls of the card (souls represent the points system of the game).
@@ -120,8 +179,15 @@ namespace Vermines.CardSystem.Data {
                     _Souls = value;
                 else
                     _Souls = 0;
+                CurrentSouls = _Souls;
             }
         }
+
+        /// <summary>
+        /// The current souls value of the card.
+        /// Use it in the UI, for know if the value has changed or not.
+        /// </summary>
+        public int CurrentSouls = 0;
 
         #endregion
 

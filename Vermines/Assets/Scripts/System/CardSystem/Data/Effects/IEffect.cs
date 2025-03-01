@@ -35,6 +35,11 @@ namespace Vermines.CardSystem.Data.Effect {
         void Play(PlayerRef player);
 
         /// <summary>
+        /// Function that stop an effect, for example stoping a reduction in market.
+        /// </summary>
+        void Stop(PlayerRef player);
+
+        /// <summary>
         /// Function for draw the effect.
         /// </summary>
         List<(string, Sprite)> Draw();
@@ -78,6 +83,12 @@ namespace Vermines.CardSystem.Data.Effect {
         {
             if (SubEffect != null)
                 SubEffect.Play(player);
+        }
+
+        public virtual void Stop(PlayerRef player)
+        {
+            if (SubEffect != null)
+                SubEffect.Stop(player);
         }
 
         public virtual List<(string, Sprite)> Draw()

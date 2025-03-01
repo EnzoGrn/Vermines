@@ -13,14 +13,16 @@ MonoBehaviour:
   m_Name: Knight
   m_EditorClassIdentifier: 
   Name: Knight
-  Description: You can pick up 1 <b>partisan</b> free of charge in the courtyard.
   Exemplars: 1
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 0
   _Level: 2
-  Eloquence: 15
+  Effects: []
+  _Eloquence: 15
+  CurrentEloquence: 15
   _Souls: 30
+  CurrentSouls: 30
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: dd93c049838fec145bca9e2c9eff758f, type: 3}
