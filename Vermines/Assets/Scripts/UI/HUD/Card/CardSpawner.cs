@@ -158,6 +158,7 @@ namespace Vermines.HUD.Card
         {
             foreach (var card in cardDictionary)
             {
+                Debug.Log("Card id: " + card.Value.ID);
                 bool cardExists = false;
                 foreach (var cardInShop in ShopCardDictionaries[shopType])
                 {
