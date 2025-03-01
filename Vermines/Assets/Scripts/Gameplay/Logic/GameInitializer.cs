@@ -111,7 +111,10 @@ namespace Vermines {
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
             shop.Initialize(ShopType.Market, GameManager.Instance.Config.MaxMarketCards.Value);
+            shop.FillShop(ShopType.Market, objectCards);
+
             shop.Initialize(ShopType.Courtyard, GameManager.Instance.Config.MaxCourtyardCards.Value);
+            shop.FillShop(ShopType.Courtyard, partisanCards);
 
             GameDataStorage.Instance.Shop = shop;
 

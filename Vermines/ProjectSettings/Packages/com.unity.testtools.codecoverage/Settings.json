@@ -4,7 +4,7 @@
             {
                 "type": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                 "key": "IncludeAssemblies",
-                "value": "{\"m_Value\":\"CardSystem,Command,OMGG.Network.Fusion,OMGG.Optimizer.Interface,OMGG.Optimizer.Manager,Singleton,Vermines\"}"
+                "value": "{\"m_Value\":\"Assembly-CSharp,Assembly-CSharp-Editor,CardSystem,Command,Fusion.Menu,Fusion.Menu.Editor,Fusion.Unity,Fusion.Unity.Editor,JsonEditor,OMGG.Network.Fusion,OMGG.Optimizer.Interface,OMGG.Optimizer.Manager,PlayFab,PlayFabEditorExtensions,PlayFabSDKEditor,PlayMode,Singleton,Tests1,Unity.Fusion.CodeGen,Vermines\"}"
             },
             {
                 "type": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",

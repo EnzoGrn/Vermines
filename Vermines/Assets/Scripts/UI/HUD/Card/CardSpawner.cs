@@ -95,7 +95,12 @@ namespace Vermines.HUD.Card
             }
 
             // TODO: If the card is already in the shop, in the same slot, don't spawn it again
-
+            if (_ShopSpawnedCardDictionaries[shopType].ContainsKey(cardData.ID))
+            {
+                Debug.LogWarning($"Card with ID {cardData.ID} is already spawned in the shop.");
+                return;
+            }
+            
             GameObject newCard = Instantiate(cardPrefab);
             CardInShop cardInShop;
 
@@ -152,6 +157,7 @@ namespace Vermines.HUD.Card
         {
             foreach (var card in cardDictionary)
             {
+                Debug.Log("Card id: " + card.Value.ID);
                 bool cardExists = false;
                 foreach (var cardInShop in ShopCardDictionaries[shopType])
                 {
@@ -164,22 +170,32 @@ namespace Vermines.HUD.Card
                         break;
                     }
                 }
-                if (!cardExists)
-                    ShopCardDictionaries[shopType].Add(card.Key, card.Value);
+                if (!cardExists) {
+                    if (ShopCardDictionaries[shopType].ContainsKey(card.Key)) {
+                        ShopCardDictionaries[shopType][card.Key] = card.Value;
+                    }
+                    else
+                    {
+                        ShopCardDictionaries[shopType].Add(card.Key, card.Value);
+                    }
+                }
             }
             SpawnCardsFromDictionary(cardDictionary, shopType);
         }
 
-        public void DestroyCard(int id)
+        public void DestroyCard(ShopType shopType, int slotId)
         {
-            foreach (var shopEvent in GameEvents.OnShopsEvents)
+            ICard card = ShopCardDictionaries[shopType][slotId];
+            if (card == null)
             {
-                if (ShopCardDictionaries[shopEvent.Key].ContainsKey(id))
-                {
-                    // TODO: Destroy Card GameObject
-                    ShopCardDictionaries[shopEvent.Key].Remove(id);
-                    break;
-                }
+                Debug.LogError("Card is null!");
+                return;
+            }
+            int id = card.ID;
+            if (_ShopSpawnedCardDictionaries[shopType].ContainsKey(id))
+            {
+                Destroy(_ShopSpawnedCardDictionaries[shopType][id]);
+                _ShopSpawnedCardDictionaries[shopType].Remove(id);
             }
         }
 
