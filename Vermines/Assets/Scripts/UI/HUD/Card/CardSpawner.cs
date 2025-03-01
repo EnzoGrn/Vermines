@@ -102,6 +102,11 @@ namespace Vermines.HUD.Card
             }
 
             // TODO: If the card is already in the shop, in the same slot, don't spawn it again
+            if (_ShopSpawnedCardDictionaries[shopType].ContainsKey(cardData.ID))
+            {
+                Debug.LogWarning($"Card with ID {cardData.ID} is already spawned in the shop.");
+                return;
+            }
 
             GameObject newCard = Instantiate(cardPrefab);
             CardInShop cardInShop;
