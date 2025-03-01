@@ -1,15 +1,13 @@
 using OMGG.DesignPattern;
 using Fusion;
 
-namespace Vermines.Gameplay.Commands.Deck
-{
-    using System.Linq;
-    using Vermines.CardSystem.Data;
+namespace Vermines.Gameplay.Commands.Deck {
+
     using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Data;
     using Vermines.Player;
 
-    public class CardSacrifiedCommand : ICommand
-    {
+    public class CardSacrifiedCommand : ICommand {
 
         private readonly PlayerRef _Player;
         private readonly int _CardId;
@@ -22,16 +20,16 @@ namespace Vermines.Gameplay.Commands.Deck
             _CardId = cardID;
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
             if (GameDataStorage.Instance.PlayerDeck.TryGetValue(_Player, out _) == false)
-                return false;
+                return new CommandResponse(CommandStatus.Invalid, $"Player {_Player} does not have a deck.");
             PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[_Player];
 
             _OldDeck = deck.DeepCopy();
 
             if (CardSetDatabase.Instance.CardExist(_CardId) == false)
-                return false;
+                return new CommandResponse(CommandStatus.Invalid, $"Card {_CardId} does not exist.");
 
             ICard card = CardSetDatabase.Instance.GetCardByID(_CardId);
 
@@ -39,7 +37,8 @@ namespace Vermines.Gameplay.Commands.Deck
             deck.PlayedCards.Remove(card);
 
             GameDataStorage.Instance.PlayerDeck[_Player] = deck;
-            return true;
+
+            return new CommandResponse(CommandStatus.Success, $"Player {_Player} sacrified a card.");
         }
 
         public void Undo()

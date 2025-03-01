@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Villagers
   m_EditorClassIdentifier: 
-  Name: Villagers
+  Name: Villager
   Exemplars: 2
   IsStartingCard: 0
   Type: 0
@@ -23,5 +23,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d9211d323b393e14b95463cb72c961d5, type: 2}
   Eloquence: 2
   _Souls: 5
-  _SpriteName: Villagers
+  _SpriteName: Villager
   _Sprite: {fileID: 0}

@@ -9,6 +9,7 @@ namespace Vermines.ShopSystem.Commands {
     using Vermines.ShopSystem.Data;
     using Vermines.CardSystem.Elements;
     using Vermines.Player;
+    using System.Security.Cryptography;
 
     public struct BuyParameters {
 
@@ -55,45 +56,36 @@ namespace Vermines.ShopSystem.Commands {
         public BuyCommand(BuyParameters parameters)
         {
             _Parameters   = parameters;
-
             _OriginalShop = parameters.Shop;
-
-            if (_OriginalShop != null)
-            {
-                _OldShop = parameters.Shop.DeepCopy();
-            }
+            _OldShop      = parameters.Shop?.DeepCopy() ?? null;
 
             if (parameters.Decks.TryGetValue(parameters.Player, out PlayerDeck playerDeck))
                 _OldPlayerDeck = playerDeck.DeepCopy();
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
-            if (_OriginalShop != null)
-            {
-                _OldShop = _Parameters.Shop.DeepCopy();
-            }
+            _OldShop = _OriginalShop?.DeepCopy() ?? null;
 
             if (!_Parameters.Decks.TryGetValue(_Parameters.Player, out PlayerDeck playerDeck))
-                return false;
+                return new CommandResponse(CommandStatus.Invalid, $"Player {_Parameters.Player} does not have a deck.");
             _OldPlayerDeck = playerDeck.DeepCopy();
 
             if (!_Parameters.Shop.Sections.ContainsKey(_Parameters.ShopType) || !_Parameters.Shop.Sections[_Parameters.ShopType].AvailableCards.ContainsKey(_Parameters.Slot))
-                return false;
+                return new CommandResponse(CommandStatus.Invalid, $"Shop {_Parameters.ShopType} and slot {_Parameters.Slot} does not exist.");
             ICard card = _Parameters.Shop.BuyCardAtSlot(_Parameters.ShopType, _Parameters.Slot);
 
+            if (card == null)
+                return new CommandResponse(CommandStatus.Failure, $"Shop {_Parameters.ShopType} have slot {_Parameters.Slot} empty.");
             playerDeck.Discard.Add(card);
 
-            return true;
+            return new CommandResponse(CommandStatus.Success, $"Player {_Parameters.Player} bought the card.");
         }
 
         public void Undo()
         {
             if (_OriginalShop != null)
-            {
                 _OriginalShop.Sections = _OldShop.Sections;
-            }
-
             if (_OldPlayerDeck != null) {
                 PlayerDeck old = (PlayerDeck)_OldPlayerDeck;
 
@@ -122,26 +114,28 @@ namespace Vermines.ShopSystem.Commands {
             _Parameters = parameters;
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
             if (!_Parameters.Decks.TryGetValue(_Parameters.Player, out PlayerDeck playerDeck))
-                return false;
+                return new CommandResponse(CommandStatus.Invalid, $"Player {_Parameters.Player} does not have a deck.");
             if (!_Parameters.Shop.Sections.ContainsKey(_Parameters.ShopType) || !_Parameters.Shop.Sections[_Parameters.ShopType].AvailableCards.ContainsKey(_Parameters.Slot))
-                return false;
+                return new CommandResponse(CommandStatus.Invalid, $"Shop {_Parameters.ShopType} and slot {_Parameters.Slot} does not exist.");
             if (!_Parameters.Shop.HasCardAtSlot(_Parameters.ShopType, _Parameters.Slot))
-                return false;
+                return new CommandResponse(CommandStatus.Invalid, $"Shop {_Parameters.ShopType} have slot {_Parameters.Slot} empty.");
             ICard card = _Parameters.Shop.Sections[_Parameters.ShopType].AvailableCards[_Parameters.Slot];
 
             bool res = CanPurchase(GameDataStorage.Instance.PlayerData[_Parameters.Player], card);
 
-            if (res)
-                Purchase(GameDataStorage.Instance.PlayerData[_Parameters.Player], card);
-            return res;
+            if (!res)
+                return new CommandResponse(CommandStatus.Failure, $"Player {_Parameters.Player} does not have enough eloquence to buy the card.");
+            Purchase(GameDataStorage.Instance.PlayerData[_Parameters.Player], card);
+
+            return new CommandResponse(CommandStatus.Success, $"Player {_Parameters.Player} can buy the card.");
         }
 
         public void Undo() {}
 
-        private bool CanPurchase(Vermines.Player.PlayerData playerData, ICard card)
+        private bool CanPurchase(PlayerData playerData, ICard card)
         {
             int playerEloquence = GameDataStorage.Instance.PlayerData[_Parameters.Player].Eloquence;
             int cardCost        = card.Data.Eloquence;
@@ -149,7 +143,7 @@ namespace Vermines.ShopSystem.Commands {
             return playerEloquence >= cardCost;
         }
 
-        private void Purchase(Vermines.Player.PlayerData playerData, ICard card)
+        private void Purchase(PlayerData playerData, ICard card)
         {
             int newEloquence = playerData.Eloquence - card.Data.Eloquence;
 

@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
 
 namespace OMGG.DesignPattern {
 
@@ -21,17 +19,19 @@ namespace OMGG.DesignPattern {
         /// <summary>
         /// The state of the last command that have been executed
         /// </summary>
-        public static bool State = false;
+        public static CommandResponse State = new(CommandStatus.Success, "No command executed yet.");
 
         /// <summary>
         /// Function that execute a command, that is passed as parameter.
         /// The command is then pushed in the undo stack.
         /// </summary>
-        public static void ExecuteCommand(ICommand command)
+        public static CommandResponse ExecuteCommand(ICommand command)
         {
             State = command.Execute();
 
             _UndoStack.Push(command);
+
+            return State;
         }
 
         public static void UndoCommand()

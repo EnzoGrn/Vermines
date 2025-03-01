@@ -23,5 +23,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 19ea749eb0e80834f984c4196ee7f658, type: 2}
   Eloquence: 8
   _Souls: 20
-  _SpriteName: Archbishop
+  _SpriteName: High Cleric
   _Sprite: {fileID: 0}

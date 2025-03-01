@@ -10,18 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Brigand
+  m_Name: Royal Messenger
   m_EditorClassIdentifier: 
-  Name: Brigand
-  Description: Discard the <b>brigand</b> to gain <b><color=purple>2E</color></b>
-    and draw 1 card, then discard 1 card.
-  Exemplars: 2
+  Name: Royal Messenger
+  Exemplars: 4
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
-  _Family: 5
+  _Family: 0
   _Level: 1
-  Eloquence: 3
+  Effects: []
+  Eloquence: 7
   _Souls: 10
   _SpriteName: 
-  _Sprite: {fileID: 21300000, guid: e33e5d3b3324fbe44aaf5955f14b08a8, type: 3}
+  _Sprite: {fileID: 21300000, guid: 9bb401e926698b6449f4c5f814f68c28, type: 3}
