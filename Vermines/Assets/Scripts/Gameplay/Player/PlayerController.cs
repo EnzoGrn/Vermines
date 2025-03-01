@@ -10,6 +10,7 @@ namespace Vermines.Player {
     using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.HUD;
+    using Vermines.HUD.Card;
     using Vermines.Network.Utilities;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
@@ -88,6 +89,8 @@ namespace Vermines.Player {
             if (response.Status == CommandStatus.Success) {
                 if (HUDManager.instance != null)
                     HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[PlayerRef.FromEncoded(playerRef)]);
+                if (CardSpawner.Instance != null)
+                    CardSpawner.Instance.DestroyCard(shopType, slot);
                 Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[PlayerRef.FromEncoded(playerRef)].Serialize()}");
             }
         }
