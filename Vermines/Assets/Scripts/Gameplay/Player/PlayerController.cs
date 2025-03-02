@@ -60,6 +60,11 @@ namespace Vermines.Player {
             RPC_BuyCard(Object.InputAuthority.RawEncoded, shopType, slot);
         }
 
+        public void OnActiveEffectActivated(int cardID)
+        {
+            GameManager.Instance.RPC_ActivateEffect(Object.InputAuthority.RawEncoded, cardID);
+        }
+
         #endregion
 
         #region Player's Commands
@@ -178,6 +183,24 @@ namespace Vermines.Player {
                 }
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
+            }
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_ActivateEffect(int playerID, int cardID)
+        {
+            PlayerRef player = PlayerRef.FromEncoded(playerID);
+            ICard card       = CardSetDatabase.Instance.GetCardByID(cardID);
+
+            if (card == null) {
+                Debug.LogError($"[SERVER]: Player {player} tried to activate an effect that doesn't exist.");
+
+                return;
+            }
+
+            foreach (AEffect effect in card.Data.Effects) {
+                if (effect.Type == EffectType.Activate)
+                    effect.Play(player);
             }
         }
 

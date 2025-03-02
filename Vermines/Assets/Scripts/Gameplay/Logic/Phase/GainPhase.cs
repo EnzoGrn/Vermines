@@ -20,10 +20,14 @@ namespace Vermines.Gameplay.Phases {
 
         #endregion
 
+        private PlayerRef _CurrentPlayer;
+
         #region Override Methods
 
         public override void Run(PlayerRef player)
         {
+            _CurrentPlayer = player;
+
             Debug.Log($"Phase {Type} is now running");
 
             ExecutePlayedCardsEffect(player);
@@ -62,9 +66,9 @@ namespace Vermines.Gameplay.Phases {
             return;
         }
 
-        public void OnEffectActivated()
+        public void OnEffectActivated(int cardID)
         {
-            // TODO: Handle effect activation
+            PlayerController.Local.OnActiveEffectActivated(cardID);
         }
 
         #endregion

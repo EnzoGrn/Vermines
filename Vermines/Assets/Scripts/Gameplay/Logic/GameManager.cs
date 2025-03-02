@@ -158,6 +158,13 @@ namespace Vermines {
         {
             Player.PlayerController.Local.RPC_CardSacrified(playerId, cardId);
         }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_ActivateEffect(int playerID, int cardID)
+        {
+            Player.PlayerController.Local.RPC_ActivateEffect(playerID, cardID);
+        }
+
         #endregion
     }
 }

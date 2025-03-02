@@ -5,6 +5,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.Editor.Gameplay.Cards.Effect;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.CardSystem.Data.Effect;
 
     [CustomEditor(typeof(EarnEffect))]
     public class EarnEffectEditor : AEffectEditor {
