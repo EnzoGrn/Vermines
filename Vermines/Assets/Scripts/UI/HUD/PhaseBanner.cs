@@ -28,19 +28,19 @@ namespace Vermines.HUD {
                 switch (currentPhase)
                 {
                     case PhaseType.Sacrifice:
-                        phaseText.text = "Phase de Sacrifice";
+                        phaseText.text = "Phase: Sacrifice";
                         break;
                     case PhaseType.Gain:
-                        phaseText.text = "Phase de Gain";
+                        phaseText.text = "Phase: Earn";
                         break;
                     case PhaseType.Action:
-                        phaseText.text = "Phase d'Action";
+                        phaseText.text = "Phase: Action";
                         break;
                     case PhaseType.Resolution:
-                        phaseText.text = "Phase de Résolution";
+                        phaseText.text = "Phase: Resolution";
                         break;
                     default:
-                        phaseText.text = "Phase Inconnue";
+                        phaseText.text = "Phase: Unknown";
                         break;
                 }
             }

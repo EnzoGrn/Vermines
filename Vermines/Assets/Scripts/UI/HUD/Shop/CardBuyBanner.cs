@@ -20,10 +20,10 @@ namespace Vermines.HUD
         [SerializeField] private TextMeshProUGUI souls;
         [SerializeField] private TextMeshProUGUI effectDescription;
         [SerializeField] private GameObject CardGameObject;
+        [SerializeField] private ICard _Card;
         #endregion
 
         #region Debug
-        [SerializeField] private ICard _Card;
         [SerializeField] private bool debugMode = false;
         #endregion
 
@@ -55,8 +55,8 @@ namespace Vermines.HUD
             }
 
             cardName.text = card.Data.Name;
-            cost.text = $"Coût: {card.Data.Eloquence} éloquences";
-            souls.text = $"+{card.Data.Souls} âmes si sacrifié";
+            cost.text = $"Cost: {card.Data.Eloquence} eloquences";
+            souls.text = $"+{card.Data.Souls} souls on sacrifice";
             souls.gameObject.SetActive(card.Data.Type == CardType.Partisan);
             type.text = card.Data.Type == CardType.Partisan ? card.Data.Family.ToString() : card.Data.Type.ToString();
             
@@ -104,7 +104,7 @@ namespace Vermines.HUD
             GameEvents.OnCardBought.Invoke(cardInfo.Value.Item1, cardInfo.Value.Item2);
 
             // Destroy the card bought
-            CardSpawner.Instance.DestroyCard(_Card.ID);
+            //CardSpawner.Instance.DestroyCard(_Card.ID);
 
             ShopManager.instance.GetShop().CloseCardBuyOverlay();
         }
