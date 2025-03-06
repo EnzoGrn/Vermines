@@ -65,6 +65,11 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_ActivateEffect(Object.InputAuthority.RawEncoded, cardID);
         }
 
+        public void OnShopReplaceCard(ShopType shopType, int slot)
+        {
+            GameManager.Instance.RPC_ReplaceCardInShop(Object.InputAuthority.RawEncoded, shopType, slot);
+        }
+
         #endregion
 
         #region Player's Commands
@@ -202,6 +207,16 @@ namespace Vermines.Player {
                 if (effect.Type == EffectType.Activate)
                     effect.Play(player);
             }
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_ReplaceCardInShop(int playerID, ShopType shopType, int slot)
+        {
+            ICommand replaceCommand = new ChangeCardCommand(GameDataStorage.Instance.Shop, shopType, slot);
+
+            CommandResponse response = CommandInvoker.ExecuteCommand(replaceCommand);
+            
+            // TODO: Update shop 'here' or in the ChangeCardCommand.
         }
 
         #endregion

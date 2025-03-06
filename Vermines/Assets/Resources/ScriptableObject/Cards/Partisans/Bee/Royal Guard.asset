@@ -19,8 +19,10 @@ MonoBehaviour:
   IsFamilyCard: 0
   _Family: 0
   _Level: 1
-  Effects: []
+  Effects:
+  - {fileID: 11400000, guid: 95f806f4c2156174ba6e9fc65ce53a19, type: 2}
   _Eloquence: 8
+  IsFree: 0
   CurrentEloquence: 8
   _Souls: 0
   CurrentSouls: 0

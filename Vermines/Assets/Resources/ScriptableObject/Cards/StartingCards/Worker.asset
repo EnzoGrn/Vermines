@@ -20,8 +20,9 @@ MonoBehaviour:
   _Family: 0
   _Level: 1
   Effects:
-  - {fileID: 11400000, guid: b808e43bd63549a42aa6f6db8c9d6ee3, type: 2}
+  - {fileID: 11400000, guid: 872a86a932ebfe04c9c2ee894b54ea23, type: 2}
   _Eloquence: 0
+  IsFree: 0
   CurrentEloquence: 0
   _Souls: 0
   CurrentSouls: 0

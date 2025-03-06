@@ -165,6 +165,12 @@ namespace Vermines {
             Player.PlayerController.Local.RPC_ActivateEffect(playerID, cardID);
         }
 
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_ReplaceCardInShop(int playerId, ShopType shopType, int slot)
+        {
+            Player.PlayerController.Local.RPC_ReplaceCardInShop(playerId, shopType, slot);
+        }
+
         #endregion
     }
 }

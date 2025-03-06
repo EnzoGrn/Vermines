@@ -49,12 +49,10 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
         }
 
-        // TODO: Maybe this will be useless, but we wait the UI to be implemented.
         public void OnDiscarded(ICard card)
         {
-            // Enlève l'observer
-
-            PlayerController.Local.OnDiscard(card.ID);
+            // TODO: Remove the event observer
+            PlayerController.Local.OnDiscard(card.ID); // TODO: Remove this line if the OnDiscard is call before the event observer.
 
             base.Play(PlayerController.Local.PlayerRef);
         }

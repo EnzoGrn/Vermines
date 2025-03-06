@@ -6,8 +6,6 @@ namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
-    using Vermines.HUD;
-    using Vermines.ShopSystem.Data;
     using Vermines.ShopSystem.Enumerations;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Shop/Free card in shop.")]
@@ -85,9 +83,11 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             _CurrentBuy++;
 
-            if (_CurrentBuy == _Amount)
+            if (_CurrentBuy == _Amount) {
                 GameDataStorage.Instance.Shop.Sections[_ShopTarget].SetFree(false);
-            // TODO: Unlink this to a shop event OnBuy that is link to a specific shop!!!
+
+                // TODO: Unlink this to a shop event OnBuy that is link to a specific shop!!!
+            }
         }
 
         public override void Stop(PlayerRef player)
