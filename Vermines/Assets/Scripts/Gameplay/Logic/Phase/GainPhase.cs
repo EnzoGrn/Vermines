@@ -54,7 +54,7 @@ namespace Vermines.Gameplay.Phases {
             {
                 foreach (AEffect effect in card.Data.Effects)
                 {
-                    if (effect.Type is CardSystem.Enumerations.EffectType.Play)
+                    if (effect.Type == CardSystem.Enumerations.EffectType.Play)
                     {
                         effect.Play(player);
                         HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[player]);

@@ -10,9 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c266d1a9b5b782e41bb2f387658168af, type: 3}
-  m_Name: SoldierEffect
+  m_Name: KnightEffect
   m_EditorClassIdentifier: 
   _Type: 4
-  _Description: Your purchases at the Market  cost <b><color=purple>2E</color></b>
-    less.
-  _SubEffect: {fileID: 11400000, guid: b76f616b7af626543b66ea6173e7f9da, type: 2}
+  _Description: Once per turn, you can buy 1 card for free in the Courtyard..
+  _SubEffect: {fileID: 11400000, guid: 67511acf30642bc47bf2de96e9c58c83, type: 2}

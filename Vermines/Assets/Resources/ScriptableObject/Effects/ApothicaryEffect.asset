@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: ApothicaryEffect
   m_EditorClassIdentifier: 
   _Type: 4
-  _Description: Your purchases  cost <b><color=purple>2E</color></b> less..
-  _SubEffect: {fileID: 11400000, guid: be0a0df4546742f41bf361e2970f62e8, type: 2}
+  _Description: Your purchases  cost <b><color=purple>2E</color></b> less.
+  _SubEffect: {fileID: 11400000, guid: 11f963d0e8236174a8955cf12ee49438, type: 2}

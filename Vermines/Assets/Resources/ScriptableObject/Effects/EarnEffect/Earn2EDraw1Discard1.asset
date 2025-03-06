@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bb757b4499f6c1429a162d44d6a92ad, type: 3}
   m_Name: Earn2EDraw1Discard1
   m_EditorClassIdentifier: 
-  _Description: Earn <b><color=purple>2E</color></b> then draw 2 cards
+  _Description: Earn <b><color=purple>2E</color></b> then draw 1 card then discard
+    1 card
   _Amount: 2
   _DataToEarn: 0
   EloquenceIcon: {fileID: 21300000, guid: 4bfc719361e4f1f49a3001672b1d6bca, type: 3}

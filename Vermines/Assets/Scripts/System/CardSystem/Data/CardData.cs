@@ -119,6 +119,8 @@ namespace Vermines.CardSystem.Data {
             }
         }
 
+        public bool IsFree = false;
+
         /// <summary>
         /// The current eloquence value of the card.
         /// Use it in the UI, for know if the value has changed or not.

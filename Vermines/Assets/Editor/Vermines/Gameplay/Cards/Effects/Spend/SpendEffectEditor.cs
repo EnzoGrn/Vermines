@@ -20,7 +20,7 @@ namespace Vermines.Gameplay.Cards.Effect
             GUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Effect Properties", EditorStyles.boldLabel);
 
-            effect.Amount = EditorGUILayout.IntField(new GUIContent("Amount", "The amount of eloquence to earn."), effect.Amount);
+            effect.Amount = EditorGUILayout.IntField(new GUIContent("Amount", "The amount of eloquence to spend."), effect.Amount);
             effect.DataToSpend = (DataType)EditorGUILayout.EnumPopup(new GUIContent("Data type", "The type of the data you want to spend."), effect.DataToSpend);
 
             GUILayout.EndVertical();

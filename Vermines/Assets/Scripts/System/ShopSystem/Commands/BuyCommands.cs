@@ -9,7 +9,6 @@ namespace Vermines.ShopSystem.Commands {
     using Vermines.ShopSystem.Data;
     using Vermines.CardSystem.Elements;
     using Vermines.Player;
-    using System.Security.Cryptography;
 
     public struct BuyParameters {
 
@@ -140,11 +139,13 @@ namespace Vermines.ShopSystem.Commands {
             int playerEloquence = GameDataStorage.Instance.PlayerData[_Parameters.Player].Eloquence;
             int cardCost        = card.Data.Eloquence;
 
-            return playerEloquence >= cardCost;
+            return (card.Data.IsFree || playerEloquence >= cardCost);
         }
 
         private void Purchase(PlayerData playerData, ICard card)
         {
+            if (card.Data.IsFree)
+                return;
             int newEloquence = playerData.Eloquence - card.Data.CurrentEloquence;
 
             GameDataStorage.Instance.SetEloquence(playerData.PlayerRef, newEloquence);

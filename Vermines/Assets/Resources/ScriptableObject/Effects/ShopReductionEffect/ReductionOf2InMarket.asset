@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: ReductionOf2InMarket
   m_EditorClassIdentifier: 
   _Description: Your purchases at the Market  cost <b><color=purple>2E</color></b>
-    less.
+    less
   _Amount: 2
   _ShopTarget: 00000000
   CourtyardIcon: {fileID: 21300000, guid: a0c85b41ad73ba5478aedecfa4ed7dc8, type: 3}
   MarketIcon: {fileID: 21300000, guid: 504388bbdef93f941af19a6319fd7610, type: 3}
-  EloquenceIcon: {fileID: 21300000, guid: 4bfc719361e4f1f49a3001672b1d6bca, type: 3}
+  EloquenceIcon: {fileID: 21300000, guid: 8b11ba55686919c42b3f3cdc5236a440, type: 3}

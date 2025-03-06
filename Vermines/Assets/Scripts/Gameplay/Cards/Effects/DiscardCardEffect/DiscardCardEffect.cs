@@ -43,16 +43,20 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            // TODO: Force the player to be in the discard view.
-            // TODO: Implement the observer pattern here to trigger the discard event.
-
-            base.Play(player);
+            if (player == PlayerController.Local.PlayerRef) {
+                // TODO: Force the player to be in the discard view.
+                // TODO: Implement the observer pattern here to trigger the discard event.
+            }
         }
 
         // TODO: Maybe this will be useless, but we wait the UI to be implemented.
         public void OnDiscarded(ICard card)
         {
+            // Enlève l'observer
+
             PlayerController.Local.OnDiscard(card.ID);
+
+            base.Play(PlayerController.Local.PlayerRef);
         }
 
         public override List<(string, Sprite)> Draw()

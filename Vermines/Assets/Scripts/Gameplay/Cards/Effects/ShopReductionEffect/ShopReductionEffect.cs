@@ -5,7 +5,6 @@ using Fusion;
 namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
-    using Vermines.Player;
     using Vermines.ShopSystem.Data;
     using Vermines.ShopSystem.Enumerations;
 
@@ -14,7 +13,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #region Constants
 
-        private static readonly string shopTemplate = "Your purchases {0} cost <b><color=purple>{1}E</color></b> less.";
+        private static readonly string shopTemplate = "Your purchases {0} cost <b><color=purple>{1}E</color></b> less";
 
         #endregion
 
@@ -119,7 +118,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                     elements.Add((null, CourtyardIcon));
             }
 
-            elements.Add(($" = -{Amount}E", null));
+            elements.Add(($" = -{Amount}", null));
             elements.Add((null, EloquenceIcon));
 
             return elements;
@@ -140,7 +139,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             UpdateDescription();
 
             if (EloquenceIcon == null)
-                EloquenceIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Eloquence");
+                EloquenceIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Eloquence_Banner");
             if (CourtyardIcon == null)
                 CourtyardIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Courtyard");
             if (MarketIcon == null)

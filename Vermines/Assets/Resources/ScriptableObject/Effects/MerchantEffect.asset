@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: MerchantEffect
   m_EditorClassIdentifier: 
   _Type: 4
-  _Description: Your purchases  cost <b><color=purple>1E</color></b> less..
-  _SubEffect: {fileID: 11400000, guid: 178105d9680f9d74187394cdfce3346c, type: 2}
+  _Description: Your purchases  cost <b><color=purple>1E</color></b> less.
+  _SubEffect: {fileID: 11400000, guid: 82c0e99935199254ca1363e08181496d, type: 2}

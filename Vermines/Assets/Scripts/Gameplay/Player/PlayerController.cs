@@ -116,7 +116,7 @@ namespace Vermines.Player {
                 ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
                 foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type is CardSystem.Enumerations.EffectType.Discard) {
+                    if (effect.Type == CardSystem.Enumerations.EffectType.Discard) {
                         effect.Play(player);
 
                         HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[player]);
