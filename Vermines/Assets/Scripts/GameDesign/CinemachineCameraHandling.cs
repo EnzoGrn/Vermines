@@ -4,13 +4,20 @@ public class CinemachineCameraHandling : MonoBehaviour
 {
     public void OnSplineAnimationEnd()
     {
-        if (CamsManager.Instance)
-            CamsManager.Instance.OnCamSplineCompleted();
+        if (CamManager.Instance)
+            CamManager.Instance.OnCamSplineCompleted();
+    }
+
+    public void OnSplineAnimationStart()
+    {
+        if (CamManager.Instance)
+            CamManager.Instance.OnCamSplineStart();
     }
 
     public void LookAtRequest()
     {
-        if (CamsManager.Instance)
-            CamsManager.Instance.ProceedLookAtRequest();
+        if (CamManager.Instance)
+            CamManager.Instance.ProceedLookAtRequest();
     }
+
 }
