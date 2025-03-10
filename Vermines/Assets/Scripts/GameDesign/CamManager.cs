@@ -49,11 +49,14 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
         _SplineCameraAnimator.gameObject.SetActive(true);
         _SplineCameraAnimator.enabled = true;
 
-        Debug.Log("ResetAnimation set the isReversed to " + isReversed);
-
-        _SplineCameraAnimator.Rebind();  // Resets the animator's state
+        Debug.Log("[ResetAnimation]: set the isReversed to " + isReversed);
         _SplineCameraAnimator.SetBool("IsReversed", isReversed);
-        _SplineCameraAnimator.Play(0, -1, 0f);  // Restart animation from the beginning
+        if (!isReversed)
+        {
+            _SplineCameraAnimator.Rebind();  // Resets the animator's state
+            _SplineCameraAnimator.Play(0, -1, 0f);  // Restart animation from the beginning
+        }
+            
     }
 
     /// <summary>
