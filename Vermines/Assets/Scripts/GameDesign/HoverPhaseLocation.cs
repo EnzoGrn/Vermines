@@ -5,21 +5,23 @@ using UnityEngine;
 
 public class HoverPhaseLocation : MonoBehaviour
 {
+    #region Exposed Fields
     [SerializeField] private CamSplineType _CamSplineType;
     [SerializeField] private Material _OutlineMaterial;
     [SerializeField] private List<MeshRenderer> _MeshRendererList;
+    [SerializeField] private Color _OutlineColor = new (0f, 1f, 0f, 1f); // Green default color
+    #endregion
 
+    #region Private Fields
     private bool _CanHoverLocations = true;
-    private BoxCollider _Collider;
     private Material _InstanceOfMaterial;
     private MaterialPropertyBlock _PropBlock;
 
-    private Color _OutlineColor = new Color(0f, 1f, 0f, 1f); // Green color
-    private Color _TransparentColor = new Color(0f, 1f, 0f, 0f); // Transparent color
+    private Color _TransparentColor = new(0f, 1f, 0f, 0f); // Transparent color
+    #endregion
 
     private void Awake()
     {
-        _Collider = GetComponent<BoxCollider>();
         _InstanceOfMaterial = new Material(_OutlineMaterial);
         _PropBlock = new MaterialPropertyBlock();
 
@@ -75,7 +77,7 @@ public class HoverPhaseLocation : MonoBehaviour
 
     private void OnCamNotOnLocation(CamSplineType camSplineType)
     {
-        Debug.Log("[OnCamNotOnLocation]: Hover Effetcrt can occur again.");
+        Debug.Log("[OnCamNotOnLocation]: Hover Effect can occur again.");
 
         _CanHoverLocations = (camSplineType == CamSplineType.None);
     }
