@@ -25,7 +25,6 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
     #region Private Fields
 
     private CinemachineSplineDolly _CinemachineSplineDolly;
-    private CamSplineType _CinemachineSplineType;
     private int _SplineID = 0;
     private int _Offset = 0;
     private bool _IsAnimated = false;
@@ -100,7 +99,7 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
         {
             _CinemachineSplineDolly.SplineSettings.Spline.Spline = _SplineContainerRef.Splines[_SplineID - 1];
             _SplineID = splineID;
-            _CinemachineSplineType = (CamSplineType)splineID - _Offset;
+            //_CinemachineSplineType = (CamSplineType)splineID;
 
             Debug.Log($"[CamManager]: Play {splineID} animation reversed");
 
@@ -112,7 +111,7 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
             _CineCam.Follow = _LookAt[_SplineID].transform;
             _CinemachineSplineDolly.SplineSettings.Spline.Spline = _SplineContainerRef.Splines[splineID - 1];
             _SplineID = splineID;
-            _CinemachineSplineType = (CamSplineType)splineID;
+            //_CinemachineSplineType = (CamSplineType)splineID;
 
             Debug.Log($"[CamManager]: Play {splineID} animation");
 
@@ -154,14 +153,14 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
         _SplineCameraAnimator.enabled = false;
         _IsAnimated = false;
 
-        OnCamLocationChanged.Invoke(_CinemachineSplineType);
+        OnCamLocationChanged.Invoke((CamSplineType)_SplineID);
     }
 
     public void OnCamSplineStart()
     {
         Debug.Log("[CamManager]: OnCamSplineStart");
 
-        OnCamLocationIsChanging.Invoke(_CinemachineSplineType);
+        OnCamLocationIsChanging.Invoke((CamSplineType)_SplineID);
     }
     #endregion
 }

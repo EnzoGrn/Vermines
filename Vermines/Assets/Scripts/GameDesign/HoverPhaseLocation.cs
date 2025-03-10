@@ -13,6 +13,7 @@ public class HoverPhaseLocation : MonoBehaviour
     #endregion
 
     #region Private Fields
+    private bool _CanClickLocations = true;
     private bool _CanHoverLocations = true;
     private Material _InstanceOfMaterial;
     private MaterialPropertyBlock _PropBlock;
@@ -46,6 +47,7 @@ public class HoverPhaseLocation : MonoBehaviour
         ApplyOutline(false);
 
         CamManager.Instance.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
+        CamManager.Instance.OnCamLocationChanged.AddListener(OnCamAnimationCompleted);
     }
 
 
@@ -67,7 +69,7 @@ public class HoverPhaseLocation : MonoBehaviour
     private void OnMouseDown()
     {
         Debug.Log("OnMouseDown Detected");
-        if (!_CanHoverLocations)
+        if (!_CanHoverLocations || !_CanClickLocations)
             return;
         
         _CanHoverLocations = false;
@@ -77,9 +79,14 @@ public class HoverPhaseLocation : MonoBehaviour
 
     private void OnCamNotOnLocation(CamSplineType camSplineType)
     {
-        Debug.Log("[OnCamNotOnLocation]: Hover Effect can occur again.");
+        Debug.Log($"[OnCamNotOnLocation]: Hover Effect can occur again {camSplineType} == {CamSplineType.None}.");
 
         _CanHoverLocations = (camSplineType == CamSplineType.None);
+    }
+
+    private void OnCamAnimationCompleted(CamSplineType camSplineType)
+    {
+        _CanClickLocations = (camSplineType == CamSplineType.None);
     }
 
     private void ApplyOutline(bool enable)
