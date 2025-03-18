@@ -6,20 +6,20 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
 
-    [CreateAssetMenu(fileName = "New Played Effect", menuName = "Vermines/Card System/Card/Effects/Discarded Effect.")]
-    public class DiscardedEffect : AEffect {
+    [CreateAssetMenu(fileName = "New Played Effect", menuName = "Vermines/Card System/Card/Effects/Sacrifice Effect.")]
+    public class SacrificeEffect : AEffect {
 
         #region Constants
 
-        private static readonly string descriptionTemplate = "Discard the <b>{0}</b>";
-        private static readonly string linkerTemplate      = " to ";
+        private static readonly string descriptionTemplate = "Sacrifice the <b>{0}</b>";
+        private static readonly string linkerTemplate = " to ";
 
         #endregion
 
         #region Informations
 
         [SerializeField]
-        private EffectType _Type = EffectType.Discard;
+        private EffectType _Type = EffectType.Sacrifice;
 
         public override EffectType Type
         {
@@ -60,14 +60,14 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #region UI Elements
 
-        public Sprite DiscardThisCardIcon = null;
+        public Sprite SacrificeIcon = null;
 
         #endregion
 
         public override List<(string, Sprite)> Draw()
         {
             List<(string, Sprite)> elements = new() {
-                { (null, DiscardThisCardIcon) }
+                { (null, SacrificeIcon) }
             };
 
             if (SubEffect != null) {
@@ -97,8 +97,8 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             UpdateDescription();
 
-            if (DiscardThisCardIcon == null)
-                DiscardThisCardIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Discard_This_Card");
+            if (SacrificeIcon == null)
+                SacrificeIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Sacrificed_This_Card");
         }
 
         #region Editor

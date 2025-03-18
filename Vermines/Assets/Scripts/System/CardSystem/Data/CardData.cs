@@ -93,6 +93,8 @@ namespace Vermines.CardSystem.Data {
 
         public List<AEffect> Effects;
 
+        public bool ReduceInSilence = false;
+
         #endregion
 
         #region Stats
@@ -190,6 +192,33 @@ namespace Vermines.CardSystem.Data {
         /// Use it in the UI, for know if the value has changed or not.
         /// </summary>
         public int CurrentSouls = 0;
+
+        private int _ExcessiveSouls = 0;
+
+        public void SoulsReduction(int amount)
+        {
+            if (CurrentSouls - amount < 0) {
+                _ExcessiveSouls = Mathf.Abs(CurrentSouls);
+
+                CurrentSouls = 0;
+            } else {
+                CurrentSouls -= amount;
+            }
+        }
+
+        public void RemoveSoulsReduction(int amount)
+        {
+            if (_ExcessiveSouls > 0 && amount < _ExcessiveSouls)
+                _ExcessiveSouls -= amount;
+            else if (_ExcessiveSouls > 0) {
+                amount -= _ExcessiveSouls;
+
+                CurrentSouls += amount;
+                _ExcessiveSouls = 0;
+            } else {
+                CurrentSouls += amount;
+            }
+        }
 
         #endregion
 

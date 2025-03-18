@@ -3,7 +3,7 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Phases {
-    using Vermines.CardSystem.Data;
+
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
@@ -28,7 +28,9 @@ namespace Vermines.Gameplay.Phases {
         {
             _CurrentPlayer = player;
 
-            Debug.Log($"Phase {Type} is now running");
+            ResetEveryEffectsThatWasActivatedDuringTheLastRound();
+
+            Debug.Log($"Phase {Type} is now running for player {_CurrentPlayer}");
 
             ExecutePlayedCardsEffect(player);
 
@@ -50,13 +52,11 @@ namespace Vermines.Gameplay.Phases {
             // Check if the effect is a passive effect or an active effect.
             // If it's a passive effect, the effect is already applied to the player.
 
-            foreach (ICard card in GameDataStorage.Instance.PlayerDeck[player].PlayedCards)
-            {
-                foreach (AEffect effect in card.Data.Effects)
-                {
-                    if (effect.Type == CardSystem.Enumerations.EffectType.Play)
-                    {
+            foreach (ICard card in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Play) {
                         effect.Play(player);
+
                         HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[player]);
 
                         Debug.Log($"[Client]: Card {card.ID} is {card.Data.Name}, effect played");
@@ -69,6 +69,15 @@ namespace Vermines.Gameplay.Phases {
         public void OnEffectActivated(int cardID)
         {
             PlayerController.Local.OnActiveEffectActivated(cardID);
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void ResetEveryEffectsThatWasActivatedDuringTheLastRound()
+        {
+            RoundEventDispatcher.ExecutePlayerEvents(_CurrentPlayer);
         }
 
         #endregion

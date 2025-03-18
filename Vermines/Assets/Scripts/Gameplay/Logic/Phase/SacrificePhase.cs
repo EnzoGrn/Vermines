@@ -7,7 +7,6 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Gameplay.Cards.Effect;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.HUD;
     using Vermines.Player;

@@ -5,16 +5,15 @@ namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.Editor.Gameplay.Cards.Effect;
     using Vermines.CardSystem.Enumerations;
-    using Vermines.CardSystem.Data.Effect;
 
-    [CustomEditor(typeof(EarnEffect))]
-    public class EarnEffectEditor : AEffectEditor {
+    [CustomEditor(typeof(EarnWithMultiplicatorEffect))]
+    public class EarnWithMultiplicatorEffectEditor : AEffectEditor {
 
         protected override void DrawCustomProperties()
         {
-            if (target == null || target is not EarnEffect)
+            if (target == null || target is not EarnWithMultiplicatorEffect)
                 return;
-            EarnEffect effect = (EarnEffect)target;
+            EarnWithMultiplicatorEffect effect = (EarnWithMultiplicatorEffect)target;
 
             // -- [Header("Card Properties")]
             GUILayout.BeginVertical(EditorStyles.helpBox);
@@ -22,6 +21,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             effect.Amount     = EditorGUILayout.IntField(new GUIContent("Amount", "The amount of data to earn."), effect.Amount);
             effect.DataToEarn = (DataType)EditorGUILayout.EnumPopup(new GUIContent("Data type", "The type of the data you want to earn."), effect.DataToEarn);
+
+            effect.ConditionChoice = (EarnWithMultiplicatorConditionType)EditorGUILayout.EnumPopup(new GUIContent("Condition", "The condition to multiply the data that will be earned."), effect.ConditionChoice);
 
             GUILayout.EndVertical();
             GUILayout.Space(10);

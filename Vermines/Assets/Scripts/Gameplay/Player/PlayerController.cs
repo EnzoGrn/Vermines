@@ -70,6 +70,16 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_ReplaceCardInShop(Object.InputAuthority.RawEncoded, shopType, slot);
         }
 
+        public void OnReducedInSilenced(ICard cardToBeSilenced)
+        {
+            GameManager.Instance.RPC_ReducedInSilenced(Object.InputAuthority.RawEncoded, cardToBeSilenced.ID);
+        }
+
+        public void RemoveReducedInSilenced(ICard card, int originalSouls)
+        {
+            GameManager.Instance.RPC_RemoveReducedInSilenced(Object.InputAuthority.RawEncoded, card.ID, originalSouls);
+        }
+
         #endregion
 
         #region Player's Commands
@@ -169,7 +179,7 @@ namespace Vermines.Player {
                         effect.Stop(player);
                 }
 
-                foreach (Card playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
+                foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
                     if (playedCard.Data.Effects != null) {
                         foreach (AEffect effect in playedCard.Data.Effects) {
                             if (effect.Type == EffectType.OnOtherSacrifice)
@@ -217,6 +227,40 @@ namespace Vermines.Player {
             CommandResponse response = CommandInvoker.ExecuteCommand(replaceCommand);
             
             // TODO: Update shop 'here' or in the ChangeCardCommand.
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_ReducedInSilenced(int playerId, int cardId)
+        {
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            if (card == null) {
+                Debug.LogError($"[SERVER]: Player {playerId} tried to reduce in silence a card that doesn't exist.");
+
+                return;
+            }
+            ICommand command = new ReducedInSilenceCommand(card);
+
+            CommandResponse response = CommandInvoker.ExecuteCommand(command);
+
+            // TODO: Maybe update the card UI ?
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_RemoveReducedInSilenced(int playerId, int cardID, int originalSouls)
+        {
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
+
+            if (card == null) {
+                Debug.LogError($"[SERVER]: Player {playerId} tried to remove the reduction in silence of a card that doesn't exist.");
+
+                return;
+            }
+            ICommand command = new RemoveReducedInSilenceCommand(card, originalSouls);
+
+            CommandResponse response = CommandInvoker.ExecuteCommand(command);
+
+            // TODO: Maybe update the card UI ?
         }
 
         #endregion

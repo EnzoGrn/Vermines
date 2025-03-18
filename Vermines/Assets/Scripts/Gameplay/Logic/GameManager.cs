@@ -4,6 +4,7 @@ using Fusion;
 
 namespace Vermines {
     using OMGG.DesignPattern;
+    using Vermines.CardSystem.Elements;
     using Vermines.Config;
     using Vermines.Gameplay.Phases;
     using Vermines.ShopSystem.Commands;
@@ -169,6 +170,18 @@ namespace Vermines {
         public void RPC_ReplaceCardInShop(int playerId, ShopType shopType, int slot)
         {
             Player.PlayerController.Local.RPC_ReplaceCardInShop(playerId, shopType, slot);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_ReducedInSilenced(int playerId, int cardToBeSilenced)
+        {
+            Player.PlayerController.Local.RPC_ReducedInSilenced(playerId, cardToBeSilenced);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_RemoveReducedInSilenced(int playerId, int cardID, int originalSouls)
+        {
+            Player.PlayerController.Local.RPC_RemoveReducedInSilenced(playerId, cardID, originalSouls);
         }
 
         #endregion

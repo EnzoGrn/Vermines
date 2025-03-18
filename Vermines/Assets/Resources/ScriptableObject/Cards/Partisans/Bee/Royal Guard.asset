@@ -20,7 +20,8 @@ MonoBehaviour:
   _Family: 0
   _Level: 1
   Effects:
-  - {fileID: 11400000, guid: 95f806f4c2156174ba6e9fc65ce53a19, type: 2}
+  - {fileID: 11400000, guid: f15ba1e32d2a94e4bb043640d5111058, type: 2}
+  - {fileID: 11400000, guid: 45a215d0d06a9bf4284c6a597c0298dc, type: 2}
   _Eloquence: 8
   IsFree: 0
   CurrentEloquence: 8
