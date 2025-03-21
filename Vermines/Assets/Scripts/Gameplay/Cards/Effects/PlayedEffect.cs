@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
 

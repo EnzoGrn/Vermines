@@ -21,7 +21,9 @@ MonoBehaviour:
   _Level: 2
   Effects:
   - {fileID: 11400000, guid: a7156f45f60511d4e96ca1d0bcd3ac12, type: 2}
-  Eloquence: 12
+  _Eloquence: 12
+  CurrentEloquence: 12
   _Souls: 20
+  CurrentSouls: 20
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: 3956ee29c8e5a9c439cc0354e3e7f980, type: 3}

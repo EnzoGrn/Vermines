@@ -13,15 +13,16 @@ MonoBehaviour:
   m_Name: Dagger
   m_EditorClassIdentifier: 
   Name: Dagger
-  Description: Earn <b><color=purple>1E</color></b> every time you play or discard
-    1 <b>partisan</b> card (maximum 3 times/turn).<br>You cannot have the <b>scourge</b>.
   Exemplars: 3
   IsStartingCard: 0
   Type: 1
   IsFamilyCard: 0
   _Family: -1
   _Level: 0
-  Eloquence: 5
+  Effects: []
+  _Eloquence: 5
+  CurrentEloquence: 5
   _Souls: 0
+  CurrentSouls: 0
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: 9ab9b1c6ba74dae43b4c117bb9366313, type: 3}
