@@ -179,7 +179,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (ThenIcon == null)
                 ThenIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Then");
             if (PartisanSacrificedIcon == null)
-                PartisanSacrificedIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Sacrificied_Other_Partisan_Card");
+                PartisanSacrificedIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Sacrificed_Other_Partisan_Card");
             if (BeeIcon == null)
                 BeeIcon = Resources.Load<Sprite>("Sprites/Card/Bee/Icon");
         }

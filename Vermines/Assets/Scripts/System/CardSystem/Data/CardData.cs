@@ -93,6 +93,20 @@ namespace Vermines.CardSystem.Data {
 
         public List<AEffect> Effects;
 
+        private List<AEffect> _OriginalEffect = null;
+
+        public void CopyEffect(List<AEffect> effects)
+        {
+            _OriginalEffect = new List<AEffect>(effects);
+
+            Effects = effects;
+        }
+
+        public void RemoveEffectCopied()
+        {
+            Effects = _OriginalEffect;
+        }
+
         public bool ReduceInSilence = false;
 
         #endregion

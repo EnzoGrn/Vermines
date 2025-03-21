@@ -4,21 +4,22 @@ using UnityEngine;
 namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.Editor.Gameplay.Cards.Effect;
+    using Vermines.CardSystem.Enumerations;
 
-    [CustomEditor(typeof(DrawEffect))]
-    public class DrawEffectEditor : AEffectEditor {
+    [CustomEditor(typeof(RemoveToEarn))]
+    public class RemoveToEarnEffectEditor : AEffectEditor {
 
         protected override void DrawCustomProperties()
         {
-            if (target == null || target is not DrawEffect)
+            if (target == null || target is not RemoveToEarn)
                 return;
-            DrawEffect effect = (DrawEffect)target;
+            RemoveToEarn effect = (RemoveToEarn)target;
 
             // -- [Header("Card Properties")]
             GUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Effect Properties", EditorStyles.boldLabel);
 
-            effect.Amount = EditorGUILayout.IntField(new GUIContent("Amount", "The amount of card to draw."), effect.Amount);
+            effect.CardType = (CardType)EditorGUILayout.EnumPopup(new GUIContent("Card type", "The type of the card you want to remove."), effect.CardType);
 
             GUILayout.EndVertical();
             GUILayout.Space(10);

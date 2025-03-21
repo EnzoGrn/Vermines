@@ -105,7 +105,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             UpdateDescription();
 
             if (OtherSacrificeThisCardIcon == null)
-                OtherSacrificeThisCardIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Sacrificied_Other_Partisan_Card");
+                OtherSacrificeThisCardIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Sacrificed_Other_Partisan_Card");
         }
 
         #region Editor

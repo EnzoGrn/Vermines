@@ -40,6 +40,11 @@ namespace Vermines.CardSystem.Data.Effect {
         void Stop(PlayerRef player);
 
         /// <summary>
+        /// Function called after an RPC, if needed.
+        /// </summary>
+        void NetworkEventFunction(PlayerRef player);
+
+        /// <summary>
         /// Function for draw the effect.
         /// </summary>
         List<(string, Sprite)> Draw();
@@ -89,6 +94,12 @@ namespace Vermines.CardSystem.Data.Effect {
         {
             if (SubEffect != null)
                 SubEffect.Stop(player);
+        }
+
+        public virtual void NetworkEventFunction(PlayerRef player)
+        {
+            if (SubEffect != null)
+                SubEffect.NetworkEventFunction(player);
         }
 
         public virtual List<(string, Sprite)> Draw()

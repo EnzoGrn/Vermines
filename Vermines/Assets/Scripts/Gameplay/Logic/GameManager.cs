@@ -4,6 +4,8 @@ using Fusion;
 
 namespace Vermines {
     using OMGG.DesignPattern;
+    using Vermines.CardSystem.Data.Effect;
+    using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Elements;
     using Vermines.Config;
     using Vermines.Gameplay.Phases;
@@ -182,6 +184,24 @@ namespace Vermines {
         public void RPC_RemoveReducedInSilenced(int playerId, int cardID, int originalSouls)
         {
             Player.PlayerController.Local.RPC_RemoveReducedInSilenced(playerId, cardID, originalSouls);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_CopiedEffect(int playerId, int cardID, int cardToCopiedID)
+        {
+            Player.PlayerController.Local.RPC_CopiedEffect(playerId, cardID, cardToCopiedID);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_RemoveCopiedEffect(int playerId, int cardID)
+        {
+            Player.PlayerController.Local.RPC_RemoveCopiedEffect(playerId, cardID);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_NetworkEventCardEffect(int playerID, int cardID)
+        {
+            Player.PlayerController.Local.RPC_NetworkEventCardEffect(playerID, cardID);
         }
 
         #endregion
