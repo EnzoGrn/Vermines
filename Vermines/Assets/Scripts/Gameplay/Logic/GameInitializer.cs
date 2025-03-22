@@ -38,6 +38,7 @@ namespace Vermines
             {
                 Debug.Log("LoadYourAsyncScene.");
                 Runner.LoadScene("UI", LoadSceneMode.Additive);
+                Runner.LoadScene("Environment", LoadSceneMode.Additive);
             }
         }
 
