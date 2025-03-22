@@ -5,7 +5,6 @@ namespace Vermines.Editor.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Data.Effect;
-    using Vermines.CardSystem.Data;
 
     public abstract class AEffectEditor : UnityEditor.Editor {
 

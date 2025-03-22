@@ -13,14 +13,17 @@ MonoBehaviour:
   m_Name: Soldier
   m_EditorClassIdentifier: 
   Name: Soldier
-  Description: Your market purchases cost <b><color=purple>2E</color></b> less.
   Exemplars: 2
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 2
   _Level: 1
-  Eloquence: 6
+  Effects:
+  - {fileID: 11400000, guid: ac7db2863828589459fad89d97dd2582, type: 2}
+  _Eloquence: 6
+  CurrentEloquence: 6
   _Souls: 15
+  CurrentSouls: 15
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: 8bce8bf429c1bd140a1733a46a4b5c8b, type: 3}

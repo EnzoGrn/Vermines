@@ -75,6 +75,17 @@ namespace Vermines.ShopSystem.Data {
 
             return json;
         }
+
+        public void SetFree(bool free)
+        {
+            foreach (var slot in AvailableCards)
+                if (slot.Value != null)
+                    slot.Value.Data.IsFree = free;
+            foreach (var card in Deck)
+                card.Data.IsFree = free;
+            foreach (var card in DiscardDeck)
+                card.Data.IsFree = free;
+        }
         
         public void Deserialize(JSONObject json)
         {

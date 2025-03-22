@@ -1,13 +1,12 @@
 using OMGG.DesignPattern;
 using Fusion;
 
-namespace Vermines.Gameplay.Commands.Deck
-{
-    using System.Linq;
+namespace Vermines.Gameplay.Commands.Deck {
+
+    using Vermines.CardSystem.Elements;
     using Vermines.Player;
 
-    public class CardPlayedCommand : ICommand
-    {
+    public class CardPlayedCommand : ICommand {
 
         private readonly PlayerRef _Player;
         private readonly int _CardId;
@@ -20,18 +19,21 @@ namespace Vermines.Gameplay.Commands.Deck
             _CardId = cardID;
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
             if (GameDataStorage.Instance.PlayerDeck.TryGetValue(_Player, out _) == false)
-                return false;
+                return new CommandResponse(CommandStatus.Invalid, $"Player {_Player} does not have a deck.");
             PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[_Player];
 
             _OldDeck = deck.DeepCopy();
 
-            deck.PlayCard(_CardId);
+            ICard card = deck.PlayCard(_CardId);
 
+            if (card == null)
+                return new CommandResponse(CommandStatus.Invalid, $"Player {_Player} tried to play a card that he does not have.");
             GameDataStorage.Instance.PlayerDeck[_Player] = deck;
-            return true;
+ 
+            return new CommandResponse(CommandStatus.Success, $"Player {_Player} played the card {_CardId}.");
         }
 
         public void Undo()

@@ -6,9 +6,7 @@ using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Vermines
-{
-
+namespace Vermines {
     using Vermines.Gameplay.Commands.Internal;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.CardSystem.Enumerations;
@@ -24,8 +22,7 @@ namespace Vermines
     using Vermines.HUD;
     using Vermines.HUD.Card;
 
-    public class GameInitializer : NetworkBehaviour
-    {
+    public class GameInitializer : NetworkBehaviour {
 
         private readonly NetworkQueue _Queue = new();
 
@@ -122,8 +119,6 @@ namespace Vermines
 
             GameDataStorage.Instance.Shop = shop;
 
-            //FillShop();
-
             // -- RPC Command for sync initialization
             RPC_InitializeShop(GameDataStorage.Instance.Shop.Serialize());
 
@@ -182,13 +177,6 @@ namespace Vermines
             GameManager.Instance.Config.Seed = seed;
         }
 
-        private void FillShop()
-        {
-            ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
-
-            CommandInvoker.ExecuteCommand(fillCommand);
-        }
-
         #endregion
 
         #region Commands
@@ -200,11 +188,15 @@ namespace Vermines
                 SetGameSeed(seed);
 
                 List<CardFamily> familiesList = FamilyUtils.FamiliesIdsToList(familiesIds);
+
                 ICommand initializeCommand = new InitializeGameCommand(familiesList);
 
-                CommandInvoker.ExecuteCommand(initializeCommand);
+                CommandResponse response = CommandInvoker.ExecuteCommand(initializeCommand);
 
-                Debug.Log($"[SERVER]: {CardSetDatabase.Instance.Size} cards instantiated!");
+                if (response.Status == CommandStatus.Success)
+                    Debug.Log($"[SERVER]: {CardSetDatabase.Instance.Size} cards instantiated!");
+                else
+                    Debug.LogWarning($"[SERVER]: {response.Message}");
             });
         }
 
@@ -232,17 +224,17 @@ namespace Vermines
                 if (HasStateAuthority == false)
                 {
                     GameDataStorage.Instance.Shop = ScriptableObject.CreateInstance<ShopData>();
+
                     ICommand initializeCommand = new SyncShopCommand(GameDataStorage.Instance.Shop, data, GameManager.Instance.Config);
 
-                    CommandInvoker.ExecuteCommand(initializeCommand);
-                }
+                    CommandResponse syncStatus = CommandInvoker.ExecuteCommand(initializeCommand);
 
+                    if (syncStatus.Status != CommandStatus.Success)
+                        Debug.LogWarning($"[SERVER]: {syncStatus.Message}");
+                }
                 ICommand fillCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 
-                CommandInvoker.ExecuteCommand(fillCommand);
-
-                if (GameDataStorage.Instance.Shop == null)
-                    Debug.LogError("Shop is null");
+                CommandResponse response = CommandInvoker.ExecuteCommand(fillCommand);
             });
         }
 
@@ -258,7 +250,13 @@ namespace Vermines
                     {
                         ICommand drawCommand = new DrawCommand(player.Key);
 
-                        CommandInvoker.ExecuteCommand(drawCommand);
+                        CommandResponse command = CommandInvoker.ExecuteCommand(drawCommand);
+
+                        if (command.Status == CommandStatus.Success && PlayerController.Local.PlayerRef == player.Key) {
+                            PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player.Key];
+
+                            GameEvents.InvokeOnDrawCard(deck.Hand.Last());
+                        }
                     }
                 }
 

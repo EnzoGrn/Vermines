@@ -13,15 +13,18 @@ MonoBehaviour:
   m_Name: Squire
   m_EditorClassIdentifier: 
   Name: Squire
-  Description: Discard the <b>squire</b> to gain <b><color=purple>2E</color></b>
-    and replace 1 market and yard card (the squire counts as a <b>tool</b> card).
   Exemplars: 2
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 2
   _Level: 1
-  Eloquence: 3
+  Effects:
+  - {fileID: 11400000, guid: 06e012b9ff14b90469dfc184b7f44939, type: 2}
+  _Eloquence: 3
+  IsFree: 0
+  CurrentEloquence: 3
   _Souls: 10
+  CurrentSouls: 10
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: e42a1b344ea278547a495fd82da598ad, type: 3}

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using OMGG.DesignPattern;
 using UnityEngine;
 using Fusion;
@@ -6,8 +7,8 @@ using Fusion;
 namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
-    using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Deck;
+    using Vermines.Player;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Draw/Draw cards.")]
     public class DrawEffect : AEffect {
@@ -47,20 +48,6 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
         }
 
-        [SerializeField]
-        private DataType _DataToEarn = DataType.Eloquence;
-
-        public DataType DataToEarn
-        {
-            get => _DataToEarn;
-            set
-            {
-                _DataToEarn = value;
-
-                UpdateDescription();
-            }
-        }
-
         #endregion
 
         #region UI Elements
@@ -75,7 +62,13 @@ namespace Vermines.Gameplay.Cards.Effect {
             for (int i = 0; i < Amount; i++) {
                 ICommand drawCommand = new DrawCommand(player);
 
-                CommandInvoker.ExecuteCommand(drawCommand);
+                CommandResponse command = CommandInvoker.ExecuteCommand(drawCommand);
+
+                if (command.Status == CommandStatus.Success && PlayerController.Local.PlayerRef == player) {
+                    PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
+
+                    GameEvents.InvokeOnDrawCard(deck.Hand.Last());
+                }
             }
 
             base.Play(player);
@@ -107,7 +100,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
                 if (subDescription.Length > 0)
                     subDescription = char.ToLower(subDescription[0]) + subDescription[1..];
-                Description += $" {linkerTemplate} {subDescription}";
+                Description += $"{linkerTemplate}{subDescription}";
             }
         }
 

@@ -70,8 +70,10 @@ namespace Vermines.HUD
 
         public void OpenCardBuyOverlay(CardBase card)
         {
-            cardBuyOverlay.GetComponent<CardBuyBanner>().Setup(card.Card);
-            cardBuyOverlay.SetActive(true);
+            if (card != null) {
+                cardBuyOverlay.GetComponent<CardBuyBanner>().Setup(card.Card);
+                cardBuyOverlay.SetActive(true);
+            }
         }
 
         public void CloseCardBuyOverlay()

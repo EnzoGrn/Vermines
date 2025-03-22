@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29704ee84e470c419dd8befa5aa9acc, type: 3}
+  m_Name: SilenceReduction
+  m_EditorClassIdentifier: 
+  _Description: Cancel the next activation of another partisan's effects, that partisan
+    returns <b><color=red>0A</color></b> until the next turn.
+  PartisanCardIcon: {fileID: 21300000, guid: 94ece467f2b33c5498ae1a4bdc52b337, type: 3}
+  PartisanEffectIcon: {fileID: 21300000, guid: 3d7c2507c23b3a747a7fa85cf516aa1f, type: 3}
+  SoulsBannerIcon: {fileID: 21300000, guid: 2a1e2fde726996845b1bf2809a8bd00b, type: 3}
