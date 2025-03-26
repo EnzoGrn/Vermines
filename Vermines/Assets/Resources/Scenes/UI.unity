@@ -1647,17 +1647,77 @@ PrefabInstance:
     m_TransformParent: {fileID: 1548714564}
     m_Modifications:
     - target: {fileID: 185282917046948785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 185282917046948785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 185282917046948785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 599597599}
+    - target: {fileID: 185282917046948785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 599597599}
+    - target: {fileID: 185282917046948785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 185282917046948785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: GoToCourtyard
+      objectReference: {fileID: 0}
+    - target: {fileID: 185282917046948785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: CloseShop
+      objectReference: {fileID: 0}
+    - target: {fileID: 185282917046948785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Vermines.HUD.ShopManager, Vermines
+      objectReference: {fileID: 0}
+    - target: {fileID: 185282917046948785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 863552426411563904, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1295497002}
     - target: {fileID: 2423627179871805806, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2423627179871805806, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2423627179871805806, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 599597599}
+    - target: {fileID: 2423627179871805806, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 599597599}
+    - target: {fileID: 2423627179871805806, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2423627179871805806, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: GoToGlobal
+      objectReference: {fileID: 0}
+    - target: {fileID: 2423627179871805806, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Vermines.HUD.ShopManager, Vermines
+      objectReference: {fileID: 0}
+    - target: {fileID: 2423627179871805806, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 2547557445277721165, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -1815,9 +1875,41 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 599597599}
+    - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 599597599}
+    - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: GoToMarket
+      objectReference: {fileID: 0}
+    - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: CloseShop
+      objectReference: {fileID: 0}
+    - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Vermines.HUD.ShopManager, Vermines
+      objectReference: {fileID: 0}
+    - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
