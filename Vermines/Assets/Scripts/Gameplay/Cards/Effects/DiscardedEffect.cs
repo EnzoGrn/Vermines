@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
 
@@ -86,14 +85,12 @@ namespace Vermines.Gameplay.Cards.Effect {
 
                 if (subDescription.Length > 0)
                     subDescription = char.ToLower(subDescription[0]) + subDescription[1..];
-                if (Card != null && Card.Data != null) {
+                if (Card != null && Card.Data != null)
                     Description = $"{string.Format(descriptionTemplate, Card.Data.Name)}{linkerTemplate}{subDescription}";
-                } else {
+                else
                     Description = $"{string.Format(descriptionTemplate, "{card_name}")}{linkerTemplate}{subDescription}";
-                }
+                Description += ".";
             }
-
-            Description += ".";
         }
 
         private void OnEnable()

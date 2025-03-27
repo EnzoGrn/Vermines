@@ -13,14 +13,17 @@ MonoBehaviour:
   m_Name: Merchant
   m_EditorClassIdentifier: 
   Name: Merchant
-  Description: Your purchases cost <b><color=purple>1E</color></b> less.
   Exemplars: 1
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 1
   _Family: -1
   _Level: 1
-  Eloquence: 5
+  Effects:
+  - {fileID: 11400000, guid: c0caba12c8c29d14bb3b4e17285ffe02, type: 2}
+  _Eloquence: 5
+  CurrentEloquence: 5
   _Souls: 15
+  CurrentSouls: 15
   _SpriteName: Merchant
   _Sprite: {fileID: 0}

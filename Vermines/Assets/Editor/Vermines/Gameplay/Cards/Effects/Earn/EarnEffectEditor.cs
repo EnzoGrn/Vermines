@@ -5,6 +5,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.Editor.Gameplay.Cards.Effect;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.CardSystem.Data.Effect;
 
     [CustomEditor(typeof(EarnEffect))]
     public class EarnEffectEditor : AEffectEditor {
@@ -19,7 +20,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             GUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Effect Properties", EditorStyles.boldLabel);
 
-            effect.Amount     = EditorGUILayout.IntField(new GUIContent("Amount", "The amount of eloquence to earn."), effect.Amount);
+            effect.Amount     = EditorGUILayout.IntField(new GUIContent("Amount", "The amount of data to earn."), effect.Amount);
             effect.DataToEarn = (DataType)EditorGUILayout.EnumPopup(new GUIContent("Data type", "The type of the data you want to earn."), effect.DataToEarn);
 
             GUILayout.EndVertical();

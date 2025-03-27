@@ -3,11 +3,10 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Phases {
-    using OMGG.DesignPattern;
-    using System.ComponentModel.Design;
+
+    using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.HUD;
     using Vermines.Player;
@@ -47,6 +46,13 @@ namespace Vermines.Gameplay.Phases {
             Reset();
 
             List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
+
+            foreach (ICard card in playedCards) {
+                foreach (IEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Passive)
+                        effect.Play(_CurrentPlayer);
+                }
+            }
 
             if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
                 HUDManager.instance.OpenDeskOverlay();

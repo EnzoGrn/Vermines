@@ -7,7 +7,6 @@ using Fusion;
 namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
-    using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.Player;
 
@@ -44,20 +43,6 @@ namespace Vermines.Gameplay.Cards.Effect {
             set
             {
                 _Amount = value;
-
-                UpdateDescription();
-            }
-        }
-
-        [SerializeField]
-        private DataType _DataToEarn = DataType.Eloquence;
-
-        public DataType DataToEarn
-        {
-            get => _DataToEarn;
-            set
-            {
-                _DataToEarn = value;
 
                 UpdateDescription();
             }
@@ -115,7 +100,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
                 if (subDescription.Length > 0)
                     subDescription = char.ToLower(subDescription[0]) + subDescription[1..];
-                Description += $" {linkerTemplate} {subDescription}";
+                Description += $"{linkerTemplate}{subDescription}";
             }
         }
 

@@ -21,7 +21,9 @@ MonoBehaviour:
   _Level: 1
   Effects:
   - {fileID: 11400000, guid: a39c30c992c0a2d45a6099d2a1db54ca, type: 2}
-  Eloquence: 5
+  _Eloquence: 5
+  CurrentEloquence: 5
   _Souls: 15
+  CurrentSouls: 15
   _SpriteName: Priest
   _Sprite: {fileID: 0}

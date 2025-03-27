@@ -104,6 +104,10 @@ namespace Vermines {
             if (HasStateAuthority == false)
                 return;
             if (PlayerData.TryGet(player, out PlayerData data) == true) {
+                int maxEloquence = GameManager.Instance.Config.MaxEloquence.Value;
+
+                if (maxEloquence < eloquence)
+                    eloquence = maxEloquence;
                 data.Eloquence = eloquence;
 
                 PlayerData.Set(player, data);

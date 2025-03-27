@@ -3,6 +3,7 @@ using Fusion;
 using UnityEngine;
 
 namespace Vermines.Player {
+
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
@@ -60,6 +61,41 @@ namespace Vermines.Player {
             RPC_BuyCard(Object.InputAuthority.RawEncoded, shopType, slot);
         }
 
+        public void OnActiveEffectActivated(int cardID)
+        {
+            GameManager.Instance.RPC_ActivateEffect(Object.InputAuthority.RawEncoded, cardID);
+        }
+
+        public void OnShopReplaceCard(ShopType shopType, int slot)
+        {
+            GameManager.Instance.RPC_ReplaceCardInShop(Object.InputAuthority.RawEncoded, shopType, slot);
+        }
+
+        public void OnReducedInSilenced(ICard cardToBeSilenced)
+        {
+            GameManager.Instance.RPC_ReducedInSilenced(Object.InputAuthority.RawEncoded, cardToBeSilenced.ID);
+        }
+
+        public void RemoveReducedInSilenced(ICard card, int originalSouls)
+        {
+            GameManager.Instance.RPC_RemoveReducedInSilenced(Object.InputAuthority.RawEncoded, card.ID, originalSouls);
+        }
+
+        public void CopiedEffect(ICard card, ICard cardCopied)
+        {
+            GameManager.Instance.RPC_CopiedEffect(Object.InputAuthority.RawEncoded, card.ID, cardCopied.ID);
+        }
+
+        public void RemoveCopiedEffect(ICard card)
+        {
+            GameManager.Instance.RPC_RemoveCopiedEffect(Object.InputAuthority.RawEncoded, card.ID);
+        }
+
+        public void NetworkEventCardEffect(int cardID)
+        {
+            GameManager.Instance.RPC_NetworkEventCardEffect(Object.InputAuthority.RawEncoded, cardID);
+        }
+
         #endregion
 
         #region Player's Commands
@@ -70,11 +106,11 @@ namespace Vermines.Player {
         public void RPC_BuyCard(int playerRef, ShopType shopType, int slot)
         {
             BuyParameters parameters = new() {
-                Decks    = GameDataStorage.Instance.PlayerDeck,
-                Player   = PlayerRef.FromEncoded(playerRef),
-                Shop     = GameDataStorage.Instance.Shop,
+                Decks = GameDataStorage.Instance.PlayerDeck,
+                Player = PlayerRef.FromEncoded(playerRef),
+                Shop = GameDataStorage.Instance.Shop,
                 ShopType = shopType,
-                Slot     = slot
+                Slot = slot
             };
 
             if (parameters.Shop == null)
@@ -111,7 +147,7 @@ namespace Vermines.Player {
                 ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
                 foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type is CardSystem.Enumerations.EffectType.Discard) {
+                    if (effect.Type == CardSystem.Enumerations.EffectType.Discard) {
                         effect.Play(player);
 
                         HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[player]);
@@ -139,7 +175,7 @@ namespace Vermines.Player {
         public void RPC_CardSacrified(int playerId, int cardId)
         {
             PlayerRef player = PlayerRef.FromEncoded(playerId);
-            ICard card       = CardSetDatabase.Instance.GetCardByID(cardId);
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
             if (card == null) {
                 Debug.LogError($"[SERVER]: Player {player} tried to sacrify a card that doesn't exist.");
@@ -152,6 +188,22 @@ namespace Vermines.Player {
             CommandResponse response = CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
 
             if (response.Status == CommandStatus.Success) {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Sacrifice)
+                        effect.Play(player);
+                    else if (effect.Type == EffectType.Passive)
+                        effect.Stop(player);
+                }
+
+                foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
+                    if (playedCard.Data.Effects != null) {
+                        foreach (AEffect effect in playedCard.Data.Effects) {
+                            if (effect.Type == EffectType.OnOtherSacrifice)
+                                effect.Play(player);
+                        }
+                    }
+                }
+
                 ICommand earnCommand = new EarnCommand(player, card.Data.Souls, DataType.Soul);
 
                 response = CommandInvoker.ExecuteCommand(earnCommand);
@@ -163,6 +215,117 @@ namespace Vermines.Player {
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
             }
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_ActivateEffect(int playerID, int cardID)
+        {
+            PlayerRef player = PlayerRef.FromEncoded(playerID);
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
+
+            if (card == null) {
+                Debug.LogError($"[SERVER]: Player {player} tried to activate an effect that doesn't exist.");
+
+                return;
+            }
+
+            foreach (AEffect effect in card.Data.Effects) {
+                if (effect.Type == EffectType.Activate)
+                    effect.Play(player);
+            }
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_ReplaceCardInShop(int playerID, ShopType shopType, int slot)
+        {
+            ICommand replaceCommand = new ChangeCardCommand(GameDataStorage.Instance.Shop, shopType, slot);
+
+            CommandResponse response = CommandInvoker.ExecuteCommand(replaceCommand);
+
+            // TODO: Update shop 'here' or in the ChangeCardCommand.
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_ReducedInSilenced(int playerId, int cardId)
+        {
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            if (card == null) {
+                Debug.LogError($"[SERVER]: Player {playerId} tried to reduce in silence a card that doesn't exist.");
+
+                return;
+            }
+            ICommand command = new ReducedInSilenceCommand(card);
+
+            CommandResponse response = CommandInvoker.ExecuteCommand(command);
+
+            // TODO: Maybe update the card UI ?
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_RemoveReducedInSilenced(int playerId, int cardID, int originalSouls)
+        {
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
+
+            if (card == null) {
+                Debug.LogError($"[SERVER]: Player {playerId} tried to remove the reduction in silence of a card that doesn't exist.");
+
+                return;
+            }
+            ICommand command = new RemoveReducedInSilenceCommand(card, originalSouls);
+
+            CommandResponse response = CommandInvoker.ExecuteCommand(command);
+
+            // TODO: Maybe update the card UI ?
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_CopiedEffect(int playerId, int cardID, int cardToCopiedID)
+        {
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
+            ICard cardToCopied = CardSetDatabase.Instance.GetCardByID(cardToCopiedID);
+
+            if (card == null || cardToCopied == null) {
+                Debug.LogError($"[SERVER]: Player {playerId} tried to copy an effect of a card that doesn't exist.");
+
+                return;
+            }
+
+            card.Data.CopyEffect(cardToCopied.Data.Effects);
+
+            // TODO: Maybe update the card UI, of the card (effect)
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_RemoveCopiedEffect(int playerId, int cardID)
+        {
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
+
+            if (card == null) {
+                Debug.LogError($"[SERVER]: Player {playerId} tried to removed a copied effect of a card that doesn't exist.");
+
+                return;
+            }
+
+            card.Data.RemoveEffectCopied();
+
+            // TODO: Maybe update the card UI, of the card (effect)
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_NetworkEventCardEffect(int playerID, int cardID)
+        {
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
+            PlayerRef player = PlayerRef.FromEncoded(playerID);
+
+            if (card == null) {
+                Debug.LogError($"[SERVER]: Player {playerID} tried to called an network event for a card that doesn't exist.");
+
+                return;
+            }
+
+            foreach (AEffect effect in card.Data.Effects)
+                effect.NetworkEventFunction(player);
         }
 
         #endregion

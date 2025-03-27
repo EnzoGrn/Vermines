@@ -13,14 +13,17 @@ MonoBehaviour:
   m_Name: Apothecary
   m_EditorClassIdentifier: 
   Name: Apothecary
-  Description: Your purchases cost <b><color=purple>2E</color></b> less.
   Exemplars: 1
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 1
   _Family: -1
   _Level: 2
-  Eloquence: 8
+  Effects:
+  - {fileID: 11400000, guid: e2da36245f92dc445b5e545f2e6ba819, type: 2}
+  _Eloquence: 8
+  CurrentEloquence: 8
   _Souls: 20
+  CurrentSouls: 20
   _SpriteName: Apothecary
   _Sprite: {fileID: 0}

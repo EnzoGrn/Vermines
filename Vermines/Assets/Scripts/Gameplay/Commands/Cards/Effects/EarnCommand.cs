@@ -34,6 +34,7 @@ namespace Vermines.Gameplay.Commands.Cards.Effects {
         {
             if (!GameDataStorage.Instance.PlayerData.TryGet(_Player, out PlayerData playerData))
                 return;
+            // TODO: Fix that (in case the player have 19 and win 5, it will be at 20, but if we undo he will currently be at 15 and not 19)
             if (_DataType == DataType.Eloquence)
                 GameDataStorage.Instance.SetEloquence(_Player, playerData.Eloquence - _Amount);
             else if (_DataType == DataType.Soul)
