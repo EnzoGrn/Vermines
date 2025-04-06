@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.Events;
 using Vermines.CardSystem.Elements;
+using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.ShopSystem.Enumerations;
 
 public static class GameEvents
@@ -14,6 +15,7 @@ public static class GameEvents
     public static UnityEvent<int> OnDiscard = new();
     public static UnityEvent<int> OnCardPlayed = new();
     public static UnityEvent<int> OnCardSacrified = new();
+    public static UnityEvent<PhaseType> OnPhaseChanged = new();
 
     static GameEvents()
     {

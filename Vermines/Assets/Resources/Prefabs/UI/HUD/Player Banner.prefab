@@ -521,6 +521,7 @@ GameObject:
   - component: {fileID: 6078751338380125149}
   - component: {fileID: -2145041871505033882}
   - component: {fileID: 5722145261315663453}
+  - component: {fileID: 8617780805097864372}
   m_Layer: 5
   m_Name: Player Banner
   m_TagString: Untagged
@@ -594,7 +595,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4772245233492487442}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: baeedd400af61304ab6e692ac8083924, type: 3}
   m_Name: 
@@ -663,6 +664,25 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &8617780805097864372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4772245233492487442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d57203dbaa9f3464faac5141fd388ad2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nicknameText: {fileID: 8448030125051477157}
+  eloquenceText: {fileID: 6307927075711677442}
+  soulsText: {fileID: 496529015923178744}
+  canvasGroup: {fileID: 0}
+  root: {fileID: 842492557416429263}
+  normalScale: 1.1
+  activeScale: 1.275
 --- !u!1 &5989282088663256067
 GameObject:
   m_ObjectHideFlags: 0

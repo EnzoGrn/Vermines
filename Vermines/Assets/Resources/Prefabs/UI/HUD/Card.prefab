@@ -276,6 +276,7 @@ GameObject:
   - component: {fileID: -2039284470658538282}
   - component: {fileID: 1568188764484955011}
   - component: {fileID: 6682604036917479662}
+  - component: {fileID: 8617751701730483249}
   m_Layer: 6
   m_Name: Card
   m_TagString: Untagged
@@ -351,7 +352,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 548401717956231047}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87de637992a7dee4f9bed38f40815fbd, type: 3}
   m_Name: 
@@ -388,7 +389,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 548401717956231047}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 431924b3649ed54478f8c36d3f0cee3a, type: 3}
   m_Name: 
@@ -400,6 +401,24 @@ MonoBehaviour:
   character: {fileID: 6797222475460496817}
   background: {fileID: 6641272224189884911}
   debugMode: 1
+--- !u!114 &8617751701730483249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548401717956231047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eff4dcaa842f7f341a4cbba17b81d31f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardNameText: {fileID: 7487895608642308917}
+  eloquenceText: {fileID: 2529223482764352865}
+  soulsText: {fileID: 2994218563122489541}
+  effectText: {fileID: 0}
+  characterImage: {fileID: 3360256749106935662}
+  backgroundImage: {fileID: 4078322104712623146}
 --- !u!1 &716538002797232710
 GameObject:
   m_ObjectHideFlags: 0

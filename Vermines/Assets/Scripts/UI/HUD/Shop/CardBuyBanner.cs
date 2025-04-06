@@ -106,7 +106,7 @@ namespace Vermines.HUD
             // Destroy the card bought
             //CardSpawner.Instance.DestroyCard(_Card.ID);
 
-            ShopManager.instance.GetShop().CloseCardBuyOverlay();
+            //ShopManager.instance.GetShop().CloseCardBuyOverlay();
         }
 
         private void OnValidate()

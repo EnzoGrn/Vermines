@@ -8,7 +8,7 @@ using Vermines.HUD;
 namespace Vermines.Gameplay.Phases {
 
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.Player;
+    using Vermines.UI;
 
     public class PhaseManager : NetworkBehaviour {
 
@@ -54,8 +54,7 @@ namespace Vermines.Gameplay.Phases {
 
         private void SetUpUI()
         {
-            HUDManager.instance.SetPlayers(GameDataStorage.Instance.PlayerData);
-            HUDManager.instance.UpdatePhaseButton(GameManager.Instance.IsMyTurn());
+            TurnManager.Instance.Init(GameDataStorage.Instance.PlayerData);
         }
 
         private void SetUpEvents()
@@ -114,8 +113,7 @@ namespace Vermines.Gameplay.Phases {
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
         public void RPC_UpdatePhaseUI()
         {
-            HUDManager.instance.NextPhase();
-            HUDManager.instance.UpdatePhaseButton(GameManager.Instance.IsMyTurn());
+            GameEvents.OnPhaseChanged?.Invoke(CurrentPhase);
         }
 
         /// <summary>
@@ -142,7 +140,7 @@ namespace Vermines.Gameplay.Phases {
         {
             if (!Runner.IsServer || !GameManager.Instance.Start || Runner.ActivePlayers.Count() < GameManager.Instance.Config.MinPlayers.Value)
                 return;
-            HUDManager.instance.UpdatePlayers(GameDataStorage.Instance.PlayerData);
+            TurnManager.Instance.UpdateAllPlayers(GameDataStorage.Instance.PlayerData);
             RPC_ProcessPhase(CurrentPhase, GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex));
         }
 

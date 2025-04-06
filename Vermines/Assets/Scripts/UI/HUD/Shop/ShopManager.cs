@@ -1,83 +1,67 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Vermines.CardSystem.Elements;
+using Vermines.ShopSystem.Enumerations;
 
-namespace Vermines.HUD
+namespace Vermines.UI.Shop
 {
+    public class ShopCardEntry
+    {
+        public ICard Data;
+        public bool IsNew;
+
+        public ShopCardEntry(ICard data, bool isNew = false)
+        {
+            Data = data;
+            IsNew = isNew;
+        }
+    }
+
     public class ShopManager : MonoBehaviour
     {
-        public static ShopManager instance;
+        public static ShopManager Instance;
+        public event Action<ShopType, List<ShopCardEntry>> OnShopUpdated;
 
-        [SerializeField] private GameObject marketOverlay;
-        [SerializeField] private GameObject courtyardOverlay;
-
-        private Shop currentShop;
+        private Dictionary<ShopType, Dictionary<int, ICard>> previousShopStates = new();
 
         private void Awake()
         {
-            if (instance == null) instance = this;
-            else Destroy(gameObject);
-        }
-
-        private void Start()
-        {
-            marketOverlay.SetActive(false);
-            courtyardOverlay.SetActive(false);
-            currentShop = null;
-        }
-
-        public void OpenMarket()
-        {
-            marketOverlay.SetActive(true);
-            currentShop = marketOverlay.GetComponent<Shop>();
-            if (currentShop == null)
+            if (Instance == null)
             {
-                Debug.LogError("Shop component not found on marketOverlay GameObject.");
-                return;
+                Instance = this;
             }
-            courtyardOverlay.SetActive(false);
-        }
-
-        public void OpenCourtyard()
-        {
-            marketOverlay.SetActive(false);
-            courtyardOverlay.SetActive(true);
-            currentShop = courtyardOverlay.GetComponent<Shop>();
-            if (currentShop == null)
+            else
             {
-                Debug.LogError("Shop component not found on courtyardOverlay GameObject.");
-                return;
+                Destroy(gameObject);
             }
         }
-
-        public void CloseShop()
+        public void ReceiveFullShopList(ShopType type, Dictionary<int, ICard> newList)
         {
-            if (instance != null)
+            List<ShopCardEntry> entries = new();
+
+            // Check if there's an old list for this shop type
+            Dictionary<int, ICard> oldList = previousShopStates.ContainsKey(type)
+                ? previousShopStates[type]
+                : new Dictionary<int, ICard>();
+
+            foreach (var kvp in newList)
             {
-                if (currentShop != null)
-                    currentShop.CloseCardBuyOverlay();
-                marketOverlay.SetActive(false);
-                courtyardOverlay.SetActive(false);
-                currentShop = null;
+                int slotIndex = kvp.Key;
+                ICard newCard = kvp.Value;
+
+                // Check if the card is new or has changed in the slot
+                bool isNew = !oldList.TryGetValue(slotIndex, out var oldCard) || oldCard.ID != newCard?.ID;
+
+                entries.Add(new ShopCardEntry(newCard, isNew));
             }
-        }
 
-        public Shop GetShop()
-        {
-            return currentShop;
-        }
+            // Update the previous shop list
+            previousShopStates[type] = new Dictionary<int, ICard>(newList);
 
-        public void GoToMarket()
-        {
-            CamManager.Instance.GoOnMarketLocation();
-        }
-
-        public void GoToCourtyard()
-        {
-            CamManager.Instance.GoOnCourtyardLocation();
-        }
-
-        public void GoToGlobal()
-        {
-            CamManager.Instance.GoOnNoneLocation();
+            // Notification
+            Debug.Log($"[ShopManager] {type} shop updated with {entries.Count} entries.");
+            OnShopUpdated?.Invoke(type, entries);
         }
     }
 }
