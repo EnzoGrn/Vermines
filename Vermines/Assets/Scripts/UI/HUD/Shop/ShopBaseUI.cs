@@ -1,7 +1,7 @@
-using ExitGames.Client.Photon.StructWrapping;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
+using Vermines.ShopSystem.Enumerations;
 
 namespace Vermines.UI.Shop
 {
@@ -12,6 +12,11 @@ namespace Vermines.UI.Shop
 
         protected List<ShopCardEntry> currentEntries = new();
         protected List<ShopCardSlot> activeSlots = new();
+
+        [SerializeField]
+        protected ShopType shopType;
+
+        public ShopType ShopType => shopType;
 
         public virtual void Init(List<ShopCardEntry> entries)
         {
@@ -35,7 +40,7 @@ namespace Vermines.UI.Shop
 
                 slot.transform.SetParent(cardSlotRoot, false);
                 slot.SetIndex(i);
-                slot.Init(entry.Data, entry.IsNew, new ShopCardClickHandler());
+                slot.Init(entry.Data, entry.IsNew, new ShopCardClickHandler(shopType, i));
                 activeSlots.Add(slot);
             }
         }

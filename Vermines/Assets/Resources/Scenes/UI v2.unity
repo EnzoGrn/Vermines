@@ -185,6 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardSlotRoot: {fileID: 2482752997488875385}
+  shopType: 0
   AreaName: {fileID: 9088103212838161459}
   AreaDescription: {fileID: 692778652162931732}
   PortraitLeft: {fileID: 3432531081421943898}
@@ -2467,7 +2468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
@@ -2476,7 +2477,7 @@ PrefabInstance:
     - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 599597599}
+      objectReference: {fileID: 899526693}
     - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -2487,11 +2488,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: GoToMarket
+      value: OpenShopMarket
       objectReference: {fileID: 0}
     - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
       value: CloseShop
+      objectReference: {fileID: 0}
+    - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Vermines.UI.UIManager, Vermines
       objectReference: {fileID: 0}
     - target: {fileID: 8548440595678294785, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName

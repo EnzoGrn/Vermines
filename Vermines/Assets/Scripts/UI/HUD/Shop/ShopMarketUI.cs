@@ -27,6 +27,8 @@ namespace Vermines.UI.Shop
         {
             AreaName.text = ShopName;
             AreaDescription.text = ShopDescription;
+            shopType = ShopType.Market;
+
             if (SpriteMagician != null)
             {
                 PortraitRight.sprite = SpriteMagician;

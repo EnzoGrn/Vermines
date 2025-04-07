@@ -7,6 +7,8 @@ namespace Vermines.UI
 {
     public class UIManager : MonoBehaviour
     {
+        public static UIManager Instance;
+
         public ShopMarketUI ShopMarket;
         //public ShopBUI shopB;
         //public TableUI table;
@@ -21,11 +23,21 @@ namespace Vermines.UI
             //book.Init();
             ShopMarket.gameObject.SetActive(false);
             //shopB.gameObject.SetActive(false);
+
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
 
         public void OpenShopMarket()
         {
             ShopMarket.gameObject.SetActive(true);
+            //CamManager.Instance.GoOnMarketLocation();
         }
 
         //public void OpenShopB(List<CardData> cards)
@@ -40,6 +52,7 @@ namespace Vermines.UI
         public void CloseAll()
         {
             ShopMarket.gameObject.SetActive(false);
+            CamManager.Instance.GoOnNoneLocation();
             //shopB.gameObject.SetActive(false);
             //table.Close();
             //hand.Close();

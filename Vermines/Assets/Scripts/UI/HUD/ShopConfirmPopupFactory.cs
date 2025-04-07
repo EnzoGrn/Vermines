@@ -1,32 +1,49 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Vermines.CardSystem.Elements;
+using Vermines.ShopSystem.Enumerations;
 
 public static class ShopConfirmPopupFactory
 {
     private static GameObject _PopupPrefab;
     private static Transform _PopupParent;
 
-    public static void Init(GameObject popupPrefab, Transform popupParent = null)
+    public static void Init(GameObject popupPrefab, Transform popupParent)
     {
         _PopupPrefab = popupPrefab;
-        _PopupParent = popupPrefab.transform.parent;
+        _PopupParent = popupParent;
     }
 
-    public static IUIContext Create(ICard card)
+    public static IUIContext Create(ICard card, ShopType shopType, int slotId)
     {
-        Debug.Log($"[Popup] Creation d'un popup de confirmation pour {card.Data.name}");
+        if (_PopupPrefab == null)
+        {
+            Debug.LogError("[ShopConfirmPopup] Popup prefab is not set. Please call Init() first.");
+            return null;
+        }
+        if (card == null)
+        {
+            Debug.LogError("[ShopConfirmPopup] Card is null. Cannot create popup.");
+            return null;
+        }
+        if (_PopupParent == null)
+        {
+            Debug.LogError("[ShopConfirmPopup] Popup parent is not set. Cannot create popup.");
+            return null;
+        }
+
+        Debug.Log($"[ShopConfirmPopup] Creation of a new popup for {card.Data.name}");
         var popupGO = GameObject.Instantiate(_PopupPrefab, _PopupParent);
         var popup = popupGO.GetComponent<ShopConfirmPopup>();
 
-        popup.Setup(card, HandlePurchase);
+        popup.Setup(card, (c) => HandlePurchase(c, shopType, slotId));
 
         return popup;
     }
 
-    private static void HandlePurchase(ICard card)
+    private static void HandlePurchase(ICard card, ShopType shopType, int slotId)
     {
-        Debug.Log($"[Popup] Achat confirm� pour {card.Data.name}");
+        Debug.Log($"[ShopConfirmPopup] Purchase confirmed for {card.Data.name}");
 
-        // ShopManager.Instance.PurchaseCard(cardData);
+        GameEvents.OnCardBought.Invoke(shopType, slotId);
     }
 }

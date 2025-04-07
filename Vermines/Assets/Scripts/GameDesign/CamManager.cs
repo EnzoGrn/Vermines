@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using OMGG.DesignPattern;
 using UnityEngine.Events;
 using Vermines.HUD;
+using Vermines.UI;
 
 public class CamManager : MonoBehaviourSingleton<CamManager>
 {
@@ -164,6 +165,8 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
         else if ((CamSplineType)_SplineID == CamSplineType.MainViewToMarket || (CamSplineType)_SplineID == CamSplineType.CourtyardToMarket)
         {
             //ShopManager.Instance.OpenMarket();
+            UIManager.Instance.ShopMarket.gameObject.SetActive(true);
+
             // TODO: Reimplement the market camera movement
         }
     }

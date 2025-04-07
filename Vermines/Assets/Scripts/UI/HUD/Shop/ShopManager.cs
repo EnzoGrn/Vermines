@@ -36,6 +36,7 @@ namespace Vermines.UI.Shop
                 Destroy(gameObject);
             }
         }
+
         public void ReceiveFullShopList(ShopType type, Dictionary<int, ICard> newList)
         {
             List<ShopCardEntry> entries = new();
@@ -62,6 +63,10 @@ namespace Vermines.UI.Shop
             // Notification
             Debug.Log($"[ShopManager] {type} shop updated with {entries.Count} entries.");
             OnShopUpdated?.Invoke(type, entries);
+        }
+
+        public void PurchaseCard(ShopCardSlot slot)
+        {
         }
     }
 }

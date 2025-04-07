@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Vermines.CardSystem.Data;
 using Vermines.CardSystem.Elements;
 
 public class ShopConfirmPopup : MonoBehaviour, IUIContext

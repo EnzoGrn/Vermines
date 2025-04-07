@@ -18,8 +18,7 @@ namespace Vermines.UI.Card
         [SerializeField] private Image characterImage;
         [SerializeField] private Image backgroundImage;
 
-
-        private ICard _cardData;
+        private ICard _card;
         private ICardClickHandler _clickHandler;
 
         public void Display(ICard card, ICardClickHandler clickHandler = null)
@@ -30,7 +29,7 @@ namespace Vermines.UI.Card
                 return;
             }
 
-            _cardData = card;
+            _card = card;
             _clickHandler = clickHandler;
             CardData data = card.Data;
 
@@ -79,7 +78,12 @@ namespace Vermines.UI.Card
         public void OnPointerClick(PointerEventData eventData)
         {
             Debug.Log($"[ShopCardSlot] Card {gameObject.name} clicked.");
-            _clickHandler?.OnCardClicked(_cardData);
+            _clickHandler?.OnCardClicked(_card);
+        }
+
+        public ICard GetCardData()
+        {
+            return _card;
         }
     }
 }
