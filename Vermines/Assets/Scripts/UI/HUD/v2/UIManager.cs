@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
-using Vermines.CardSystem.Elements;
 using Vermines.UI.Shop;
+using Vermines.ShopSystem.Enumerations;
 
 namespace Vermines.UI
 {
@@ -9,8 +8,6 @@ namespace Vermines.UI
     {
         public static UIManager Instance;
 
-        public ShopMarketUI ShopMarket;
-        //public ShopBUI shopB;
         //public TableUI table;
         //public HandUI hand;
         //public BookUI book;
@@ -21,8 +18,6 @@ namespace Vermines.UI
             //hand.Init();
             //table.Init();
             //book.Init();
-            ShopMarket.gameObject.SetActive(false);
-            //shopB.gameObject.SetActive(false);
 
             if (Instance == null)
             {
@@ -36,23 +31,34 @@ namespace Vermines.UI
 
         public void OpenShopMarket()
         {
-            ShopMarket.gameObject.SetActive(true);
+            CloseContextualUI();
+            ShopUIManager.Instance.OpenShop(ShopType.Market);
             //CamManager.Instance.GoOnMarketLocation();
         }
 
-        //public void OpenShopB(List<CardData> cards)
-        //{
-        //    shopB.gameObject.SetActive(true);
-        //    shopB.Init(cards);
-        //}
+        public void OpenShopCourtyard()
+        {
+            CloseContextualUI();
+            ShopUIManager.Instance.OpenShop(ShopType.Courtyard);
+            //CamManager.Instance.GoOnCourtyardLocation();
+        }
+
+        public void CloseContextualUI()
+        {
+            ShopUIManager.Instance.CloseCurrentShop();
+            if (UIContextManager.Instance.CurrentContext is ShopConfirmPopup)
+            {
+                Debug.Log("Closing ShopConfirmPopup");
+                UIContextManager.Instance.ClearContext();
+            }
+        }
 
         //public void OpenBook() => book.Open();
         //public void OpenTable() => table.Open();
 
         public void CloseAll()
         {
-            ShopMarket.gameObject.SetActive(false);
-            CamManager.Instance.GoOnNoneLocation();
+            ShopUIManager.Instance.CloseCurrentShop();
             //shopB.gameObject.SetActive(false);
             //table.Close();
             //hand.Close();

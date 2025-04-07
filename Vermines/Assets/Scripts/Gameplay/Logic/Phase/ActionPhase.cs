@@ -23,7 +23,7 @@ namespace Vermines.Gameplay.Phases {
 
         public ActionPhase()
         {
-            GameEvents.OnCardBought.AddListener(OnCardBought);
+            GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
             GameEvents.OnDiscard.AddListener(OnDiscard);
             GameEvents.OnCardPlayed.AddListener(OnCardPlayed);
         }
@@ -39,7 +39,7 @@ namespace Vermines.Gameplay.Phases {
                 HUDManager.instance.EnablePhaseButton(false);
         }
 
-        private void OnCardBought(ShopType type, int id)
+        private void OnCardPurchaseRequested(ShopType type, int id)
         {
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
             {

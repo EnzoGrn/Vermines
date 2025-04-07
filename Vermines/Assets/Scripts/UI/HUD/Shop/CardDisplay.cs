@@ -11,15 +11,16 @@ namespace Vermines.UI.Card
     public class CardDisplay : MonoBehaviour, IPointerClickHandler
     {
         [Header("UI Elements")]
-        [SerializeField] private TextMeshProUGUI cardNameText;
-        [SerializeField] private TextMeshProUGUI eloquenceText;
-        [SerializeField] private TextMeshProUGUI soulsText;
-        [SerializeField] private TextMeshProUGUI effectText;
-        [SerializeField] private Image characterImage;
-        [SerializeField] private Image backgroundImage;
+        [SerializeField] private TextMeshProUGUI _cardNameText;
+        [SerializeField] private TextMeshProUGUI _eloquenceText;
+        [SerializeField] private TextMeshProUGUI _soulsText;
+        [SerializeField] private TextMeshProUGUI _effectText;
+        [SerializeField] private Image _characterImage;
+        [SerializeField] private Image _backgroundImage;
 
-        private ICard _card;
         private ICardClickHandler _clickHandler;
+
+        public ICard Card { get; private set; }
 
         public void Display(ICard card, ICardClickHandler clickHandler = null)
         {
@@ -29,14 +30,14 @@ namespace Vermines.UI.Card
                 return;
             }
 
-            _card = card;
+            Card = card;
             _clickHandler = clickHandler;
             CardData data = card.Data;
 
-            cardNameText.text = data.Name;
-            eloquenceText.text = data.Eloquence.ToString();
-            soulsText.text = data.Souls.ToString();
-            // effectText.text = data.Effects?.FirstOrDefault()?.Description ?? "";
+            _cardNameText.text = data.Name;
+            _eloquenceText.text = data.Eloquence.ToString();
+            _soulsText.text = data.Souls.ToString();
+            // _effectText.text = data.Effects?.FirstOrDefault()?.Description ?? "";
 
             string family = data.Type switch
             {
@@ -55,35 +56,30 @@ namespace Vermines.UI.Card
             string characterPath = $"{basePath}/{characterName}";
             string backgroundPath = $"{basePath}/Background";
 
-            characterImage.sprite = Resources.Load<Sprite>(characterPath);
-            backgroundImage.sprite = Resources.Load<Sprite>(backgroundPath);
+            _characterImage.sprite = Resources.Load<Sprite>(characterPath);
+            _backgroundImage.sprite = Resources.Load<Sprite>(backgroundPath);
 
-            if (!characterImage.sprite)
+            if (!_characterImage.sprite)
                 Debug.LogError($"[CardDisplay] Character sprite not found: {characterPath}");
 
-            if (!backgroundImage.sprite)
+            if (!_backgroundImage.sprite)
                 Debug.LogError($"[CardDisplay] Background sprite not found: {backgroundPath}");
         }
 
         public void Clear()
         {
-            cardNameText.text = string.Empty;
-            eloquenceText.text = string.Empty;
-            soulsText.text = string.Empty;
-            //effectText.text = string.Empty;
-            characterImage.sprite = null;
-            backgroundImage.sprite = null;
+            _cardNameText.text = string.Empty;
+            _eloquenceText.text = string.Empty;
+            _soulsText.text = string.Empty;
+            //_effectText.text = string.Empty;
+            _characterImage.sprite = null;
+            _backgroundImage.sprite = null;
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
             Debug.Log($"[ShopCardSlot] Card {gameObject.name} clicked.");
-            _clickHandler?.OnCardClicked(_card);
-        }
-
-        public ICard GetCardData()
-        {
-            return _card;
+            _clickHandler?.OnCardClicked(Card);
         }
     }
 }

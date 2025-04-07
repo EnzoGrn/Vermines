@@ -35,15 +35,15 @@ public static class ShopConfirmPopupFactory
         var popupGO = GameObject.Instantiate(_PopupPrefab, _PopupParent);
         var popup = popupGO.GetComponent<ShopConfirmPopup>();
 
-        popup.Setup(card, (c) => HandlePurchase(c, shopType, slotId));
+        popup.Setup(card, (c) => RequestPurchase(c, shopType, slotId));
 
         return popup;
     }
 
-    private static void HandlePurchase(ICard card, ShopType shopType, int slotId)
+    private static void RequestPurchase(ICard card, ShopType shopType, int slotId)
     {
-        Debug.Log($"[ShopConfirmPopup] Purchase confirmed for {card.Data.name}");
+        Debug.Log($"[ShopConfirmPopup] Purchase asked for {card.Data.name}");
 
-        GameEvents.OnCardBought.Invoke(shopType, slotId);
+        GameEvents.OnCardPurchaseRequested.Invoke(shopType, slotId);
     }
 }

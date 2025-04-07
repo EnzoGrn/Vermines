@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Vermines.CardSystem.Elements;
 using Vermines.ShopSystem.Enumerations;
 
 namespace Vermines.UI.Shop
@@ -14,15 +13,18 @@ namespace Vermines.UI.Shop
         protected List<ShopCardSlot> activeSlots = new();
 
         [SerializeField]
-        protected ShopType shopType;
-
-        public ShopType ShopType => shopType;
+        public ShopType ShopType;
 
         public virtual void Init(List<ShopCardEntry> entries)
         {
             Debug.Log($"[ShopBaseUI] Init with {entries.Count} entries.");
             currentEntries = entries;
             PopulateShop();
+        }
+
+        private void OnEnable()
+        {
+            GameEvents.OnCardPurchase.AddListener(OnCardPurchased);
         }
 
         protected virtual void PopulateShop()
@@ -40,11 +42,27 @@ namespace Vermines.UI.Shop
 
                 slot.transform.SetParent(cardSlotRoot, false);
                 slot.SetIndex(i);
-                slot.Init(entry.Data, entry.IsNew, new ShopCardClickHandler(shopType, i));
+                slot.Init(entry.Data, entry.IsNew, new ShopCardClickHandler(ShopType, i));
                 activeSlots.Add(slot);
             }
         }
 
-        public abstract void OnBuyCard(ICard card);
+        public virtual void OnCardPurchased(ShopType shopType, int slotIndex)
+        {
+            if (shopType != this.ShopType)
+                return;
+
+            if (slotIndex < 0 || slotIndex >= activeSlots.Count)
+            {
+                Debug.LogWarning($"[ShopBaseUI] Invalid slot index {slotIndex}.");
+                return;
+            }
+
+            var slot = activeSlots[slotIndex];
+
+            CardSlotPool.Instance.ReturnSlot(slot);
+            activeSlots[slotIndex] = null;
+        }
+
     }
 }

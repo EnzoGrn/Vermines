@@ -8,7 +8,15 @@ public class UIContextManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 
     public bool HasContext() => _current != null;
@@ -26,5 +34,5 @@ public class UIContextManager : MonoBehaviour
         _current = null;
     }
 
-    public IUIContext Current => _current;
+    public IUIContext CurrentContext => _current;
 }

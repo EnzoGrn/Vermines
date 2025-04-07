@@ -9,9 +9,10 @@ using Vermines.ShopSystem.Enumerations;
 public static class GameEvents
 {
     public static UnityEvent OnAttemptNextPhase = new ();
-    public static UnityEvent<ICard> OnDrawCard = new ();
+    public static UnityEvent<ICard> OnDrawCard = new();
     public static Dictionary<ShopType, UnityEvent<int, ICard>> OnShopsEvents = new();
-    public static UnityEvent<ShopType, int> OnCardBought = new();
+    public static UnityEvent<ShopType, int> OnCardPurchaseRequested = new();
+    public static UnityEvent<ShopType, int> OnCardPurchase = new();
     public static UnityEvent<int> OnDiscard = new();
     public static UnityEvent<int> OnCardPlayed = new();
     public static UnityEvent<int> OnCardSacrified = new();

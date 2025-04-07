@@ -15,6 +15,7 @@ namespace Vermines.Player {
     using Vermines.Network.Utilities;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
+    using Vermines.UI;
 
     public class PlayerController : NetworkBehaviour {
 
@@ -123,11 +124,9 @@ namespace Vermines.Player {
             CommandResponse response = CommandInvoker.ExecuteCommand(buyCommand);
 
             if (response.Status == CommandStatus.Success) {
-                if (HUDManager.instance != null)
-                    HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[PlayerRef.FromEncoded(playerRef)]);
-                if (CardSpawner.Instance != null)
-                    CardSpawner.Instance.DestroyCard(shopType, slot);
-                Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[PlayerRef.FromEncoded(playerRef)].Serialize()}");
+                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[parameters.Player]);
+                GameEvents.OnCardPurchase.Invoke(shopType, slot);
+                Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[parameters.Player].Serialize()}");
             }
         }
 

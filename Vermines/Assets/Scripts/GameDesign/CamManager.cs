@@ -159,15 +159,11 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
 
         if ((CamSplineType)_SplineID ==  CamSplineType.MainViewToCourtyard || (CamSplineType)_SplineID == CamSplineType.MarketToCourtyard)
         {
-            //ShopManager.Instance.OpenCourtyard();
-            // TODO: Reimplement the courtyard camera movement
+            UIManager.Instance.OpenShopCourtyard();
         }
         else if ((CamSplineType)_SplineID == CamSplineType.MainViewToMarket || (CamSplineType)_SplineID == CamSplineType.CourtyardToMarket)
         {
-            //ShopManager.Instance.OpenMarket();
-            UIManager.Instance.ShopMarket.gameObject.SetActive(true);
-
-            // TODO: Reimplement the market camera movement
+            UIManager.Instance.OpenShopMarket();
         }
     }
 

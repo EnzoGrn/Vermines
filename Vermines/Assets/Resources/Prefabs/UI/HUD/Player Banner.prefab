@@ -673,13 +673,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4772245233492487442}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d57203dbaa9f3464faac5141fd388ad2, type: 3}
+  m_Script: {fileID: 11500000, guid: e2f6b2f179bda57418ed950ca495a8ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   nicknameText: {fileID: 8448030125051477157}
   eloquenceText: {fileID: 6307927075711677442}
   soulsText: {fileID: 496529015923178744}
-  canvasGroup: {fileID: 0}
   root: {fileID: 842492557416429263}
   normalScale: 1.1
   activeScale: 1.275

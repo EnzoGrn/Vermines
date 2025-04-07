@@ -57,8 +57,7 @@ namespace Vermines.ShopSystem.Commands
                 }
 
                 if (!TestMode.IsTesting)
-                ShopManager.Instance.ReceiveFullShopList(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
-                //CardSpawner.Instance.UpdateSpecificShop(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
+                    ShopManager.Instance.ReceiveFullShopList(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
             }
 
             return _Shop;

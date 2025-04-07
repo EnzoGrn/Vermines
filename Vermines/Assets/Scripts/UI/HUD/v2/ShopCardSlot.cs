@@ -1,7 +1,4 @@
-using DG.Tweening;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using Vermines.CardSystem.Data;
 using Vermines.CardSystem.Elements;
 using Vermines.UI.Card;
 
@@ -9,7 +6,7 @@ public class ShopCardSlot : MonoBehaviour
 {
     [SerializeField] private GameObject _CardDisplayPrefab;
     private int _SlotIndex;
-    private CardDisplay _CardDisplayInstance;
+    public CardDisplay CardDisplay { get; private set; }
 
     public void SetIndex(int index)
     {
@@ -18,14 +15,14 @@ public class ShopCardSlot : MonoBehaviour
 
     public void Init(ICard card, bool isNew, ICardClickHandler clickHandler)
     {
-        if (_CardDisplayInstance == null)
+        if (CardDisplay == null)
         {
-            GameObject obj = Instantiate(_CardDisplayPrefab, this.transform);
-            _CardDisplayInstance = obj.GetComponent<CardDisplay>();
+            GameObject obj = Instantiate(_CardDisplayPrefab, transform);
+            CardDisplay = obj.GetComponent<CardDisplay>();
         }
 
-        _CardDisplayInstance.Display(card, clickHandler);
-        _CardDisplayInstance.transform.localScale = Vector3.one;
+        CardDisplay.Display(card, clickHandler);
+        CardDisplay.transform.localScale = Vector3.one;
 
         if (isNew)
         {
@@ -35,7 +32,7 @@ public class ShopCardSlot : MonoBehaviour
 
     public void ResetSlot()
     {
-        _CardDisplayInstance.Clear();
+        CardDisplay.Clear();
     }
 
     public int GetIndex() => _SlotIndex;
