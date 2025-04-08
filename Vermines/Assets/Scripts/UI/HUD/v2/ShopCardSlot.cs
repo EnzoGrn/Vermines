@@ -21,6 +21,10 @@ public class ShopCardSlot : MonoBehaviour
             CardDisplay = obj.GetComponent<CardDisplay>();
         }
 
+        CardDisplay.gameObject.SetActive(false);
+
+        if (card == null) return;
+
         CardDisplay.Display(card, clickHandler);
         CardDisplay.transform.localScale = Vector3.one;
 
@@ -28,6 +32,8 @@ public class ShopCardSlot : MonoBehaviour
         {
             Debug.Log($"[ShopCardSlot] Card {card.Data.Name} is new.");
         }
+
+        CardDisplay.gameObject.SetActive(true);
     }
 
     public void ResetSlot()

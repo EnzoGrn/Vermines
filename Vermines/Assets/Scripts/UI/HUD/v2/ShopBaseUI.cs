@@ -25,7 +25,7 @@ namespace Vermines.UI.Shop
         protected virtual void OnEnable()
         {
             Debug.Log($"[ShopBaseUI] OnEnable called for {ShopType} shop.");
-            GameEvents.OnCardPurchase.AddListener(OnCardPurchased);
+            //GameEvents.OnCardPurchased.AddListener(OnCardPurchased);
         }
 
         protected virtual void PopulateShop()

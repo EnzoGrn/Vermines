@@ -77,7 +77,7 @@ namespace Vermines.Gameplay.Phases {
             // TODO: Add to the config a limit of turn and end the game if reach
             if (GameManager.Instance.CurrentPlayerIndex == 0)
                 GameManager.Instance.TotalTurnPlayed++;
-            RPC_UpdatePhaseUI();
+            RPC_UpdateTurnUI();
         }
 
         public void ProcessPhase(PhaseType currentPhase, PlayerRef playerRef)
@@ -114,6 +114,12 @@ namespace Vermines.Gameplay.Phases {
         public void RPC_UpdatePhaseUI()
         {
             GameEvents.OnPhaseChanged?.Invoke(CurrentPhase);
+        }
+
+        [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
+        public void RPC_UpdateTurnUI()
+        {
+            GameEvents.OnTurnChanged?.Invoke(GameManager.Instance.CurrentPlayerIndex);
         }
 
         /// <summary>

@@ -10,26 +10,39 @@ namespace Vermines.UI
     {
         public static TurnManager Instance { get; private set; }
 
-        [SerializeField] private PlayerBannerManager bannerManager;
+        [SerializeField] private PlayerBannerManager _bannerManager;
 
-        private int currentPlayerIndex = 0;
-        private Dictionary<int, PlayerData> players = new();
+        private int _currentPlayerIndex = 0;
+        private List<PlayerData> _orderedPlayers = new();
+        private Dictionary<int, PlayerData> _players = new();
 
         private void Awake()
         {
-            Instance = this;
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
+            GameEvents.OnTurnChanged.AddListener(NextTurn);
         }
 
         public void Init(NetworkDictionary<PlayerRef, PlayerData> playerData)
         {
-            players.Clear();
+            _orderedPlayers.Clear();
+            _players.Clear();
+
             foreach (var player in playerData)
             {
-                players[player.Value.PlayerRef.PlayerId] = new PlayerData(player.Value.PlayerRef);
+                _players[player.Value.PlayerRef.PlayerId] = player.Value;
+                _orderedPlayers.Add(player.Value);
             }
-            foreach (var player in players)
+            foreach (var player in _players)
             {
-                bannerManager.CreateBanner(player.Value, player.Key);
+                _bannerManager.CreateBanner(player.Value, player.Key);
             }
         }
 
@@ -37,20 +50,20 @@ namespace Vermines.UI
         {
             foreach (var player in playerData)
             {
-                if (players.ContainsKey(player.Value.PlayerRef.PlayerId))
+                if (_players.ContainsKey(player.Value.PlayerRef.PlayerId))
                 {
-                    players[player.Value.PlayerRef.PlayerId] = player.Value;
-                    bannerManager.UpdateBanner(player.Value, player.Key.PlayerId);
+                    _players[player.Value.PlayerRef.PlayerId] = player.Value;
+                    _bannerManager.UpdateBanner(player.Value, player.Key.PlayerId);
                 }
             }
         }
 
         public void UpdatePlayer(PlayerData playerData)
         {
-            if (players.ContainsKey(playerData.PlayerRef.PlayerId))
+            if (_players.ContainsKey(playerData.PlayerRef.PlayerId))
             {
-                players[playerData.PlayerRef.PlayerId] = playerData;
-                bannerManager.UpdateBanner(playerData, playerData.PlayerRef.PlayerId);
+                _players[playerData.PlayerRef.PlayerId] = playerData;
+                _bannerManager.UpdateBanner(playerData, playerData.PlayerRef.PlayerId);
             }
         }
 
@@ -59,15 +72,15 @@ namespace Vermines.UI
             GameEvents.OnAttemptNextPhase?.Invoke();
         }
 
-        public void NextTurn()
+        public void NextTurn(int currentPlayerIndex)
         {
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
+            _currentPlayerIndex = currentPlayerIndex;
 
-            bannerManager.NextTurn();
+            _bannerManager.NextTurn();
 
-            Debug.Log(GetCurrentPlayer().Nickname + "'s turn");
+            Debug.Log($"[TurnManager] Next turn for player {GetCurrentPlayer().Nickname} ({GetCurrentPlayer().PlayerRef.PlayerId})");
         }
 
-        public PlayerData GetCurrentPlayer() => players[currentPlayerIndex];
+        public PlayerData GetCurrentPlayer() => _orderedPlayers[_currentPlayerIndex];
     }
 }

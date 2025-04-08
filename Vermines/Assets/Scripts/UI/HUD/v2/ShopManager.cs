@@ -35,6 +35,8 @@ namespace Vermines.UI.Shop
             {
                 Destroy(gameObject);
             }
+
+            GameEvents.OnCardPurchased.AddListener(OnCardPurchased);
         }
 
         public void ReceiveFullShopList(ShopType type, Dictionary<int, ICard> newList)
@@ -52,7 +54,7 @@ namespace Vermines.UI.Shop
                 ICard newCard = kvp.Value;
 
                 // Check if the card is new or has changed in the slot
-                bool isNew = !oldList.TryGetValue(slotIndex, out var oldCard) || oldCard.ID != newCard?.ID;
+                bool isNew = !oldList.TryGetValue(slotIndex, out var oldCard) || oldCard?.ID != newCard?.ID;
 
                 entries.Add(new ShopCardEntry(newCard, isNew));
             }
@@ -77,6 +79,29 @@ namespace Vermines.UI.Shop
                 return entries;
             }
             return new List<ShopCardEntry>();
+        }
+
+        public void OnCardPurchased(ShopType shopType, int slotIndex)
+        {
+            if (!previousShopStates.TryGetValue(shopType, out var shopList))
+            {
+                Debug.LogWarning($"[ShopManager] No shop list found for type {shopType}");
+                return;
+            }
+
+            if (!shopList.ContainsKey(slotIndex))
+            {
+                Debug.LogWarning($"[ShopManager] Slot index {slotIndex} not found in shop {shopType}");
+                return;
+            }
+
+            Debug.Log($"[ShopManager] Card purchased from {shopType} shop at slot {slotIndex}");
+
+            // Retirer la carte du shop
+            shopList[slotIndex] = null;
+
+            // Simuler une mise à jour complète du shop
+            ReceiveFullShopList(shopType, shopList);
         }
     }
 }

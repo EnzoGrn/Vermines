@@ -1126,7 +1126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3981057bd23ae49b3f9d9b513eb9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bannerManager: {fileID: 2142422037}
+  _bannerManager: {fileID: 2142422037}
 --- !u!4 &2142422039
 Transform:
   m_ObjectHideFlags: 0
@@ -1239,24 +1239,32 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5423458086757945620, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5423458086757945620, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1295497002}
+      objectReference: {fileID: 2142422038}
     - target: {fileID: 5423458086757945620, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 899526693}
+      objectReference: {fileID: 2142422038}
     - target: {fileID: 5423458086757945620, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: AttemptToNextPhase
       objectReference: {fileID: 0}
     - target: {fileID: 5423458086757945620, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: CloseAll
+      value: AttemptToNextPhase
+      objectReference: {fileID: 0}
+    - target: {fileID: 5423458086757945620, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Vermines.UI.TurnManager, Vermines
       objectReference: {fileID: 0}
     - target: {fileID: 5423458086757945620, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: Vermines.UI.UIManager, Vermines
+      value: Vermines.UI.TurnManager, Vermines
       objectReference: {fileID: 0}
     - target: {fileID: 5488509809160032824, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
       propertyPath: m_AnchorMax.y

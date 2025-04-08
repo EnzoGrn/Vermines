@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Vermines.Gameplay.Phases;
 using Vermines.Gameplay.Phases.Enumerations;
 
 namespace Vermines.UI
@@ -15,11 +14,6 @@ namespace Vermines.UI
         private void OnEnable()
         {
             GameEvents.OnPhaseChanged.AddListener(UpdateUI);
-        }
-
-        private void OnDisable()
-        {
-            GameEvents.OnPhaseChanged.RemoveListener(UpdateUI);
         }
 
         private void UpdateUI(PhaseType currentPhase = PhaseType.Sacrifice)

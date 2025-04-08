@@ -125,7 +125,7 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Success) {
                 TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[parameters.Player]);
-                GameEvents.OnCardPurchase.Invoke(shopType, slot);
+                GameEvents.OnCardPurchased.Invoke(shopType, slot);
                 Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[parameters.Player].Serialize()}");
             }
         }

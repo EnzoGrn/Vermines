@@ -12,11 +12,12 @@ public static class GameEvents
     public static UnityEvent<ICard> OnDrawCard = new();
     public static Dictionary<ShopType, UnityEvent<int, ICard>> OnShopsEvents = new();
     public static UnityEvent<ShopType, int> OnCardPurchaseRequested = new();
-    public static UnityEvent<ShopType, int> OnCardPurchase = new();
+    public static UnityEvent<ShopType, int> OnCardPurchased = new();
     public static UnityEvent<int> OnDiscard = new();
     public static UnityEvent<int> OnCardPlayed = new();
     public static UnityEvent<int> OnCardSacrified = new();
     public static UnityEvent<PhaseType> OnPhaseChanged = new();
+    public static UnityEvent<int> OnTurnChanged = new();
 
     static GameEvents()
     {
