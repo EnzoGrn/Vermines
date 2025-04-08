@@ -98,10 +98,11 @@ namespace Vermines.UI.Shop
             image.transform.localScale = scale;
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
             if (ShopManager.Instance != null)
                 ShopManager.Instance.OnShopUpdated += HandleShopUpdate;
+            base.OnEnable();
         }
 
         private void OnDisable()

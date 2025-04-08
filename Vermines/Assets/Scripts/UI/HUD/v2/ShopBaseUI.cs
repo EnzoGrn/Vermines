@@ -22,8 +22,9 @@ namespace Vermines.UI.Shop
             PopulateShop();
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
+            Debug.Log($"[ShopBaseUI] OnEnable called for {ShopType} shop.");
             GameEvents.OnCardPurchase.AddListener(OnCardPurchased);
         }
 
@@ -49,6 +50,7 @@ namespace Vermines.UI.Shop
 
         public virtual void OnCardPurchased(ShopType shopType, int slotIndex)
         {
+            Debug.Log($"[ShopBaseUI] OnCardPurchased called with {shopType} and slot index {slotIndex}.");
             if (shopType != this.ShopType)
                 return;
 
@@ -58,7 +60,17 @@ namespace Vermines.UI.Shop
                 return;
             }
 
-            var slot = activeSlots[slotIndex];
+            Debug.Log($"[ShopBaseUI] Card purchased from slot {slotIndex} in {shopType} shop.");
+
+            ShopCardSlot slot = activeSlots[slotIndex];
+
+            if (slot == null)
+            {
+                Debug.LogWarning($"[ShopBaseUI] Slot {slotIndex} is null.");
+                return;
+            }
+
+            Debug.Log($"[ShopBaseUI] The card {slot.CardDisplay.Card.Data.Name} has been purchased.");
 
             CardSlotPool.Instance.ReturnSlot(slot);
             activeSlots[slotIndex] = null;

@@ -43,7 +43,7 @@ namespace Vermines.UI
         public void ReturnSlot(ShopCardSlot slot)
         {
             slot.ResetSlot();
-            slot.gameObject.SetActive(false);
+            //slot.gameObject.SetActive(false);
             availableSlots.Enqueue(slot);
         }
 

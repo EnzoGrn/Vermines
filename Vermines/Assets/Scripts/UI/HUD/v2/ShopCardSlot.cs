@@ -32,7 +32,9 @@ public class ShopCardSlot : MonoBehaviour
 
     public void ResetSlot()
     {
+        Debug.Log($"[ShopCardSlot] Resetting slot {_SlotIndex}");
         CardDisplay.Clear();
+        CardDisplay.gameObject.SetActive(false);
     }
 
     public int GetIndex() => _SlotIndex;

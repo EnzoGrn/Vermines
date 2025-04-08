@@ -15,6 +15,8 @@ MonoBehaviour:
   shopType: 1
   shopName: Courtyard
   shopDescription: Welcome to courtyard
+  leftDialogue: 
+  rightDialogue: I'm a gentle bard like jasquier
   portraitLeft: {fileID: 0}
   flipLeft: 0
   portraitRight: {fileID: 21300000, guid: f07497f1c657d2049840940d779a2c17, type: 3}
