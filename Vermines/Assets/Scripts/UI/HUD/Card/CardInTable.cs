@@ -1,18 +1,18 @@
 using UnityEngine;
 
-namespace Vermines.HUD.Card
+namespace Vermines.UI.Card
 {
     public class CardInTable : MonoBehaviour
     {
-        CardBase cardBase;
+        CardDisplay cardBase;
 
         public void OpenOverlay()
         {
             Debug.Log("Affichage de l'overlay d'achat");
-            TableManager.instance.OpenSacrificeOverlay(cardBase);
+            //TableManager.instance.OpenSacrificeOverlay(cardBase);
         }
 
-        public void SetCardBase(CardBase cardBase)
+        public void SetCardBase(CardDisplay cardBase)
         {
             this.cardBase = cardBase;
         }

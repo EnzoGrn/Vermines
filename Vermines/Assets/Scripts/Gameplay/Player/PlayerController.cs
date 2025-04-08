@@ -149,7 +149,7 @@ namespace Vermines.Player {
                     if (effect.Type == CardSystem.Enumerations.EffectType.Discard) {
                         effect.Play(player);
 
-                        HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[player]);
+                        TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
                     }
                 }
             } else {

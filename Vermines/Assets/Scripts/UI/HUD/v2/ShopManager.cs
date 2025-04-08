@@ -97,10 +97,8 @@ namespace Vermines.UI.Shop
 
             Debug.Log($"[ShopManager] Card purchased from {shopType} shop at slot {slotIndex}");
 
-            // Retirer la carte du shop
             shopList[slotIndex] = null;
 
-            // Simuler une mise à jour complète du shop
             ReceiveFullShopList(shopType, shopList);
         }
     }

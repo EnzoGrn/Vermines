@@ -9,7 +9,7 @@ using Vermines.ShopSystem.Enumerations;
 public static class GameEvents
 {
     public static UnityEvent OnAttemptNextPhase = new ();
-    public static UnityEvent<ICard> OnDrawCard = new();
+    public static UnityEvent<ICard> OnCardDrawn = new();
     public static Dictionary<ShopType, UnityEvent<int, ICard>> OnShopsEvents = new();
     public static UnityEvent<ShopType, int> OnCardPurchaseRequested = new();
     public static UnityEvent<ShopType, int> OnCardPurchased = new();
@@ -35,7 +35,7 @@ public static class GameEvents
 
     public static void InvokeOnDrawCard(ICard card)
     {
-        OnDrawCard.Invoke(card);
+        OnCardDrawn.Invoke(card);
         return;
     }
 

@@ -2,7 +2,7 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 using Vermines.Player;
-namespace Vermines.HUD.Card
+namespace Vermines.UI.Card
 {
     public class DiscardArea : MonoBehaviour, ICardDropArea, IDropHandler
     {
@@ -32,7 +32,7 @@ namespace Vermines.HUD.Card
             Destroy(card.GetComponent<CardHover>());
             Debug.Log("Card dropped on Discard Area");
 
-            CardBase cardBase = card.GetComponent<CardBase>();
+            CardDisplay cardBase = card.GetComponent<CardDisplay>();
 
             if (cardBase != null)
             {

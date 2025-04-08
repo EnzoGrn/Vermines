@@ -265,11 +265,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83a46a430ec796442adfe3ae7022a62c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHandSize: 50
   cardPrefab: {fileID: 548401717956231047, guid: aa93eda88b9cdc749a3fdbb5706da2d4, type: 3}
   splineContainer: {fileID: 1363706444}
   spawnPoint: {fileID: 366325651}
   handContainer: {fileID: 246171797}
+  maxHandSize: 50
   debugMode: 0
 --- !u!224 &518696959 stripped
 RectTransform:
@@ -350,6 +350,76 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 25832286751892267, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
   m_PrefabInstance: {fileID: 1751536742765098581}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &780962746
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 780962748}
+  - component: {fileID: 780962747}
+  - component: {fileID: 780962749}
+  m_Layer: 0
+  m_Name: HandManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &780962747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 780962746}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f68305a929cbaed46bb6f2b02623fe1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnPoint: {fileID: 366325651}
+  cardContainer: {fileID: 246171797}
+  cardDisplayPrefab: {fileID: 548401717956231047, guid: aa93eda88b9cdc749a3fdbb5706da2d4, type: 3}
+  splineContainer: {fileID: 1363706444}
+  hoverRaise: 30
+  animationDuration: 0.5
+  maxCards: 20
+--- !u!4 &780962748
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 780962746}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960, y: 490, z: -5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &780962749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 780962746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83a46a430ec796442adfe3ae7022a62c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardPrefab: {fileID: 548401717956231047, guid: aa93eda88b9cdc749a3fdbb5706da2d4, type: 3}
+  splineContainer: {fileID: 1363706444}
+  spawnPoint: {fileID: 366325651}
+  handContainer: {fileID: 246171797}
+  maxHandSize: 50
+  debugMode: 0
 --- !u!1 &899526692
 GameObject:
   m_ObjectHideFlags: 0
@@ -906,6 +976,7 @@ GameObject:
   - component: {fileID: 1548714563}
   - component: {fileID: 1548714562}
   - component: {fileID: 1548714561}
+  - component: {fileID: 1548714565}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -997,6 +1068,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1548714565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1548714560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c6b284eb2eec7840afbdd6f0e04d919, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  overlayBackgroundPrefab: {fileID: 5632570677568334644, guid: e7f1691d1672739448a4f698450984cc, type: 3}
+  popupConfirmPrefab: {fileID: 1728198047971725043, guid: 1d8ddfe7b12cca242803dffd52dad451, type: 3}
 --- !u!1 &1588842890 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 28537701583777326, guid: c3246b79662fd5445a7e6f3514304aea, type: 3}
@@ -1491,6 +1576,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1548714564}
     m_Modifications:
+    - target: {fileID: 4350324696119834199, guid: dffe08522f019e74e8bb4f442147137c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4514182433385435371, guid: dffe08522f019e74e8bb4f442147137c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1594,3 +1683,4 @@ SceneRoots:
   - {fileID: 2128936107}
   - {fileID: 428765479}
   - {fileID: 2142422039}
+  - {fileID: 780962748}
