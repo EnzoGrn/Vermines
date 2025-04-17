@@ -17,7 +17,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4314332775548574
 Transform:
@@ -122,11 +122,11 @@ GameObject:
   - component: {fileID: 265759034918937711}
   - component: {fileID: 6403662288294055787}
   m_Layer: 0
-  m_Name: Light
+  m_Name: Bracket_Lamp_01_Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2098365147434702023
 Transform:
@@ -153,9 +153,9 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 2
-  m_Color: {r: 0.8490566, g: 0.63441944, b: 0.41491634, a: 1}
-  m_Intensity: 7
-  m_Range: 4
+  m_Color: {r: 0.9169811, g: 0.7360944, b: 0.5519188, a: 1}
+  m_Intensity: 25
+  m_Range: 15
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -203,7 +203,7 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
-  m_ShadowRadius: 4
+  m_ShadowRadius: 10
   m_ShadowAngle: 0
   m_LightUnit: 1
   m_LuxAtDistance: 1

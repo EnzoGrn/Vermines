@@ -9,6 +9,7 @@ public class SkyboxEvolution : MonoBehaviour
     public Color ToColorSkyboxTint;
     public Color ToColorFog;
     public Color ToColorDL;
+    public float ToIntensityDL;
     public float ToExposure;
     public float Duration;
 
@@ -16,6 +17,7 @@ public class SkyboxEvolution : MonoBehaviour
     private Color _originalFogColor;
     private Color _originalDLCOlor;
     private float _originalExposure;
+    private float _originalIntensity;
     private float _timer = 0f;
 
     void Start()
@@ -30,6 +32,7 @@ public class SkyboxEvolution : MonoBehaviour
         if (DirectionalLight != null)
         {
             _originalDLCOlor = DirectionalLight.color;
+            _originalIntensity = DirectionalLight.intensity;
         }
     }
 
@@ -43,6 +46,7 @@ public class SkyboxEvolution : MonoBehaviour
 
         // Lerp values
         float exposure = Mathf.Lerp(_originalExposure, ToExposure, t);
+        float intensity = Mathf.Lerp(_originalIntensity, ToIntensityDL, t);
         Color skyboxTint = Color.Lerp(_originalSkyboxTint, ToColorSkyboxTint, t);
         Color fogColor = Color.Lerp(_originalFogColor, ToColorFog, t);
         Color lightColor = Color.Lerp(_originalDLCOlor, ToColorDL, t);
@@ -55,6 +59,7 @@ public class SkyboxEvolution : MonoBehaviour
         if (DirectionalLight != null)
         {
             DirectionalLight.color = lightColor;
+            DirectionalLight.intensity = intensity;
         }
 
         DynamicGI.UpdateEnvironment(); // For real-time reflection updates
@@ -72,6 +77,7 @@ public class SkyboxEvolution : MonoBehaviour
         if (DirectionalLight != null)
         {
             DirectionalLight.color = _originalDLCOlor;
+            DirectionalLight.intensity = _originalIntensity;
         }
     }
 }
