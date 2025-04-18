@@ -8,9 +8,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1372747507259542, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 1967254158679252, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
       propertyPath: m_Name
       value: SM_Prop_Candle_Melted_04_Preset Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 1967254158679252, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 4645012286851768, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
       propertyPath: m_LocalScale.y
@@ -62,7 +70,7 @@ PrefabInstance:
       objectReference: {fileID: 6842223166553750308, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
     - target: {fileID: 198720441778155348, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
       propertyPath: LightsModule.range
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 198720441778155348, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
       propertyPath: LightsModule.ratio
@@ -77,16 +85,24 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 198720441778155348, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
+      propertyPath: LightsModule.rangeCurve.scalar
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 198720441778155348, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
-      value: 0.0155855995
+      value: 0.30588236
       objectReference: {fileID: 0}
     - target: {fileID: 198720441778155348, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
       propertyPath: InitialModule.startColor.maxColor.g
-      value: 0.115431674
+      value: 0.7372549
       objectReference: {fileID: 0}
     - target: {fileID: 198720441778155348, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
-      value: 0.7509433
+      value: 0.96862745
+      objectReference: {fileID: 0}
+    - target: {fileID: 198720441778155348, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
+      propertyPath: EmissionModule.rateOverDistance.scalar
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 199625316179208146, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
       propertyPath: m_Materials.Array.size
@@ -94,6 +110,84 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4645012286851768, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 6712668060229503006}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
+--- !u!4 &1519059556054065017 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4645012286851768, guid: a929ce797b153ec4c8e451bd5f306df8, type: 3}
+  m_PrefabInstance: {fileID: 1514414552896640449}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &2979266079640558314
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1519059556054065017}
+    m_Modifications:
+    - target: {fileID: 396731024890074251, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_Name
+      value: CandleLight
+      objectReference: {fileID: 0}
+    - target: {fileID: 396731024890074251, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 396731024890074251, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390288293904749300, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0065
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390288293904749300, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.0866
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390288293904749300, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.0026
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390288293904749300, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390288293904749300, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390288293904749300, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390288293904749300, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390288293904749300, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390288293904749300, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390288293904749300, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+--- !u!4 &6712668060229503006 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8390288293904749300, guid: 122acb28c567bb74c8e2ccc594fecaab, type: 3}
+  m_PrefabInstance: {fileID: 2979266079640558314}
+  m_PrefabAsset: {fileID: 0}
