@@ -1,13 +1,13 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Vermines.HUD.Card
+namespace Vermines.UI.Card
 {
     public class CardClickable : MonoBehaviour, IPointerClickHandler
     {
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log($"Carte {gameObject.name} cliquÃ©e !");
+            Debug.Log($"Carte {gameObject.name} cliquée !");
             HandleClick();
         }
 
@@ -17,21 +17,7 @@ namespace Vermines.HUD.Card
         /// </summary>
         private void HandleClick()
         {
-            if (CompareTag("ShopCard"))
-            {
-                if (TryGetComponent<CardInShop>(out var marketCard))
-                {
-                    marketCard.OpenOverlay();
-                }
-            }
-            else if (CompareTag("HandCard"))
-            {
-                if (TryGetComponent<CardInHand>(out var inventoryCard))
-                {
-                    // TODO: implement card selection
-                }
-            }
-            else if (CompareTag("TableCard"))
+            if (CompareTag("TableCard"))
             {
                 if (TryGetComponent<CardInTable>(out var tableCard))
                 {

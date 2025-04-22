@@ -1,11 +1,9 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Vermines.HUD.Card
+namespace Vermines.UI.Card
 {
-    using Vermines.HUD;
-
     public class CardDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         [SerializeField] private Transform originalParent;
@@ -27,7 +25,7 @@ namespace Vermines.HUD.Card
             //transform.DOKill();
             //transform.SetParent(null);
             transform.rotation = Quaternion.identity;
-            HandManager.instance.RemoveCard(gameObject);
+            //HandManager.instance.RemoveCard(gameObject);
             cardHover.SetLocked(true);
             xOffset = this.transform.position.x - eventData.position.x;
             yOffset = this.transform.position.y - eventData.position.y;
@@ -53,9 +51,9 @@ namespace Vermines.HUD.Card
         private void ReturnToHand()
         {
             //transform.SetParent(originalParent); // On remet la carte dans la main
-            HandManager.instance.AddCard(gameObject); // On ajoute la carte à la main
+            //HandManager.instance.AddCard(gameObject); // On ajoute la carte � la main
             //transform.DOKill();
-            HandManager.instance.UpdateCardPosition();
+            //HandManager.instance.UpdateCardPosition();
         }
     }
 }

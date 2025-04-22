@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using OMGG.DesignPattern;
 using UnityEngine.Events;
 using Vermines.HUD;
+using Vermines.UI;
 
 public class CamManager : MonoBehaviourSingleton<CamManager>
 {
@@ -158,11 +159,11 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
 
         if ((CamSplineType)_SplineID ==  CamSplineType.MainViewToCourtyard || (CamSplineType)_SplineID == CamSplineType.MarketToCourtyard)
         {
-            ShopManager.instance.OpenCourtyard();
+            UIManager.Instance.OpenShopCourtyard();
         }
         else if ((CamSplineType)_SplineID == CamSplineType.MainViewToMarket || (CamSplineType)_SplineID == CamSplineType.CourtyardToMarket)
         {
-            ShopManager.instance.OpenMarket();
+            UIManager.Instance.OpenShopMarket();
         }
     }
 

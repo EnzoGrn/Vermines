@@ -272,10 +272,10 @@ GameObject:
   - component: {fileID: 5926621648341682244}
   - component: {fileID: 8570673010082492015}
   - component: {fileID: 6185790379621379204}
-  - component: {fileID: 5726712145301186012}
   - component: {fileID: -2039284470658538282}
   - component: {fileID: 1568188764484955011}
-  - component: {fileID: 6682604036917479662}
+  - component: {fileID: 8617751701730483249}
+  - component: {fileID: 1999928330661488271}
   m_Layer: 6
   m_Name: Card
   m_TagString: Untagged
@@ -344,18 +344,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5726712145301186012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 548401717956231047}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87de637992a7dee4f9bed38f40815fbd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!225 &-2039284470658538282
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -381,7 +369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 0
---- !u!114 &6682604036917479662
+--- !u!114 &8617751701730483249
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -390,16 +378,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 548401717956231047}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 431924b3649ed54478f8c36d3f0cee3a, type: 3}
+  m_Script: {fileID: 11500000, guid: eff4dcaa842f7f341a4cbba17b81d31f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardName: {fileID: 7487895608642308917}
-  eloquence: {fileID: 2529223482764352865}
-  souls: {fileID: 2994218563122489541}
-  effectDescription: {fileID: 0}
-  character: {fileID: 6797222475460496817}
-  background: {fileID: 6641272224189884911}
-  debugMode: 1
+  _cardNameText: {fileID: 7487895608642308917}
+  _eloquenceText: {fileID: 2529223482764352865}
+  _soulsText: {fileID: 2994218563122489541}
+  _effectText: {fileID: 0}
+  _characterImage: {fileID: 3360256749106935662}
+  _backgroundImage: {fileID: 4078322104712623146}
+--- !u!114 &1999928330661488271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548401717956231047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3ee0d75cb6b13546860c6b829dd9233, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &716538002797232710
 GameObject:
   m_ObjectHideFlags: 0

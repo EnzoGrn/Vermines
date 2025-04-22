@@ -15,6 +15,8 @@ namespace Vermines.Player {
     using Vermines.Network.Utilities;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
+    using Vermines.UI;
+    using Vermines.UI.Card;
 
     public class PlayerController : NetworkBehaviour {
 
@@ -49,6 +51,11 @@ namespace Vermines.Player {
         public void OnDiscard(int cardId)
         {
             GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId);
+        }
+
+        public void OnDiscardNoEffect(int cardId)
+        {
+            GameManager.Instance.RPC_DiscardCardNoEffect(Object.InputAuthority.RawEncoded, cardId);
         }
 
         public void OnBuy(ShopType shopType, int slot)
@@ -123,11 +130,9 @@ namespace Vermines.Player {
             CommandResponse response = CommandInvoker.ExecuteCommand(buyCommand);
 
             if (response.Status == CommandStatus.Success) {
-                if (HUDManager.instance != null)
-                    HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[PlayerRef.FromEncoded(playerRef)]);
-                if (CardSpawner.Instance != null)
-                    CardSpawner.Instance.DestroyCard(shopType, slot);
-                Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[PlayerRef.FromEncoded(playerRef)].Serialize()}");
+                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[parameters.Player]);
+                GameEvents.OnCardPurchased.Invoke(shopType, slot);
+                Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[parameters.Player].Serialize()}");
             }
         }
 
@@ -150,10 +155,34 @@ namespace Vermines.Player {
                     if (effect.Type == CardSystem.Enumerations.EffectType.Discard) {
                         effect.Play(player);
 
-                        HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[player]);
+                        TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
+
+                        GameEvents.OnCardDiscarded.Invoke(card);
                     }
                 }
             } else {
+                Debug.LogWarning($"[SERVER]: {response.Message}");
+            }
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_DiscardCardNoEffect(int playerId, int cardId)
+        {
+            PlayerRef player = PlayerRef.FromEncoded(playerId);
+            ICommand discardCommand = new DiscardCommand(player, cardId);
+
+            CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
+
+            if (response.Status == CommandStatus.Success)
+            {
+                Debug.Log($"[SERVER]: {response.Message}");
+
+                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+                GameEvents.OnCardDiscarded.Invoke(card);
+            }
+            else
+            {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
             }
         }
