@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Vermines.UI
+namespace Vermines.UI.Card
 {
     public class CardSlotPool : MonoBehaviour
     {

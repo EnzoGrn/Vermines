@@ -1,6 +1,7 @@
 using UnityEngine;
 using Vermines.UI.Shop;
 using Vermines.ShopSystem.Enumerations;
+using Vermines.UI.GameTable;
 
 namespace Vermines.UI
 {
@@ -8,7 +9,7 @@ namespace Vermines.UI
     {
         public static UIManager Instance;
 
-        //public TableUI table;
+        public TableUI table;
         //public HandUI hand;
         //public BookUI book;
 
@@ -54,7 +55,7 @@ namespace Vermines.UI
         }
 
         //public void OpenBook() => book.Open();
-        //public void OpenTable() => table.Open();
+        public void OpenTable() => table.OpenTableUI();
 
         public void CloseAll()
         {

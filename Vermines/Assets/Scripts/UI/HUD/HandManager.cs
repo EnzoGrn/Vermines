@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Splines;
 using DG.Tweening;
 using Vermines.CardSystem.Elements;
+using Vermines.UI.GameTable;
 
 namespace Vermines.UI.Card
 {
@@ -77,6 +78,7 @@ namespace Vermines.UI.Card
         public void RemoveCard(GameObject card)
         {
             handCards.Remove(card);
+            card.transform.DOKill(true);
             UpdateCardPositions();
         }
 
@@ -99,14 +101,13 @@ namespace Vermines.UI.Card
 
         public void DiscardAllCards()
         {
-            foreach (var card in handCards)
+            List<GameObject> cards = new List<GameObject>(handCards);
+            foreach (var card in cards)
             {
+                Debug.Log("[HandManager] Discard all cards");
                 CardDisplay cardBase = card.GetComponent<CardDisplay>();
-                GameEvents.InvokeOnDiscard(cardBase.Card.ID);
+                GameEvents.OnCardDiscardRequestedNoEffect.Invoke(cardBase.Card);
             }
-
-            handCards.Clear();
-            UpdateCardPositions();
         }
 
         public bool HasRemainingCards() => handCards.Count > 0;
@@ -125,6 +126,7 @@ namespace Vermines.UI.Card
 
             for (int i = 0; i < handCards.Count; i++)
             {
+                Debug.Log("Update dotween");
                 float t = startT + i * spacing;
                 Vector3 worldOffset = handContainer.position;
                 Vector3 position = (Vector3)spline.EvaluatePosition(t) + worldOffset;
@@ -133,13 +135,14 @@ namespace Vermines.UI.Card
                 Quaternion rotation = Quaternion.LookRotation(up, Vector3.Cross(up, forward).normalized);
 
                 var card = handCards[i];
+                var localCard = card;
+
                 card.transform.DOMove(position, 0.25f);
                 card.transform.DORotateQuaternion(rotation, 0.25f);
 
-                int index = i;
                 DOVirtual.DelayedCall(0.25f, () =>
                 {
-                    if (card.TryGetComponent<CardHover>(out var hover))
+                    if (localCard != null && localCard.TryGetComponent<CardHover>(out var hover))
                         hover.SetInitialPosition();
                 });
             }
@@ -155,9 +158,22 @@ namespace Vermines.UI.Card
         {
             GameObject card = Instantiate(cardPrefab, spawnPoint.position, spawnPoint.rotation, handContainer);
             card.name = $"Card_{handCards.Count + 1}";
-            card.AddComponent<CardHover>();
-            card.AddComponent<CardDraggable>();
+            //card.AddComponent<CardHover>();
+            //card.AddComponent<DraggableCard>();
             return card;
+        }
+
+        public GameObject GetCardDisplayGO(ICard card)
+        {
+            foreach (var cardGO in handCards)
+            {
+                var display = cardGO.GetComponent<CardDisplay>();
+                if (display != null && display.Card.ID == card.ID)
+                {
+                    return cardGO;
+                }
+            }
+            return null;
         }
 
         #endregion

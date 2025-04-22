@@ -13,7 +13,10 @@ public static class GameEvents
     public static Dictionary<ShopType, UnityEvent<int, ICard>> OnShopsEvents = new();
     public static UnityEvent<ShopType, int> OnCardPurchaseRequested = new();
     public static UnityEvent<ShopType, int> OnCardPurchased = new();
-    public static UnityEvent<int> OnDiscard = new();
+    public static UnityEvent<ShopType, int> OnShopCardReplaced = new();
+    public static UnityEvent<ICard> OnCardDiscardRequested = new();
+    public static UnityEvent<ICard> OnCardDiscardRequestedNoEffect = new();
+    public static UnityEvent<ICard> OnCardDiscarded = new();
     public static UnityEvent<int> OnCardPlayed = new();
     public static UnityEvent<int> OnCardSacrified = new();
     public static UnityEvent<PhaseType> OnPhaseChanged = new();
@@ -36,12 +39,6 @@ public static class GameEvents
     public static void InvokeOnDrawCard(ICard card)
     {
         OnCardDrawn.Invoke(card);
-        return;
-    }
-
-    public static void InvokeOnDiscard(int cardId)
-    {
-        OnDiscard.Invoke(cardId);
         return;
     }
 

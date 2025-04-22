@@ -1,47 +1,19 @@
-using UnityEngine;
 using Vermines.CardSystem.Elements;
-using Vermines.UI.Card;
+using Vermines.CardSystem.Enumerations;
 
-public class ShopCardSlot : MonoBehaviour
+namespace Vermines.UI.Card
 {
-    [SerializeField] private GameObject _CardDisplayPrefab;
-    private int _SlotIndex;
-    public CardDisplay CardDisplay { get; private set; }
-
-    public void SetIndex(int index)
+    public class ShopCardSlot : CardSlotBase
     {
-        _SlotIndex = index;
-    }
-
-    public void Init(ICard card, bool isNew, ICardClickHandler clickHandler)
-    {
-        if (CardDisplay == null)
+        private void Awake()
         {
-            GameObject obj = Instantiate(_CardDisplayPrefab, transform);
-            CardDisplay = obj.GetComponent<CardDisplay>();
+            _acceptedType = CardType.None;
+            IsInteractable = false;
         }
 
-        CardDisplay.gameObject.SetActive(false);
-
-        if (card == null) return;
-
-        CardDisplay.Display(card, clickHandler);
-        CardDisplay.transform.localScale = Vector3.one;
-
-        if (isNew)
+        public override bool CanAcceptCard(ICard card)
         {
-            Debug.Log($"[ShopCardSlot] Card {card.Data.Name} is new.");
+            return false;
         }
-
-        CardDisplay.gameObject.SetActive(true);
     }
-
-    public void ResetSlot()
-    {
-        Debug.Log($"[ShopCardSlot] Resetting slot {_SlotIndex}");
-        CardDisplay.Clear();
-        CardDisplay.gameObject.SetActive(false);
-    }
-
-    public int GetIndex() => _SlotIndex;
 }

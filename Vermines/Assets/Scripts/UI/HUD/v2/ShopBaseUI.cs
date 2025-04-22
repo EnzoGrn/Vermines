@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.ShopSystem.Enumerations;
+using Vermines.UI.Card;
 
 namespace Vermines.UI.Shop
 {

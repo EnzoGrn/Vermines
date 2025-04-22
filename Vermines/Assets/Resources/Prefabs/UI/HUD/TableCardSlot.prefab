@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 3504337161609592308}
   - component: {fileID: 667875038325336323}
   - component: {fileID: 3667550677457294685}
-  - component: {fileID: 8239353783234960549}
+  - component: {fileID: 7061799629681195994}
+  - component: {fileID: -1366432220857425989}
   m_Layer: 5
-  m_Name: Slot
+  m_Name: TableCardSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76,7 +77,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8239353783234960549
+--- !u!114 &7061799629681195994
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,7 +86,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 3155057234065678115}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a84aafe2df7da0e48937ed822741c4e1, type: 3}
+  m_Script: {fileID: 11500000, guid: 7aa46dded1f81de4c96f4595aae3c65e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _CardDisplayPrefab: {fileID: 548401717956231047, guid: aa93eda88b9cdc749a3fdbb5706da2d4, type: 3}
+  acceptedCardType: 0
+--- !u!114 &-1366432220857425989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3155057234065678115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db1f93afc42ffc24da3572adfa764b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

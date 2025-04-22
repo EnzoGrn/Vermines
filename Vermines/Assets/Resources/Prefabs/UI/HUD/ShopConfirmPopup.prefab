@@ -2271,6 +2271,7 @@ MonoBehaviour:
   nameText: {fileID: 704797510698481051}
   descriptionText: {fileID: 5209935594300156630}
   costText: {fileID: 5036171408641339296}
+  soulValueText: {fileID: 3170406157243678650}
   buyButton: {fileID: 2244284450968304157}
   cancelButton: {fileID: 6406689129450807163}
   cardDisplayPrefab: {fileID: 548401717956231047, guid: aa93eda88b9cdc749a3fdbb5706da2d4, type: 3}

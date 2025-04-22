@@ -16,6 +16,7 @@ namespace Vermines.Player {
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
     using Vermines.UI;
+    using Vermines.UI.Card;
 
     public class PlayerController : NetworkBehaviour {
 
@@ -50,6 +51,11 @@ namespace Vermines.Player {
         public void OnDiscard(int cardId)
         {
             GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId);
+        }
+
+        public void OnDiscardNoEffect(int cardId)
+        {
+            GameManager.Instance.RPC_DiscardCardNoEffect(Object.InputAuthority.RawEncoded, cardId);
         }
 
         public void OnBuy(ShopType shopType, int slot)
@@ -150,9 +156,33 @@ namespace Vermines.Player {
                         effect.Play(player);
 
                         TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
+
+                        GameEvents.OnCardDiscarded.Invoke(card);
                     }
                 }
             } else {
+                Debug.LogWarning($"[SERVER]: {response.Message}");
+            }
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_DiscardCardNoEffect(int playerId, int cardId)
+        {
+            PlayerRef player = PlayerRef.FromEncoded(playerId);
+            ICommand discardCommand = new DiscardCommand(player, cardId);
+
+            CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
+
+            if (response.Status == CommandStatus.Success)
+            {
+                Debug.Log($"[SERVER]: {response.Message}");
+
+                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+                GameEvents.OnCardDiscarded.Invoke(card);
+            }
+            else
+            {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
             }
         }

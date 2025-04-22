@@ -196,14 +196,14 @@ namespace Vermines.HUD {
 
         public void OpenDeskOverlay()
         {
-            if (PhaseManager.Instance && PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice)
-            {
-                TableManager.instance.EnableDiscard(false);
-            } else
-            {
-                TableManager.instance.EnableDiscard(true);
-            }
-            deskOverlay.SetActive(true);
+            //if (PhaseManager.Instance && PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice)
+            //{
+            //    TableManager.instance.EnableDiscard(false);
+            //} else
+            //{
+            //    TableManager.instance.EnableDiscard(true);
+            //}
+            //deskOverlay.SetActive(true);
         }
 
         public void CloseDeskOverlay()
