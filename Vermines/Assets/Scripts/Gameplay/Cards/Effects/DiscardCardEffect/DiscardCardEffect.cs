@@ -56,8 +56,8 @@ namespace Vermines.Gameplay.Cards.Effect {
             // TODO: Remove the event observer
             PlayerController.Local.OnDiscard(card.ID);
 
-            // Ensuite on déclenche l'effet de la carte jouée
             base.Play(PlayerController.Local.PlayerRef);
+            UIContextManager.Instance.ClearContext();
         }
 
         public override List<(string, Sprite)> Draw()
