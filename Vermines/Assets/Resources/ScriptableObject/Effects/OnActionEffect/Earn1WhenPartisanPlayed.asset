@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bbc3438809686d4dac52819fc0d6c38, type: 3}
+  m_Name: Earn1WhenPartisanPlayed
+  m_EditorClassIdentifier: 
+  _Description: Earn <b><color=purple>1E</color></b> each time you play a <b>Partisan</b>
+    card
+  PartisanIcon: {fileID: 21300000, guid: 1f82901efd596d44daa5763f25078608, type: 3}

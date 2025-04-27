@@ -131,7 +131,9 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Success) {
                 TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[parameters.Player]);
+
                 GameEvents.OnCardPurchased.Invoke(shopType, slot);
+
                 Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[parameters.Player].Serialize()}");
             }
         }
@@ -198,6 +200,12 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Invalid)
                 Debug.LogWarning($"[SERVER]: {response.Message}");
+            if (response.Status == CommandStatus.Success) {
+                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+                foreach (AEffect effect in card.Data.Effects)
+                    effect.OnAction("Play", player, card);
+            }
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

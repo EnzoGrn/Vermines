@@ -46,7 +46,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         }
 
         [SerializeField]
-        public ShopType _ShopTarget = ShopType.Market;
+        private ShopType _ShopTarget = ShopType.Market;
 
         public ShopType ShopTarget
         {
