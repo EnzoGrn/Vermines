@@ -58,7 +58,7 @@ namespace Vermines.Gameplay.Phases {
                     if (effect.Type == EffectType.Play) {
                         effect.Play(player);
 
-                        HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[player]);
+                        // TODO: update the player
 
                         Debug.Log($"[Client]: Card {card.ID} is {card.Data.Name}, effect played");
                     }

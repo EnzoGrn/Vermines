@@ -36,9 +36,6 @@ namespace Vermines.Gameplay.Phases {
         {
             _CurrentPlayerRef = player;
             Debug.Log($"Phase {Type} is now running");
-
-            if (HUDManager.instance)
-                HUDManager.instance.EnablePhaseButton(false);
         }
 
         private void OnCardPurchaseRequested(ShopType type, int id)

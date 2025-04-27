@@ -55,7 +55,8 @@ namespace Vermines.Gameplay.Phases {
             }
 
             if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
-                HUDManager.instance.OpenDeskOverlay();
+                // TODO: Open sacrifice menu
+                Debug.Log($"[Client]: Open Sacrifice Menu for player {_CurrentPlayer}");
             else
                 OnPhaseEnding(_CurrentPlayer, true);
         }

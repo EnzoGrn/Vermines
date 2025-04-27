@@ -151,13 +151,13 @@ namespace Vermines.Player {
 
                 ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
+                GameEvents.OnCardDiscarded.Invoke(card);
+
                 foreach (AEffect effect in card.Data.Effects) {
                     if (effect.Type == CardSystem.Enumerations.EffectType.Discard) {
                         effect.Play(player);
 
                         TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
-
-                        GameEvents.OnCardDiscarded.Invoke(card);
                     }
                 }
             } else {
@@ -239,7 +239,7 @@ namespace Vermines.Player {
 
                 if (response.Status == CommandStatus.Success) {
                     GameDataStorage.Instance.PlayerData.TryGet(player, out PlayerData playerData);
-                    HUDManager.instance.UpdateSpecificPlayer(playerData);
+                    // TODO: update the player
                 }
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
