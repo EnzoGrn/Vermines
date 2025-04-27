@@ -14,13 +14,13 @@ public class TestSound : MonoBehaviour
         // Test unique sound
         if (Input.GetKeyDown(KeyCode.Y))
         {
-            SoundManager.Instance.PlaySoundFXClip(_testOneShotSoundFX, transform, 1f);
+            SoundManager.Instance.PlaySoundFXClip(_testOneShotSoundFX, transform, 1f, false);
         }
 
         // Test random sound
         if (Input.GetKeyDown(KeyCode.U))
         {
-            SoundManager.Instance.PlaySoundFXClip(_testOneShotSoundFXList, transform, 1f);
+            SoundManager.Instance.PlaySoundFXClip(_testOneShotSoundFXList, transform, 1f, false);
         }
 
         if (Input.GetKeyDown(KeyCode.I))

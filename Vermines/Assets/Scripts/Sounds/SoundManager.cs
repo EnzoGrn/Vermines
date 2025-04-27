@@ -6,12 +6,23 @@ using System.Collections;
 public class SoundManager : MonoBehaviourSingleton<SoundManager>
 {
     [SerializeField] private AudioSource _soundFXObjectPrefab;
+    [SerializeField] private AudioSource _3dSoundFXObjectPrefab;
     [SerializeField] private float _fadeDuration;
 
-    public void PlaySoundFXClip(AudioClip audioclip, Transform transform, float volume)
+    public void PlaySoundFXClip(AudioClip audioclip, Transform transform, float volume, bool is3dSound,
+                                float minDistance = 0f, float maxDistance = 15f)
     {
         // Spawn the gameobject
-        AudioSource audioSource = Instantiate(_soundFXObjectPrefab, transform.position, Quaternion.identity);
+        AudioSource audioSource;
+
+        if (!is3dSound)
+            audioSource = Instantiate(_soundFXObjectPrefab, transform.position, Quaternion.identity);
+        else
+        {
+            audioSource = Instantiate(_3dSoundFXObjectPrefab, transform.position, Quaternion.identity);
+            audioSource.minDistance = minDistance;
+            audioSource.maxDistance = maxDistance;
+        }
 
         audioSource.clip = audioclip;
         audioSource.volume = volume;
@@ -20,7 +31,8 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         Destroy(audioSource.gameObject, audioSource.clip.length);
     }
 
-    public void PlaySoundFXClip(List<AudioClip> audioclipList, Transform transform, float volume)
+    public void PlaySoundFXClip(List<AudioClip> audioclipList, Transform transform, float volume, bool is3dSound,
+                                float minDistance = 0f, float maxDistance = 15f)
     {
         if (audioclipList == null || audioclipList.Count == 0)
         {
@@ -28,8 +40,17 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
             return;
         }
 
+        AudioSource audioSource;
+
         // Spawn the gameobject
-        AudioSource audioSource = Instantiate(_soundFXObjectPrefab, transform.position, Quaternion.identity);
+        if (!is3dSound)
+            audioSource = Instantiate(_soundFXObjectPrefab, transform.position, Quaternion.identity);
+        else
+        {
+            audioSource = Instantiate(_3dSoundFXObjectPrefab, transform.position, Quaternion.identity);
+            audioSource.minDistance = minDistance;
+            audioSource.maxDistance = maxDistance;
+        }
 
         audioSource.clip = audioclipList[Random.Range(0, audioclipList.Count)];
         audioSource.volume = volume;
