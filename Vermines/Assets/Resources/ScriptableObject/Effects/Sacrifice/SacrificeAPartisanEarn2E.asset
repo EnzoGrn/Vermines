@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1897c79de7e4e414ea43f5adf2b902e6, type: 3}
   m_Name: SacrificeAPartisanEarn2E
   m_EditorClassIdentifier: 
-  _Description: Sacrifice a <b>Partisan</b>
+  _Description: Sacrifice a <b>Partisan</b> then earn <b><color=purple>2E</color></b>
+  _SubEffect: {fileID: 11400000, guid: 99decfc020a17de469edd14b8530020a, type: 2}
   SacrificedIcon: {fileID: 21300000, guid: 156c42c3701633942bcfe423ce840169, type: 3}
   SoulIcon: {fileID: 21300000, guid: a3c4b0860b11f9145b70a7d40201e163, type: 3}
   Then: {fileID: 21300000, guid: 24a76bff2862f8a4fbc25bf2c54630fa, type: 3}

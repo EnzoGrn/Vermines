@@ -32,6 +32,20 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
         }
 
+        [SerializeField]
+        private AEffect _SubEffect = null;
+
+        public override AEffect SubEffect
+        {
+            get => _SubEffect;
+            set
+            {
+                _SubEffect = value;
+
+                UpdateDescription();
+            }
+        }
+
         #endregion
 
         #region UI Elements
@@ -56,7 +70,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             // TODO: Remove the event observer
             PlayerController.Local.OnDiscard(card.ID);
 
-            // Ensuite on déclenche l'effet de la carte jouée
+            // Ensuite on dï¿½clenche l'effet de la carte jouï¿½e
             base.Play(PlayerController.Local.PlayerRef);
         }
 
