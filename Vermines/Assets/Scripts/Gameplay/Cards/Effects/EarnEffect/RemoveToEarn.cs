@@ -77,7 +77,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController.Local.NetworkEventCardEffect(Card.ID);
         }
 
-        public override void NetworkEventFunction(PlayerRef player)
+        public override void NetworkEventFunction(PlayerRef player, string data)
         {
             base.Play(player);
         }

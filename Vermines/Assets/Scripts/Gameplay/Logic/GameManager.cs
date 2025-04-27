@@ -205,9 +205,9 @@ namespace Vermines {
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_NetworkEventCardEffect(int playerID, int cardID)
+        public void RPC_NetworkEventCardEffect(int playerID, int cardID, string data)
         {
-            Player.PlayerController.Local.RPC_NetworkEventCardEffect(playerID, cardID);
+            Player.PlayerController.Local.RPC_NetworkEventCardEffect(playerID, cardID, data);
         }
 
         #endregion

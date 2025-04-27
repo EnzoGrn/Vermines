@@ -98,9 +98,9 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_RemoveCopiedEffect(Object.InputAuthority.RawEncoded, card.ID);
         }
 
-        public void NetworkEventCardEffect(int cardID)
+        public void NetworkEventCardEffect(int cardID, string data = null)
         {
-            GameManager.Instance.RPC_NetworkEventCardEffect(Object.InputAuthority.RawEncoded, cardID);
+            GameManager.Instance.RPC_NetworkEventCardEffect(Object.InputAuthority.RawEncoded, cardID, data);
         }
 
         #endregion
@@ -350,7 +350,7 @@ namespace Vermines.Player {
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_NetworkEventCardEffect(int playerID, int cardID)
+        public void RPC_NetworkEventCardEffect(int playerID, int cardID, string data)
         {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
             PlayerRef player = PlayerRef.FromEncoded(playerID);
@@ -362,7 +362,7 @@ namespace Vermines.Player {
             }
 
             foreach (AEffect effect in card.Data.Effects)
-                effect.NetworkEventFunction(player);
+                effect.NetworkEventFunction(player, data);
         }
 
         #endregion

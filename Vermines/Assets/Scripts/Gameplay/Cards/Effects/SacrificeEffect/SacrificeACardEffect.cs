@@ -44,7 +44,12 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            if (player == PlayerController.Local.PlayerRef) {
+            PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
+
+            // Check if their is card to sacrifice.
+            if (deck.PlayedCards.Count == 0) {
+                base.Play(player);
+            } else if (player == PlayerController.Local.PlayerRef) {
                 // TODO: Force the player to be in the sacrifice view.
                 // TODO: Implement the observer pattern here to trigger the sacrifice event.
             }
@@ -57,7 +62,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController.Local.NetworkEventCardEffect(card.ID);
         }
 
-        public override void NetworkEventFunction(PlayerRef player)
+        public override void NetworkEventFunction(PlayerRef player, string data)
         {
             base.Play(player);
         }
