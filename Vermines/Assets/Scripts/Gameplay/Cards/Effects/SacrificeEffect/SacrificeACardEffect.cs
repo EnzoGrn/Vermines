@@ -1,21 +1,19 @@
 using System.Collections.Generic;
-using System.Linq;
-using OMGG.DesignPattern;
 using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
-    using Vermines.Gameplay.Commands.Deck;
+    using Vermines.CardSystem.Elements;
     using Vermines.Player;
 
-    [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Draw/Draw cards.")]
-    public class DrawEffect : AEffect {
+    [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Sacrifice/Sacrifice cards.")]
+    public class SacrificeACard : AEffect {
 
         #region Constants
 
-        private static readonly string drawTemplate = "Draw {0} card";
+        private static readonly string sacrificeTemplate = "Sacrifice a <b>Partisan</b>";
         private static readonly string linkerTemplate = " then ";
 
         #endregion
@@ -31,20 +29,6 @@ namespace Vermines.Gameplay.Cards.Effect {
             set
             {
                 _Description = value;
-            }
-        }
-
-        [SerializeField]
-        private int _Amount = 1;
-
-        public int Amount
-        {
-            get => _Amount;
-            set
-            {
-                _Amount = value;
-
-                UpdateDescription();
             }
         }
         
@@ -66,33 +50,43 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #region UI Elements
 
-        public Sprite DrawIcon = null;
-        public Sprite Then = null;
+        public Sprite SacrificedIcon = null;
+        public Sprite SoulIcon       = null;
+        public Sprite Then           = null;
 
         #endregion
 
         public override void Play(PlayerRef player)
         {
-            for (int i = 0; i < Amount; i++) {
-                ICommand drawCommand = new DrawCommand(player);
+            PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
 
-                CommandResponse command = CommandInvoker.ExecuteCommand(drawCommand);
-
-                if (command.Status == CommandStatus.Success && PlayerController.Local.PlayerRef == player) {
-                    PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
-
-                    GameEvents.InvokeOnDrawCard(deck.Hand.Last());
-                }
+            // Check if their is card to sacrifice.
+            if (deck.PlayedCards.Count == 0) {
+                base.Play(player);
+            } else if (player == PlayerController.Local.PlayerRef) {
+                // TODO: Force the player to be in the sacrifice view.
+                // TODO: Implement the observer pattern here to trigger the sacrifice event.
             }
+        }
 
+        public void OnSacrificed(ICard card)
+        {
+            // TODO: Remove the event observer
+            PlayerController.Local.OnCardSacrified(card.ID);
+            PlayerController.Local.NetworkEventCardEffect(card.ID);
+        }
+
+        public override void NetworkEventFunction(PlayerRef player, string data)
+        {
             base.Play(player);
         }
 
         public override List<(string, Sprite)> Draw()
         {
             List<(string, Sprite)> elements = new() {
-                { (null       , DrawIcon) },
-                { ($"{Amount}", null) }
+                { (null  , SacrificedIcon) },
+                { ($"+ X", null)           },
+                { (null  , SoulIcon)       }
             };
 
             if (SubEffect != null) {
@@ -105,10 +99,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         protected override void UpdateDescription()
         {
-            Description = $"{string.Format(drawTemplate, Amount)}";
+            Description = $"{sacrificeTemplate}";
 
-            if (Amount > 1)
-                Description += "s";
             if (SubEffect != null) {
                 string subDescription = SubEffect.Description;
 
@@ -122,8 +114,10 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             UpdateDescription();
 
-            if (DrawIcon == null)
-                DrawIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Draw");
+            if (SacrificedIcon == null)
+                SacrificedIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Sacrificed_Other_Partisan_Card");
+            if (SoulIcon == null)
+                SoulIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Souls");
             if (Then == null)
                 Then = Resources.Load<Sprite>("Sprites/UI/Effects/Then");
         }

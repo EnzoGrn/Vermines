@@ -78,6 +78,8 @@ namespace Vermines.ShopSystem.Commands {
                 return new CommandResponse(CommandStatus.Failure, $"Shop {_Parameters.ShopType} have slot {_Parameters.Slot} empty.");
             playerDeck.Discard.Add(card);
 
+            card.Owner = _Parameters.Player;
+
             return new CommandResponse(CommandStatus.Success, $"Player {_Parameters.Player} bought the card.");
         }
 

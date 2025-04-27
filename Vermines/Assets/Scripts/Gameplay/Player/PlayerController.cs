@@ -98,9 +98,9 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_RemoveCopiedEffect(Object.InputAuthority.RawEncoded, card.ID);
         }
 
-        public void NetworkEventCardEffect(int cardID)
+        public void NetworkEventCardEffect(int cardID, string data = null)
         {
-            GameManager.Instance.RPC_NetworkEventCardEffect(Object.InputAuthority.RawEncoded, cardID);
+            GameManager.Instance.RPC_NetworkEventCardEffect(Object.InputAuthority.RawEncoded, cardID, data);
         }
 
         #endregion
@@ -131,7 +131,9 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Success) {
                 TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[parameters.Player]);
+
                 GameEvents.OnCardPurchased.Invoke(shopType, slot);
+
                 Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[parameters.Player].Serialize()}");
             }
         }
@@ -198,6 +200,12 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Invalid)
                 Debug.LogWarning($"[SERVER]: {response.Message}");
+            if (response.Status == CommandStatus.Success) {
+                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+                foreach (AEffect effect in card.Data.Effects)
+                    effect.OnAction("Play", player, card);
+            }
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -342,7 +350,7 @@ namespace Vermines.Player {
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_NetworkEventCardEffect(int playerID, int cardID)
+        public void RPC_NetworkEventCardEffect(int playerID, int cardID, string data)
         {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
             PlayerRef player = PlayerRef.FromEncoded(playerID);
@@ -354,7 +362,7 @@ namespace Vermines.Player {
             }
 
             foreach (AEffect effect in card.Data.Effects)
-                effect.NetworkEventFunction(player);
+                effect.NetworkEventFunction(player, data);
         }
 
         #endregion

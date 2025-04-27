@@ -10,6 +10,11 @@ namespace Vermines.CardSystem.Data.Effect {
     public interface IEffect {
 
         /// <summary>
+        /// The reference of the card.
+        /// </summary>
+        ICard Card { get; set; }
+
+        /// <summary>
         /// The description of the effect.
         /// </summary>
         string Description { get; }
@@ -42,7 +47,9 @@ namespace Vermines.CardSystem.Data.Effect {
         /// <summary>
         /// Function called after an RPC, if needed.
         /// </summary>
-        void NetworkEventFunction(PlayerRef player);
+        void NetworkEventFunction(PlayerRef player, string data);
+
+        void OnAction(string ActionMessage, PlayerRef player, ICard card);
 
         /// <summary>
         /// Function for draw the effect.
@@ -58,7 +65,7 @@ namespace Vermines.CardSystem.Data.Effect {
         /// <summary>
         /// The reference of the card.
         /// </summary>
-        public ICard Card { get; set; }
+        virtual public ICard Card { get; set; }
 
         /// <summary>
         /// The description of the effect.
@@ -96,10 +103,16 @@ namespace Vermines.CardSystem.Data.Effect {
                 SubEffect.Stop(player);
         }
 
-        public virtual void NetworkEventFunction(PlayerRef player)
+        public virtual void NetworkEventFunction(PlayerRef player, string data)
         {
             if (SubEffect != null)
-                SubEffect.NetworkEventFunction(player);
+                SubEffect.NetworkEventFunction(player, data);
+        }
+
+        public virtual void OnAction(string ActionMessage, PlayerRef player, ICard card)
+        {
+            if (SubEffect != null)
+                SubEffect.OnAction(ActionMessage, player, card);
         }
 
         public virtual List<(string, Sprite)> Draw()

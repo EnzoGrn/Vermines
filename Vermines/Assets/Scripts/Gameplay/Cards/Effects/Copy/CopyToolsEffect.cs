@@ -4,16 +4,18 @@ using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
 
+    using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
 
-    [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Copy/Copy a partisan effect.")]
-    public class CopyPartisanEffect : AEffect {
+    [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Copy/Copy a tools effect.")]
+    public class CopyToolEffect : AEffect {
 
         #region Constants
 
-        private static readonly string copyTemplate = "Play the effect of a different partisan.";
+        private static readonly string copyTemplate = "Plays the effect of a tool in the market.";
 
         #endregion
 
@@ -31,14 +33,12 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
         }
 
-        private ICard _CardCopied = null;
-
         #endregion
 
         #region UI Elements
 
-        public Sprite PartisanCardIcon = null;
-        public Sprite PartisanEffectIcon = null;
+        public Sprite ToolEffectIcon = null;
+        public Sprite MarketIcon = null;
 
         #endregion
 
@@ -47,33 +47,32 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (player != PlayerController.Local.PlayerRef)
                 return;
 
-            // TODO: Subscribe to the function for copied the partisan's effect
+            // TODO: Subscribe to the function for copied the tool's effect (only on market && and only tools)
         }
 
-        public override void Stop(PlayerRef player)
+        private void OnCardCopied(ICard card)
         {
-            if (player != PlayerController.Local.PlayerRef)
+            if (card.Data.Type != CardType.Tools)
                 return;
-            PlayerController.Local.RemoveCopiedEffect(Card);
+            PlayerController.Local.NetworkEventCardEffect(Card.ID, card.ID.ToString());
+
+            // TODO: Unsubscribe the function for copied the partisan's effect
         }
 
-        private void CopiedEffect(ICard card)
+        public override void NetworkEventFunction(PlayerRef player, string data)
         {
-            // TODO: Unsubscribe the function for copied the partisan's effect
+            // Here the data is equal to the id of the card copied
+            ICard card = CardSetDatabase.Instance.GetCardByID(data);
 
-            _CardCopied = card;
-
-            RoundEventDispatcher.RegisterEvent(PlayerController.Local.PlayerRef, Stop);
-
-            PlayerController.Local.CopiedEffect(Card, _CardCopied);
+            foreach (var effect in card.Data.Effects)
+                effect.Play(player);
         }
 
         public override List<(string, Sprite)> Draw()
         {
             List<(string, Sprite)> elements = new() {
-                { (null, PartisanEffectIcon) },
-                { (" != ", null) },
-                { (null, PartisanCardIcon) }
+                { (null, ToolEffectIcon) },
+                { (null, MarketIcon) }
             };
 
             return elements;
@@ -88,10 +87,10 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             UpdateDescription();
 
-            if (PartisanEffectIcon == null)
-                PartisanEffectIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Partisan_Card_Effect");
-            if (PartisanCardIcon == null)
-                PartisanCardIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Partisan_Card_Played");
+            if (ToolEffectIcon == null)
+                ToolEffectIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Tool_Card_Effect");
+            if (MarketIcon == null)
+                MarketIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Market");
         }
 
         #region Editor Editor
