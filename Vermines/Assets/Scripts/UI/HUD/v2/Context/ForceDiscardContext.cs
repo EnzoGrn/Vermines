@@ -10,11 +10,13 @@ public class ForceDiscardContext : IUIContext
 
     public ForceDiscardContext(Action<ICard> onDiscardComplete)
     {
+        Debug.Log($"[ForceDiscardContext] Entering discard context");
         _onDiscardComplete = onDiscardComplete;
     }
 
     public void Enter()
     {
+        Debug.Log($"[ForceDiscardContext] Entering discard context");
         if (TableUI.Instance != null)
             TableUI.Instance.SetOnlyDiscardInteractable(true);
 
@@ -23,6 +25,7 @@ public class ForceDiscardContext : IUIContext
 
     public void Exit()
     {
+        Debug.Log($"[ForceDiscardContext] Exiting discard context");
         if (TableUI.Instance != null)
             TableUI.Instance.SetOnlyDiscardInteractable(false);
 

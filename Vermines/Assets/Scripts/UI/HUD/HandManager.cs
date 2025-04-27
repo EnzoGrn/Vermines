@@ -54,17 +54,19 @@ namespace Vermines.UI.Card
             UpdateCardPositions();
         }
 
-        public void DrawCard(ICard cardData)
+        public void DrawCard(ICard card)
         {
             if (handCards.Count >= maxHandSize) return;
 
-            GameObject card = CreateCard();
-            if (card.TryGetComponent<CardDisplay>(out var display))
-                display.Display(cardData, null);
+            Debug.Log($"[HandManager] Drawing card: {card.Data.name}");
+            GameObject cardGO = CreateCard();
+            if (cardGO.TryGetComponent<CardDisplay>(out var display))
+                display.Display(card, null);
             else
                 Debug.LogWarning("CardDisplay component missing on card prefab.");
 
-            handCards.Add(card);
+            Debug.Log($"[HandManager] Card drawn: {card.Data.name}");
+            handCards.Add(cardGO);
 
             UpdateCardPositions();
         }
