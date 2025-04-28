@@ -81,11 +81,6 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_BuyCard(shopType, slot, Object.InputAuthority.RawEncoded);
         }
 
-        public void BuyCard(ShopType shopType, int slot)
-        {
-            RPC_BuyCard(Object.InputAuthority.RawEncoded, shopType, slot);
-        }
-
         public void OnActiveEffectActivated(int cardID)
         {
             GameManager.Instance.RPC_ActivateEffect(Object.InputAuthority.RawEncoded, cardID);
