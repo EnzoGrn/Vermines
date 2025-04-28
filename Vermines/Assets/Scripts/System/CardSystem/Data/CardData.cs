@@ -93,6 +93,22 @@ namespace Vermines.CardSystem.Data {
 
         public List<AEffect> Effects;
 
+        private List<AEffect> _OriginalEffect = null;
+
+        public void CopyEffect(List<AEffect> effects)
+        {
+            _OriginalEffect = new List<AEffect>(effects);
+
+            Effects = effects;
+        }
+
+        public void RemoveEffectCopied()
+        {
+            Effects = _OriginalEffect;
+        }
+
+        public bool ReduceInSilence = false;
+
         #endregion
 
         #region Stats
@@ -100,7 +116,68 @@ namespace Vermines.CardSystem.Data {
         /// <summary>
         /// The cost of the card (with Eloquence as the currency).
         /// </summary>
-        public int Eloquence = 0;
+        [SerializeField]
+        private int _Eloquence = 0;
+
+        /// <summary>
+        /// Get or set the cost of the card (with Eloquence as the currency).
+        /// </summary>
+        public int Eloquence
+        {
+            get => IsStartingCard ? 0 : _Eloquence;
+            set
+            {
+                if (IsStartingCard)
+                    _Eloquence = 0;
+                else
+                    _Eloquence = value;
+                CurrentEloquence = _Eloquence;
+            }
+        }
+
+        public bool IsFree = false;
+
+        /// <summary>
+        /// The current eloquence value of the card.
+        /// Use it in the UI, for know if the value has changed or not.
+        /// </summary>
+        public int CurrentEloquence = 0;
+
+        /// <summary>
+        /// The eloquence that are not reduced because the card is already at the minimum cost.
+        /// </summary>
+        private int _ExcessiveEloquence = 0;
+
+        /// <summary>
+        /// Function for reducing the eloquence of the card.
+        /// </summary>
+        public void EloquenceReduction(int amount)
+        {
+            if (CurrentEloquence - amount < 1) {
+                _ExcessiveEloquence = Mathf.Abs(CurrentEloquence - 1);
+
+                CurrentEloquence = 1;
+            } else {
+                CurrentEloquence -= amount;
+            }
+        }
+
+        /// <summary>
+        /// Function that remove the reduction of the eloquence of the card.
+        /// </summary>
+        public void RemoveReduction(int amount)
+        {
+            if (_ExcessiveEloquence > 0 && amount < _ExcessiveEloquence) {
+                _ExcessiveEloquence -= amount;
+            } else if (_ExcessiveEloquence > 0) {
+                amount -= _ExcessiveEloquence;
+
+                CurrentEloquence   += amount;
+                _ExcessiveEloquence = 0;
+            } else {
+                CurrentEloquence += amount;
+            }
+        }
 
         /// <summary>
         /// The souls of the card (souls represent the points system of the game).
@@ -120,6 +197,40 @@ namespace Vermines.CardSystem.Data {
                     _Souls = value;
                 else
                     _Souls = 0;
+                CurrentSouls = _Souls;
+            }
+        }
+
+        /// <summary>
+        /// The current souls value of the card.
+        /// Use it in the UI, for know if the value has changed or not.
+        /// </summary>
+        public int CurrentSouls = 0;
+
+        private int _ExcessiveSouls = 0;
+
+        public void SoulsReduction(int amount)
+        {
+            if (CurrentSouls - amount < 0) {
+                _ExcessiveSouls = Mathf.Abs(CurrentSouls);
+
+                CurrentSouls = 0;
+            } else {
+                CurrentSouls -= amount;
+            }
+        }
+
+        public void RemoveSoulsReduction(int amount)
+        {
+            if (_ExcessiveSouls > 0 && amount < _ExcessiveSouls)
+                _ExcessiveSouls -= amount;
+            else if (_ExcessiveSouls > 0) {
+                amount -= _ExcessiveSouls;
+
+                CurrentSouls += amount;
+                _ExcessiveSouls = 0;
+            } else {
+                CurrentSouls += amount;
             }
         }
 
@@ -173,7 +284,7 @@ namespace Vermines.CardSystem.Data {
                 return null;
             if (Effects.Count == 1 && Effects[0] != null)
                 return Effects[0].Draw();
-            else
+            else if (Effects.Count == 1)
                 return null;
             List<(string, Sprite)> elements  = new();
             Sprite                 separator = Resources.Load<Sprite>("Sprites/UI/Effects/separator");

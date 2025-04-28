@@ -49,18 +49,14 @@ namespace Vermines.HUD.Card
 
         public void Initialize()
         {
-            foreach (var shopEvent in GameEvents.OnShopsEvents)
-            {
-                if (!ShopCardDictionaries.ContainsKey(shopEvent.Key))
-                {
+            foreach (var shopEvent in GameEvents.OnShopsEvents) {
+                if (!ShopCardDictionaries.ContainsKey(shopEvent.Key)) {
                     ShopCardDictionaries.Add(shopEvent.Key, new());
                     //shopEvent.Value.AddListener((id, card) => SetShopCardDictionnary(shopEvent.Key, id, card));
                 }
 
                 if (!_ShopSpawnedCardDictionaries.ContainsKey(shopEvent.Key))
-                {
                     _ShopSpawnedCardDictionaries.Add(shopEvent.Key, new());
-                }
             }
 
             if (cardPrefab == null)
@@ -89,31 +85,33 @@ namespace Vermines.HUD.Card
 
         public void SpawnCard(ICard cardData, ShopType shopType)
         {
-            if (cardData == null)
-            {
+            if (cardData == null) {
                 Debug.LogError("Card data is null!");
-                return;
-            }
 
-            if (cardPrefab == null)
-            {
+                return;
+            } if (cardPrefab == null) {
                 Debug.LogWarning("Card prefab is null!");
                 return;
             }
 
             // TODO: If the card is already in the shop, in the same slot, don't spawn it again
-
+            if (_ShopSpawnedCardDictionaries[shopType].ContainsKey(cardData.ID))
+            {
+                Debug.LogWarning($"Card with ID {cardData.ID} is already spawned in the shop.");
+                return;
+            }
+            
             GameObject newCard = Instantiate(cardPrefab);
             CardInShop cardInShop;
 
-            switch (shopType)
-            {
+            switch (shopType) {
                 case ShopType.Market:
                     cardInShop = newCard.AddComponent<CardInShop>();
                     cardInShop.Initialize(newCard.GetComponent<CardBase>());
                     newCard.transform.SetParent(marketContainer, false);
                     newCard.tag = "ShopCard";
                     _ShopSpawnedCardDictionaries[shopType].Add(cardData.ID, newCard);
+                    Debug.LogWarning($"Spawning card {cardData.ID} in the shop {shopType}");
                     break;
                 case ShopType.Courtyard:
                     cardInShop = newCard.AddComponent<CardInShop>();
@@ -121,6 +119,7 @@ namespace Vermines.HUD.Card
                     newCard.transform.SetParent(courtyardContainer, false);
                     newCard.tag = "ShopCard";
                     _ShopSpawnedCardDictionaries[shopType].Add(cardData.ID, newCard);
+                    Debug.LogWarning($"Spawning card {cardData.ID} in the shop {shopType}");
                     break;
                 default:
                     Debug.LogError("Location not found");
@@ -158,6 +157,7 @@ namespace Vermines.HUD.Card
         {
             foreach (var card in cardDictionary)
             {
+                Debug.Log("Card id: " + card.Value.ID);
                 bool cardExists = false;
                 foreach (var cardInShop in ShopCardDictionaries[shopType])
                 {
@@ -170,22 +170,32 @@ namespace Vermines.HUD.Card
                         break;
                     }
                 }
-                if (!cardExists)
-                    ShopCardDictionaries[shopType].Add(card.Key, card.Value);
+                if (!cardExists) {
+                    if (ShopCardDictionaries[shopType].ContainsKey(card.Key)) {
+                        ShopCardDictionaries[shopType][card.Key] = card.Value;
+                    }
+                    else
+                    {
+                        ShopCardDictionaries[shopType].Add(card.Key, card.Value);
+                    }
+                }
             }
             SpawnCardsFromDictionary(cardDictionary, shopType);
         }
 
-        public void DestroyCard(int id)
+        public void DestroyCard(ShopType shopType, int slotId)
         {
-            foreach (var shopEvent in GameEvents.OnShopsEvents)
+            ICard card = ShopCardDictionaries[shopType][slotId];
+            if (card == null)
             {
-                if (ShopCardDictionaries[shopEvent.Key].ContainsKey(id))
-                {
-                    // TODO: Destroy Card GameObject
-                    ShopCardDictionaries[shopEvent.Key].Remove(id);
-                    break;
-                }
+                Debug.LogError("Card is null!");
+                return;
+            }
+            int id = card.ID;
+            if (_ShopSpawnedCardDictionaries[shopType].ContainsKey(id))
+            {
+                Destroy(_ShopSpawnedCardDictionaries[shopType][id]);
+                _ShopSpawnedCardDictionaries[shopType].Remove(id);
             }
         }
 

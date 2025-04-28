@@ -1,9 +1,13 @@
 using OMGG.DesignPattern;
 using UnityEngine;
+using System.Linq;
 using Fusion;
 
 namespace Vermines.Gameplay.Phases {
-    using System.Linq;
+
+    using Vermines.CardSystem.Data.Effect;
+    using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.HUD.Card;
@@ -24,31 +28,37 @@ namespace Vermines.Gameplay.Phases {
         {
             Debug.Log($"Phase {Type} is now running");
 
-            Debug.Log($"[SERVER]: Player hand deck at resolution: {GameDataStorage.Instance.PlayerDeck[player].Serialize()}");
-
             // Refill Shop
             ICommand refillShopCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 
-            CommandInvoker.ExecuteCommand(refillShopCommand);
+            CommandResponse response = CommandInvoker.ExecuteCommand(refillShopCommand);
 
-            if (CommandInvoker.State == true)
-            {
+            if (response.Status == CommandStatus.Success) {
                 foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
-                {
                     CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
-                }
             }
 
             // Refill Hand
-            for (int i = 0; i < GameManager.Instance.Config.NumberOfCardsToDrawAtEndOfTurn.Value; i++)
-            {
-                Debug.Log($"Player {player} is tying to draw a card");
+            for (int i = 0; i < GameManager.Instance.Config.NumberOfCardsToDrawAtEndOfTurn.Value; i++) {
                 ICommand drawCardCommand = new DrawCommand(player);
-                CommandInvoker.ExecuteCommand(drawCardCommand);
+
+                CommandResponse command = CommandInvoker.ExecuteCommand(drawCardCommand);
+
+                if (command.Status == CommandStatus.Success && PlayerController.Local.PlayerRef == player) {
+                    PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
+
+                    GameEvents.InvokeOnDrawCard(deck.Hand.Last());
+                }
 
                 // Dump all the deck of the user
-                Debug.Log($"Player {player} draw a card");
-                Debug.Log($"Player {player} Decks: {GameDataStorage.Instance.PlayerDeck[player].Serialize()}");
+                Debug.Log($"[SERVER]: (Resolution Phase) Player {player} refill his hand: {GameDataStorage.Instance.PlayerDeck[player].Serialize()}");
+            }
+
+            foreach (ICard card in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Passive)
+                        effect.Stop(player);
+                }
             }
 
             OnPhaseEnding(player, true); // Here true, because everyone know that the phase is over.

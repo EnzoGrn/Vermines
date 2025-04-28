@@ -64,5 +64,20 @@ namespace Vermines.HUD
         {
             return currentShop;
         }
+
+        public void GoToMarket()
+        {
+            CamManager.Instance.GoOnMarketLocation();
+        }
+
+        public void GoToCourtyard()
+        {
+            CamManager.Instance.GoOnCourtyardLocation();
+        }
+
+        public void GoToGlobal()
+        {
+            CamManager.Instance.GoOnNoneLocation();
+        }
     }
 }

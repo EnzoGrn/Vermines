@@ -24,19 +24,15 @@ namespace Vermines.ShopSystem.Commands.Internal {
             _Config  = config;
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
             _OldShop = _Shop?.DeepCopy() ?? null;
             
             _Shop = SyncShop(_Shop, _Data, _Config);
 
             if (_Shop == null)
-            {
-                Debug.LogError("Shop is null after sync.");
-                return false;
-            }
-
-            return true;
+                return new CommandResponse(CommandStatus.Failure, $"Failed to sync the shop.");
+            return new CommandResponse(CommandStatus.Success, $"Shop synced.");
         }
 
         public void Undo()

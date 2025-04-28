@@ -17,6 +17,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         private static readonly string eloquenceTemplate   = "<b><color=purple>{0}E</color></b>";
         private static readonly string soulTemplate        = "<b><color=red>{0}A</color></b>";
         private static readonly string descriptionTemplate = "Earn ";
+        private static readonly string linkerTemplate      = " then ";
 
         #endregion
 
@@ -68,6 +69,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public Sprite EloquenceIcon = null;
         public Sprite SoulIcon      = null;
+        public Sprite ThenIcon      = null;
 
         #endregion
 
@@ -85,11 +87,16 @@ namespace Vermines.Gameplay.Cards.Effect {
             List<(string, Sprite)> elements = new();
 
             if (DataToEarn == DataType.Eloquence) {
-                elements.Add(($"+{Amount}E", EloquenceIcon));
+                elements.Add(($"+{Amount}E", null));
                 elements.Add((null, EloquenceIcon));
             } else if (DataToEarn == DataType.Soul) {
-                elements.Add(($"+{Amount}A", SoulIcon));
+                elements.Add(($"+{Amount}A", null));
                 elements.Add((null, SoulIcon));
+            }
+
+            if (SubEffect != null) {
+                elements.Add((null, ThenIcon));
+                elements.AddRange(SubEffect.Draw());
             }
 
             return elements;
@@ -101,6 +108,13 @@ namespace Vermines.Gameplay.Cards.Effect {
                 Description = $"{descriptionTemplate}{string.Format(eloquenceTemplate, Amount)}";
             else if (DataToEarn == DataType.Soul)
                 Description = $"{descriptionTemplate}{string.Format(soulTemplate, Amount)}";
+            if (SubEffect != null) {
+                string subDescription = SubEffect.Description;
+
+                if (subDescription.Length > 0)
+                    subDescription = char.ToLower(subDescription[0]) + subDescription[1..];
+                Description += $"{linkerTemplate}{subDescription}";
+            }
         }
 
         private void OnEnable()
@@ -111,6 +125,8 @@ namespace Vermines.Gameplay.Cards.Effect {
                 EloquenceIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Eloquence");
             if (SoulIcon == null)
                 SoulIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Souls");
+            if (ThenIcon == null)
+                ThenIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Then");
         }
 
         #region Editor Editor

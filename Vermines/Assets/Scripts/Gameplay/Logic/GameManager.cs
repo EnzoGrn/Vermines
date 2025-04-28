@@ -4,6 +4,9 @@ using Fusion;
 
 namespace Vermines {
     using OMGG.DesignPattern;
+    using Vermines.CardSystem.Data.Effect;
+    using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Elements;
     using Vermines.Config;
     using Vermines.Gameplay.Phases;
     using Vermines.ShopSystem.Commands;
@@ -133,12 +136,12 @@ namespace Vermines {
             
             ICommand buyCommand = new CheckBuyCommand(parameters);
 
-            CommandInvoker.ExecuteCommand(buyCommand);
+            CommandResponse response = CommandInvoker.ExecuteCommand(buyCommand);
 
-            if (CommandInvoker.State == true)
+            if (response.Status == CommandStatus.Success)
                 Player.PlayerController.Local.RPC_BuyCard(playerId, shopType, slot);
             else
-                Debug.LogWarning($"[Host]: Player {playerId} can't buy the card at slot {slot} in {shopType}");
+                Debug.LogWarning($"[SERVER]: {response.Message}");
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -158,6 +161,49 @@ namespace Vermines {
         {
             Player.PlayerController.Local.RPC_CardSacrified(playerId, cardId);
         }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_ActivateEffect(int playerID, int cardID)
+        {
+            Player.PlayerController.Local.RPC_ActivateEffect(playerID, cardID);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_ReplaceCardInShop(int playerId, ShopType shopType, int slot)
+        {
+            Player.PlayerController.Local.RPC_ReplaceCardInShop(playerId, shopType, slot);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_ReducedInSilenced(int playerId, int cardToBeSilenced)
+        {
+            Player.PlayerController.Local.RPC_ReducedInSilenced(playerId, cardToBeSilenced);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_RemoveReducedInSilenced(int playerId, int cardID, int originalSouls)
+        {
+            Player.PlayerController.Local.RPC_RemoveReducedInSilenced(playerId, cardID, originalSouls);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_CopiedEffect(int playerId, int cardID, int cardToCopiedID)
+        {
+            Player.PlayerController.Local.RPC_CopiedEffect(playerId, cardID, cardToCopiedID);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_RemoveCopiedEffect(int playerId, int cardID)
+        {
+            Player.PlayerController.Local.RPC_RemoveCopiedEffect(playerId, cardID);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_NetworkEventCardEffect(int playerID, int cardID)
+        {
+            Player.PlayerController.Local.RPC_NetworkEventCardEffect(playerID, cardID);
+        }
+
         #endregion
     }
 }

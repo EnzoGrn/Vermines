@@ -19,11 +19,13 @@ namespace Vermines.Gameplay.Commands.Internal {
             _Families = families;
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
             CardSetDatabase.Instance.Initialize(_Families);
 
-            return true;
+            if (CardSetDatabase.Instance.Size == 0)
+                return new CommandResponse(CommandStatus.Failure, $"Failed to initialize the game with the families: {string.Join(", ", _Families)}");
+            return new CommandResponse(CommandStatus.Success, $"Game initialized with the families: {string.Join(", ", _Families)}");
         }
 
         public void Undo()
@@ -50,7 +52,7 @@ namespace Vermines.Gameplay.Commands.Internal {
             _PlayersData = data.Split('|', StringSplitOptions.RemoveEmptyEntries);
         }
 
-        public bool Execute()
+        public CommandResponse Execute()
         {
             _OldDecks = GameDataStorage.Instance.PlayerDeck;
 
@@ -58,17 +60,17 @@ namespace Vermines.Gameplay.Commands.Internal {
                 string[] playerDeck = playerData.Split(':', StringSplitOptions.RemoveEmptyEntries);
 
                 if (playerDeck.Length != 2)
-                    continue;
+                    return new CommandResponse(CommandStatus.Invalid, $"Malformed data during deck initialization.\n{_PlayersData}");
                 try {
                     InitializeDeck(playerDeck[0], playerDeck[1]);
                 } catch (Exception) {
                     Debug.LogWarning($"[SERVER]: Error during deck initialization of {playerDeck[0]} - {playerDeck[1]}");
 
-                    continue;
+                    return new CommandResponse(CommandStatus.Invalid, $"Malformed data during deck initialization.\n{_PlayersData}");
                 }
             }
 
-            return true;
+            return new CommandResponse(CommandStatus.Success, "Decks initialized.");
         }
 
         public void Undo()
