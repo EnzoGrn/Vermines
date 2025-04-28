@@ -8,21 +8,26 @@ namespace Vermines.Player {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Cards;
     using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.HUD;
-    using Vermines.HUD.Card;
     using Vermines.Network.Utilities;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
     using Vermines.UI;
-    using Vermines.UI.Card;
 
     public class PlayerController : NetworkBehaviour {
 
         public static PlayerController Local { get; private set; }
 
         public PlayerRef PlayerRef => Object.InputAuthority;
+
+        #region Cards Tracker
+
+        private CardTracker _DiscardedCardTrackerPerTurn = new();
+
+        #endregion
 
         #region Override Methods
 
@@ -37,6 +42,19 @@ namespace Vermines.Player {
         #endregion
 
         #region Methods
+
+        public void ClearTracker()
+        {
+            _DiscardedCardTrackerPerTurn.Reset();
+        }
+
+        public void AddCardInTracker(int cardId)
+        {
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            if (card != null)
+                _DiscardedCardTrackerPerTurn.AddCard(card);
+        }
 
         public void OnCardSacrified(int cardId)
         {
@@ -149,19 +167,25 @@ namespace Vermines.Player {
             CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
 
             if (response.Status == CommandStatus.Success) {
-                Debug.Log($"[SERVER]: {response.Message}");
-
                 ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
-                foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == CardSystem.Enumerations.EffectType.Discard) {
-                        effect.Play(player);
+                if (_DiscardedCardTrackerPerTurn.HasCard(card) && card.Data.Type == CardType.Tools && !card.Data.IsStartingCard) {
+                    Debug.Log($"[SERVER]: This tool '{card.Data.Name}' card already discarded this turn");
+                } else {
+                    Debug.Log($"[SERVER]: {response.Message}");
 
-                        TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
+                    _DiscardedCardTrackerPerTurn.AddCard(card);
 
-                        GameEvents.OnCardDiscarded.Invoke(card);
+                    foreach (AEffect effect in card.Data.Effects) {
+                        if (effect.Type == EffectType.Discard) {
+                            effect.Play(player);
+
+                            TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
+                        }
                     }
                 }
+
+                GameEvents.OnCardDiscarded.Invoke(card);
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
             }
