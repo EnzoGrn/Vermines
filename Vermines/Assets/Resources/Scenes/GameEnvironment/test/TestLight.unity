@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 0}
+  m_Sun: {fileID: 690920877}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -93,8 +93,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: cc838543c69e018468985102bb0e6b48, type: 2}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: 2f5b204b6e7b2254cb87b800a3357829, type: 2}
+  m_LightingDataAsset: {fileID: 112000000, guid: e3dce9c83e371c146a9751ab2e43073f, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 24745f33476a2e847a60bf2f342a3373, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
