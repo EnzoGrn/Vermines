@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 35815096}
   - component: {fileID: 35815097}
+  - component: {fileID: 35815098}
   m_Layer: 0
   m_Name: Rogue
   m_TagString: Untagged
@@ -206,6 +207,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &35815098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35815095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &45516911
 GameObject:
   m_ObjectHideFlags: 0
@@ -216,6 +230,7 @@ GameObject:
   m_Component:
   - component: {fileID: 45516912}
   - component: {fileID: 45516913}
+  - component: {fileID: 45516914}
   m_Layer: 0
   m_Name: Queen
   m_TagString: Untagged
@@ -293,6 +308,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &45516914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45516911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &52066161
 GameObject:
   m_ObjectHideFlags: 0
@@ -303,6 +331,7 @@ GameObject:
   m_Component:
   - component: {fileID: 52066162}
   - component: {fileID: 52066163}
+  - component: {fileID: 52066164}
   m_Layer: 0
   m_Name: Villager
   m_TagString: Untagged
@@ -380,6 +409,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &52066164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 52066161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &108726151
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,6 +592,7 @@ GameObject:
   m_Component:
   - component: {fileID: 198200147}
   - component: {fileID: 198200148}
+  - component: {fileID: 198200149}
   m_Layer: 0
   m_Name: Dragoleon
   m_TagString: Untagged
@@ -627,6 +670,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &198200149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198200146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &258029718
 GameObject:
   m_ObjectHideFlags: 0
@@ -637,6 +693,7 @@ GameObject:
   m_Component:
   - component: {fileID: 258029719}
   - component: {fileID: 258029720}
+  - component: {fileID: 258029721}
   m_Layer: 0
   m_Name: Villager
   m_TagString: Untagged
@@ -714,6 +771,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &258029721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258029718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &270308907
 GameObject:
   m_ObjectHideFlags: 0
@@ -724,6 +794,7 @@ GameObject:
   m_Component:
   - component: {fileID: 270308908}
   - component: {fileID: 270308909}
+  - component: {fileID: 270308910}
   m_Layer: 0
   m_Name: Merchant
   m_TagString: Untagged
@@ -801,6 +872,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &270308910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270308907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &317392494
 GameObject:
   m_ObjectHideFlags: 0
@@ -811,6 +895,7 @@ GameObject:
   m_Component:
   - component: {fileID: 317392495}
   - component: {fileID: 317392496}
+  - component: {fileID: 317392497}
   m_Layer: 0
   m_Name: Apothecary
   m_TagString: Untagged
@@ -888,6 +973,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &317392497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317392494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &340273657
 GameObject:
   m_ObjectHideFlags: 0
@@ -898,6 +996,7 @@ GameObject:
   m_Component:
   - component: {fileID: 340273658}
   - component: {fileID: 340273659}
+  - component: {fileID: 340273660}
   m_Layer: 0
   m_Name: High Cleric
   m_TagString: Untagged
@@ -975,6 +1074,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &340273660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340273657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &351380346
 GameObject:
   m_ObjectHideFlags: 0
@@ -985,6 +1097,7 @@ GameObject:
   m_Component:
   - component: {fileID: 351380347}
   - component: {fileID: 351380348}
+  - component: {fileID: 351380349}
   m_Layer: 0
   m_Name: Assassin
   m_TagString: Untagged
@@ -1062,6 +1175,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &351380349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 351380346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &769787658
 GameObject:
   m_ObjectHideFlags: 0
@@ -1106,6 +1232,7 @@ GameObject:
   m_Component:
   - component: {fileID: 847948750}
   - component: {fileID: 847948751}
+  - component: {fileID: 847948752}
   m_Layer: 0
   m_Name: High Cleric
   m_TagString: Untagged
@@ -1183,6 +1310,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &847948752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847948749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &849990515
 GameObject:
   m_ObjectHideFlags: 0
@@ -1193,6 +1333,7 @@ GameObject:
   m_Component:
   - component: {fileID: 849990516}
   - component: {fileID: 849990517}
+  - component: {fileID: 849990518}
   m_Layer: 0
   m_Name: Bandit
   m_TagString: Untagged
@@ -1270,6 +1411,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &849990518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849990515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &918070280
 GameObject:
   m_ObjectHideFlags: 0
@@ -1280,6 +1434,7 @@ GameObject:
   m_Component:
   - component: {fileID: 918070281}
   - component: {fileID: 918070282}
+  - component: {fileID: 918070283}
   m_Layer: 0
   m_Name: Merchant
   m_TagString: Untagged
@@ -1357,6 +1512,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &918070283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918070280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &918752135
 GameObject:
   m_ObjectHideFlags: 0
@@ -1403,6 +1571,7 @@ GameObject:
   m_Component:
   - component: {fileID: 924220257}
   - component: {fileID: 924220258}
+  - component: {fileID: 924220259}
   m_Layer: 0
   m_Name: Priest
   m_TagString: Untagged
@@ -1480,6 +1649,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &924220259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 924220256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &967367013
 GameObject:
   m_ObjectHideFlags: 0
@@ -1490,6 +1672,7 @@ GameObject:
   m_Component:
   - component: {fileID: 967367014}
   - component: {fileID: 967367015}
+  - component: {fileID: 967367016}
   m_Layer: 0
   m_Name: Villager
   m_TagString: Untagged
@@ -1567,6 +1750,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &967367016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 967367013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &976463951
 GameObject:
   m_ObjectHideFlags: 0
@@ -1613,6 +1809,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1021703244}
   - component: {fileID: 1021703245}
+  - component: {fileID: 1021703246}
   m_Layer: 0
   m_Name: Apothecary
   m_TagString: Untagged
@@ -1690,6 +1887,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1021703246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1021703243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1024679863
 GameObject:
   m_ObjectHideFlags: 0
@@ -1700,6 +1910,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1024679864}
   - component: {fileID: 1024679865}
+  - component: {fileID: 1024679866}
   m_Layer: 0
   m_Name: Courtesan
   m_TagString: Untagged
@@ -1777,6 +1988,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1024679866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024679863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1057583207
 GameObject:
   m_ObjectHideFlags: 0
@@ -1787,6 +2011,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1057583208}
   - component: {fileID: 1057583209}
+  - component: {fileID: 1057583210}
   m_Layer: 0
   m_Name: Merchant
   m_TagString: Untagged
@@ -1864,6 +2089,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1057583210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057583207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1120436995
 GameObject:
   m_ObjectHideFlags: 0
@@ -1874,6 +2112,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1120436996}
   - component: {fileID: 1120436997}
+  - component: {fileID: 1120436998}
   m_Layer: 0
   m_Name: Priest
   m_TagString: Untagged
@@ -1951,6 +2190,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1120436998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120436995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1129456872
 GameObject:
   m_ObjectHideFlags: 0
@@ -1961,6 +2213,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1129456873}
   - component: {fileID: 1129456874}
+  - component: {fileID: 1129456875}
   m_Layer: 0
   m_Name: Blacksmith
   m_TagString: Untagged
@@ -2038,6 +2291,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1129456875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129456872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1132031664
 GameObject:
   m_ObjectHideFlags: 0
@@ -2048,6 +2314,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1132031665}
   - component: {fileID: 1132031666}
+  - component: {fileID: 1132031667}
   m_Layer: 0
   m_Name: High Cleric
   m_TagString: Untagged
@@ -2125,6 +2392,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1132031667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132031664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1155535039
 GameObject:
   m_ObjectHideFlags: 0
@@ -2212,11 +2492,11 @@ Transform:
   m_GameObject: {fileID: 1155535039}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1475829967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1155535043
 MonoBehaviour:
@@ -2272,6 +2552,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1162172727}
   - component: {fileID: 1162172728}
+  - component: {fileID: 1162172729}
   m_Layer: 0
   m_Name: Priest
   m_TagString: Untagged
@@ -2349,6 +2630,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1162172729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1162172726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1179223713
 GameObject:
   m_ObjectHideFlags: 0
@@ -2359,6 +2653,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1179223714}
   - component: {fileID: 1179223715}
+  - component: {fileID: 1179223716}
   m_Layer: 0
   m_Name: Soldier
   m_TagString: Untagged
@@ -2436,6 +2731,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1179223716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1179223713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1186865070
 GameObject:
   m_ObjectHideFlags: 0
@@ -2446,6 +2754,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1186865071}
   - component: {fileID: 1186865072}
+  - component: {fileID: 1186865073}
   m_Layer: 0
   m_Name: Priest
   m_TagString: Untagged
@@ -2523,6 +2832,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1186865073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1186865070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1200743849
 GameObject:
   m_ObjectHideFlags: 0
@@ -2533,6 +2855,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1200743850}
   - component: {fileID: 1200743851}
+  - component: {fileID: 1200743852}
   m_Layer: 0
   m_Name: Knight
   m_TagString: Untagged
@@ -2610,6 +2933,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1200743852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200743849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1203517508
 GameObject:
   m_ObjectHideFlags: 0
@@ -2620,6 +2956,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1203517509}
   - component: {fileID: 1203517510}
+  - component: {fileID: 1203517511}
   m_Layer: 0
   m_Name: Apothecary
   m_TagString: Untagged
@@ -2697,6 +3034,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1203517511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203517508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1225733766
 GameObject:
   m_ObjectHideFlags: 0
@@ -2707,6 +3057,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1225733767}
   - component: {fileID: 1225733768}
+  - component: {fileID: 1225733769}
   m_Layer: 0
   m_Name: High Cleric
   m_TagString: Untagged
@@ -2784,6 +3135,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1225733769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1225733766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1258566666
 GameObject:
   m_ObjectHideFlags: 0
@@ -2888,7 +3252,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 2}
+  m_LocalScale: {x: 4, y: 1, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2903,6 +3267,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1269211951}
   - component: {fileID: 1269211952}
+  - component: {fileID: 1269211953}
   m_Layer: 0
   m_Name: Magician
   m_TagString: Untagged
@@ -2980,6 +3345,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1269211953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1269211950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1297099698
 GameObject:
   m_ObjectHideFlags: 0
@@ -2990,6 +3368,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1297099699}
   - component: {fileID: 1297099700}
+  - component: {fileID: 1297099701}
   m_Layer: 0
   m_Name: Royal Guard
   m_TagString: Untagged
@@ -3067,6 +3446,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1297099701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1297099698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1322089766
 GameObject:
   m_ObjectHideFlags: 0
@@ -3077,6 +3469,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1322089767}
   - component: {fileID: 1322089768}
+  - component: {fileID: 1322089769}
   m_Layer: 0
   m_Name: Squire
   m_TagString: Untagged
@@ -3154,6 +3547,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1322089769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1322089766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1370223321
 GameObject:
   m_ObjectHideFlags: 0
@@ -3164,6 +3570,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1370223322}
   - component: {fileID: 1370223323}
+  - component: {fileID: 1370223324}
   m_Layer: 0
   m_Name: Villager
   m_TagString: Untagged
@@ -3241,6 +3648,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1370223324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370223321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1436378511
 GameObject:
   m_ObjectHideFlags: 0
@@ -3251,6 +3671,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1436378512}
   - component: {fileID: 1436378513}
+  - component: {fileID: 1436378514}
   m_Layer: 0
   m_Name: Crusader
   m_TagString: Untagged
@@ -3328,6 +3749,143 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1436378514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436378511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
+--- !u!1 &1475829963
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1475829967}
+  - component: {fileID: 1475829966}
+  - component: {fileID: 1475829965}
+  - component: {fileID: 1475829964}
+  - component: {fileID: 1475829968}
+  m_Layer: 0
+  m_Name: DebugCube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1475829964
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1475829963}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1475829965
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1475829963}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1475829966
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1475829963}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1475829967
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1475829963}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -9.28, y: 1, z: 13.06}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1155535042}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1475829968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1475829963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e632ff58e3e67b440b917b3c874704e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  rotationSpeed: 3
 --- !u!1 &1652287756
 GameObject:
   m_ObjectHideFlags: 0
@@ -3338,6 +3896,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1652287757}
   - component: {fileID: 1652287758}
+  - component: {fileID: 1652287759}
   m_Layer: 0
   m_Name: Apothecary
   m_TagString: Untagged
@@ -3415,6 +3974,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1652287759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1652287756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1774600994
 GameObject:
   m_ObjectHideFlags: 0
@@ -3450,6 +4022,7 @@ Transform:
   - {fileID: 976463952}
   - {fileID: 918752136}
   - {fileID: 1900612723}
+  - {fileID: 1933444120}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1900612722
@@ -3532,6 +4105,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1927273624}
   - component: {fileID: 1927273625}
+  - component: {fileID: 1927273626}
   m_Layer: 0
   m_Name: Bard
   m_TagString: Untagged
@@ -3609,6 +4183,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1927273626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1927273623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1 &1933444119
 GameObject:
   m_ObjectHideFlags: 0
@@ -3633,7 +4220,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1933444119}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3643,7 +4230,7 @@ Transform:
   - {fileID: 2030029968}
   - {fileID: 1162172727}
   - {fileID: 258029719}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1774600995}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2030029967
 GameObject:
@@ -3655,6 +4242,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2030029968}
   - component: {fileID: 2030029969}
+  - component: {fileID: 2030029970}
   m_Layer: 0
   m_Name: Merchant
   m_TagString: Untagged
@@ -3732,12 +4320,24 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2030029970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2030029967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1155535041}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1155535042}
   - {fileID: 108726153}
   - {fileID: 1258566670}
   - {fileID: 1774600995}
-  - {fileID: 1933444120}
+  - {fileID: 1475829967}
