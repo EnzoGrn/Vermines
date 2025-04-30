@@ -8,12 +8,11 @@ namespace Vermines.UI.Card
 {
     public class DiscardDropHandler : CardDropHandler
     {
-        private CardSlotBase slot;
-
         private void Awake()
         {
             // Initialize any necessary components or variables here
             GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
+            GameEvents.OnCardDiscardRefused.AddListener(OnDiscardRefused);
             slot = GetComponent<CardSlotBase>();
         }
 
@@ -21,6 +20,13 @@ namespace Vermines.UI.Card
         {
             DraggableCard drag = eventData.pointerDrag?.GetComponent<DraggableCard>();
             if (drag == null || slot == null) return;
+
+            if (GameManager.Instance.IsMyTurn() == false)
+            {
+                Debug.Log("[DiscardDropHandler] Not your turn, cannot discard card.");
+                drag.ReturnToOriginalPosition();
+                return;
+            }
 
             ICard card = drag.GetCard();
             if (card == null)
@@ -52,6 +58,21 @@ namespace Vermines.UI.Card
                 HandManager.Instance.RemoveCard(go);
                 go.transform.DOKill(true);
                 Destroy(go);
+            }
+        }
+
+        private void OnDiscardRefused(ICard card)
+        {
+            // Handle the discard refusal event here if needed
+            Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} discard refused.");
+            GameObject go = HandManager.Instance.GetCardDisplayGO(card);
+            if (go != null)
+            {
+                DraggableCard drag = go.GetComponent<DraggableCard>();
+                if (drag != null)
+                {
+                    drag.ReturnToOriginalPosition();
+                }
             }
         }
     }

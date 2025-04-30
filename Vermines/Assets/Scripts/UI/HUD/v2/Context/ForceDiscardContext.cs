@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
+using Vermines.UI.Card;
 using Vermines.UI.GameTable;
 
 public class ForceDiscardContext : IUIContext
@@ -19,7 +20,7 @@ public class ForceDiscardContext : IUIContext
         Debug.Log($"[ForceDiscardContext] Entering discard context");
         if (TableUI.Instance != null)
             TableUI.Instance.SetOnlyDiscardInteractable(true);
-
+        HandManager.Instance.ExpandHand(true);
         GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
     }
 
@@ -28,7 +29,7 @@ public class ForceDiscardContext : IUIContext
         Debug.Log($"[ForceDiscardContext] Exiting discard context");
         if (TableUI.Instance != null)
             TableUI.Instance.SetOnlyDiscardInteractable(false);
-
+        HandManager.Instance.ExpandHand(false);
         GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
     }
 

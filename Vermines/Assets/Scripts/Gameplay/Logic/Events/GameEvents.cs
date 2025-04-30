@@ -16,6 +16,7 @@ public static class GameEvents
     public static UnityEvent<ShopType, int> OnShopCardReplaced = new();
     public static UnityEvent<ICard> OnCardDiscardRequested = new();
     public static UnityEvent<ICard> OnCardDiscardRequestedNoEffect = new();
+    public static UnityEvent<ICard> OnCardDiscardRefused = new();
     public static UnityEvent<ICard> OnCardDiscarded = new();
     public static UnityEvent<int> OnCardPlayed = new();
     public static UnityEvent<int> OnCardSacrified = new();

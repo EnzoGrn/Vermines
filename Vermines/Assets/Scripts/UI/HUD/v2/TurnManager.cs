@@ -71,7 +71,7 @@ namespace Vermines.UI
         public void AttemptToNextPhase()
         {
             UIManager.Instance.CloseContextualUI();
-            if (HandManager.Instance.HasRemainingCards())
+            if (HandManager.Instance.HasCards())
             {
                 // Soit tu bloques
                 Debug.Log("Impossible de passer au joueur suivant, il reste des cartes en main.");

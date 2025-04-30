@@ -7,7 +7,7 @@ namespace Vermines.UI.Card
 {
     public class CardDropHandler : MonoBehaviour, IDropHandler
     {
-        private CardSlotBase slot;
+        protected CardSlotBase slot;
 
         private void Awake()
         {

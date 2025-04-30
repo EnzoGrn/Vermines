@@ -148,10 +148,11 @@ namespace Vermines.Player {
 
             CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
 
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
             if (response.Status == CommandStatus.Success) {
                 Debug.Log($"[SERVER]: {response.Message}");
 
-                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
                 GameEvents.OnCardDiscarded.Invoke(card);
 
@@ -164,6 +165,7 @@ namespace Vermines.Player {
                 }
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
+                GameEvents.OnCardDiscardRefused.Invoke(card);
             }
         }
 
