@@ -47,13 +47,6 @@ namespace Vermines.Gameplay.Phases {
 
             List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
 
-            foreach (ICard card in playedCards) {
-                foreach (IEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Passive)
-                        effect.Play(_CurrentPlayer);
-                }
-            }
-
             if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
                 // TODO: Open sacrifice menu
                 Debug.Log($"[Client]: Open Sacrifice Menu for player {_CurrentPlayer}");

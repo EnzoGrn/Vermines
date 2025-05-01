@@ -84,20 +84,6 @@ namespace Vermines.UI.Card
             }
         }
 
-        public void ExpandHand(bool expand)
-        {
-            if (expand)
-            {
-                handLayout.transform.DOScale(1.5f, 0.3f).SetEase(Ease.OutExpo);
-                handLayout.transform.DOLocalMoveY(200f, 0.3f).SetEase(Ease.OutExpo);
-            }
-            else
-            {
-                handLayout.transform.DOScale(1f, 0.3f).SetEase(Ease.InExpo);
-                handLayout.transform.DOLocalMoveY(0f, 0.3f).SetEase(Ease.InExpo);
-            }
-        }
-
         public GameObject GetCardDisplayGO(ICard card)
         {
             foreach (var cardGO in handCards)

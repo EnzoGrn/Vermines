@@ -113,13 +113,14 @@ namespace Vermines.Gameplay.Phases {
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
         public void RPC_UpdatePhaseUI()
         {
-            GameEvents.OnPhaseChanged?.Invoke(CurrentPhase);
+            GameEvents.OnPhaseChanged.Invoke(CurrentPhase);
         }
 
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
         public void RPC_UpdateTurnUI()
         {
-            GameEvents.OnTurnChanged?.Invoke(GameManager.Instance.CurrentPlayerIndex);
+            GameEvents.OnTurnChanged.Invoke(GameManager.Instance.CurrentPlayerIndex);
+            GameEvents.OnPhaseChanged.Invoke(CurrentPhase);
         }
 
         /// <summary>
