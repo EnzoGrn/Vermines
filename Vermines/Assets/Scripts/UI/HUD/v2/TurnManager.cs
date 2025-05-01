@@ -1,6 +1,7 @@
 using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
+using Vermines.Gameplay.Phases;
 using Vermines.Player;
 using Vermines.UI.Card;
 using Vermines.UI.Popup;
@@ -71,7 +72,7 @@ namespace Vermines.UI
         public void AttemptToNextPhase()
         {
             UIManager.Instance.CloseContextualUI();
-            if (HandManager.Instance.HasCards())
+            if (HandManager.Instance.HasCards() && PhaseManager.Instance.CurrentPhase == Gameplay.Phases.Enumerations.PhaseType.Action)
             {
                 // Soit tu bloques
                 Debug.Log("Impossible de passer au joueur suivant, il reste des cartes en main.");
@@ -81,14 +82,14 @@ namespace Vermines.UI
                     "You have some cards left. Do you want to discard them without activating their effect?",
                     onConfirm: () => {
                         HandManager.Instance.DiscardAllCards();
-                        GameEvents.OnAttemptNextPhase?.Invoke();
+                        GameEvents.OnAttemptNextPhase.Invoke();
                     },
                     onCancel: () => {}
                 );
             }
             else
             {
-                GameEvents.OnAttemptNextPhase?.Invoke();
+                GameEvents.OnAttemptNextPhase.Invoke();
             }
 
         }

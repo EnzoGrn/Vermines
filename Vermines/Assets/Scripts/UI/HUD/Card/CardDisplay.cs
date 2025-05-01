@@ -30,6 +30,8 @@ namespace Vermines.UI.Card
                 return;
             }
 
+            Debug.Log($"[CardDisplay] Displaying card {card.Data.Name}, clickHandler: {(clickHandler == null ? "NULL" : clickHandler.GetType().Name)}");
+
             Card = card;
             _clickHandler = clickHandler;
             CardData data = card.Data;

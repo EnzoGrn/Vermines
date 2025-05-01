@@ -63,7 +63,7 @@ namespace Vermines.UI.Card
                 Destroy(go);
 
                 // Display the card on the table
-                slot.SetCard(card);
+                TableUI.Instance.AddCardToPartisanSlot(card, slot.GetIndex());
             }
             GameEvents.OnCardPlayed.RemoveListener(OnCardPlayed);
             GameEvents.OnCardPlayedRefused.RemoveListener(OnPlayRefused);

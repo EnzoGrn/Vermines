@@ -45,5 +45,11 @@ namespace Vermines.UI.Popup
         {
             OnClosed?.Invoke();
         }
+
+        public void ForceClose()
+        {
+            OnClosed?.Invoke();
+        }
+
     }
 }

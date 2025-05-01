@@ -249,7 +249,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             int count = 0;
 
             foreach (ICard sacrificeCard in sacrificed) {
-                if (sacrificeCard.Data.Name == card.Data.Name)
+                if (sacrificeCard?.Data.Name == card?.Data.Name)
                     count++;
             }
 

@@ -26,7 +26,10 @@ public static class GameEvents
     public static UnityEvent<ICard> OnCardPlayedRefused = new();
     public static UnityEvent<ICard> OnCardPlayed = new();
 
-    public static UnityEvent<int> OnCardSacrified = new();
+    public static UnityEvent<ICard> OnCardSacrificedRequested = new();
+    public static UnityEvent<ICard> OnCardSacrifiedRefused = new();
+    public static UnityEvent<ICard> OnCardSacrified = new();
+
     public static UnityEvent<PhaseType> OnPhaseChanged = new();
     public static UnityEvent<int> OnTurnChanged = new();
 

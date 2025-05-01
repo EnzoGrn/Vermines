@@ -17,6 +17,7 @@ namespace Vermines.Player {
     using Vermines.ShopSystem.Enumerations;
     using Vermines.UI;
     using Vermines.UI.Card;
+    using Vermines.UI.GameTable;
 
     public class PlayerController : NetworkBehaviour {
 
@@ -227,7 +228,7 @@ namespace Vermines.Player {
 
             if (card == null) {
                 Debug.LogError($"[SERVER]: Player {player} tried to sacrify a card that doesn't exist.");
-
+                GameEvents.OnCardSacrifiedRefused.Invoke(card);
                 return;
             }
 
@@ -258,10 +259,14 @@ namespace Vermines.Player {
 
                 if (response.Status == CommandStatus.Success) {
                     GameDataStorage.Instance.PlayerData.TryGet(player, out PlayerData playerData);
-                    // TODO: update the player
+                    GameEvents.OnCardSacrified.Invoke(card);
+                    TurnManager.Instance.UpdatePlayer(playerData);
+                    TableUI.Instance.DisableSacrificeMode();
+                    TableUI.Instance.CloseTableUI();
                 }
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
+                GameEvents.OnCardSacrifiedRefused.Invoke(card);
             }
         }
 

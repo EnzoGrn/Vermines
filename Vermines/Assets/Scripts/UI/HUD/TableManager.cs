@@ -16,11 +16,10 @@ namespace Vermines.UI.GameTable
         [Header("Zone Containers")]
         [SerializeField] private Transform partisanSlotsContainer;
         [SerializeField] private Transform equipmentSlotsContainer;
-        [SerializeField] private Transform discardZone;
 
         private List<TableCardSlot> partisanSlots = new();
         private List<TableCardSlot> equipmentSlots = new();
-        private TableCardSlot discardSlot;
+        [SerializeField] private DiscardCardSlot discardSlot;
 
         [Header("Config")]
         [SerializeField] private int defaultPartisanSlotCount = 3;
@@ -90,8 +89,7 @@ namespace Vermines.UI.GameTable
 
         private void SetupDiscardZone()
         {
-            //discardSlot = discardZone.GetComponent<DropZone>();
-            //discardSlot.Setup(CardType.Any);
+            discardSlot.SetIndex(-1);
         }
 
         public void SetPartisanSlotsInteractable(bool value)
@@ -111,7 +109,7 @@ namespace Vermines.UI.GameTable
         public void SetDiscardZoneInteractable(bool value)
         {
             Debug.Log($"[TableUI] Setting discard zone interactable to {value}.");
-            //discardSlot.SetInteractable(value);
+            discardSlot.SetInteractable(value);
         }
 
         public void AddCardToPartisanSlot(ICard card, int index)
@@ -121,9 +119,10 @@ namespace Vermines.UI.GameTable
                 Debug.LogError($"[TableUI] Invalid index {index} for partisan slots.");
                 return;
             }
-            var slot = partisanSlots[index];
+            TableCardSlot slot = partisanSlots[index];
             if (slot.CanAcceptCard(card))
             {
+                Debug.Log($"[PartisanSlot] Init slot");
                 slot.Init(card, true, new TableCardClickHandler(index));
             }
             else
@@ -237,6 +236,22 @@ namespace Vermines.UI.GameTable
             Debug.Log($"[TableUI] Setting only discard zone interactable to {value}.");
             SetPartisanSlotsInteractable(!value);
             SetEquipmentSlotsInteractable(!value);
+        }
+
+        public void EnableSacrificeMode()
+        {
+            Debug.Log($"[TableUI] Enabling sacrifice mode.");
+            SetPartisanSlotsInteractable(true);
+            SetEquipmentSlotsInteractable(false);
+            SetDiscardZoneInteractable(false);
+        }
+
+        public void DisableSacrificeMode()
+        {
+            Debug.Log($"[TableUI] Disabling sacrifice mode.");
+            SetPartisanSlotsInteractable(true);
+            SetEquipmentSlotsInteractable(false);
+            SetDiscardZoneInteractable(true);
         }
     }
 }

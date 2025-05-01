@@ -390,6 +390,7 @@ MonoBehaviour:
   partisanSlotsContainer: {fileID: 4994605531694666081}
   equipmentSlotsContainer: {fileID: 555543697}
   discardZone: {fileID: 6611191762940076113}
+  discardSlot: {fileID: 8579091791034656105}
   defaultPartisanSlotCount: 3
   defaultEquipmentSlotCount: 3
 --- !u!1 &1079709761

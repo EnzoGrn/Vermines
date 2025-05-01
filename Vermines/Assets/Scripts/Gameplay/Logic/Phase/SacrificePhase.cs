@@ -10,6 +10,7 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.HUD;
     using Vermines.Player;
+    using Vermines.UI.GameTable;
 
     public class SacrificePhase : APhase {
 
@@ -32,7 +33,7 @@ namespace Vermines.Gameplay.Phases {
 
         public SacrificePhase()
         {
-            GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
+            GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
         }
 
         #region Override Methods
@@ -48,10 +49,17 @@ namespace Vermines.Gameplay.Phases {
             List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
 
             if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
+            {
                 // TODO: Open sacrifice menu
                 Debug.Log($"[Client]: Open Sacrifice Menu for player {_CurrentPlayer}");
-            else
+                TableUI.Instance.OpenTableUI();
+                TableUI.Instance.EnableSacrificeMode();
+            }
+            else if (playedCards.Count == 0)
+            {
+                Debug.Log($"[Client]: No cards to sacrifice for player {_CurrentPlayer}");
                 OnPhaseEnding(_CurrentPlayer, true);
+            }
         }
 
         public override void Reset()
@@ -63,15 +71,15 @@ namespace Vermines.Gameplay.Phases {
 
         #region Events
 
-        public void OnCardSacrified(int cardId)
+        public void OnCardSacrified(ICard cardSacrified)
         {
             Debug.Log("[Client]: Card Sacrified");
+            int cardId = cardSacrified.ID;
             ICard card = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Find(card => card.ID == cardId);
-
-            Debug.Log($"[Client]: Card {card.ID} is now sacrificed");
 
             if (card != null)
             {
+                Debug.Log($"[Client]: Card {card.ID} is now sacrificed");
                 if (_CurrentPlayer == PlayerController.Local.PlayerRef)
                 {
                     PlayerController.Local.OnCardSacrified(card.ID);
@@ -84,8 +92,12 @@ namespace Vermines.Gameplay.Phases {
                     OnPhaseEnding(_CurrentPlayer, true);
                 }
             }
+            else
+            {
+                Debug.LogWarning($"[Client]: Card {cardId} not found in played cards.");
+                GameEvents.OnCardSacrifiedRefused.Invoke(cardSacrified);
+            }
         }
-
         #endregion
     }
 }
