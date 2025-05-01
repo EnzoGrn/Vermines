@@ -14,11 +14,18 @@ public static class GameEvents
     public static UnityEvent<ShopType, int> OnCardPurchaseRequested = new();
     public static UnityEvent<ShopType, int> OnCardPurchased = new();
     public static UnityEvent<ShopType, int> OnShopCardReplaced = new();
-    public static UnityEvent<ICard> OnCardDiscardRequested = new();
-    public static UnityEvent<ICard> OnCardDiscardRequestedNoEffect = new();
-    public static UnityEvent<ICard> OnCardDiscardRefused = new();
+
+    #region DISCARD
+    public static UnityEvent<ICard> OnCardDiscardedRequested = new();
+    public static UnityEvent<ICard> OnCardDiscardedRequestedNoEffect = new();
+    public static UnityEvent<ICard> OnCardDiscardedRefused = new();
     public static UnityEvent<ICard> OnCardDiscarded = new();
-    public static UnityEvent<int> OnCardPlayed = new();
+    #endregion
+
+    public static UnityEvent<ICard> OnCardPlayedRequested = new();
+    public static UnityEvent<ICard> OnCardPlayedRefused = new();
+    public static UnityEvent<ICard> OnCardPlayed = new();
+
     public static UnityEvent<int> OnCardSacrified = new();
     public static UnityEvent<PhaseType> OnPhaseChanged = new();
     public static UnityEvent<int> OnTurnChanged = new();
@@ -40,12 +47,6 @@ public static class GameEvents
     public static void InvokeOnDrawCard(ICard card)
     {
         OnCardDrawn.Invoke(card);
-        return;
-    }
-
-    public static void InvokeOnCardPlayed(int cardId)
-    {
-        OnCardPlayed.Invoke(cardId);
         return;
     }
 }

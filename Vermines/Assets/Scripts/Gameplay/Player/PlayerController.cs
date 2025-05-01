@@ -152,7 +152,7 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Success) {
                 Debug.Log($"[SERVER]: {response.Message}");
-
+                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
 
                 GameEvents.OnCardDiscarded.Invoke(card);
 
@@ -165,7 +165,7 @@ namespace Vermines.Player {
                 }
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
-                GameEvents.OnCardDiscardRefused.Invoke(card);
+                GameEvents.OnCardDiscardedRefused.Invoke(card);
             }
         }
 
@@ -184,6 +184,7 @@ namespace Vermines.Player {
                 ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
                 GameEvents.OnCardDiscarded.Invoke(card);
+                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
             }
             else
             {
@@ -200,13 +201,21 @@ namespace Vermines.Player {
 
             CommandResponse response = CommandInvoker.ExecuteCommand(cardPlayedCommand);
 
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
             if (response.Status == CommandStatus.Invalid)
+            {
+
                 Debug.LogWarning($"[SERVER]: {response.Message}");
+                GameEvents.OnCardPlayedRefused.Invoke(card);
+            }
             if (response.Status == CommandStatus.Success) {
-                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
+                GameEvents.OnCardPlayed.Invoke(card);
 
                 foreach (AEffect effect in card.Data.Effects)
                     effect.OnAction("Play", player, card);
+                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
             }
         }
 

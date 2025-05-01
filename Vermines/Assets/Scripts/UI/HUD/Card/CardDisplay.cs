@@ -78,7 +78,7 @@ namespace Vermines.UI.Card
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log($"[ShopCardSlot] Card {gameObject.name} clicked.");
+            Debug.Log($"[CardDisplay] Card {gameObject.name} clicked.");
             _clickHandler?.OnCardClicked(Card);
         }
     }

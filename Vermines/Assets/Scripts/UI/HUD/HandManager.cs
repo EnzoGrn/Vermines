@@ -80,7 +80,7 @@ namespace Vermines.UI.Card
                 Debug.Log("[HandManager] Discarding card.");
                 CardDisplay display = card.GetComponent<CardDisplay>();
                 if (display != null)
-                    GameEvents.OnCardDiscardRequestedNoEffect.Invoke(display.Card);
+                    GameEvents.OnCardDiscardedRequestedNoEffect.Invoke(display.Card);
             }
         }
 
@@ -116,6 +116,7 @@ namespace Vermines.UI.Card
         {
             GameObject card = Instantiate(cardPrefab, spawnPoint.position, spawnPoint.rotation, handLayout.transform);
             card.name = $"Card_{handCards.Count + 1}";
+            card.transform.localScale = Vector3.one * 2f;
             return card;
         }
 

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
+using Vermines.UI.GameTable;
 
 namespace Vermines.UI.Card
 {
@@ -23,6 +24,11 @@ namespace Vermines.UI.Card
             if (CardDisplay == null)
             {
                 GameObject obj = Instantiate(_CardDisplayPrefab, transform);
+                DraggableCard draggableCard = obj.GetComponent<DraggableCard>();
+                if (draggableCard != null)
+                {
+                    Destroy(draggableCard);
+                }
                 CardDisplay = obj.GetComponent<CardDisplay>();
             }
 

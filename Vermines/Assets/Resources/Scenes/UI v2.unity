@@ -4031,7 +4031,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.5019608}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.7490196}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4932,7 +4932,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0fcc17598cfe284098b61808b381e27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _CardDisplayPrefab: {fileID: 0}
+  _CardDisplayPrefab: {fileID: 548401717956231047, guid: aa93eda88b9cdc749a3fdbb5706da2d4, type: 3}
 --- !u!1 &8704885026705061390
 GameObject:
   m_ObjectHideFlags: 0

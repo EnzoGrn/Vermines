@@ -12,8 +12,15 @@ namespace Vermines.UI.Card
         {
             // Initialize any necessary components or variables here
             GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
-            GameEvents.OnCardDiscardRefused.AddListener(OnDiscardRefused);
+            GameEvents.OnCardDiscardedRefused.AddListener(OnDiscardRefused);
             slot = GetComponent<CardSlotBase>();
+        }
+
+        private void OnDestroy()
+        {
+            // Clean up event listeners to avoid memory leaks
+            GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
+            GameEvents.OnCardDiscardedRefused.RemoveListener(OnDiscardRefused);
         }
 
         public override void OnDrop(PointerEventData eventData)
@@ -39,7 +46,8 @@ namespace Vermines.UI.Card
 
             if (slot.CanAcceptCard(card))
             {
-                GameEvents.OnCardDiscardRequested.Invoke(card);
+                GameEvents.OnCardDiscardedRequested.Invoke(card);
+                drag.gameObject.SetActive(false);
             }
             else
             {
@@ -58,6 +66,9 @@ namespace Vermines.UI.Card
                 HandManager.Instance.RemoveCard(go);
                 go.transform.DOKill(true);
                 Destroy(go);
+
+                slot.ResetSlot();
+                slot.SetCard(card);
             }
         }
 

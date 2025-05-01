@@ -84,7 +84,7 @@ namespace Vermines.UI.GameTable
             slot.Setup(acceptedType);
             slot.SetIndex(index);
             slot.ResetSlot();
-            slot.transform.localScale = Vector3.one * 1.2f;
+            slot.transform.localScale = Vector3.one * 1.6f;
             return slot;
         }
 
