@@ -3,6 +3,9 @@ using UnityEngine;
 using Vermines.CardSystem.Enumerations;
 using Vermines.CardSystem.Elements;
 using Vermines.UI.Card;
+using Vermines.Gameplay.Phases.Enumerations;
+using Vermines.Gameplay.Phases;
+using Vermines.UI.Popup;
 
 namespace Vermines.UI.GameTable
 {
@@ -45,6 +48,7 @@ namespace Vermines.UI.GameTable
                 return;
             }
             tableUIPrefab.SetActive(false);
+            GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
             InitializeTable();
         }
 
@@ -210,6 +214,22 @@ namespace Vermines.UI.GameTable
                     return;
                 }
             }
+            if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice)
+            {
+                PopupManager.Instance.ShowConfirm(
+                    title: "Passer la phase de sacrifice ?",
+                    message: $"Souhaitez-vous finir votre phase de sacrifice ?",
+                    onConfirm: () =>
+                    {
+                        GameEvents.OnAttemptNextPhase.Invoke();
+                        PopupManager.Instance.CloseCurrentPopup();
+                    },
+                    onCancel: () =>
+                    {
+                        PopupManager.Instance.CloseCurrentPopup();
+                    }
+                );
+            }
             if (tableUIPrefab == null)
             {
                 Debug.LogError("[TableUI] Table UI prefab is not assigned.");
@@ -252,6 +272,23 @@ namespace Vermines.UI.GameTable
             SetPartisanSlotsInteractable(true);
             SetEquipmentSlotsInteractable(false);
             SetDiscardZoneInteractable(true);
+        }
+
+        private void OnCardSacrified(ICard card)
+        {
+            Debug.Log($"[TableUI] Card {card.Data.Name} has been sacrificed.");
+
+            for (int i = 0; i < partisanSlots.Count; i++)
+            {
+                var slot = partisanSlots[i];
+                if (slot.CardDisplay && slot.CardDisplay.Card.ID == card.ID)
+                {
+                    RemoveCardFromPartisanSlot(i);
+                    return;
+                }
+            }
+
+            Debug.LogWarning($"[TableUI] Could not find slot containing card {card.Data.Name}.");
         }
     }
 }

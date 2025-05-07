@@ -35,7 +35,7 @@ namespace Vermines.Gameplay.Phases {
         public virtual void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
             if (logic == true) {
-                PhaseManager.Instance.PhaseCompleted();
+                PhaseManager.Instance.RPC_PhaseCompleted();
             } else {
                 if (player != PlayerController.Local.PlayerRef)
                     return;

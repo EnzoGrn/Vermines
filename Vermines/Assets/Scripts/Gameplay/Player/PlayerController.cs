@@ -261,8 +261,6 @@ namespace Vermines.Player {
                     GameDataStorage.Instance.PlayerData.TryGet(player, out PlayerData playerData);
                     GameEvents.OnCardSacrified.Invoke(card);
                     TurnManager.Instance.UpdatePlayer(playerData);
-                    TableUI.Instance.DisableSacrificeMode();
-                    TableUI.Instance.CloseTableUI();
                 }
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
