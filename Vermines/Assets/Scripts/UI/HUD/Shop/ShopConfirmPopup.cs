@@ -11,6 +11,7 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text costText;
     [SerializeField] private TMP_Text soulValueText;
+    [SerializeField] private TMP_Text questionText;
     [SerializeField] private Button buyButton;
     [SerializeField] private Button cancelButton;
 
@@ -67,7 +68,7 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
         costText.text = string.Empty;
     }
 
-    public void Setup(ICard cardData, System.Action<ICard> onBuy)
+    public void Setup(ICard cardData, System.Action<ICard> onBuy, bool isReplace = false)
     {
         _CardData = cardData;
 
@@ -80,6 +81,9 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
         // TODO: This needs to be changed with Localization later, using SmartString
         costText.text = $"Cost: {_CardData.Data.Eloquence} eloquences";
         soulValueText.text = $"+{_CardData.Data.Souls} souls if sacrificed";
+        questionText.text = isReplace
+        ? $"Replace {_CardData.Data.name} ?"
+        : $"Buy {_CardData.Data.name} ?";
 
         GameObject displayGO = Instantiate(cardDisplayPrefab, cardDisplayParent);
         displayGO.transform.SetSiblingIndex(0);
@@ -95,21 +99,22 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
         buyButton.onClick.AddListener(() =>
         {
             onBuy?.Invoke(_CardData);
-            UIContextManager.Instance.ClearContext();
+            UIContextManager.Instance.PopContext();
         });
 
         cancelButton.onClick.AddListener(() =>
         {
+            UIContextManager.Instance.PopContext();
             if (activeShop is ShopUIController controller)
             {
                 controller.SetDialogueVisible(true);
             }
-            UIContextManager.Instance.ClearContext();
         });
     }
 
     public void Enter()
     {
+        Debug.Log($"[ShopConfirmPopup] Entering shop confirm popup context");
         gameObject.SetActive(true);
     }
 

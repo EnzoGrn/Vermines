@@ -97,6 +97,15 @@ namespace Vermines.UI.Shop
             }
         }
 
+        public void EnterReplaceMode(Action onCardReplaced)
+        {
+            if (activeShop != null)
+            {
+                activeShop.EnterReplaceMode(onCardReplaced);
+                OpenShop(activeShop.config.shopType);
+            }
+        }
+
         public ShopUIController GetActiveShop() => activeShop;
     }
 }

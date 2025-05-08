@@ -39,6 +39,6 @@ public class ForceDiscardContext : IUIContext
         Debug.Log($"[ForceDiscardContext] Discarded card: {card}");
 
         _onDiscardComplete?.Invoke(card);
-        UIContextManager.Instance.ClearContext();
+        UIContextManager.Instance.PopContext();
     }
 }

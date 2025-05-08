@@ -1,3 +1,4 @@
+using UnityEditor.Graphs;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.ShopSystem.Enumerations;
@@ -16,9 +17,16 @@ public class ShopCardClickHandler : ICardClickHandler
     public void OnCardClicked(ICard card)
     {
         Debug.Log($"[ShopCardClickHandler] Card clicked: {card.Data.Name}");
-        //if (UIContextManager.Instance.HasContext()) return;
 
-        var context = ShopConfirmPopupFactory.Create(card, _shopType, _slotId);
-        UIContextManager.Instance.SetContext(context);
+        if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
+        {
+            var replacePopupContext = ShopConfirmPopupFactory.Create(card, _shopType, _slotId, true, (c) => ShopConfirmPopupFactory.RequestReplace(c, _shopType, _slotId));
+            UIContextManager.Instance.PushUniqueContext(replacePopupContext);
+            return;
+        }
+
+        // Comportement normal
+        var popupContext = ShopConfirmPopupFactory.Create(card, _shopType, _slotId, false, (c) => ShopConfirmPopupFactory.RequestPurchase(c, _shopType, _slotId));
+        UIContextManager.Instance.PushUniqueContext(popupContext);
     }
 }

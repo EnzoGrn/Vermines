@@ -56,6 +56,7 @@ namespace Vermines.UI.Shop
                 // Check if the card is new or has changed in the slot
                 bool isNew = !oldList.TryGetValue(slotIndex, out var oldCard) || oldCard?.ID != newCard?.ID;
 
+                Debug.Log($"[ShopManager] Slot {slotIndex}: Old Card: {oldCard?.ID}, New Card: {newCard?.ID}, Is New: {isNew}");
                 entries.Add(new ShopCardEntry(newCard, isNew));
             }
 

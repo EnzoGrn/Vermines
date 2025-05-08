@@ -87,7 +87,8 @@ namespace Vermines.Gameplay.Phases {
 
                 _NumberOfCardSacrified++;
 
-                if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value)
+                if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value
+                    || GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Count == 0)
                 {
                     OnPhaseEnding(_CurrentPlayer, true);
                     TableUI.Instance.DisableSacrificeMode();

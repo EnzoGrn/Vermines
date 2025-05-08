@@ -87,6 +87,11 @@ namespace Vermines.UI.Card
             }
         }
 
+        public void SetClickHandler(ICardClickHandler handler)
+        {
+            CardDisplay.SetClickHandler(handler);
+        }
+
         public int GetIndex() => _SlotIndex;
     }
 }

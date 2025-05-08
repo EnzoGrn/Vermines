@@ -18,6 +18,7 @@ namespace Vermines.Player {
     using Vermines.UI;
     using Vermines.UI.Card;
     using Vermines.UI.GameTable;
+    using Vermines.UI.Shop;
 
     public class PlayerController : NetworkBehaviour {
 
@@ -294,6 +295,14 @@ namespace Vermines.Player {
             CommandResponse response = CommandInvoker.ExecuteCommand(replaceCommand);
 
             // TODO: Update shop 'here' or in the ChangeCardCommand.
+            if (response.Status == CommandStatus.Success)
+            {
+                ShopManager.Instance.ReceiveFullShopList(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
+            }
+            else
+            {
+                Debug.LogWarning($"[SERVER]: {response.Message}");
+            }
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

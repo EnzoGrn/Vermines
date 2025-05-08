@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.ShopSystem.Enumerations;
@@ -13,7 +14,7 @@ public static class ShopConfirmPopupFactory
         _PopupParent = popupParent;
     }
 
-    public static IUIContext Create(ICard card, ShopType shopType, int slotId)
+    public static ShopConfirmPopup Create(ICard card, ShopType shopType, int slotId, bool isReplace, Action<ICard> onBuy)
     {
         if (_PopupPrefab == null)
         {
@@ -35,15 +36,26 @@ public static class ShopConfirmPopupFactory
         var popupGO = GameObject.Instantiate(_PopupPrefab, _PopupParent);
         var popup = popupGO.GetComponent<ShopConfirmPopup>();
 
-        popup.Setup(card, (c) => RequestPurchase(c, shopType, slotId));
+        popup.Setup(card, onBuy, isReplace);
 
         return popup;
     }
 
-    private static void RequestPurchase(ICard card, ShopType shopType, int slotId)
+    public static void RequestPurchase(ICard card, ShopType shopType, int slotId)
     {
         Debug.Log($"[ShopConfirmPopup] Purchase asked for {card.Data.name}");
 
         GameEvents.OnCardPurchaseRequested.Invoke(shopType, slotId);
+    }
+
+    public static void RequestReplace(ICard card, ShopType shopType, int slotId)
+    {
+       
+        if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
+        {
+            Debug.Log($"[ShopConfirmPopup] Replace asked for {card.Data.name}");
+            ReplaceEffectContext context = UIContextManager.Instance.GetContext<ReplaceEffectContext>();
+            context.OnShopCardClicked(shopType, slotId);
+        }
     }
 }

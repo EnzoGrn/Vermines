@@ -276,6 +276,7 @@ namespace Vermines.UI.GameTable
 
         private void OnCardSacrified(ICard card)
         {
+            if (GameManager.Instance.IsMyTurn() == false) return;
             Debug.Log($"[TableUI] Card {card.Data.Name} has been sacrificed.");
 
             for (int i = 0; i < partisanSlots.Count; i++)

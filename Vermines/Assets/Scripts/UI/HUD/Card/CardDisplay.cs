@@ -83,5 +83,10 @@ namespace Vermines.UI.Card
             Debug.Log($"[CardDisplay] Card {gameObject.name} clicked.");
             _clickHandler?.OnCardClicked(Card);
         }
+
+        public void SetClickHandler(ICardClickHandler clickHandler)
+        {
+            _clickHandler = clickHandler;
+        }
     }
 }

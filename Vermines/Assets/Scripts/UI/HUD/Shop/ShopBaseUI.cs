@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Card;
+using System;
 
 namespace Vermines.UI.Shop
 {
@@ -26,7 +27,6 @@ namespace Vermines.UI.Shop
         protected virtual void OnEnable()
         {
             Debug.Log($"[ShopBaseUI] OnEnable called for {ShopType} shop.");
-            //GameEvents.OnCardPurchased.AddListener(OnCardPurchased);
         }
 
         protected virtual void PopulateShop()
@@ -49,33 +49,16 @@ namespace Vermines.UI.Shop
             }
         }
 
-        public virtual void OnCardPurchased(ShopType shopType, int slotIndex)
+        public void EnterReplaceMode(Action onCardReplaced)
         {
-            Debug.Log($"[ShopBaseUI] OnCardPurchased called with {shopType} and slot index {slotIndex}.");
-            if (shopType != this.ShopType)
-                return;
+            Debug.Log("[ShopUIManager] Entered replace mode.");
 
-            if (slotIndex < 0 || slotIndex >= activeSlots.Count)
+            int shopSlotCount = currentEntries.Count;
+            for (int i = 0; i < shopSlotCount; i++)
             {
-                Debug.LogWarning($"[ShopBaseUI] Invalid slot index {slotIndex}.");
-                return;
+                var slot = activeSlots[i];
+                //slot.SetClickHandler(new ReplaceClickHandler(ShopType, i, onCardReplaced));
             }
-
-            Debug.Log($"[ShopBaseUI] Card purchased from slot {slotIndex} in {shopType} shop.");
-
-            ShopCardSlot slot = activeSlots[slotIndex];
-
-            if (slot == null)
-            {
-                Debug.LogWarning($"[ShopBaseUI] Slot {slotIndex} is null.");
-                return;
-            }
-
-            Debug.Log($"[ShopBaseUI] The card {slot.CardDisplay.Card.Data.Name} has been purchased.");
-
-            CardSlotPool.Instance.ReturnSlot(slot);
-            activeSlots[slotIndex] = null;
         }
-
     }
 }
