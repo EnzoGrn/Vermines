@@ -8,21 +8,26 @@ namespace Vermines.Player {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Cards;
     using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.HUD;
-    using Vermines.HUD.Card;
     using Vermines.Network.Utilities;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
     using Vermines.UI;
-    using Vermines.UI.Card;
 
     public class PlayerController : NetworkBehaviour {
 
         public static PlayerController Local { get; private set; }
 
         public PlayerRef PlayerRef => Object.InputAuthority;
+
+        #region Cards Tracker
+
+        private CardTracker _DiscardedCardTrackerPerTurn = new();
+
+        #endregion
 
         #region Override Methods
 
@@ -37,6 +42,19 @@ namespace Vermines.Player {
         #endregion
 
         #region Methods
+
+        public void ClearTracker()
+        {
+            _DiscardedCardTrackerPerTurn.Reset();
+        }
+
+        public void AddCardInTracker(int cardId)
+        {
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            if (card != null)
+                _DiscardedCardTrackerPerTurn.AddCard(card);
+        }
 
         public void OnCardSacrified(int cardId)
         {
@@ -61,11 +79,6 @@ namespace Vermines.Player {
         public void OnBuy(ShopType shopType, int slot)
         {
             GameManager.Instance.RPC_BuyCard(shopType, slot, Object.InputAuthority.RawEncoded);
-        }
-
-        public void BuyCard(ShopType shopType, int slot)
-        {
-            RPC_BuyCard(Object.InputAuthority.RawEncoded, shopType, slot);
         }
 
         public void OnActiveEffectActivated(int cardID)
@@ -98,9 +111,9 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_RemoveCopiedEffect(Object.InputAuthority.RawEncoded, card.ID);
         }
 
-        public void NetworkEventCardEffect(int cardID)
+        public void NetworkEventCardEffect(int cardID, string data = null)
         {
-            GameManager.Instance.RPC_NetworkEventCardEffect(Object.InputAuthority.RawEncoded, cardID);
+            GameManager.Instance.RPC_NetworkEventCardEffect(Object.InputAuthority.RawEncoded, cardID, data);
         }
 
         #endregion
@@ -131,7 +144,9 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Success) {
                 TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[parameters.Player]);
+
                 GameEvents.OnCardPurchased.Invoke(shopType, slot);
+
                 Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[parameters.Player].Serialize()}");
             }
         }
@@ -147,19 +162,25 @@ namespace Vermines.Player {
             CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
 
             if (response.Status == CommandStatus.Success) {
-                Debug.Log($"[SERVER]: {response.Message}");
-
                 ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
-                foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == CardSystem.Enumerations.EffectType.Discard) {
-                        effect.Play(player);
+                if (_DiscardedCardTrackerPerTurn.HasCard(card) && card.Data.Type == CardType.Tools && !card.Data.IsStartingCard) {
+                    Debug.Log($"[SERVER]: This tool '{card.Data.Name}' card already discarded this turn");
+                } else {
+                    Debug.Log($"[SERVER]: {response.Message}");
 
-                        TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
+                    _DiscardedCardTrackerPerTurn.AddCard(card);
 
-                        GameEvents.OnCardDiscarded.Invoke(card);
+                    foreach (AEffect effect in card.Data.Effects) {
+                        if (effect.Type == EffectType.Discard) {
+                            effect.Play(player);
+
+                            TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
+                        }
                     }
                 }
+
+                GameEvents.OnCardDiscarded.Invoke(card);
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
             }
@@ -198,6 +219,12 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Invalid)
                 Debug.LogWarning($"[SERVER]: {response.Message}");
+            if (response.Status == CommandStatus.Success) {
+                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+                foreach (AEffect effect in card.Data.Effects)
+                    effect.OnAction("Play", player, card);
+            }
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -342,7 +369,7 @@ namespace Vermines.Player {
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_NetworkEventCardEffect(int playerID, int cardID)
+        public void RPC_NetworkEventCardEffect(int playerID, int cardID, string data)
         {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
             PlayerRef player = PlayerRef.FromEncoded(playerID);
@@ -354,7 +381,7 @@ namespace Vermines.Player {
             }
 
             foreach (AEffect effect in card.Data.Effects)
-                effect.NetworkEventFunction(player);
+                effect.NetworkEventFunction(player, data);
         }
 
         #endregion

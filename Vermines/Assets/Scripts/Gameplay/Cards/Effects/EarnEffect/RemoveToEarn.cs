@@ -46,6 +46,20 @@ namespace Vermines.Gameplay.Cards.Effect {
                 UpdateDescription();
             }
         }
+        
+        [SerializeField]
+        private AEffect _SubEffect = null;
+
+        public override AEffect SubEffect
+        {
+            get => _SubEffect;
+            set
+            {
+                _SubEffect = value;
+
+                UpdateDescription();
+            }
+        }
 
         #endregion
 
@@ -77,7 +91,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController.Local.NetworkEventCardEffect(Card.ID);
         }
 
-        public override void NetworkEventFunction(PlayerRef player)
+        public override void NetworkEventFunction(PlayerRef player, string data)
         {
             base.Play(player);
         }
