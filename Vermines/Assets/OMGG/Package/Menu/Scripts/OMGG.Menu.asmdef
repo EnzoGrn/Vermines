@@ -1,0 +1,18 @@
+{
+    "name": "OMGG.Menu",
+    "rootNamespace": "",
+    "references": [
+        "GUID:fb5d0e71eb91bea4fb1aaf554387e4fd",
+        "GUID:1baf1ffff1031e948b3b228ab3453251",
+        "GUID:4d449a4732e064d26a3069f2cfd88917"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
