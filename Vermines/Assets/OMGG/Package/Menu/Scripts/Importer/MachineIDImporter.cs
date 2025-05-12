@@ -7,6 +7,7 @@ namespace OMGG.Menu.Importer {
 
     using OMGG.Menu.Configuration;
     using OMGG.Menu.Tools;
+    using UnityEditor;
 
     /// <summary>
     /// All asset ending with .id will be tried for a <see cref="MachineID"/> script.
@@ -23,6 +24,8 @@ namespace OMGG.Menu.Importer {
                 asset.ID = CodeGenerator.Create(8, "ABCDEFGHIJKLMNPQRSTUVWXYZ123456789");
 
                 context.AddObjectToAsset("root", asset);
+
+                EditorUtility.SetDirty(asset);
             }
         }
     }
