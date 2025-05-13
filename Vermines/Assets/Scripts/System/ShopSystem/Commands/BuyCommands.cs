@@ -9,6 +9,7 @@ namespace Vermines.ShopSystem.Commands {
     using Vermines.ShopSystem.Data;
     using Vermines.CardSystem.Elements;
     using Vermines.Player;
+    using Vermines.CardSystem.Enumerations;
 
     public struct BuyParameters {
 
@@ -76,7 +77,11 @@ namespace Vermines.ShopSystem.Commands {
 
             if (card == null)
                 return new CommandResponse(CommandStatus.Failure, $"Shop {_Parameters.ShopType} have slot {_Parameters.Slot} empty.");
-            playerDeck.Discard.Add(card);
+
+            if (card.Data.Type == CardType.Equipment)
+                playerDeck.Equipments.Add(card);
+            else
+                playerDeck.Discard.Add(card);
 
             card.Owner = _Parameters.Player;
 
@@ -124,6 +129,13 @@ namespace Vermines.ShopSystem.Commands {
             if (!_Parameters.Shop.HasCardAtSlot(_Parameters.ShopType, _Parameters.Slot))
                 return new CommandResponse(CommandStatus.Invalid, $"Shop {_Parameters.ShopType} have slot {_Parameters.Slot} empty.");
             ICard card = _Parameters.Shop.Sections[_Parameters.ShopType].AvailableCards[_Parameters.Slot];
+
+            if (playerDeck.Equipments.Count > 0 && card.Data.Type == CardType.Equipment) {
+                ICard found = playerDeck.Equipments.Find(c => c.Data.Name == card.Data.Name);
+
+                if (found != null)
+                    return new CommandResponse(CommandStatus.Invalid, $"Player {_Parameters.Player} already have the card {card.Data.Name} in his equipment.");
+            }
 
             bool res = CanPurchase(GameDataStorage.Instance.PlayerData[_Parameters.Player], card);
 
