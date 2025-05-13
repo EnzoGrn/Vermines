@@ -68,7 +68,6 @@ namespace Vermines.Gameplay.Phases {
                     if (effect.Type == EffectType.Play) {
                         effect.Play(_CurrentPlayer);
 
-                        // TODO: update the player
                         GameDataStorage.Instance.PlayerData.TryGet(_CurrentPlayer, out PlayerData playerData);
                         TurnManager.Instance.UpdatePlayer(playerData);
 

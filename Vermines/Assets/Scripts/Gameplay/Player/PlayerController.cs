@@ -294,7 +294,6 @@ namespace Vermines.Player {
 
             CommandResponse response = CommandInvoker.ExecuteCommand(replaceCommand);
 
-            // TODO: Update shop 'here' or in the ChangeCardCommand.
             if (response.Status == CommandStatus.Success)
             {
                 ShopManager.Instance.ReceiveFullShopList(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);

@@ -50,12 +50,11 @@ namespace Vermines.Gameplay.Phases {
 
             if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
             {
-                // TODO: Open sacrifice menu
                 Debug.Log($"[Client]: Open Sacrifice Menu for player {_CurrentPlayer}");
                 TableUI.Instance.OpenTableUI();
                 TableUI.Instance.EnableSacrificeMode();
             }
-            else if (playedCards.Count == 0)
+            else if (playedCards.Count == 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
             {
                 Debug.Log($"[Client]: No cards to sacrifice for player {_CurrentPlayer}");
                 OnPhaseEnding(_CurrentPlayer, true);

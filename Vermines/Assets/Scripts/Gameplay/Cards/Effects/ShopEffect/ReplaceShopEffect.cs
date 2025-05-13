@@ -43,7 +43,6 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            // TODO: Subscribe to the replace shop event
             if (player == PlayerController.Local.PlayerRef)
             {
                 var context = new ReplaceEffectContext(dict =>
@@ -64,7 +63,6 @@ namespace Vermines.Gameplay.Cards.Effect {
             UIContextManager.Instance.PopContext();
             foreach (var shopSlot in dictShopSlot)
                 PlayerController.Local.OnShopReplaceCard(shopSlot.Key, shopSlot.Value);
-            // TODO: Unsubscribe to the replace shop event
         }
 
         public override List<(string, Sprite)> Draw()
