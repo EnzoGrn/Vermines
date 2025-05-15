@@ -150,7 +150,7 @@ namespace OMGG.Menu.Connection.Element {
         /// <summary>
         /// Disconnect task.
         /// </summary>
-        /// <param name="reason">Disconnect reason <see cref="ConnectFailReason>"/></param>
+        /// <param name="reason">Disconnect reason <see cref="ConnectFailReason"/></param>
         /// <returns>When the connection has terminated gracefully.</returns>
         protected abstract Task DisconnectAsyncInternal(int reason);
 
