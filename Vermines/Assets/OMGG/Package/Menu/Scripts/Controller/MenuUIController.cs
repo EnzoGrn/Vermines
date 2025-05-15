@@ -21,7 +21,7 @@ namespace OMGG.Menu.Controller {
         /// The menu config.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected ServerConfig _Config;
+        public ServerConfig Config;
 
         /// <summary>
         /// The connection wrapper.
@@ -84,7 +84,7 @@ namespace OMGG.Menu.Controller {
             foreach (var screen in _Screens) {
                 var screenType = screen.GetType();
 
-                screen.Config         = _Config;
+                screen.Config         = Config;
                 screen.Connection     = Connection;
                 screen.ConnectionArgs = ConnectionArgs;
                 screen.Controller     = this;
@@ -229,37 +229,12 @@ namespace OMGG.Menu.Controller {
         /// <returns>When handling is completed</returns>
         public virtual async Task HandleConnectionResult(ConnectResult result, MenuUIController controller)
         {
-            if (result.CustomResultHandling)
-                return;
-            if (result.Success)
-                controller.Show(_ScreenToShowOnConnect);
-            else if (result.FailReason != ConnectFailReason.ApplicationQuit) {
-                var popup = controller.PopupAsync(result.DebugMessage, "Connection Failed");
-
-                if (result.WaitForCleanup != null)
-                    await Task.WhenAll(result.WaitForCleanup, popup);
-                else
-                    await popup;
-                controller.Show<MenuUIMain>();
-            }
+            return;
         }
 
         public virtual async Task HandleSceneChangeResult(ConnectResult result, MenuUIController controller, MenuUIScreen screenToShow)
         {
-            if (result.CustomResultHandling)
-                return;
-            if (result.Success)
-                controller.Show(screenToShow);
-            else
-            {
-                var popup = controller.PopupAsync(result.DebugMessage, "Problem during game launch.");
-
-                if (result.WaitForCleanup != null)
-                    await Task.WhenAll(result.WaitForCleanup, popup);
-                else
-                    await popup;
-                controller.Show<MenuUILobby>();
-            }
+            return;
         }
 
         #endregion

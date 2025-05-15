@@ -3,6 +3,7 @@ using Fusion;
 namespace OMGG.Menu.Connection.Data {
 
     using OMGG.Menu.Configuration;
+    using System;
 
     public partial class ConnectionArgs {
 

@@ -8,7 +8,7 @@ namespace OMGG.Menu.Screen {
     using Button = UnityEngine.UI.Button;
 
     /// <summary>
-    /// The popup screen handles notificaction.
+    /// The popup screen handles notificaction.Popup
     /// The screen has be <see cref="MenuUIScreen.IsModal"/> true.
     /// </summary>
     public partial class Popup : MenuUIScreen {

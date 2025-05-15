@@ -14,11 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _MaxPlayers: 4
   _AdaptFramerateForMobilePlatform: 1
-  _AvailableRegions:
-  - asia
-  - eu
-  - sa
-  - us
-  _AvailableScenes: []
-  _MachineId: {fileID: 11400000, guid: 13811e871d3f8ac4b9846fa91b9ef0dc, type: 2}
+  _AvailableRegions: []
+  _AvailableScenes:
+  - Name: Vermines
+    ScenePath: Assets/Resources/Scenes/Game.unity
+    Preview: {fileID: 21300000, guid: dd93c049838fec145bca9e2c9eff758f, type: 3}
+  _MachineId: {fileID: -755480892457977500, guid: f1463fcd55b7a8949af5fb9a095ebbac, type: 3}
   _CodeGenerator: {fileID: 11400000, guid: 05a83dd833e73be429bacc85cf1c344f, type: 2}

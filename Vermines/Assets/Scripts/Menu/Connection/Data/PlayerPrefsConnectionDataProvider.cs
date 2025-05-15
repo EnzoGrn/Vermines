@@ -9,6 +9,8 @@ namespace Vermines.Menu.Connection.Data {
     /// </summary>
     public class PlayerPrefsConnectionDataProvider : IConnectionDataProvider {
 
+        public PlayerPrefsConnectionDataProvider() { }
+
         /// <summary>
         /// Gets the stored username from PlayerPrefs.
         /// </summary>
