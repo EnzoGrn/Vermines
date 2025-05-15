@@ -4,7 +4,7 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines {
-    using System;
+
     using Vermines.Player;
     using Vermines.ShopSystem.Data;
 
