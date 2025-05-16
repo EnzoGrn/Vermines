@@ -9,6 +9,12 @@ namespace OMGG.Menu.Screen {
     public class MenuScreenPlugin : FusionMonoBehaviour {
 
         /// <summary>
+        /// The parent screen to init.
+        /// </summary>
+        /// <param name="screen">Parent screen</param>
+        public virtual void Init(MenuUIScreen screen) { }
+
+        /// <summary>
         /// The parent screen is shown.
         /// </summary>
         /// <param name="screen">Parent screen</param>

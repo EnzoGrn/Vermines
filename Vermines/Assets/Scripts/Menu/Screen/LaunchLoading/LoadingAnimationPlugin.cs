@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using OMGG.Menu.Screen;
 
-public class LoadingAnimationPlugin : MonoBehaviour {
+public class LoadingAnimationPlugin : MenuScreenPlugin {
 
     [SerializeField]
     public List<RectTransform> _Dots;
@@ -18,13 +19,25 @@ public class LoadingAnimationPlugin : MonoBehaviour {
 
     private Vector2[] _OriginalPositions;
 
-    void Start()
+    public override void Init(MenuUIScreen screen)
     {
         _OriginalPositions = new Vector2[_Dots.Count];
 
         for (int i = 0; i < _Dots.Count; i++)
             _OriginalPositions[i] = _Dots[i].anchoredPosition;
+    }
+
+    public override void Show(MenuUIScreen screen)
+    {
         StartCoroutine(AnimateDots());
+    }
+
+    public override void Hide(MenuUIScreen screen)
+    {
+        StopAllCoroutines();
+
+        for (int i = 0; i < _Dots.Count; i++)
+            _Dots[i].anchoredPosition = _OriginalPositions[i];
     }
 
     IEnumerator AnimateDots()
