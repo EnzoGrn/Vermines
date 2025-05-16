@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
 using Vermines.UI.Card;
@@ -46,7 +46,7 @@ namespace Vermines.UI.GameTable
         {
             _originalParent = transform.parent;
             _originalPosition = _rectTransform.anchoredPosition;
-            transform.SetParent(transform.root);
+            //transform.SetParent(transform.root);
             _canvasGroup.blocksRaycasts = false;
         }
 

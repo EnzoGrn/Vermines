@@ -1,4 +1,4 @@
-using OMGG.DesignPattern;
+﻿using OMGG.DesignPattern;
 using Fusion;
 using UnityEngine;
 
@@ -168,7 +168,6 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Success) {
                 Debug.Log($"[SERVER]: {response.Message}");
-                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
 
                 GameEvents.OnCardDiscarded.Invoke(card);
 
@@ -182,8 +181,6 @@ namespace Vermines.Player {
                     foreach (AEffect effect in card.Data.Effects) {
                         if (effect.Type == EffectType.Discard) {
                             effect.Play(player);
-
-                            TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
                         }
                     }
                 }
@@ -210,7 +207,7 @@ namespace Vermines.Player {
                 ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
                 GameEvents.OnCardDiscarded.Invoke(card);
-                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
+                GameEvents.OnPlayerUpdated.Invoke(GameDataStorage.Instance.PlayerData[player]);
             }
             else
             {
@@ -236,12 +233,10 @@ namespace Vermines.Player {
                 GameEvents.OnCardPlayedRefused.Invoke(card);
             }
             if (response.Status == CommandStatus.Success) {
-                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
                 GameEvents.OnCardPlayed.Invoke(card);
 
                 foreach (AEffect effect in card.Data.Effects)
                     effect.OnAction("Play", player, card);
-                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
             }
         }
 

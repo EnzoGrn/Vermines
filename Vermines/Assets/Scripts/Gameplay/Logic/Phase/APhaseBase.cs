@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 
 namespace Vermines.Gameplay.Phases {
 
@@ -34,11 +34,9 @@ namespace Vermines.Gameplay.Phases {
         /// <param name="player">The player that end the phase.</param>
         public virtual void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
-            if (logic == true) {
+            if (logic == false) {
                 PhaseManager.Instance.RPC_PhaseCompleted();
             } else {
-                if (player != PlayerController.Local.PlayerRef)
-                    return;
                 GameEvents.OnAttemptNextPhase.Invoke();
             }
         }

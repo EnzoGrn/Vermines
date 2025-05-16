@@ -1,7 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using Vermines.CardSystem.Elements;
+using UnityEditor.Graphs;
 
 namespace Vermines.UI.Card
 {
@@ -25,6 +26,8 @@ namespace Vermines.UI.Card
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
+
+            GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
         }
 
         private void Start()
@@ -62,6 +65,19 @@ namespace Vermines.UI.Card
             handCards.Remove(card);
             card.transform.DOKill(true);
             RefreshHand();
+        }
+
+        private void OnCardDiscarded(ICard card)
+        {
+            // Handle the card discard event here if needed
+            Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} has been discarded.");
+            GameObject go = HandManager.Instance.GetCardDisplayGO(card);
+            if (go != null)
+            {
+                HandManager.Instance.RemoveCard(go);
+                go.transform.DOKill(true);
+                Destroy(go);
+            }
         }
 
         public void AddCard(GameObject card)

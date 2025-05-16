@@ -1,9 +1,12 @@
-using Fusion;
+﻿using Fusion;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
+using Vermines;
 using Vermines.CardSystem.Elements;
 using Vermines.Gameplay.Phases.Enumerations;
+using Vermines.Player;
 using Vermines.ShopSystem.Enumerations;
 
 public static class GameEvents
@@ -33,6 +36,9 @@ public static class GameEvents
     public static UnityEvent<PhaseType> OnPhaseChanged = new();
     public static UnityEvent<int> OnTurnChanged = new();
 
+    public static UnityEvent OnPlayerInitialized = new();
+    public static UnityEvent<PlayerData> OnPlayerUpdated = new();
+
     static GameEvents()
     {
         foreach (ShopType shopType in Enum.GetValues(typeof(ShopType)))
@@ -41,15 +47,24 @@ public static class GameEvents
         }
     }
 
-    public static void AttemptNextPhase()
-    {
-        OnAttemptNextPhase.Invoke();
-        return;
-    }
-
     public static void InvokeOnDrawCard(ICard card)
     {
         OnCardDrawn.Invoke(card);
+        return;
+    }
+
+    public static void InvokeOnPlayerUpdated(NetworkDictionary<PlayerRef, PlayerData> playerData)
+    {
+        PlayerRef playerRef = GameManager.Instance.PlayerTurnOrder[GameManager.Instance.CurrentPlayerIndex];
+        if (playerRef == null)
+        {
+            return;
+        }
+        if (playerData.TryGet(playerRef, out PlayerData data) == false)
+        {
+            return;
+        }
+        OnPlayerUpdated.Invoke(data);
         return;
     }
 }

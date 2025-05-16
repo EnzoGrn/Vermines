@@ -1,14 +1,13 @@
-using Fusion ;
+﻿using Fusion ;
 using OMGG.Network.Fusion;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Vermines.HUD;
 
 namespace Vermines.Gameplay.Phases {
 
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.UI;
+    using Vermines.UI.Plugin;
 
     public class PhaseManager : NetworkBehaviour {
 
@@ -54,7 +53,7 @@ namespace Vermines.Gameplay.Phases {
 
         private void SetUpUI()
         {
-            TurnManager.Instance.Init(GameDataStorage.Instance.PlayerData);
+            GameEvents.OnPlayerInitialized.Invoke();
         }
 
         private void SetUpEvents()
@@ -136,6 +135,7 @@ namespace Vermines.Gameplay.Phases {
         [Rpc(sources: RpcSources.All, targets: RpcTargets.All)]
         public void RPC_PhaseCompleted()
         {
+            Debug.Log($"[SERVER]: Phase {CurrentPhase} completed");
             PhaseCompleted();
         }
 
@@ -147,7 +147,10 @@ namespace Vermines.Gameplay.Phases {
         {
             if (!Runner.IsServer || !GameManager.Instance.Start || Runner.ActivePlayers.Count() < GameManager.Instance.Config.MinPlayers.Value)
                 return;
-            TurnManager.Instance.UpdateAllPlayers(GameDataStorage.Instance.PlayerData);
+            foreach (var player in GameDataStorage.Instance.PlayerData)
+            {
+                GameEvents.OnPlayerUpdated.Invoke(player.Value);
+            }
             RPC_ProcessPhase(CurrentPhase, GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex));
         }
 

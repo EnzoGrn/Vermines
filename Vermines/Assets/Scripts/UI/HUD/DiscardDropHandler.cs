@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
 using Vermines.UI.GameTable;
@@ -60,16 +60,8 @@ namespace Vermines.UI.Card
         {
             // Handle the card discard event here if needed
             Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} has been discarded.");
-            GameObject go = HandManager.Instance.GetCardDisplayGO(card);
-            if (go != null)
-            {
-                HandManager.Instance.RemoveCard(go);
-                go.transform.DOKill(true);
-                Destroy(go);
-
-                slot.ResetSlot();
-                slot.SetCard(card);
-            }
+            slot.ResetSlot();
+            slot.SetCard(card);
         }
 
         private void OnDiscardRefused(ICard card)

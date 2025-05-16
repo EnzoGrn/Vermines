@@ -1,4 +1,4 @@
-using OMGG.DesignPattern;
+﻿using OMGG.DesignPattern;
 using UnityEngine;
 using Fusion;
 using System.Collections.Generic;
@@ -12,6 +12,7 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
     using Vermines.UI;
+    using Vermines.UI.Plugin;
 
     public class GainPhase : APhase {
 
@@ -41,7 +42,7 @@ namespace Vermines.Gameplay.Phases {
 
             GameDataStorage.Instance.PlayerData.TryGet(_CurrentPlayer, out PlayerData playerData);
 
-            TurnManager.Instance.UpdatePlayer(playerData);
+            GameEvents.OnPlayerUpdated.Invoke(playerData);
 
             OnPhaseEnding(_CurrentPlayer, true);
         }

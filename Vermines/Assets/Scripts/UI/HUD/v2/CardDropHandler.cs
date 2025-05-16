@@ -1,4 +1,5 @@
-using DG.Tweening;
+﻿using DG.Tweening;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
@@ -63,7 +64,7 @@ namespace Vermines.UI.Card
                 Destroy(go);
 
                 // Display the card on the table
-                TableUI.Instance.AddCardToPartisanSlot(card, slot.GetIndex());
+                slot.Init(card, true, new TableCardClickHandler(slot.GetIndex()));
             }
             GameEvents.OnCardPlayed.RemoveListener(OnCardPlayed);
             GameEvents.OnCardPlayedRefused.RemoveListener(OnPlayRefused);

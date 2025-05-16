@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Vermines.UI.Shop;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.GameTable;
@@ -33,15 +33,15 @@ namespace Vermines.UI
         public void OpenShopMarket()
         {
             CloseContextualUI();
-            ShopUIManager.Instance.OpenShop(ShopType.Market);
-            //CamManager.Instance.GoOnMarketLocation();
+            //ShopUIManager.Instance.OpenShop(ShopType.Market);
+            CamManager.Instance.GoOnMarketLocation();
         }
 
         public void OpenShopCourtyard()
         {
             CloseContextualUI();
-            ShopUIManager.Instance.OpenShop(ShopType.Courtyard);
-            //CamManager.Instance.GoOnCourtyardLocation();
+            //ShopUIManager.Instance.OpenShop(ShopType.Courtyard);
+            CamManager.Instance.GoOnCourtyardLocation();
         }
 
         public void CloseContextualUI()

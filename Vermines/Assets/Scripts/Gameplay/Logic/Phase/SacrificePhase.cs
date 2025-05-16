@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -56,7 +56,7 @@ namespace Vermines.Gameplay.Phases {
                 TableUI.Instance.OpenTableUI();
                 TableUI.Instance.EnableSacrificeMode();
             }
-            else if (playedCards.Count == 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
+            else if (playedCards.Count == 0)
             {
                 Debug.Log($"[Client]: No cards to sacrifice for player {_CurrentPlayer}");
                 OnPhaseEnding(_CurrentPlayer, true);
