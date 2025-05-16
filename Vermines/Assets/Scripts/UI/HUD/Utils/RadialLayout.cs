@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,7 +35,15 @@ public class RadialLayout : LayoutGroup
     protected override void OnValidate()
     {
         base.OnValidate();
-        CalculateRadial();
+
+        if (!Application.isPlaying)
+        {
+            EditorApplication.delayCall += () =>
+            {
+                if (this != null)
+                    CalculateRadial();
+            };
+        }
     }
 #endif
 
