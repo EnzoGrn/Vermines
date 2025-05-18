@@ -125,24 +125,16 @@ namespace Vermines.UI.Screen
             {
                 if (_ShopController != null)
                 {
-                    Debug.Log($"GameplayUIShop: SetParam called for {_ShopType} with config {config.shopName}.");
-
                     var entries = GetEntries(_ShopType);
                     _ShopController.Init(entries, config);
                 }
             }
             else
             {
-                Debug.LogWarningFormat(
-                    gameObject,
-                    "GameplayUIShop: SetParam called but no config found for {0}.",
-                    _ShopType
-                );
+                Debug.LogWarningFormat(gameObject, "[{0}] Warning: {1}", nameof(GameplayUIShop), "SetParam called but no config found for {0}.");
             }
 
             ShowUser();
-
-            Debug.Log($"GameplayUIShop: Show called for {gameObject.name} with shop type {_ShopType}.");
         }
 
         /// <summary>
@@ -208,7 +200,6 @@ namespace Vermines.UI.Screen
             previousShopStates[type] = new Dictionary<int, ICard>(newList);
 
             // Notification
-            Debug.Log($"[ShopManager] {type} shop updated with {entries.Count} entries.");
             GameEvents.OnShopUpdated.Invoke(type, entries);
         }
 
@@ -242,6 +233,7 @@ namespace Vermines.UI.Screen
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
+            UIContextManager.Instance.PopContextOfType<ShopConfirmPopup>();
             Hide();
         }
 

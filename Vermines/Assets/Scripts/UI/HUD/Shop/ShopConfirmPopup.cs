@@ -71,6 +71,9 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
         descriptionText.text = string.Empty;
         costText.text = string.Empty;
 
+        buyButton.onClick.RemoveAllListeners();
+        cancelButton.onClick.RemoveAllListeners();
+
         _CardData = cardData;
 
         nameText.text = _CardData.Data.Name;
@@ -100,6 +103,10 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
         {
             onBuy?.Invoke(_CardData);
             UIContextManager.Instance.PopContext();
+            if (activeShop is ShopUIController controller)
+            {
+                controller.SetDialogueVisible(true);
+            }
         });
 
         cancelButton.onClick.AddListener(() =>
