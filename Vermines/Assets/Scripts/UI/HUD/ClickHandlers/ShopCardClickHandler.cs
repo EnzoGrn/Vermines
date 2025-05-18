@@ -1,32 +1,40 @@
-using UnityEditor.Graphs;
-using UnityEngine;
+﻿using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.ShopSystem.Enumerations;
+using Vermines.UI.Shop;
 
 public class ShopCardClickHandler : ICardClickHandler
 {
     private readonly ShopType _shopType;
     private readonly int _slotId;
+    private readonly ShopConfirmPopup _popup;
 
-    public ShopCardClickHandler(ShopType shopType, int slotId)
+    public ShopCardClickHandler(ShopType shopType, int slotId, ShopConfirmPopup popup)
     {
         _shopType = shopType;
         _slotId = slotId;
+        _popup = popup;
     }
 
     public void OnCardClicked(ICard card)
     {
         Debug.Log($"[ShopCardClickHandler] Card clicked: {card.Data.Name}");
 
+        UIContextManager.Instance.PushUniqueContext(_popup);
+
         if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
         {
-            var replacePopupContext = ShopConfirmPopupFactory.Create(card, _shopType, _slotId, true, (c) => ShopConfirmPopupFactory.RequestReplace(c, _shopType, _slotId));
-            UIContextManager.Instance.PushUniqueContext(replacePopupContext);
+            var ctx = UIContextManager.Instance.GetContext<ReplaceEffectContext>();
+            ctx.OnShopCardClicked(_shopType, _slotId);
             return;
         }
 
-        // Comportement normal
-        var popupContext = ShopConfirmPopupFactory.Create(card, _shopType, _slotId, false, (c) => ShopConfirmPopupFactory.RequestPurchase(c, _shopType, _slotId));
-        UIContextManager.Instance.PushUniqueContext(popupContext);
+        _popup.Setup(card, (c) =>
+        {
+            Debug.Log($"[ShopCardClickHandler] Setup popup for {card.Data.Name}");
+            GameEvents.InvokeOnCardPurchaseRequested(_shopType, _slotId);
+        }, isReplace: false);
+
+        _popup.gameObject.SetActive(true);
     }
 }

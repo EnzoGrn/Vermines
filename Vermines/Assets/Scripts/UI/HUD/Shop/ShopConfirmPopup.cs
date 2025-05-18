@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Vermines.CardSystem.Elements;
@@ -16,7 +16,7 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
     [SerializeField] private Button cancelButton;
 
     [Header("Card Display")]
-    [SerializeField] private GameObject cardDisplayPrefab;
+    [SerializeField] private GameObject cardDisplay;
     [SerializeField] private Transform cardDisplayParent;
 
     private ICard _CardData;
@@ -24,10 +24,6 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
     private void Awake()
     {
         #region ERROR HANDLING
-        if (cardDisplayPrefab == null)
-        {
-            Debug.LogError("[ShopConfirmPopup] Card display prefab is not assigned.");
-        }
 
         if (cardDisplayParent == null)
         {
@@ -58,6 +54,7 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
         {
             Debug.LogError("[ShopConfirmPopup] Cancel button is not assigned.");
         }
+
         #endregion
 
         buyButton.onClick.RemoveAllListeners();
@@ -70,9 +67,13 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
 
     public void Setup(ICard cardData, System.Action<ICard> onBuy, bool isReplace = false)
     {
+        nameText.text = string.Empty;
+        descriptionText.text = string.Empty;
+        costText.text = string.Empty;
+
         _CardData = cardData;
 
-        nameText.text = _CardData.Data.name;
+        nameText.text = _CardData.Data.Name;
         foreach (var effect in _CardData.Data.Effects)
         {
             descriptionText.text += effect.Description + "\n";
@@ -82,18 +83,17 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
         costText.text = $"Cost: {_CardData.Data.Eloquence} eloquences";
         soulValueText.text = $"+{_CardData.Data.Souls} souls if sacrificed";
         questionText.text = isReplace
-        ? $"Replace {_CardData.Data.name} ?"
-        : $"Buy {_CardData.Data.name} ?";
+        ? $"Replace {_CardData.Data.Name} ?"
+        : $"Buy {_CardData.Data.Name} ?";
 
-        GameObject displayGO = Instantiate(cardDisplayPrefab, cardDisplayParent);
-        displayGO.transform.SetSiblingIndex(0);
-        CardDisplay display = displayGO.GetComponent<CardDisplay>();
+        CardDisplay display = cardDisplay.GetComponent<CardDisplay>();
         display.Display(_CardData, null);
 
-        var activeShop = ShopUIManager.Instance != null ? ShopUIManager.Instance.GetActiveShop() : null;
-        if (activeShop is ShopUIController controller)
+        // Hide the shop dialogue
+        var activeShop = GameObject.FindAnyObjectByType<ShopUIController>();
+        if (activeShop != null)
         {
-            controller.SetDialogueVisible(false);
+            activeShop.SetDialogueVisible(false);
         }
 
         buyButton.onClick.AddListener(() =>
@@ -109,6 +109,7 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
             {
                 controller.SetDialogueVisible(true);
             }
+            Debug.Log($"[ShopConfirmPopup] Cancel button clicked, exiting context.");
         });
     }
 
@@ -120,6 +121,7 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
 
     public void Exit()
     {
-        Destroy(gameObject);
+        Debug.Log($"[ShopConfirmPopup] Exiting shop confirm popup context");
+        gameObject.SetActive(false);
     }
 }

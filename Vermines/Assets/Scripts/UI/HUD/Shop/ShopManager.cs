@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
@@ -21,7 +21,6 @@ namespace Vermines.UI.Shop
     public class ShopManager : MonoBehaviour
     {
         public static ShopManager Instance;
-        public event Action<ShopType, List<ShopCardEntry>> OnShopUpdated;
 
         private Dictionary<ShopType, Dictionary<int, ICard>> previousShopStates = new();
 
@@ -65,7 +64,7 @@ namespace Vermines.UI.Shop
 
             // Notification
             Debug.Log($"[ShopManager] {type} shop updated with {entries.Count} entries.");
-            OnShopUpdated?.Invoke(type, entries);
+            //GameEvents.OnShopUpdated.Invoke(type, entries);
         }
 
         public List<ShopCardEntry> GetEntries(ShopType type)

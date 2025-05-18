@@ -1,12 +1,15 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Vermines.ShopSystem.Enumerations;
 using System.Collections.Generic;
+using Vermines.UI.Plugin;
+using Vermines.UI.Card;
+using System;
 
 namespace Vermines.UI.Shop
 {
-    public class ShopUIController : ShopBaseUI
+    public class ShopUIController : GameplayScreenPlugin
     {
         [Header("UI Texts")]
         public TMP_Text areaName;
@@ -21,23 +24,76 @@ namespace Vermines.UI.Shop
         [SerializeField] private DialogueBubble bubbleRight;
 
         [Header("Configuration")]
-        public ShopUIConfig config;
+        private ShopUIConfig config;
 
-        public override void Init(List<ShopCardEntry> entries)
+        [Header("Common UI")]
+        public Transform cardSlotRoot;
+
+        protected List<Vermines.UI.Screen.ShopCardEntry> currentEntries = new();
+        protected List<ShopCardSlot> activeSlots = new();
+
+        [SerializeField]
+        private CardSlotPool _CardPool;
+
+        [SerializeField]
+        public ShopType ShopType;
+
+        [SerializeField]
+        private ShopConfirmPopup _popup;
+
+        #region Override Methods
+
+        /// <summary>
+        /// The parent screen is shown.
+        /// Cache the connection object.
+        /// </summary>
+        /// <param name="screen">Parent screen</param>
+        public override void Show(GameplayUIScreen screen)
         {
+            base.Show(screen);
+
+            _popup.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// The parent screen is hidden. Clear the connection object.
+        /// </summary>
+        /// <param name="screen">Parent screen</param>
+        public override void Hide(GameplayUIScreen screen)
+        {
+            base.Hide(screen);
+        }
+
+        #endregion
+
+        public void Init(List<Vermines.UI.Screen.ShopCardEntry> entries, ShopUIConfig configSet)
+        {
+            config = configSet;
+
             if (config == null)
             {
                 Debug.LogError("[ShopUIController] Init called but config is null.");
                 return;
             }
-
+            Debug.Log($"[ShopUIController] Init called with {entries.Count} entries for {config.shopName}.");
             ShopType = config.shopType;
             if (bubbleLeft != null)
                 bubbleLeft.gameObject.SetActive(false);
             if (bubbleRight != null)
                 bubbleRight.gameObject.SetActive(false);
             SetupUI();
-            base.Init(entries);
+            currentEntries = entries;
+            PopulateShop();
+
+            if (_popup != null)
+            {
+                _popup.gameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.LogError("[ShopUIController] Popup is null.");
+                return;
+            }
         }
 
         private void SetupUI()
@@ -98,24 +154,21 @@ namespace Vermines.UI.Shop
             image.transform.localScale = scale;
         }
 
-        protected override void OnEnable()
+        protected void OnEnable()
         {
-            if (ShopManager.Instance != null)
-                ShopManager.Instance.OnShopUpdated += HandleShopUpdate;
-            base.OnEnable();
+            GameEvents.OnShopUpdated.AddListener(HandleShopUpdate);
         }
 
         private void OnDisable()
         {
-            if (ShopManager.Instance != null)
-                ShopManager.Instance.OnShopUpdated -= HandleShopUpdate;
+            GameEvents.OnShopUpdated.RemoveListener(HandleShopUpdate);
         }
 
-        private void HandleShopUpdate(ShopType type, List<ShopCardEntry> entries)
+        private void HandleShopUpdate(ShopType type, List<Vermines.UI.Screen.ShopCardEntry> entries)
         {
             if (type != ShopType) return;
             Debug.Log($"[ShopUIController] Received {entries.Count} entries for {type}.");
-            Init(entries);
+            Init(entries, config);
         }
 
         public void SetDialogueVisible(bool visible)
@@ -125,6 +178,52 @@ namespace Vermines.UI.Shop
 
             if (bubbleRight != null && config.portraitRight != null && !string.IsNullOrWhiteSpace(config.rightDialogue))
                 bubbleRight.SetVisible(visible);
+        }
+
+        protected virtual void PopulateShop()
+        {
+            foreach (var slot in activeSlots)
+            {
+                _CardPool.ReturnSlot(slot);
+            }
+            activeSlots.Clear();
+
+            for (int i = 0; i < currentEntries.Count; i++)
+            {
+                Vermines.UI.Screen.ShopCardEntry entry = currentEntries[i];
+                var slot = _CardPool.GetSlot(cardSlotRoot);
+
+                if (slot == null)
+                {
+                    Debug.LogError($"[ShopUIController] Failed to get slot from pool for {ShopType} shop.");
+                    continue;
+                }
+
+                slot.transform.SetParent(cardSlotRoot, false);
+                slot.SetIndex(i);
+
+                var clickHandler = CreateClickHandler(i);
+                slot.Init(entry.Data, entry.IsNew, clickHandler);
+
+                activeSlots.Add(slot);
+            }
+        }
+
+        public void EnterReplaceMode(Action onCardReplaced)
+        {
+            Debug.Log("[ShopUIManager] Entered replace mode.");
+
+            int shopSlotCount = currentEntries.Count;
+            for (int i = 0; i < shopSlotCount; i++)
+            {
+                var slot = activeSlots[i];
+                //slot.SetClickHandler(new ReplaceClickHandler(ShopType, i, onCardReplaced));
+            }
+        }
+
+        protected virtual ICardClickHandler CreateClickHandler(int slotIndex)
+        {
+            return new ShopCardClickHandler(ShopType, slotIndex, _popup);
         }
     }
 }

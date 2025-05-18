@@ -2,14 +2,10 @@
 using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
-using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.Player;
-using Vermines.UI;
 
 namespace Vermines.UI.Plugin
 {
-    using Text = TMPro.TMP_Text;
-
     /// <summary>
     /// Manages the display of player banners in the gameplay screen.
     /// </summary>
@@ -44,6 +40,8 @@ namespace Vermines.UI.Plugin
         private Dictionary<int, PlayerData> _players = new();
         private readonly List<PlayerBannerUI> _banners = new();
 
+        #region Override Methods
+
         /// <summary>
         /// The parent screen is shown.
         /// Cache the connection object.
@@ -70,6 +68,8 @@ namespace Vermines.UI.Plugin
             GameEvents.OnPlayerInitialized.RemoveListener(Init);
             GameEvents.OnPlayerUpdated.RemoveListener(UpdatePlayer);
         }
+
+        #endregion
 
         public void Init()
         {

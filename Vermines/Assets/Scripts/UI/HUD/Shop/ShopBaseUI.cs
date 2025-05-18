@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Card;
@@ -11,13 +11,16 @@ namespace Vermines.UI.Shop
         [Header("Common UI")]
         public Transform cardSlotRoot;
 
-        protected List<ShopCardEntry> currentEntries = new();
+        protected List<Vermines.UI.Screen.ShopCardEntry> currentEntries = new();
         protected List<ShopCardSlot> activeSlots = new();
+
+        [SerializeField]
+        private CardSlotPool _CardPool;
 
         [SerializeField]
         public ShopType ShopType;
 
-        public virtual void Init(List<ShopCardEntry> entries)
+        public virtual void Init(List<Vermines.UI.Screen.ShopCardEntry> entries)
         {
             Debug.Log($"[ShopBaseUI] Init with {entries.Count} entries.");
             currentEntries = entries;
@@ -33,18 +36,24 @@ namespace Vermines.UI.Shop
         {
             foreach (var slot in activeSlots)
             {
-                CardSlotPool.Instance.ReturnSlot(slot);
+                _CardPool.ReturnSlot(slot);
             }
             activeSlots.Clear();
 
             for (int i = 0; i < currentEntries.Count; i++)
             {
-                ShopCardEntry entry = currentEntries[i];
-                var slot = CardSlotPool.Instance.GetSlot(cardSlotRoot);
+                Vermines.UI.Screen.ShopCardEntry entry = currentEntries[i];
+                var slot = _CardPool.GetSlot(cardSlotRoot);
+
+                if (slot == null)
+                {
+                    Debug.LogError($"[ShopBaseUI] Failed to get slot from pool for {ShopType} shop.");
+                    continue;
+                }
 
                 slot.transform.SetParent(cardSlotRoot, false);
                 slot.SetIndex(i);
-                slot.Init(entry.Data, entry.IsNew, new ShopCardClickHandler(ShopType, i));
+                //slot.Init(entry.Data, entry.IsNew, new ShopCardClickHandler(ShopType, i));
                 activeSlots.Add(slot);
             }
         }

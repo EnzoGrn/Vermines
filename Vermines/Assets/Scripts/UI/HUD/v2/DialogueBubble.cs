@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 public class DialogueBubble : MonoBehaviour
@@ -12,6 +12,7 @@ public class DialogueBubble : MonoBehaviour
 
     public void SetVisible(bool isVisible)
     {
+        Debug.Log($"Setting visibility to {isVisible} for {gameObject.name}");
         gameObject.SetActive(isVisible);
     }
 }

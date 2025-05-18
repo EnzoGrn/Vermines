@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.ShopSystem.Enumerations;
@@ -78,12 +78,12 @@ namespace Vermines.UI.Shop
 
             GameObject go = Instantiate(shopUIPrefab, uiRoot);
             activeShop = go.GetComponent<ShopUIController>();
-            activeShop.config = config;
+            //activeShop.config = config;
 
             if (ShopManager.Instance != null)
             {
                 var entries = ShopManager.Instance.GetEntries(type);
-                activeShop.Init(entries);
+                //activeShop.Init(entries);
             }
         }
 
@@ -102,7 +102,7 @@ namespace Vermines.UI.Shop
             if (activeShop != null)
             {
                 activeShop.EnterReplaceMode(onCardReplaced);
-                OpenShop(activeShop.config.shopType);
+                //OpenShop(activeShop.config.shopType);
             }
         }
 

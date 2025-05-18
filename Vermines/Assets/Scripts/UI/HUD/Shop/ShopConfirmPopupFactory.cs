@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.ShopSystem.Enumerations;
@@ -32,7 +32,7 @@ public static class ShopConfirmPopupFactory
             return null;
         }
 
-        Debug.Log($"[ShopConfirmPopup] Creation of a new popup for {card.Data.name}");
+        Debug.Log($"[ShopConfirmPopup] Creation of a new popup for {card.Data.Name}");
         var popupGO = GameObject.Instantiate(_PopupPrefab, _PopupParent);
         var popup = popupGO.GetComponent<ShopConfirmPopup>();
 
@@ -43,7 +43,7 @@ public static class ShopConfirmPopupFactory
 
     public static void RequestPurchase(ICard card, ShopType shopType, int slotId)
     {
-        Debug.Log($"[ShopConfirmPopup] Purchase asked for {card.Data.name}");
+        Debug.Log($"[ShopConfirmPopup] Purchase asked for {card.Data.Name}");
 
         GameEvents.OnCardPurchaseRequested.Invoke(shopType, slotId);
     }
@@ -53,7 +53,7 @@ public static class ShopConfirmPopupFactory
        
         if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
         {
-            Debug.Log($"[ShopConfirmPopup] Replace asked for {card.Data.name}");
+            Debug.Log($"[ShopConfirmPopup] Replace asked for {card.Data.Name}");
             ReplaceEffectContext context = UIContextManager.Instance.GetContext<ReplaceEffectContext>();
             context.OnShopCardClicked(shopType, slotId);
         }

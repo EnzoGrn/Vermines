@@ -185,7 +185,6 @@ namespace Vermines.UI.Screen
         /// </summary>
         protected virtual void OnAttemptToNextPhase()
         {
-            UIManager.Instance.CloseContextualUI();
             if (HandManager.Instance.HasCards() && PhaseManager.Instance.CurrentPhase == PhaseType.Action)
             {
                 _DiscardAllView.SetActive(true);

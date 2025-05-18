@@ -1,6 +1,8 @@
-﻿using UnityEngine;
-namespace Vermines.UI.Plugin
+﻿namespace Vermines.UI.Plugin
 {
+    using Vermines.UI.Screen;
+    using Vermines.ShopSystem.Enumerations;
+
     /// <summary>
     /// Manages the navigation button plugin.
     /// </summary>
@@ -13,7 +15,7 @@ namespace Vermines.UI.Plugin
         /// </summary>
         protected virtual void OnOpenMarket()
         {
-            Debug.Log("[UI]: Open Market button clicked.");
+            _ParentScreen.Controller.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Market);
         }
 
         #endregion

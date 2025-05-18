@@ -14,6 +14,7 @@ namespace Vermines.Player {
     using Vermines.HUD;
     using Vermines.Network.Utilities;
     using Vermines.ShopSystem.Commands;
+    using Vermines.ShopSystem.Data;
     using Vermines.ShopSystem.Enumerations;
     using Vermines.UI;
     using Vermines.UI.Card;
@@ -146,8 +147,6 @@ namespace Vermines.Player {
             CommandResponse response = CommandInvoker.ExecuteCommand(buyCommand);
 
             if (response.Status == CommandStatus.Success) {
-                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[parameters.Player]);
-
                 GameEvents.OnCardPurchased.Invoke(shopType, slot);
 
                 Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[parameters.Player].Serialize()}");
@@ -315,7 +314,8 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Success)
             {
-                ShopManager.Instance.ReceiveFullShopList(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
+                //ShopManager.Instance.ReceiveFullShopList(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
+                GameEvents.OnShopRefilled.Invoke(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
             }
             else
             {

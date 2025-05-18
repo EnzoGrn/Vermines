@@ -8,6 +8,7 @@ using Vermines.CardSystem.Elements;
 using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.Player;
 using Vermines.ShopSystem.Enumerations;
+using Vermines.UI.Screen;
 
 public static class GameEvents
 {
@@ -39,6 +40,9 @@ public static class GameEvents
     public static UnityEvent OnPlayerInitialized = new();
     public static UnityEvent<PlayerData> OnPlayerUpdated = new();
 
+    public static UnityEvent<ShopType, List<ShopCardEntry>> OnShopUpdated = new();
+    public static UnityEvent<ShopType, Dictionary<int, ICard>> OnShopRefilled = new();
+
     static GameEvents()
     {
         foreach (ShopType shopType in Enum.GetValues(typeof(ShopType)))
@@ -65,6 +69,13 @@ public static class GameEvents
             return;
         }
         OnPlayerUpdated.Invoke(data);
+        return;
+    }
+
+    public static void InvokeOnCardPurchaseRequested(ShopType shopType, int slotIndex)
+    {
+        Debug.Log($"[GameEvents] InvokeOnCardPurchaseRequested: {shopType}, Slot: {slotIndex}");
+        OnCardPurchaseRequested.Invoke(shopType, slotIndex);
         return;
     }
 }

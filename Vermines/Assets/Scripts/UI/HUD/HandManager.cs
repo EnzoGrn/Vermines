@@ -41,7 +41,7 @@ namespace Vermines.UI.Card
         {
             if (handCards.Count >= maxHandSize) return;
 
-            Debug.Log($"[HandManager] Drawing card: {card.Data.name}");
+            Debug.Log($"[HandManager] Drawing card: {card.Data.Name}");
             GameObject cardGO = CreateCard();
 
             if (cardGO.TryGetComponent<CardDisplay>(out var display))

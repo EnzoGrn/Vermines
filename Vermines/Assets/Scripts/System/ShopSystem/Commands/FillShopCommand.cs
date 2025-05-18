@@ -1,4 +1,4 @@
-using OMGG.DesignPattern;
+﻿using OMGG.DesignPattern;
 using System.Linq;
 
 namespace Vermines.ShopSystem.Commands
@@ -56,8 +56,7 @@ namespace Vermines.ShopSystem.Commands
                     GameEvents.OnShopsEvents[shopSection.Key].Invoke(slot.Key, card);
                 }
 
-                if (!TestMode.IsTesting)
-                    ShopManager.Instance.ReceiveFullShopList(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
+                GameEvents.OnShopRefilled.Invoke(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
             }
 
             return _Shop;

@@ -1,11 +1,5 @@
-﻿using Fusion;
-using UnityEngine;
-using Vermines.Gameplay.Phases.Enumerations;
-
-namespace Vermines.UI.Plugin
+﻿namespace Vermines.UI.Plugin
 {
-    using Text = TMPro.TMP_Text;
-
     /// <summary>
     /// Manages the navigation button plugin.
     /// </summary>

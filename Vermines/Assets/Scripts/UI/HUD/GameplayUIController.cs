@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Vermines.UI
 {
+    using Vermines.UI.Screen;
 
     public class GameplayUIController : MonoBehaviour
     {
@@ -68,7 +69,6 @@ namespace Vermines.UI
             foreach (var screen in _Screens)
             {
                 screen.Init();
-                screen.Hide();
             }
         }
 
@@ -112,6 +112,43 @@ namespace Vermines.UI
         }
 
         /// <summary>
+        /// Show a screen of type <typeparamref name="S"/> with a parameter of type <typeparamref name="T"/>.
+        /// Automatically hides the current active screen if the new one is not modal.
+        /// </summary>
+        /// <typeparam name="S">Screen type to show, must implement <see cref="IParamReceiver{T}"/>.</typeparam>
+        /// <typeparam name="T">Parameter type to pass to the screen.</typeparam>
+        /// <param name="param">Parameter value passed to the screen.</param>
+        /// <param name="last">Optional last screen (can be null).</param>
+        public virtual void ShowWithParams<S, T>(T param, GameplayUIScreen last = null) where S : GameplayUIScreen, IParamReceiver<T>
+        {
+            if (_ScreenLookup.TryGetValue(typeof(S), out var result))
+            {
+                Debug.Log($"ShowWithParams() - Show screen '{result.GetType().Name}' with param {param}");
+                _LastScreen = last;
+
+                if (!result.IsModal && _ActiveScreen != result && _ActiveScreen)
+                    _ActiveScreen.Hide();
+
+                if (_ActiveScreen != result)
+                {
+                    if (result is IParamReceiver<T> receiver)
+                    {
+                        receiver.SetParam(param);
+                    }
+
+                    result.Show();
+                }
+
+                if (!result.IsModal)
+                    _ActiveScreen = result;
+            }
+            else
+            {
+                Debug.LogError($"ShowWithParams() - Screen type '{typeof(S).Name}' not found.");
+            }
+        }
+
+        /// <summary>
         /// Show a screen will automaticall disable the current active screen and call animations.
         /// </summary>
         /// <param name="screenToShow">Screen to show</param>
@@ -143,6 +180,7 @@ namespace Vermines.UI
                 Debug.LogError($"ShowLast() - No last screen found. Return to the main menu.");
 
                 // TODO: Show main gameplay screen
+                Show<GameplayUIMain>();
             }
             else
             {

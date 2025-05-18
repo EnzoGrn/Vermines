@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Vermines.CardSystem.Data;
@@ -29,8 +29,6 @@ namespace Vermines.UI.Card
                 Debug.LogError("[CardDisplay] CardData is null.");
                 return;
             }
-
-            Debug.Log($"[CardDisplay] Displaying card {card.Data.Name}, clickHandler: {(clickHandler == null ? "NULL" : clickHandler.GetType().Name)}");
 
             Card = card;
             _clickHandler = clickHandler;
