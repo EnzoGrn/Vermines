@@ -15,11 +15,6 @@ public class TableCardClickHandler : ICardClickHandler
 
     public void OnCardClicked(ICard card)
     {
-        Debug.Log($"[TableCardClickHandler] Card clicked: {card.Data.Name}");
-
-        if (PhaseManager.Instance.CurrentPhase == Vermines.Gameplay.Phases.Enumerations.PhaseType.Sacrifice)
-        {
-            GameEvents.OnCardClicked.Invoke(card);
-        }
+        GameEvents.OnCardClicked.Invoke(card);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Fusion;
 using UnityEngine;
+using UnityEngine.Localization;
 using Vermines.Gameplay.Phases.Enumerations;
 
 namespace Vermines.UI.Plugin
@@ -55,13 +56,6 @@ namespace Vermines.UI.Plugin
             SetPhase(PhaseType.Sacrifice);
         }
 
-        /// <summary>
-        /// Unity update method to update text.
-        /// </summary>
-        public virtual void Update()
-        {
-        }
-
         public void SetPhase(PhaseType newPhase = PhaseType.Sacrifice)
         {
             string phaseKey = $"Phase.{newPhase}";
@@ -72,32 +66,9 @@ namespace Vermines.UI.Plugin
 
         private string LocalizePhase(string key)
         {
-            // TODO: Replace with your actual localization system
-            // e.g., return LocalizationManager.Localize(key);
-            /*
             // Check if the key exists in the localization system
-            if (LocalizationManager.Instance.IsKeyExists(key))
-            {
-                // Return the localized string
-                return LocalizationManager.Instance.GetLocalizedString(key);
-            }
-            else
-            {
-                // If the key doesn't exist, return a default value or an error message
-                Debug.LogWarning($"Localization key '{key}' not found. Returning default value.");
-                return "Unknown Phase";
-            }
-            */
-
-            // Fallback version for now
-            return key switch
-            {
-                "Phase.Sacrifice" => "Phase: Sacrifice",
-                "Phase.Gain" => "Phase: Earn",
-                "Phase.Action" => "Phase: Action",
-                "Phase.Resolution" => "Phase: Resolution",
-                _ => "Phase: Unknown"
-            };
+            LocalizedString localized = new LocalizedString("PhaseTable", key);
+            return localized.GetLocalizedString();
         }
     }
 }

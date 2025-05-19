@@ -95,7 +95,6 @@ namespace Vermines.UI
         {
             if (_ScreenLookup.TryGetValue(typeof(S), out var result))
             {
-                Debug.Log($"Show() - Show screen '{result.GetType().Name}'");
                 _LastScreen = last;
 
                 if (!result.IsModal && _ActiveScreen != result && _ActiveScreen)
@@ -123,7 +122,6 @@ namespace Vermines.UI
         {
             if (_ScreenLookup.TryGetValue(typeof(S), out var result))
             {
-                Debug.Log($"ShowWithParams() - Show screen '{result.GetType().Name}' with param {param}");
                 _LastScreen = last;
 
                 if (!result.IsModal && _ActiveScreen != result && _ActiveScreen)
@@ -177,9 +175,6 @@ namespace Vermines.UI
         {
             if (_LastScreen == null)
             {
-                Debug.LogError($"ShowLast() - No last screen found. Return to the main menu.");
-
-                // TODO: Show main gameplay screen
                 Show<GameplayUIMain>();
             }
             else

@@ -1,6 +1,7 @@
 ﻿using Fusion;
 using UnityEditor.MemoryProfiler;
 using UnityEngine;
+using UnityEngine.Localization;
 using Vermines.Gameplay.Phases;
 using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.UI.Card;
@@ -145,11 +146,8 @@ namespace Vermines.UI.Screen
 
         protected string Translate(string key)
         {
-            // TODO: Integrate with the localization system
-            // Futur example: return LocalizationManager.Instance.GetLocalizedString(key);
-
-            // For now, just return the key
-            return key;
+            LocalizedString localized = new LocalizedString("UIUtils", key);
+            return localized.GetLocalizedString();
         }
 
         protected void ShowDiscardPopup(IDiscardPopupStrategy strategy)

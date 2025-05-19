@@ -2,6 +2,7 @@
 using OMGG.Menu.Screen;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Gameplay.Phases;
@@ -332,39 +333,37 @@ namespace Vermines.UI.Screen
 
         public void OnCardClicked(ICard card)
         {
-            var popup = _CloseView.GetComponent<PopupConfirm>();
-            popup.Setup(
-                "Sacrifice this card?",
-                "Are you sure you want to sacrifice this card? You will not be able to use it.",
-                () => { GameEvents.OnCardSacrificedRequested.Invoke(card); },
-                () => { Debug.Log("[TableCardClickHandler] Sacrifice cancelled."); }
-            );
+            if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice)
+            {
+                LocalizedString title = new LocalizedString("PopupTable", "sacrifice.title");
+                LocalizedString message = new LocalizedString("PopupTable", "sacrifice.message");
 
-            popup.OnClosed += () => _CloseView.SetActive(false);
-            _CloseView.SetActive(true);
-            //title: "Sacrifier ce partisan ?",
-            //message: $"Souhaitez-vous sacrifier {card.Data.Name} ?",
+                var popup = _CloseView.GetComponent<PopupConfirm>();
+                popup.Setup(
+                    title.GetLocalizedString(),
+                    message.GetLocalizedString(),
+                    () => { GameEvents.OnCardSacrificedRequested.Invoke(card); },
+                    () => { Debug.Log("[TableCardClickHandler] Sacrifice cancelled."); }
+                );
 
-            /* TODO: Uncomment and implement localization
-            string title = LocalizationManager.Instance.Get("popup.sacrifice.title");
-            string message = LocalizationManager.Instance.Get("popup.sacrifice.message", card.Data.Name);
-
-            PopupManager.Instance.ShowConfirm(
-                title: title,
-                message: message,
-                onConfirm: () =>
-                {
-                    GameEvents.OnCardSacrificedRequested.Invoke(card);
-                    DisableSacrificeMode();
-                    PopupManager.Instance.CloseCurrentPopup();
-                },
-                onCancel: () =>
-                {
-                    Debug.Log("[TableCardClickHandler] Sacrifice cancelled.");
-                    PopupManager.Instance.CloseCurrentPopup();
-                }
-            );
-            */
+                popup.OnClosed += () => _CloseView.SetActive(false);
+                _CloseView.SetActive(true);
+            }
+            if (PhaseManager.Instance.CurrentPhase == PhaseType.Gain)
+            {
+                Debug.Log($"[TableCardClickHandler] Card clicked: {card.Data.Name}");
+                LocalizedString title = new LocalizedString("PopupTable", "action.title");
+                LocalizedString message = new LocalizedString("PopupTable", "action.message");
+                var popup = _CloseView.GetComponent<PopupConfirm>();
+                popup.Setup(
+                    title.GetLocalizedString(),
+                    message.GetLocalizedString(),
+                    () => {  },
+                    () => { Debug.Log("[TableCardClickHandler] Action cancelled."); }
+                );
+                popup.OnClosed += () => _CloseView.SetActive(false);
+                _CloseView.SetActive(true);
+            }
         }
 
         private void OnCardSacrified(ICard card)

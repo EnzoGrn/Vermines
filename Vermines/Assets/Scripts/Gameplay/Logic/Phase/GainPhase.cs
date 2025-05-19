@@ -13,6 +13,7 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.Player;
     using Vermines.UI;
     using Vermines.UI.Plugin;
+    using Vermines.UI.Screen;
 
     public class GainPhase : APhase {
 
@@ -44,7 +45,16 @@ namespace Vermines.Gameplay.Phases {
 
             GameEvents.OnPlayerUpdated.Invoke(playerData);
 
-            OnPhaseEnding(_CurrentPlayer, true);
+            Debug.Log("Current player is " + _CurrentPlayer + " and Local player is " + PlayerController.Local.PlayerRef);
+            if (_CurrentPlayer == PlayerController.Local.PlayerRef)
+            {
+                GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+                if (gameplayUIController != null)
+                {
+                    gameplayUIController.Show<GameplayUIGainSummary>();
+                    //UIContextManager.Instance.PushContext<SacrificeContext>();
+                }
+            }
         }
 
         private void ExecuteCardEffect()

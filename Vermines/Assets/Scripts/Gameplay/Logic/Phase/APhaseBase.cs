@@ -34,7 +34,7 @@ namespace Vermines.Gameplay.Phases {
         /// <param name="player">The player that end the phase.</param>
         public virtual void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
-            if (logic == false) {
+            if (logic == true) {
                 PhaseManager.Instance.RPC_PhaseCompleted();
             } else {
                 GameEvents.OnAttemptNextPhase.Invoke();

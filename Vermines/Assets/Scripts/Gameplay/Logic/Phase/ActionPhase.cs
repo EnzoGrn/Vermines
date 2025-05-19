@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Phases {
@@ -66,6 +66,7 @@ namespace Vermines.Gameplay.Phases {
             else
             {
                 Debug.LogWarning("You can't discard a card if it's not your turn.");
+                GameEvents.OnCardPlayedRefused.Invoke(card);
             }
         }
 
@@ -85,6 +86,7 @@ namespace Vermines.Gameplay.Phases {
             else
             {
                 Debug.LogWarning("You can't discard a card if it's not your turn.");
+                GameEvents.OnCardPlayedRefused.Invoke(card);
             }
         }
 
@@ -104,6 +106,7 @@ namespace Vermines.Gameplay.Phases {
             else
             {
                 Debug.LogWarning("You can't play a card if it's not your turn.");
+                GameEvents.OnCardPlayedRefused.Invoke(card);
             }
         }
         #endregion

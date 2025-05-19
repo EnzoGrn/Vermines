@@ -10,28 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
-  m_Name: PhaseTable_fr
+  m_Name: PopupTable_en
   m_EditorClassIdentifier: 
   m_LocaleId:
-    m_Code: fr
-  m_SharedData: {fileID: 11400000, guid: 9e6adfa3db7330a4d97951bbb7b1a07a, type: 2}
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: e0d9f7c0dd3b9d44898358fad611b989, type: 2}
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 8903680000
-    m_Localized: 'Phase : Sacrifice'
+  - m_Id: 70513811456
+    m_Localized: Sacrifice this card?
     m_Metadata:
       m_Items: []
-  - m_Id: 222255341568
-    m_Localized: 'Phase : Gain et Effets'
+  - m_Id: 140600631296
+    m_Localized: Are you sure you want to sacrifice this card? You will not be able
+      to use it.
     m_Metadata:
       m_Items: []
-  - m_Id: 225833082880
-    m_Localized: 'Phase : Action'
+  - m_Id: 1725766524928
+    m_Localized: Play this card?
     m_Metadata:
       m_Items: []
-  - m_Id: 527688753152
-    m_Localized: "Phase: R\xE9solution"
+  - m_Id: 1728719314944
+    m_Localized: 'Are you sure you want to play this card? '
     m_Metadata:
       m_Items: []
   references:
