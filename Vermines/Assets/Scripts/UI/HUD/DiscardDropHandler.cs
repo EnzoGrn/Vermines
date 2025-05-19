@@ -11,16 +11,29 @@ namespace Vermines.UI.Card
         private void Awake()
         {
             // Initialize any necessary components or variables here
-            GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
-            GameEvents.OnCardDiscardedRefused.AddListener(OnDiscardRefused);
+            GameEvents.OnTurnChanged.AddListener(SetupListeners);
             slot = GetComponent<CardSlotBase>();
         }
 
         private void OnDestroy()
         {
             // Clean up event listeners to avoid memory leaks
-            GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
-            GameEvents.OnCardDiscardedRefused.RemoveListener(OnDiscardRefused);
+            GameEvents.OnTurnChanged.RemoveListener(SetupListeners);
+        }
+
+        private void SetupListeners(int i)
+        {
+            switch (GameManager.Instance.IsMyTurn())
+            {
+                case true:
+                    GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
+                    GameEvents.OnCardDiscardedRefused.AddListener(OnDiscardRefused);
+                    break;
+                case false:
+                    GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
+                    GameEvents.OnCardDiscardedRefused.RemoveListener(OnDiscardRefused);
+                    break;
+            }
         }
 
         public override void OnDrop(PointerEventData eventData)

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.Gameplay.Phases;
 using Vermines.UI;
@@ -19,46 +19,7 @@ public class TableCardClickHandler : ICardClickHandler
 
         if (PhaseManager.Instance.CurrentPhase == Vermines.Gameplay.Phases.Enumerations.PhaseType.Sacrifice)
         {
-            OpenConfirmationDialog(card);
+            GameEvents.OnCardClicked.Invoke(card);
         }
-    }
-
-    private void OpenConfirmationDialog(ICard card)
-    {
-        PopupManager.Instance.ShowConfirm(
-            title: "Sacrifier ce partisan ?",
-            message: $"Souhaitez-vous sacrifier {card.Data.Name} ?",
-            onConfirm: () =>
-            {
-                GameEvents.OnCardSacrificedRequested.Invoke(card);
-                PopupManager.Instance.CloseCurrentPopup();
-            },
-            onCancel: () =>
-            {
-                Debug.Log("[TableCardClickHandler] Sacrifice cancelled.");
-                PopupManager.Instance.CloseCurrentPopup();
-            }
-        );
-
-        /* TODO: Uncomment and implement localization
-        string title = LocalizationManager.Instance.Get("popup.sacrifice.title");
-        string message = LocalizationManager.Instance.Get("popup.sacrifice.message", card.Data.Name);
-
-        PopupManager.Instance.ShowConfirm(
-            title: title,
-            message: message,
-            onConfirm: () =>
-            {
-                GameEvents.OnCardSacrificedRequested.Invoke(card);
-                DisableSacrificeMode();
-                PopupManager.Instance.CloseCurrentPopup();
-            },
-            onCancel: () =>
-            {
-                Debug.Log("[TableCardClickHandler] Sacrifice cancelled.");
-                PopupManager.Instance.CloseCurrentPopup();
-            }
-        );
-        */
     }
 }

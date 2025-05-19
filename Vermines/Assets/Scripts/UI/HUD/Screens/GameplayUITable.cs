@@ -1,4 +1,5 @@
 ﻿using Fusion;
+using OMGG.Menu.Screen;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
@@ -11,8 +12,6 @@ using Vermines.UI.Popup;
 
 namespace Vermines.UI.Screen
 {
-    using Text = TMPro.TMP_Text;
-
     public partial class GameplayUITable : GameplayUIScreen
     {
         #region Attributes
@@ -136,37 +135,35 @@ namespace Vermines.UI.Screen
             SetupPartisanSlots(defaultPartisanSlotCount);
             SetupEquipmentSlots(defaultEquipmentSlotCount);
             SetupDiscardZone();
-            SetPartisanSlotsInteractable(true);
-            SetEquipmentSlotsInteractable(false);
-            SetDiscardZoneInteractable(true);
+            GameEvents.OnPhaseChanged.AddListener(UpdateUIForPhase);
+            SetupCloseViewPopup();
+        }
 
-            if (_CloseView != null)
-            {
-                PopupConfirm popupScript = _CloseView.GetComponent<PopupConfirm>();
-                popupScript.Setup(
-                    "Pass the sacrifice phase?",
-                    "Would you like to pass the sacrifice phase?",
-                    onConfirm: () => {
-                        GameEvents.OnAttemptNextPhase.Invoke();
-                        popupScript.ForceClose();
-                    },
-                    onCancel: () => { }
-                );
-
-                popupScript.OnClosed += () =>
-                {
-                    _CloseView.SetActive(false);
-                };
-                _CloseView.SetActive(false);
-            }
-            else
+        private void SetupCloseViewPopup()
+        {
+            if (_CloseView == null)
             {
                 Debug.LogErrorFormat(
                     gameObject,
-                    "GameplayUIMain Critical Error: Missing 'DiscardAllView' reference on GameObject '{0}'. This component is required to render the turn button. Please assign a valid GameObject in the Inspector.",
+                    "GameplayUIMain Critical Error: Missing 'DiscardAllView' reference on GameObject '{0}'.",
                     gameObject.name
                 );
+                return;
             }
+
+            PopupConfirm popupScript = _CloseView.GetComponent<PopupConfirm>();
+            popupScript.Setup(
+                "Pass the sacrifice phase?",
+                "Would you like to pass the sacrifice phase?",
+                onConfirm: () => {
+                    GameEvents.OnAttemptNextPhase.Invoke();
+                    popupScript.ForceClose();
+                },
+                onCancel: () => { }
+            );
+
+            popupScript.OnClosed += () => _CloseView.SetActive(false);
+            _CloseView.SetActive(false);
         }
 
         /// <summary>
@@ -180,6 +177,7 @@ namespace Vermines.UI.Screen
 
             ShowUser();
 
+            GameEvents.OnCardClicked.AddListener(OnCardClicked);
             GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
         }
 
@@ -194,6 +192,7 @@ namespace Vermines.UI.Screen
             HideUser();
 
             GameEvents.OnCardSacrified.RemoveListener(OnCardSacrified);
+            GameEvents.OnCardClicked.RemoveListener(OnCardClicked);
         }
 
         #endregion
@@ -246,24 +245,16 @@ namespace Vermines.UI.Screen
             discardSlot.ResetSlot();
         }
 
-        public void SetPartisanSlotsInteractable(bool value)
-        {
-            Debug.Log($"[TableUI] Setting partisan slots interactable to {value}.");
-            foreach (var slot in partisanSlots)
-                slot.SetInteractable(value);
-        }
-
-        public void SetEquipmentSlotsInteractable(bool value)
-        {
-            Debug.Log($"[TableUI] Setting equipment slots interactable to {value}.");
-            foreach (var slot in equipmentSlots)
-                slot.SetInteractable(value);
-        }
-
         public void SetDiscardZoneInteractable(bool value)
         {
             Debug.Log($"[TableUI] Setting discard zone interactable to {value}.");
             discardSlot.SetInteractable(value);
+        }
+
+        private void SetSlotsInteractable(List<TableCardSlot> slots, bool value)
+        {
+            foreach (var slot in slots)
+                slot.SetInteractable(value);
         }
 
         public void AddCardToDiscardZone(ICard card)
@@ -305,6 +296,23 @@ namespace Vermines.UI.Screen
             slot.ResetSlot();
         }
 
+        public void UpdateUIForPhase(PhaseType phase)
+        {
+            switch (phase)
+            {
+                case PhaseType.Sacrifice:
+                    if (GameManager.Instance.IsMyTurn() == false) return;
+                    SetSlotsInteractable(partisanSlots, true);
+                    SetDiscardZoneInteractable(false);
+                    break;
+
+                default:
+                    SetSlotsInteractable(partisanSlots, true);
+                    SetDiscardZoneInteractable(true);
+                    break;
+            }
+        }
+
         #endregion
 
         #region Events
@@ -314,19 +322,49 @@ namespace Vermines.UI.Screen
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
-            if (UIContextManager.Instance.HasContext())
+            if (UIContextManager.Instance.IsInContext<ForceDiscardContext>())
             {
-                var context = UIContextManager.Instance.CurrentContext;
-                if (context is ForceDiscardContext)
-                {
-                    Debug.Log("[GameTableManager] Cannot close UI during a forced discard.");
-                    return;
-                }
-            }
-            if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice)
-            {
+                Debug.Log("[GameTableManager] Cannot close UI during a forced discard.");
+                return;
             }
             Hide();
+        }
+
+        public void OnCardClicked(ICard card)
+        {
+            var popup = _CloseView.GetComponent<PopupConfirm>();
+            popup.Setup(
+                "Sacrifice this card?",
+                "Are you sure you want to sacrifice this card? You will not be able to use it.",
+                () => { GameEvents.OnCardSacrificedRequested.Invoke(card); },
+                () => { Debug.Log("[TableCardClickHandler] Sacrifice cancelled."); }
+            );
+
+            popup.OnClosed += () => _CloseView.SetActive(false);
+            _CloseView.SetActive(true);
+            //title: "Sacrifier ce partisan ?",
+            //message: $"Souhaitez-vous sacrifier {card.Data.Name} ?",
+
+            /* TODO: Uncomment and implement localization
+            string title = LocalizationManager.Instance.Get("popup.sacrifice.title");
+            string message = LocalizationManager.Instance.Get("popup.sacrifice.message", card.Data.Name);
+
+            PopupManager.Instance.ShowConfirm(
+                title: title,
+                message: message,
+                onConfirm: () =>
+                {
+                    GameEvents.OnCardSacrificedRequested.Invoke(card);
+                    DisableSacrificeMode();
+                    PopupManager.Instance.CloseCurrentPopup();
+                },
+                onCancel: () =>
+                {
+                    Debug.Log("[TableCardClickHandler] Sacrifice cancelled.");
+                    PopupManager.Instance.CloseCurrentPopup();
+                }
+            );
+            */
         }
 
         private void OnCardSacrified(ICard card)

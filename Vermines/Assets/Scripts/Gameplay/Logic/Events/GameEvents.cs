@@ -34,6 +34,8 @@ public static class GameEvents
     public static UnityEvent<ICard> OnCardSacrifiedRefused = new();
     public static UnityEvent<ICard> OnCardSacrified = new();
 
+    public static UnityEvent<ICard> OnCardClicked = new();
+
     public static UnityEvent<PhaseType> OnPhaseChanged = new();
     public static UnityEvent<int> OnTurnChanged = new();
 

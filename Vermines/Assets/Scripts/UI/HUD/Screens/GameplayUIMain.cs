@@ -75,34 +75,6 @@ namespace Vermines.UI.Screen
                 );
                 return;
             }
-
-            if (_DiscardAllView != null)
-            {
-                PopupConfirm popupScript = _DiscardAllView.GetComponent<PopupConfirm>();
-                popupScript.Setup(
-                    "",
-                    "You have some cards left. Do you want to discard them without activating their effect?",
-                    onConfirm: () => {
-                        HandManager.Instance.DiscardAllCards();
-                        GameEvents.OnAttemptNextPhase.Invoke();
-                    },
-                    onCancel: () => { }
-                );
-
-                popupScript.OnClosed += () =>
-                {
-                    _DiscardAllView.SetActive(false);
-                };
-                _DiscardAllView.SetActive(false);
-            }
-            else
-            {
-                Debug.LogErrorFormat(
-                    gameObject,
-                    "GameplayUIMain Critical Error: Missing 'DiscardAllView' reference on GameObject '{0}'. This component is required to render the turn button. Please assign a valid GameObject in the Inspector.",
-                    gameObject.name
-                );
-            }
         }
 
         /// <summary>
@@ -148,9 +120,13 @@ namespace Vermines.UI.Screen
                 _TurnButton.GetComponentInChildren<Text>().text = Translate("ui.button.wait_your_turn");
                 return;
             }
-            _TurnButton.interactable = GameManager.Instance.IsMyTurn();
 
-            var labelKey = GameManager.Instance.IsMyTurn() ? GetButtonTranslationKey(PhaseManager.Instance.CurrentPhase) : "ui.button.wait_your_turn";
+            bool isMyTurn = GameManager.Instance.IsMyTurn();
+            _TurnButton.interactable = isMyTurn;
+
+            var labelKey = isMyTurn
+                ? GetButtonTranslationKey(PhaseManager.Instance.CurrentPhase)
+                : "ui.button.wait_your_turn";
 
             _TurnButton.GetComponentInChildren<Text>().text = Translate(labelKey);
         }
@@ -176,24 +152,54 @@ namespace Vermines.UI.Screen
             return key;
         }
 
+        protected void ShowDiscardPopup(IDiscardPopupStrategy strategy)
+        {
+            if (_DiscardAllView == null)
+            {
+                Debug.LogError("Discard popup is not assigned.");
+                return;
+            }
+
+            var popup = _DiscardAllView.GetComponent<PopupConfirm>();
+            popup.Setup(
+                strategy.GetTitle(),
+                strategy.GetMessage(),
+                strategy.OnConfirm,
+                strategy.OnCancel
+            );
+
+            popup.ClearOnClosed();
+            popup.OnClosed += () =>
+            {
+                _DiscardAllView.SetActive(false);
+            };
+            _DiscardAllView.SetActive(true);
+        }
+
         #endregion
 
         #region Events
 
         /// <summary>
-        /// Is called when the <see cref="_TurnButton"/> is pressed using SendMessage() from the UI object."/>
+        /// Is called when the <see cref="_TurnButton"/> is pressed using SendMessage() from the UI object.
         /// </summary>
         protected virtual void OnAttemptToNextPhase()
         {
             UIContextManager.Instance.ClearContext();
+
+            if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice)
+            {
+                ShowDiscardPopup(new SacrificeSkipStrategy());
+                return;
+            }
+
             if (HandManager.Instance.HasCards() && PhaseManager.Instance.CurrentPhase == PhaseType.Action)
             {
-                _DiscardAllView.SetActive(true);
+                ShowDiscardPopup(new DefaultDiscardStrategy());
+                return;
             }
-            else
-            {
-                GameEvents.OnAttemptNextPhase.Invoke();
-            }
+
+            GameEvents.OnAttemptNextPhase.Invoke();
         }
 
         /// <summary>

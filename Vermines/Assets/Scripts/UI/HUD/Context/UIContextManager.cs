@@ -61,6 +61,22 @@ public class UIContextManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Pushes a new UI context of type <typeparamref name="T"/> onto the context stack and enters it.
+    /// </summary>
+    /// <typeparam name="T">The type of UI context to push. Must be a reference type implementing <see cref="IUIContext"/>.</typeparam>
+    /// <remarks>
+    /// This method retrieves the specified context via <c>GetContext&lt;T&gt;()</c>, adds it to the internal stack,
+    /// logs the action for debugging, and calls <c>Enter()</c> on the context to activate it.
+    /// </remarks>
+    public void PushContext<T>() where T : class, IUIContext, new()
+    {
+        var context = GetContext<T>() ?? new T();
+        Debug.LogFormat(gameObject, "[{0}] Pushing context: {1}", nameof(UIContextManager), context);
+        _contextStack.Push(context);
+        context.Enter();
+    }
+
+    /// <summary>
     /// Pops the current top context from the stack.
     /// </summary>
     public void PopContext()

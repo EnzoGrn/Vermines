@@ -1,5 +1,4 @@
-using Vermines.Player;
-using Vermines.ShopSystem.Enumerations;
+﻿using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Shop;
 using System;
 using UnityEngine;

@@ -168,10 +168,14 @@ namespace Vermines.Player {
             if (response.Status == CommandStatus.Success) {
                 Debug.Log($"[SERVER]: {response.Message}");
 
-                GameEvents.OnCardDiscarded.Invoke(card);
+                //GameEvents.OnCardDiscarded.Invoke(card);
 
                 if (_DiscardedCardTrackerPerTurn.HasCard(card) && card.Data.Type == CardType.Tools && !card.Data.IsStartingCard) {
                     Debug.Log($"[SERVER]: This tool '{card.Data.Name}' card already discarded this turn");
+                    if (HasStateAuthority)
+                    {
+                        RPC_DiscardCardNoEffect(playerId, cardId);
+                    }
                 } else {
                     Debug.Log($"[SERVER]: {response.Message}");
 
@@ -182,9 +186,9 @@ namespace Vermines.Player {
                             effect.Play(player);
                         }
                     }
+                    GameEvents.OnCardDiscarded.Invoke(card);
                 }
 
-                GameEvents.OnCardDiscarded.Invoke(card);
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
                 GameEvents.OnCardDiscardedRefused.Invoke(card);
@@ -277,9 +281,7 @@ namespace Vermines.Player {
                 response = CommandInvoker.ExecuteCommand(earnCommand);
 
                 if (response.Status == CommandStatus.Success) {
-                    GameDataStorage.Instance.PlayerData.TryGet(player, out PlayerData playerData);
                     GameEvents.OnCardSacrified.Invoke(card);
-                    TurnManager.Instance.UpdatePlayer(playerData);
                 }
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");

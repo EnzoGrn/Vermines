@@ -135,7 +135,6 @@ namespace Vermines.Gameplay.Phases {
         [Rpc(sources: RpcSources.All, targets: RpcTargets.All)]
         public void RPC_PhaseCompleted()
         {
-            Debug.Log($"[SERVER]: Phase {CurrentPhase} completed");
             PhaseCompleted();
         }
 

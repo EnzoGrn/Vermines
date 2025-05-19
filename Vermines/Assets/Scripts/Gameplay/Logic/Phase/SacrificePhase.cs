@@ -4,13 +4,12 @@ using Fusion;
 
 namespace Vermines.Gameplay.Phases {
 
-    using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
-    using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.HUD;
     using Vermines.Player;
     using Vermines.UI.GameTable;
+    using Vermines.UI;
+    using Vermines.UI.Screen;
 
     public class SacrificePhase : APhase {
 
@@ -52,13 +51,15 @@ namespace Vermines.Gameplay.Phases {
 
             if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
             {
-                Debug.Log($"[Client]: Open Sacrifice Menu for player {_CurrentPlayer}");
-                TableUI.Instance.OpenTableUI();
-                TableUI.Instance.EnableSacrificeMode();
+                GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+                if (gameplayUIController != null)
+                {
+                    gameplayUIController.Show<GameplayUITable>();
+                    //UIContextManager.Instance.PushContext<SacrificeContext>();
+                }
             }
             else if (playedCards.Count == 0)
             {
-                Debug.Log($"[Client]: No cards to sacrifice for player {_CurrentPlayer}");
                 OnPhaseEnding(_CurrentPlayer, true);
             }
         }
@@ -91,9 +92,8 @@ namespace Vermines.Gameplay.Phases {
                 if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value
                     || GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Count == 0)
                 {
+                    // Pop up context
                     OnPhaseEnding(_CurrentPlayer, true);
-                    TableUI.Instance.DisableSacrificeMode();
-                    TableUI.Instance.CloseTableUI();
                 }
             }
             else
