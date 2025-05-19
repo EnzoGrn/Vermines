@@ -110,7 +110,11 @@ namespace OMGG.Menu.Screen {
         /// <summary>
         /// The screen init method is called during <see cref="MenuUIController{T}.Awake()"/> after all screen have been assigned and configured.
         /// </summary>
-        public virtual void Init() { }
+        public virtual void Init()
+        {
+            foreach (MenuScreenPlugin plugin in _Plugins)
+                plugin.Init(this);
+        }
 
         /// <summary>
         /// The screen hide method.
