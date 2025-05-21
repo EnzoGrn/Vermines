@@ -214,7 +214,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 6036980241702035736}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.35
+  m_Radius: 0.25
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -242,3 +242,4 @@ MonoBehaviour:
   _agent: {fileID: -2887296596854563345}
   minIdleTime: 5
   maxIdleTime: 15
+  IsRoutineRunning: 0

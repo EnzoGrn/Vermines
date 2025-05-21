@@ -12,9 +12,13 @@ public class NpcController : MonoBehaviour
 
     #region Private Fields
     private Vector3 _startPositon;
+    private Coroutine _runningCoroutine;
     private RoutineManager _routineManager;
     private PointOfInterestSlot _currentSlot;
-    private bool _isRoutineRunning = false;
+    #endregion
+
+    #region Public Fields
+    [HideInInspector] public bool IsRoutineRunning = false;
     #endregion
 
     void Start()
@@ -23,7 +27,7 @@ public class NpcController : MonoBehaviour
         _routineManager = FindFirstObjectByType<RoutineManager>();
         _startPositon = transform.position;
 
-        StartCoroutine(StartNpcRoutine());
+        _runningCoroutine = StartCoroutine(StartNpcRoutine());
     }
 
     void Update()
@@ -79,10 +83,11 @@ public class NpcController : MonoBehaviour
     public void InterruptCoroutine(Vector3 position)
     {
         // Stop the current routine
-        if (_isRoutineRunning)
+        if (IsRoutineRunning)
         {
-            _isRoutineRunning = false;
-            StopCoroutine(StartNpcRoutine());
+            IsRoutineRunning = false;
+            StopCoroutine(_runningCoroutine);
+            _agent.ResetPath();
             MoveTo(position);
         }
     }
@@ -90,10 +95,10 @@ public class NpcController : MonoBehaviour
     public void ResumeCoroutine()
     {
         // Resume the routine
-        if (!_isRoutineRunning)
+        if (!IsRoutineRunning)
         {
             TryMoveToSlot();
-            StartCoroutine(StartNpcRoutine());
+            _runningCoroutine = StartCoroutine(StartNpcRoutine());
         }
     }
 
@@ -107,34 +112,42 @@ public class NpcController : MonoBehaviour
         // Wait until the NPC reaches his destination (in case we interrupt the routine and resume it)
         while (_agent.pathPending || _agent.remainingDistance > _agent.stoppingDistance)
         {
+            if (!IsRoutineRunning) yield break; // Interrupt the coroutine if the routine is stopped
             yield return null;
         }
 
-        Debug.Log($"Starting NPC routine: {gameObject.name}");
+        //Debug.Log($"Starting NPC routine: {gameObject.name}");
 
         // Start the routine
-        _isRoutineRunning = true;
-        while (_isRoutineRunning)
+        IsRoutineRunning = true;
+        while (IsRoutineRunning)
         {
-            yield return new WaitForSeconds(Random.Range(minIdleTime, maxIdleTime));
+            //yield return new WaitForSeconds(Random.Range(minIdleTime, maxIdleTime));
+            float waitTime = Random.Range(minIdleTime, maxIdleTime);
+            float timer = 0f;
+            while (timer < waitTime)
+            {
+                if (!IsRoutineRunning) yield break; // check pendant l'attente
+                timer += Time.deltaTime;
+                yield return null;
+            }
 
             // Free the current slot if it exists
             TryFreeSlot();
 
             // Get a slot from the RoutineManager
             _currentSlot = _routineManager.GetRandomDestinationSlot();
-
-            Debug.Log($"Slot found: {_currentSlot?.Id} by {gameObject.name}");
+            //Debug.Log($"Slot found: {_currentSlot?.Id} by {gameObject.name}");
 
             TryMoveToSlot();
 
             // Wait until the NPC reaches the destination
             while (_agent.pathPending || _agent.remainingDistance > _agent.stoppingDistance)
             {
+                if (!IsRoutineRunning) yield break; // Interrupt the coroutine if the routine is stopped
                 yield return null;
             }
-
-            Debug.Log($"Destination reached: {_currentSlot?.Id} by {gameObject.name}");
+            //Debug.Log($"Destination reached: {_currentSlot?.Id} by {gameObject.name}");
         }
     }
     #endregion

@@ -1,11 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class RoutineManager : MonoBehaviour
 {
     #region Exposed Fields
     [SerializeField] private List<PointOfInterest> _pointsOfInterest;
+    [SerializeField] private List<NpcController> _npcs;
+
+    [SerializeField] private float _radiusOfAreaInterruption;
+    [SerializeField] private float _rateOfInterestForInterruption;
     #endregion
+
+    #region Private Fields
+    private float _percentOfNpcInterest = 0;
+    #endregion
+
+    private void Start()
+    {
+        _percentOfNpcInterest = _npcs.Count * _rateOfInterestForInterruption;
+    }
 
     /// <summary>
     /// Get a random destination slot from the list of PointOfInterest.
@@ -24,7 +38,7 @@ public class RoutineManager : MonoBehaviour
 
         // Select a random POI slot from the list of valid POIs
         int randomIndex = Random.Range(0, validPOIs.Count);
-        Debug.Log($"Selected POI: {randomIndex}");
+        //Debug.Log($"Selected POI: {randomIndex}");
 
         PointOfInterest selectedPOI = validPOIs[randomIndex];
 
@@ -38,5 +52,47 @@ public class RoutineManager : MonoBehaviour
         }
 
         return chosenSlot;
+    }
+
+    private Vector3 GetRandomPointInRadius(Vector3 center)
+    {
+        Vector2 randomPoint = Random.insideUnitCircle * _radiusOfAreaInterruption;
+        Vector3 result = center + new Vector3(randomPoint.x, 0f, randomPoint.y);
+
+        // On s'assure que le point est navigable (optionnel mais recommandé)
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(result, out hit, 2.0f, NavMesh.AllAreas))
+        {
+            return hit.position;
+        }
+        return center; // fallback au centre si aucun point n’est trouvé
+    }
+
+    /// <summary>
+    /// Interrupt the current routine of some NPCs to go to a specififc destination.
+    /// </summary>
+    public void InterruptNpcRoutine()
+    {
+        Vector3 pos = Vector3.zero;
+
+        foreach (NpcController npc in _npcs)
+        {
+            int randomIndex = Random.Range(0, _npcs.Count);
+            if (randomIndex < _percentOfNpcInterest)
+            {
+                Debug.Log($"Interrupting NPC: {npc.gameObject.name}");
+                // Go to the destination
+                pos = GetRandomPointInRadius(pos);
+                npc.InterruptCoroutine(pos);
+            }
+        }
+    }
+
+    public void ResumeNpcRoutine()
+    {
+        foreach (NpcController npc in _npcs)
+        {
+            npc.ResumeCoroutine();
+        }
     }
 }
