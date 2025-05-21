@@ -1,3 +1,4 @@
+using log4net;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -14,6 +15,7 @@ public class RoutineManager : MonoBehaviour
 
     #region Private Fields
     private float _percentOfNpcInterest = 0;
+    private Vector3 _interruptPos = Vector3.zero;
     #endregion
 
     private void Start()
@@ -73,7 +75,7 @@ public class RoutineManager : MonoBehaviour
     /// </summary>
     public void InterruptNpcRoutine()
     {
-        Vector3 pos = Vector3.zero;
+        _interruptPos = Vector3.zero;
 
         foreach (NpcController npc in _npcs)
         {
@@ -81,9 +83,9 @@ public class RoutineManager : MonoBehaviour
             if (randomIndex < _percentOfNpcInterest)
             {
                 Debug.Log($"Interrupting NPC: {npc.gameObject.name}");
-                // Go to the destination
-                pos = GetRandomPointInRadius(pos);
-                npc.InterruptCoroutine(pos);
+                
+                // TODO: Run the interact animation that will then start the InterruptCoroutine
+                npc.Interruption(GetRandomPointInRadius(_interruptPos));
             }
         }
     }

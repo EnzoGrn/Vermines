@@ -1,3 +1,4 @@
+using log4net;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,6 +9,8 @@ public class NpcController : MonoBehaviour
     [SerializeField] private NavMeshAgent _agent;
     [SerializeField] private float minIdleTime = 5f;
     [SerializeField] private float maxIdleTime = 15f;
+    [SerializeField] private Animator _animator;
+    [SerializeField] private float _arrivalThreshold = 2f; // Threshold for arrival check
     #endregion
 
     #region Private Fields
@@ -15,6 +18,8 @@ public class NpcController : MonoBehaviour
     private Coroutine _runningCoroutine;
     private RoutineManager _routineManager;
     private PointOfInterestSlot _currentSlot;
+
+    private Vector3 _interruptPos = Vector3.zero;
     #endregion
 
     #region Public Fields
@@ -43,6 +48,7 @@ public class NpcController : MonoBehaviour
         if (_agent != null)
         {
             _agent.SetDestination(posittion);
+            _animator.SetBool("IsWalking", true);
         }
     }
 
@@ -76,19 +82,29 @@ public class NpcController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Interrupt the current routine and move the NPC to a specified position.
-    /// </summary>
-    /// <param name="position"></param>
-    public void InterruptCoroutine(Vector3 position)
+    public void Interruption(Vector3 position)
     {
-        // Stop the current routine
+        _interruptPos = position;
+
+        // Start animation
+        _animator.SetTrigger("Interact");
+    }
+
+    /// <summary>
+    /// Interrupt the current routine and move the NPC to a specified position when the interract animation is done.
+    /// </summary>
+    public void OnInterruptionDone()
+    {
         if (IsRoutineRunning)
         {
             IsRoutineRunning = false;
             StopCoroutine(_runningCoroutine);
             _agent.ResetPath();
-            MoveTo(position);
+            MoveTo(_interruptPos);
+
+            Debug.Log($"[OnInterruptionDone]: {gameObject.name} has been interrupted");
+
+            StartCoroutine(WaitUntilArrived());
         }
     }
 
@@ -103,6 +119,20 @@ public class NpcController : MonoBehaviour
     }
 
     #region Coroutines
+
+    private IEnumerator WaitUntilArrived()
+    {
+        // Wait until the NPC reaches the destination
+        while (_agent.pathPending && _agent.remainingDistance > Mathf.Max(_agent.stoppingDistance, _arrivalThreshold))
+        {
+            Debug.Log($"[StartNpcRoutine]: {gameObject.name}, reamainingDistance {_agent.remainingDistance}, stopping distance {_agent.stoppingDistance}, pending? {_agent.pathPending}");
+            if (!IsRoutineRunning) yield break; // Interrupt the coroutine if the routine is stopped
+            yield return null;
+        }
+        Debug.Log($"[OnInterruptionDone]: {gameObject.name} arrived (WaitUntilArrived)");
+        _animator.SetBool("IsWalking", false);
+    }
+
     /// <summary>
     /// Start the NPC routine.
     /// </summary>
@@ -115,6 +145,7 @@ public class NpcController : MonoBehaviour
             if (!IsRoutineRunning) yield break; // Interrupt the coroutine if the routine is stopped
             yield return null;
         }
+        _animator.SetBool("IsWalking", false);
 
         //Debug.Log($"Starting NPC routine: {gameObject.name}");
 
@@ -147,6 +178,7 @@ public class NpcController : MonoBehaviour
                 if (!IsRoutineRunning) yield break; // Interrupt the coroutine if the routine is stopped
                 yield return null;
             }
+            _animator.SetBool("IsWalking", false);
             //Debug.Log($"Destination reached: {_currentSlot?.Id} by {gameObject.name}");
         }
     }

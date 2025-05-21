@@ -6,6 +6,13 @@ public class RotateNpc : MonoBehaviour
 
     // https://youtube.com/shorts/KGG2V4ZkXTg?si=TnOfEIoMn83hSeWV
 
+    private void Start()
+    {
+        if (_camera == null)
+        {
+            _camera = Camera.main;
+        }
+    }
     private void LateUpdate()
     {
         Vector3 cameraPosition = _camera.transform.position;
