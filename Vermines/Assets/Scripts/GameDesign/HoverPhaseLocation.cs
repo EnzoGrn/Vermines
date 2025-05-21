@@ -1,6 +1,4 @@
-﻿using NUnit.Framework;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class HoverPhaseLocation : MonoBehaviour
@@ -10,6 +8,7 @@ public class HoverPhaseLocation : MonoBehaviour
     [SerializeField] private Material _OutlineMaterial;
     [SerializeField] private List<MeshRenderer> _MeshRendererList;
     [SerializeField] private Color _OutlineColor = new (0f, 1f, 0f, 1f); // Green default color
+    [SerializeField] private List<HoverPhaseLocation> _Locations = new();
     #endregion
 
     #region Private Fields
@@ -46,8 +45,9 @@ public class HoverPhaseLocation : MonoBehaviour
         }
         ApplyOutline(false);
 
-        CamManager.Instance.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
+        //CamManager.Instance.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
         CamManager.Instance.OnCamLocationChanged.AddListener(OnCamAnimationCompleted);
+        CamManager.Instance.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
     }
 
 
@@ -57,6 +57,11 @@ public class HoverPhaseLocation : MonoBehaviour
 
         if (_CanHoverLocations)
             ApplyOutline(true);
+
+        foreach(HoverPhaseLocation location in _Locations)
+        {
+            location.ApplyOutline(false);
+        }
     }
 
     private void OnMouseExit()
@@ -72,25 +77,25 @@ public class HoverPhaseLocation : MonoBehaviour
         return; // TODO: remove this
         if (!_CanHoverLocations || !_CanClickLocations)
             return;
-        
+
         _CanHoverLocations = false;
         ApplyOutline(false);
         CamManager.Instance.OnSplineAnimationRequest((int)_CamSplineType);
     }
 
+    // TODO: set to false to avoid over when traveling with the event is changing
     private void OnCamNotOnLocation(CamSplineType camSplineType)
     {
-        Debug.Log($"[OnCamNotOnLocation]: Hover Effect can occur again {camSplineType} == {CamSplineType.None}.");
-
-        _CanHoverLocations = (camSplineType == CamSplineType.None);
+        _CanHoverLocations = false;
     }
 
     private void OnCamAnimationCompleted(CamSplineType camSplineType)
     {
         _CanClickLocations = (camSplineType == CamSplineType.None);
+        _CanHoverLocations = (camSplineType == CamSplineType.None);
     }
 
-    private void ApplyOutline(bool enable)
+    public void ApplyOutline(bool enable)
     {
         foreach (MeshRenderer r in _MeshRendererList)
         {
