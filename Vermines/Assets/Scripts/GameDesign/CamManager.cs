@@ -31,6 +31,10 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
     private int _Offset = 0;
     private bool _IsAnimated = false;
 
+    // This value is used to go on special location from the none a market
+    // If different of 0 must be a special location to go after completed first cam animation to return in the none location
+    private int _GoOnSpecialLocation = 0;
+
     #endregion
 
     #region Methods
@@ -74,7 +78,7 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
         if (splineID > ((int)CamSplineType.MainViewToCourtyard - 1) && _SplineID > ((int)CamSplineType.MainViewToCourtyard - 1))
         {
             // splineId - LastNoneShop + (LastShop - splineId)
-            _Offset = splineID - (int)CamSplineType.None + ((int)CamSplineType.MainViewToMarket - splineID);
+            _Offset = splineID - (int)CamSplineType.MainViewToSacrifice + ((int)CamSplineType.MainViewToMarket - splineID);
 
             StartSplineCamAnimation(splineID + _Offset);
             // Set the _SplineID not to the calculated one, but the actual one (it allows the code to do this calcul again and knows where we are)
@@ -127,16 +131,52 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
         if (_IsAnimated) return;
         OnSplineAnimationRequest((int)CamSplineType.None);
     }
+
+    public void GoOnSacrificeLocation()
+    {
+        if (_IsAnimated) return;
+
+        // Check if current location is not none, if it is just go the the sacrifice location else return to none before going to sacrifice
+
+        if (_SplineID != 0)
+        {
+            OnSplineAnimationRequest((int)CamSplineType.None);
+            _GoOnSpecialLocation = (int)CamSplineType.MainViewToSacrifice;
+        }
+        else
+        {
+            OnSplineAnimationRequest((int)CamSplineType.MainViewToSacrifice);
+        }
+    }
+
     public void GoOnMarketLocation()
     {
         if (_IsAnimated) return;
-        OnSplineAnimationRequest((int)CamSplineType.MainViewToMarket);
+
+        if (_SplineID == (int)CamSplineType.MainViewToSacrifice)
+        {
+            OnSplineAnimationRequest((int)CamSplineType.None);
+            _GoOnSpecialLocation = (int)CamSplineType.MainViewToMarket;
+        }
+        else
+        {
+            OnSplineAnimationRequest((int)CamSplineType.MainViewToMarket);
+        }
     }
 
     public void GoOnCourtyardLocation()
     {
         if (_IsAnimated) return;
-        OnSplineAnimationRequest((int)CamSplineType.MainViewToCourtyard);
+        
+        if (_SplineID == (int)CamSplineType.MainViewToSacrifice)
+        {
+            OnSplineAnimationRequest((int)CamSplineType.None);
+            _GoOnSpecialLocation = (int)CamSplineType.MainViewToCourtyard;
+        }
+        else
+        {
+            OnSplineAnimationRequest((int)CamSplineType.MainViewToCourtyard);
+        }
     }
 
     public void ProceedLookAtRequest()
@@ -157,13 +197,33 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
 
         OnCamLocationChanged.Invoke((CamSplineType)_SplineID);
 
-        if ((CamSplineType)_SplineID ==  CamSplineType.MainViewToCourtyard || (CamSplineType)_SplineID == CamSplineType.MarketToCourtyard)
+        if (_GoOnSpecialLocation != 0)
         {
-            UIManager.Instance.OpenShopCourtyard();
+            // UIManager.Instance.OpenShopCourtyard();
+            OnSplineAnimationRequest(_GoOnSpecialLocation);
+            _GoOnSpecialLocation = (int)CamSplineType.None;
         }
-        else if ((CamSplineType)_SplineID == CamSplineType.MainViewToMarket || (CamSplineType)_SplineID == CamSplineType.CourtyardToMarket)
+
+        if (!UIManager.Instance)
+            return;
+
+        switch ((CamSplineType)_SplineID)
         {
-            UIManager.Instance.OpenShopMarket();
+            case CamSplineType.MainViewToCourtyard:
+                UIManager.Instance.OpenShopCourtyard();
+                break;
+            case CamSplineType.MarketToCourtyard:
+                UIManager.Instance.OpenShopCourtyard();
+                break;
+            case CamSplineType.MainViewToMarket:
+                UIManager.Instance.OpenShopMarket();
+                break;
+            case CamSplineType.CourtyardToMarket:
+                UIManager.Instance.OpenShopMarket();
+                break;
+            case CamSplineType.MainViewToSacrifice:
+                UIManager.Instance.OpenTable();
+                break;
         }
     }
 

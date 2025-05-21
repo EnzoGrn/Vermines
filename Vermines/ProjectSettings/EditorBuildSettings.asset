@@ -17,12 +17,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Resources/Scenes/UI.unity
     guid: f63b1a445d9315048a7b988295cdc361
-  - enabled: 1
-    path: Assets/Resources/Scenes/Environment.unity
-    guid: d0f87b8fa27e0a644a467af06d9926b0
+  - enabled: 0
+    path: Assets/Resources/Scenes/Environment/EnvironmentDay.unity
+    guid: bba21dea17538384ea72f6c4dc86059a
   - enabled: 1
     path: Assets/Resources/Scenes/UI v2.unity
     guid: 5afab847e01a5e04a9fedeb464659fda
+  - enabled: 1
+    path: Assets/Resources/Scenes/GameEnvironment/EnvironmentDay.unity
+    guid: db1880664d4d6b746ac0955135a940dd
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: afec51d4b81b25e469e3b14e73b7ca78, type: 2}
     com.unity.localization.settings: {fileID: 11400000, guid: 28be21c4cbc6a884fb2fbf7e4de09393, type: 2}

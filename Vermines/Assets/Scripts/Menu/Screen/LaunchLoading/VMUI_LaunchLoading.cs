@@ -17,7 +17,7 @@ namespace Vermines.Menu.Screen {
         {
             base.Show();
 
-            LoadingManager.AddStep(new LoadSceneStep("Environment", UnityEngine.SceneManagement.LoadSceneMode.Additive));
+            LoadingManager.AddStep(new LoadSceneStep("EnvironmentDay", UnityEngine.SceneManagement.LoadSceneMode.Additive));
 
             LoadingManager.OnLoadingDone += OnLoadingDone;
 
