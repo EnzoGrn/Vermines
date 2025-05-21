@@ -14,7 +14,7 @@ namespace Vermines.HUD.Card
 
         public void OpenOverlay()
         {
-            ShopManager.instance.GetShop().OpenCardBuyOverlay(CardBase);
+            //ShopManager.instance.GetShop().OpenCardBuyOverlay(CardBase);
         }
     }
 }

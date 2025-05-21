@@ -13,6 +13,7 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.HUD.Card;
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
+    using Vermines.UI.Shop;
 
     public class ResolutionPhase : APhase {
 
@@ -35,7 +36,7 @@ namespace Vermines.Gameplay.Phases {
 
             if (response.Status == CommandStatus.Success) {
                 foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
-                    CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
+                    ShopManager.Instance.ReceiveFullShopList(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
             }
 
             // Refill Hand

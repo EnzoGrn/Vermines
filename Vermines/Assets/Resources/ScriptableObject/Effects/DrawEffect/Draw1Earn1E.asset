@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Description: Draw 1 card then earn <b><color=purple>1E</color></b>
   _Amount: 1
+  _SubEffect: {fileID: 11400000, guid: b808e43bd63549a42aa6f6db8c9d6ee3, type: 2}
   DrawIcon: {fileID: 21300000, guid: cd20fdaab15ebf14489155e5f0ed5409, type: 3}
   Then: {fileID: 21300000, guid: 24a76bff2862f8a4fbc25bf2c54630fa, type: 3}

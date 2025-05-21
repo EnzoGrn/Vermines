@@ -1,5 +1,5 @@
 using UnityEngine;
-using Vermines.HUD.Card;
+using Vermines.UI.Card;
 
 public interface ICardDropArea
 {

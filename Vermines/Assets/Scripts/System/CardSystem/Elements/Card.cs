@@ -1,5 +1,6 @@
 namespace Vermines.CardSystem.Elements {
 
+    using Fusion;
     using Vermines.CardSystem.Data;
 
     /// <summary>
@@ -16,6 +17,8 @@ namespace Vermines.CardSystem.Elements {
         bool IsAnonyme { get; set; }
 
         public CardData Data { get; set; }
+
+        public PlayerRef Owner { get; set; }
     }
 
     /// <summary>
@@ -34,5 +37,7 @@ namespace Vermines.CardSystem.Elements {
             get => IsAnonyme ? null : _Data; // Security check
             set => _Data = value;
         }
+
+        public PlayerRef Owner { get; set; }
     }
 }

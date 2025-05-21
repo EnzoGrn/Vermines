@@ -15,5 +15,6 @@ MonoBehaviour:
   _Description: Spend <b><color=purple>3E</color></b> to earn <b><color=red>5A</color></b>
   _Amount: 3
   _DataToSpend: 0
+  _SubEffect: {fileID: 11400000, guid: 38f64e1ff1a84e646be1db2ff96c7bdd, type: 2}
   EloquenceIcon: {fileID: 21300000, guid: 4bfc719361e4f1f49a3001672b1d6bca, type: 3}
   SoulIcon: {fileID: 21300000, guid: a3c4b0860b11f9145b70a7d40201e163, type: 3}

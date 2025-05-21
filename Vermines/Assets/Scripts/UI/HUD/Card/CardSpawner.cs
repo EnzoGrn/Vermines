@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 namespace Vermines.HUD.Card
@@ -155,15 +155,17 @@ namespace Vermines.HUD.Card
 
         public void UpdateSpecificShop(Dictionary<int, ICard> cardDictionary, ShopType shopType)
         {
-            foreach (var card in cardDictionary)
+            foreach (var kvp in cardDictionary)
             {
-                Debug.Log("Card id: " + card.Value.ID);
+                int slotIndex = kvp.Key;
+                ICard card = kvp.Value;
+                Debug.Log("Card id: " + card.ID);
                 bool cardExists = false;
                 foreach (var cardInShop in ShopCardDictionaries[shopType])
                 {
-                    Debug.Log("Card id: " + card.Value.ID + ", CardInShop id: " + cardInShop.Value.ID);
+                    Debug.Log("Card id: " + card.ID + ", CardInShop id: " + cardInShop.Value.ID);
 
-                    if (card.Value.ID == cardInShop.Value.ID && card.Key == cardInShop.Key)
+                    if (card.ID == cardInShop.Value.ID && slotIndex == cardInShop.Key)
                     {
                         Debug.Log("Card already exists in the shop.");
                         cardExists = true;
@@ -171,12 +173,12 @@ namespace Vermines.HUD.Card
                     }
                 }
                 if (!cardExists) {
-                    if (ShopCardDictionaries[shopType].ContainsKey(card.Key)) {
-                        ShopCardDictionaries[shopType][card.Key] = card.Value;
+                    if (ShopCardDictionaries[shopType].ContainsKey(slotIndex)) {
+                        ShopCardDictionaries[shopType][slotIndex] = card;
                     }
                     else
                     {
-                        ShopCardDictionaries[shopType].Add(card.Key, card.Value);
+                        ShopCardDictionaries[shopType].Add(slotIndex, card);
                     }
                 }
             }

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c266d1a9b5b782e41bb2f387658168af, type: 3}
+  m_Name: DaggerEffect
+  m_EditorClassIdentifier: 
+  _Type: 4
+  _Description: Earn <b><color=purple>1E</color></b> each time you play a <b>Partisan</b>
+    card.
+  _SubEffect: {fileID: 11400000, guid: 49b16af25acb7154d92dedeb27b64621, type: 2}

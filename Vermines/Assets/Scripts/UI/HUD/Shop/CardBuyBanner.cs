@@ -101,12 +101,12 @@ namespace Vermines.HUD
                 return;
             }
 
-            GameEvents.OnCardBought.Invoke(cardInfo.Value.Item1, cardInfo.Value.Item2);
+            GameEvents.OnCardPurchaseRequested.Invoke(cardInfo.Value.Item1, cardInfo.Value.Item2);
 
             // Destroy the card bought
             //CardSpawner.Instance.DestroyCard(_Card.ID);
 
-            ShopManager.instance.GetShop().CloseCardBuyOverlay();
+            //ShopManager.instance.GetShop().CloseCardBuyOverlay();
         }
 
         private void OnValidate()

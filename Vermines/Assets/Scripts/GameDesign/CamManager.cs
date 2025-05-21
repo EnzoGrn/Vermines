@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using OMGG.DesignPattern;
 using UnityEngine.Events;
 using Vermines.HUD;
+using Vermines.UI;
 
 public class CamManager : MonoBehaviourSingleton<CamManager>
 {
@@ -198,29 +199,30 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
 
         if (_GoOnSpecialLocation != 0)
         {
+            // UIManager.Instance.OpenShopCourtyard();
             OnSplineAnimationRequest(_GoOnSpecialLocation);
             _GoOnSpecialLocation = (int)CamSplineType.None;
         }
 
-        if (!ShopManager.instance)
+        if (!UIManager.Instance)
             return;
 
         switch ((CamSplineType)_SplineID)
         {
             case CamSplineType.MainViewToCourtyard:
-                ShopManager.instance.OpenCourtyard();
+                UIManager.Instance.OpenShopCourtyard();
                 break;
             case CamSplineType.MarketToCourtyard:
-                ShopManager.instance.OpenCourtyard();
+                UIManager.Instance.OpenShopCourtyard();
                 break;
             case CamSplineType.MainViewToMarket:
-                ShopManager.instance.OpenMarket();
+                UIManager.Instance.OpenShopMarket();
                 break;
             case CamSplineType.CourtyardToMarket:
-                ShopManager.instance.OpenMarket();
+                UIManager.Instance.OpenShopMarket();
                 break;
             case CamSplineType.MainViewToSacrifice:
-                // TODO: Call Open Sacrifice
+                UIManager.Instance.OpenTable();
                 break;
         }
     }

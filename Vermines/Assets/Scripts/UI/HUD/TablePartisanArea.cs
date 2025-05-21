@@ -2,7 +2,7 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 
-namespace Vermines.HUD.Card
+namespace Vermines.UI.Card
 {
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Enumerations;
@@ -31,7 +31,7 @@ namespace Vermines.HUD.Card
 
             // Get gameObject from card
             GameObject cardGameObject = card.gameObject;
-            CardBase cardBase = cardGameObject.GetComponent<CardBase>();
+            CardDisplay cardBase = cardGameObject.GetComponent<CardDisplay>();
             if (cardBase == null)
             {
                 Debug.LogWarning($"[CLIENT] [{gameObject.name}] ({nameof(TablePartisanArea)}) CardBase not found.", this);
@@ -73,11 +73,11 @@ namespace Vermines.HUD.Card
             Destroy(card.GetComponent<CardHover>());
             card.GetComponent<CanvasGroup>().blocksRaycasts = true;
             card.gameObject.AddComponent<CardInTable>();
-            card.gameObject.GetComponent<CardInTable>().SetCardBase(card.gameObject.GetComponent<CardBase>());
+            card.gameObject.GetComponent<CardInTable>().SetCardBase(card.gameObject.GetComponent<CardDisplay>());
             card.gameObject.tag = "TableCard";
             Debug.Log("Card dropped on Discard Area");
 
-            CardBase cardBase = card.GetComponent<CardBase>();
+            CardDisplay cardBase = card.GetComponent<CardDisplay>();
 
             if (cardBase != null)
             {
