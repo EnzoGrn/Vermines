@@ -157,6 +157,12 @@ namespace Vermines {
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_DiscardCardNoEffect(int playerId, int cardID)
+        {
+            Player.PlayerController.Local.RPC_DiscardCardNoEffect(playerId, cardID);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_CardSacrified(int playerId, int cardId)
         {
             Player.PlayerController.Local.RPC_CardSacrified(playerId, cardId);
@@ -199,9 +205,9 @@ namespace Vermines {
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_NetworkEventCardEffect(int playerID, int cardID)
+        public void RPC_NetworkEventCardEffect(int playerID, int cardID, string data)
         {
-            Player.PlayerController.Local.RPC_NetworkEventCardEffect(playerID, cardID);
+            Player.PlayerController.Local.RPC_NetworkEventCardEffect(playerID, cardID, data);
         }
 
         #endregion

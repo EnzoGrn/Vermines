@@ -8,7 +8,7 @@ namespace Vermines.ShopSystem.Commands
     using Vermines.CardSystem.Elements;
     using Vermines.ShopSystem.Data;
     using Vermines.Test;
-    using Vermines.HUD.Card;
+    using Vermines.UI.Shop;
 
     public class FillShopCommand : ICommand
     {
@@ -57,7 +57,7 @@ namespace Vermines.ShopSystem.Commands
                 }
 
                 if (!TestMode.IsTesting)
-                    CardSpawner.Instance.UpdateSpecificShop(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
+                    ShopManager.Instance.ReceiveFullShopList(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
             }
 
             return _Shop;

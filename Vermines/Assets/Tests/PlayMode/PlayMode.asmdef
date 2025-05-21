@@ -12,7 +12,9 @@
         "Vermines",
         "CardSystem",
         "Fusion.Unity",
-        "Command"
+        "Command",
+        "OMGG.Scene",
+        "OMGG.Menu"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

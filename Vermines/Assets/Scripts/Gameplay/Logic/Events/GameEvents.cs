@@ -3,17 +3,24 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.Events;
 using Vermines.CardSystem.Elements;
+using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.ShopSystem.Enumerations;
 
 public static class GameEvents
 {
     public static UnityEvent OnAttemptNextPhase = new ();
-    public static UnityEvent<ICard> OnDrawCard = new ();
+    public static UnityEvent<ICard> OnCardDrawn = new();
     public static Dictionary<ShopType, UnityEvent<int, ICard>> OnShopsEvents = new();
-    public static UnityEvent<ShopType, int> OnCardBought = new();
-    public static UnityEvent<int> OnDiscard = new();
+    public static UnityEvent<ShopType, int> OnCardPurchaseRequested = new();
+    public static UnityEvent<ShopType, int> OnCardPurchased = new();
+    public static UnityEvent<ShopType, int> OnShopCardReplaced = new();
+    public static UnityEvent<ICard> OnCardDiscardRequested = new();
+    public static UnityEvent<ICard> OnCardDiscardRequestedNoEffect = new();
+    public static UnityEvent<ICard> OnCardDiscarded = new();
     public static UnityEvent<int> OnCardPlayed = new();
     public static UnityEvent<int> OnCardSacrified = new();
+    public static UnityEvent<PhaseType> OnPhaseChanged = new();
+    public static UnityEvent<int> OnTurnChanged = new();
 
     static GameEvents()
     {
@@ -31,13 +38,7 @@ public static class GameEvents
 
     public static void InvokeOnDrawCard(ICard card)
     {
-        OnDrawCard.Invoke(card);
-        return;
-    }
-
-    public static void InvokeOnDiscard(int cardId)
-    {
-        OnDiscard.Invoke(cardId);
+        OnCardDrawn.Invoke(card);
         return;
     }
 
