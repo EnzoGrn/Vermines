@@ -5,6 +5,7 @@
 public enum CamSplineType
 {
     None = 0,
+    MainViewToSacrifice,
     MainViewToCourtyard,
     MainViewToMarket,
     MarketToCourtyard,

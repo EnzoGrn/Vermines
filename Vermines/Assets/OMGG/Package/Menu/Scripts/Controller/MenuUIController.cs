@@ -229,12 +229,12 @@ namespace OMGG.Menu.Controller {
         /// <returns>When handling is completed</returns>
         public virtual async Task HandleConnectionResult(ConnectResult result, MenuUIController controller)
         {
-            return;
+            await Task.CompletedTask;
         }
 
         public virtual async Task HandleSceneChangeResult(ConnectResult result, MenuUIController controller, MenuUIScreen screenToShow)
         {
-            return;
+            await Task.CompletedTask;
         }
 
         #endregion

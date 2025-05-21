@@ -34,6 +34,8 @@ namespace Vermines {
             if (Runner.IsServer)
             {
                 Debug.Log("LoadYourAsyncScene.");
+                //Runner.LoadScene("EnvironmentDay", LoadSceneMode.Additive);
+                Runner.LoadScene("GameplayCameraTravelling", LoadSceneMode.Additive);
                 Runner.LoadScene("UI v2", LoadSceneMode.Additive);
                 //Runner.LoadScene("Environment", LoadSceneMode.Additive); TODO: Uncomment this
             }
