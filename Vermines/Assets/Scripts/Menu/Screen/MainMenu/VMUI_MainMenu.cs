@@ -1,11 +1,11 @@
-using Fusion.Menu;
 using Fusion;
 using OMGG.Menu.Screen;
-using UnityEngine.UI;
 using UnityEngine;
 using OMGG.Menu.Configuration;
 
 namespace Vermines.Menu.Screen {
+
+    using Vermines.Environment.Interaction.Button;
 
     using Text       = TMPro.TMP_Text;
     using InputField = TMPro.TMP_InputField;
@@ -60,13 +60,13 @@ namespace Vermines.Menu.Screen {
         /// The open setting button.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected UnityEngine.UI.Button _SettingsButton;
+        protected ButtonSignInteraction _SettingsButton;
 
         /// <summary>
         /// The quick play button.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected UnityEngine.UI.Button _PlayButton;
+        protected ButtonSignInteraction _PlayButton;
 
         /// <summary>
         /// The open party screen button.
@@ -78,7 +78,7 @@ namespace Vermines.Menu.Screen {
         /// The quit button.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected UnityEngine.UI.Button _QuitButton;
+        protected ButtonSignInteraction _QuitButton;
 
         #endregion
 
@@ -139,6 +139,10 @@ namespace Vermines.Menu.Screen {
 
             if (_UsernameLabel)
                 _UsernameLabel.text = ConnectionArgs.Username;
+            _PlayButton.OnClicked     += OnPlayButtonPressed;
+            _SettingsButton.OnClicked += OnSettingsButtonPressed;
+            _QuitButton.OnClicked     += OnQuitButtonPressed;
+
             ShowUser();
         }
 
@@ -149,6 +153,10 @@ namespace Vermines.Menu.Screen {
         public override void Hide()
         {
             base.Hide();
+
+            _PlayButton.OnClicked     -= OnPlayButtonPressed;
+            _SettingsButton.OnClicked -= OnSettingsButtonPressed;
+            _QuitButton.OnClicked     -= OnQuitButtonPressed;
 
             HideUser();
         }
