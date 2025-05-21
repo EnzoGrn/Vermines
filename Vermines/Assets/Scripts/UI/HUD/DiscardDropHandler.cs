@@ -11,29 +11,15 @@ namespace Vermines.UI.Card
         private void Awake()
         {
             // Initialize any necessary components or variables here
-            GameEvents.OnTurnChanged.AddListener(SetupListeners);
+            GameEvents.OnCardDiscardedRefused.AddListener(OnDiscardRefused);
             slot = GetComponent<CardSlotBase>();
         }
 
         private void OnDestroy()
         {
             // Clean up event listeners to avoid memory leaks
-            GameEvents.OnTurnChanged.RemoveListener(SetupListeners);
-        }
-
-        private void SetupListeners(int i)
-        {
-            switch (GameManager.Instance.IsMyTurn())
-            {
-                case true:
-                    GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
-                    GameEvents.OnCardDiscardedRefused.AddListener(OnDiscardRefused);
-                    break;
-                case false:
-                    GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
-                    GameEvents.OnCardDiscardedRefused.RemoveListener(OnDiscardRefused);
-                    break;
-            }
+            GameEvents.OnCardDiscardedRefused.RemoveListener(OnDiscardRefused);
+            GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
         }
 
         public override void OnDrop(PointerEventData eventData)
@@ -59,6 +45,7 @@ namespace Vermines.UI.Card
 
             if (slot.CanAcceptCard(card))
             {
+                GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
                 GameEvents.OnCardDiscardedRequested.Invoke(card);
                 drag.gameObject.SetActive(false);
             }
@@ -75,6 +62,7 @@ namespace Vermines.UI.Card
             Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} has been discarded.");
             slot.ResetSlot();
             slot.SetCard(card);
+            GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
         }
 
         private void OnDiscardRefused(ICard card)
@@ -90,6 +78,7 @@ namespace Vermines.UI.Card
                     drag.ReturnToOriginalPosition();
                 }
             }
+            GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
         }
     }
 }

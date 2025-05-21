@@ -60,7 +60,7 @@ namespace Vermines.Gameplay.Phases {
             }
             else if (playedCards.Count == 0)
             {
-                OnPhaseEnding(_CurrentPlayer, false);
+                OnPhaseEnding(_CurrentPlayer, true);
             }
         }
 

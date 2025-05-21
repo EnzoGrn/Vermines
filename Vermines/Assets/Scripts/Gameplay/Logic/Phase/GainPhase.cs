@@ -45,7 +45,6 @@ namespace Vermines.Gameplay.Phases {
 
             GameEvents.OnPlayerUpdated.Invoke(playerData);
 
-            Debug.Log("Current player is " + _CurrentPlayer + " and Local player is " + PlayerController.Local.PlayerRef);
             if (_CurrentPlayer == PlayerController.Local.PlayerRef)
             {
                 GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
@@ -78,9 +77,6 @@ namespace Vermines.Gameplay.Phases {
                 foreach (AEffect effect in card.Data.Effects) {
                     if (effect.Type == EffectType.Play) {
                         effect.Play(_CurrentPlayer);
-
-                        GameDataStorage.Instance.PlayerData.TryGet(_CurrentPlayer, out PlayerData playerData);
-                        TurnManager.Instance.UpdatePlayer(playerData);
 
                         Debug.Log($"[Client]: Card {card.ID} is {card.Data.Name}, effect played");
                     }

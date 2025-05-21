@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.UI.Card;
@@ -18,16 +18,16 @@ public class ForceDiscardContext : IUIContext
     public void Enter()
     {
         Debug.Log($"[ForceDiscardContext] Entering discard context");
-        if (TableUI.Instance != null)
-            TableUI.Instance.SetOnlyDiscardInteractable(true);
+        //if (TableUI.Instance != null)
+        //    TableUI.Instance.SetOnlyDiscardInteractable(true);
         GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
     }
 
     public void Exit()
     {
         Debug.Log($"[ForceDiscardContext] Exiting discard context");
-        if (TableUI.Instance != null)
-            TableUI.Instance.SetOnlyDiscardInteractable(false);
+        //if (TableUI.Instance != null)
+        //    TableUI.Instance.SetOnlyDiscardInteractable(false);
         GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
     }
 

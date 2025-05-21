@@ -14,6 +14,8 @@ namespace Vermines.UI.Card
         private void Awake()
         {
             slot = GetComponent<CardSlotBase>();
+
+            GameEvents.OnCardPlayedRefused.AddListener(OnPlayRefused);
         }
 
         public virtual void OnDrop(PointerEventData eventData)
@@ -38,8 +40,6 @@ namespace Vermines.UI.Card
             if (slot.CanAcceptCard(card))
             {
                 GameEvents.OnCardPlayed.AddListener(OnCardPlayed);
-                GameEvents.OnCardPlayedRefused.AddListener(OnPlayRefused);
-
                 GameEvents.OnCardPlayedRequested.Invoke(card);
                 drag.gameObject.SetActive(false);
             }
@@ -67,7 +67,6 @@ namespace Vermines.UI.Card
                 slot.Init(card, true, new TableCardClickHandler(slot.GetIndex()));
             }
             GameEvents.OnCardPlayed.RemoveListener(OnCardPlayed);
-            GameEvents.OnCardPlayedRefused.RemoveListener(OnPlayRefused);
         }
 
         private void OnPlayRefused(ICard card)
@@ -84,7 +83,6 @@ namespace Vermines.UI.Card
                 }
             }
             GameEvents.OnCardPlayed.RemoveListener(OnCardPlayed);
-            GameEvents.OnCardPlayedRefused.RemoveListener(OnPlayRefused);
         }
     }
 }

@@ -53,6 +53,7 @@ namespace Vermines.UI.Shop
             base.Show(screen);
 
             _popup.gameObject.SetActive(false);
+            GameEvents.OnShopUpdated.AddListener(HandleShopUpdate);
         }
 
         /// <summary>
@@ -62,6 +63,7 @@ namespace Vermines.UI.Shop
         public override void Hide(GameplayUIScreen screen)
         {
             base.Hide(screen);
+            GameEvents.OnShopUpdated.RemoveListener(HandleShopUpdate);
         }
 
         #endregion
@@ -152,16 +154,6 @@ namespace Vermines.UI.Shop
             Vector3 scale = image.transform.localScale;
             scale.x = Mathf.Abs(scale.x) * (flip ? -1 : 1);
             image.transform.localScale = scale;
-        }
-
-        protected void OnEnable()
-        {
-            GameEvents.OnShopUpdated.AddListener(HandleShopUpdate);
-        }
-
-        private void OnDisable()
-        {
-            GameEvents.OnShopUpdated.RemoveListener(HandleShopUpdate);
         }
 
         private void HandleShopUpdate(ShopType type, List<Vermines.UI.Screen.ShopCardEntry> entries)

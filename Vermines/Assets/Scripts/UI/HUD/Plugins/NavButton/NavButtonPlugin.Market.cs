@@ -15,6 +15,7 @@
         /// </summary>
         protected virtual void OnOpenMarket()
         {
+            CamManager.Instance.GoOnMarketLocation();
             _ParentScreen.Controller.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Market);
         }
 

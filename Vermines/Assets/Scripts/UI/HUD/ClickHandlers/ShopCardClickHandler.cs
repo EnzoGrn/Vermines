@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.ShopSystem.Enumerations;
-using Vermines.UI.Shop;
+using Vermines.UI;
 
 public class ShopCardClickHandler : ICardClickHandler
 {
@@ -24,16 +24,25 @@ public class ShopCardClickHandler : ICardClickHandler
 
         if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
         {
-            var ctx = UIContextManager.Instance.GetContext<ReplaceEffectContext>();
-            ctx.OnShopCardClicked(_shopType, _slotId);
-            return;
+            _popup.Setup(card, (c) =>
+            {
+                Debug.Log($"[ShopCardClickHandler] Setup replace popup for {card.Data.Name}");
+                GameEvents.OnCardClickedInShopWithSlotIndex.Invoke(_shopType, _slotId);
+                GameplayUIController controller = GameObject.FindAnyObjectByType<GameplayUIController>();
+                if (controller != null)
+                {
+                    controller.ShowLast();
+                }
+            }, isReplace: true);
         }
-
-        _popup.Setup(card, (c) =>
+        else
         {
-            Debug.Log($"[ShopCardClickHandler] Setup popup for {card.Data.Name}");
-            GameEvents.InvokeOnCardPurchaseRequested(_shopType, _slotId);
-        }, isReplace: false);
+            _popup.Setup(card, (c) =>
+            {
+                Debug.Log($"[ShopCardClickHandler] Setup popup for {card.Data.Name}");
+                GameEvents.InvokeOnCardPurchaseRequested(_shopType, _slotId);
+            }, isReplace: false);
+        }
 
         _popup.gameObject.SetActive(true);
     }

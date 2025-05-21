@@ -78,7 +78,6 @@ namespace Vermines.UI
             {
                 // Display the first screen by default
                 _Screens[0].Show();
-                _ActiveScreen = _Screens[0];
             }
         }
 
@@ -123,6 +122,9 @@ namespace Vermines.UI
             if (_ScreenLookup.TryGetValue(typeof(S), out var result))
             {
                 _LastScreen = last;
+
+                // Debug last screen type and current screen type
+                Debug.Log($"Last screen type: {_LastScreen?.GetType().Name}, Current screen type: {result.GetType().Name}");
 
                 if (!result.IsModal && _ActiveScreen != result && _ActiveScreen)
                     _ActiveScreen.Hide();
@@ -175,13 +177,22 @@ namespace Vermines.UI
         {
             if (_LastScreen == null)
             {
-                Show<GameplayUIMain>();
+                //Show<GameplayUIMain>();
             }
             else
             {
                 var lastScreenType = _LastScreen.GetType();
 
                 Show(_ScreenLookup[lastScreenType]);
+            }
+        }
+
+        public virtual void Hide()
+        {
+            if (_ActiveScreen != null)
+            {
+                _ActiveScreen.Hide();
+                _ActiveScreen = null;
             }
         }
 

@@ -69,8 +69,6 @@ namespace Vermines.UI.Card
 
         private void OnCardDiscarded(ICard card)
         {
-            // Handle the card discard event here if needed
-            Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} has been discarded.");
             GameObject go = HandManager.Instance.GetCardDisplayGO(card);
             if (go != null)
             {

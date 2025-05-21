@@ -130,9 +130,7 @@ namespace Vermines.UI.Screen
                 }
             }
             else
-            {
                 Debug.LogWarningFormat(gameObject, "[{0}] Warning: {1}", nameof(GameplayUIShop), "SetParam called but no config found for {0}.");
-            }
 
             ShowUser();
         }
@@ -146,7 +144,8 @@ namespace Vermines.UI.Screen
             base.Hide();
 
             HideUser();
-            //GameEvents.OnCardPurchased.RemoveListener(OnCardPurchased);
+            Debug.LogFormat(gameObject, "[{0}] {1}", nameof(GameplayUIShop), "Hide called.");
+            GameEvents.OnCardPurchased.RemoveListener(OnCardPurchased);
         }
 
         #endregion
@@ -235,6 +234,7 @@ namespace Vermines.UI.Screen
         {
             UIContextManager.Instance.PopContextOfType<ShopConfirmPopup>();
             Hide();
+            CamManager.Instance.GoOnNoneLocation();
         }
 
         #endregion

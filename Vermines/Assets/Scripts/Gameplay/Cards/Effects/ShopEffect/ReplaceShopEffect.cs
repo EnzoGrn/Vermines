@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -59,10 +59,10 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             Debug.Log("[ReplaceEffect] Replacing cards in shops:");
             foreach (var shopSlot in dictShopSlot)
+            {
                 Debug.Log($"[ReplaceEffect] Replacing {shopSlot.Key} at slot {shopSlot.Value}");
-            UIContextManager.Instance.PopContext();
-            foreach (var shopSlot in dictShopSlot)
                 PlayerController.Local.OnShopReplaceCard(shopSlot.Key, shopSlot.Value);
+            }
         }
 
         public override List<(string, Sprite)> Draw()

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Splines;
 using Unity.Cinemachine;
 using System.Collections.Generic;
@@ -6,6 +6,8 @@ using OMGG.DesignPattern;
 using UnityEngine.Events;
 using Vermines.HUD;
 using Vermines.UI;
+using Vermines.ShopSystem.Enumerations;
+using Vermines.UI.Screen;
 
 public class CamManager : MonoBehaviourSingleton<CamManager>
 {
@@ -159,11 +161,23 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
 
         if ((CamSplineType)_SplineID ==  CamSplineType.MainViewToCourtyard || (CamSplineType)_SplineID == CamSplineType.MarketToCourtyard)
         {
-            UIManager.Instance.OpenShopCourtyard();
+            GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+            GameplayUIScreen lastScreen = null;
+            if (gameplayUIController != null)
+            {
+                gameplayUIController.GetLastScreen(out lastScreen);
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Courtyard, lastScreen);
+            }
         }
         else if ((CamSplineType)_SplineID == CamSplineType.MainViewToMarket || (CamSplineType)_SplineID == CamSplineType.CourtyardToMarket)
         {
-            UIManager.Instance.OpenShopMarket();
+            GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+            GameplayUIScreen lastScreen = null;
+            if (gameplayUIController != null)
+            {
+                gameplayUIController.GetLastScreen(out lastScreen);
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Market, lastScreen);
+            }
         }
     }
 

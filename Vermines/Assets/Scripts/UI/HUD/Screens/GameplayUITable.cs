@@ -3,6 +3,7 @@ using OMGG.Menu.Screen;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Localization;
+using Vermines.CardSystem.Data.Effect;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Gameplay.Phases;
@@ -10,6 +11,7 @@ using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.UI.Card;
 using Vermines.UI.GameTable;
 using Vermines.UI.Popup;
+using Vermines.Player;
 
 namespace Vermines.UI.Screen
 {
@@ -333,6 +335,7 @@ namespace Vermines.UI.Screen
 
         public void OnCardClicked(ICard card)
         {
+            if (card == null || GameManager.Instance.IsMyTurn() == false) return;
             if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice)
             {
                 LocalizedString title = new LocalizedString("PopupTable", "sacrifice.title");
@@ -351,18 +354,26 @@ namespace Vermines.UI.Screen
             }
             if (PhaseManager.Instance.CurrentPhase == PhaseType.Gain)
             {
-                Debug.Log($"[TableCardClickHandler] Card clicked: {card.Data.Name}");
-                LocalizedString title = new LocalizedString("PopupTable", "action.title");
-                LocalizedString message = new LocalizedString("PopupTable", "action.message");
-                var popup = _CloseView.GetComponent<PopupConfirm>();
-                popup.Setup(
-                    title.GetLocalizedString(),
-                    message.GetLocalizedString(),
-                    () => {  },
-                    () => { Debug.Log("[TableCardClickHandler] Action cancelled."); }
-                );
-                popup.OnClosed += () => _CloseView.SetActive(false);
-                _CloseView.SetActive(true);
+                foreach (AEffect effect in card.Data.Effects)
+                {
+                    if (effect.Type != EffectType.Activate) return;
+
+                    Debug.Log($"[TableCardClickHandler] Card clicked: {card.Data.Name}");
+                    LocalizedString title = new LocalizedString("PopupTable", "action.title");
+                    LocalizedString message = new LocalizedString("PopupTable", "action.message");
+                    var popup = _CloseView.GetComponent<PopupConfirm>();
+                    popup.Setup(
+                        title.GetLocalizedString(),
+                        message.GetLocalizedString(),
+                        () =>
+                        {
+                            effect.Play(PlayerController.Local.PlayerRef);
+                        },
+                        () => { Debug.Log("[TableCardClickHandler] Action cancelled."); }
+                    );
+                    popup.OnClosed += () => _CloseView.SetActive(false);
+                    _CloseView.SetActive(true);
+                }
             }
         }
 

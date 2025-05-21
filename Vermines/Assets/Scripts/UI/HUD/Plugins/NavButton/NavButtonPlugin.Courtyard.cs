@@ -2,6 +2,8 @@
 {
     using Vermines.UI.Screen;
     using Vermines.ShopSystem.Enumerations;
+    using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// Manages the navigation button plugin.
@@ -15,7 +17,13 @@
         /// </summary>
         protected virtual void OnOpenCourtyard()
         {
-            _ParentScreen.Controller.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Courtyard);
+            GameplayUIController gameplayUIController = _ParentScreen.Controller;
+            if (gameplayUIController != null)
+            {
+                gameplayUIController.Hide();
+            }
+
+            CamManager.Instance.GoOnCourtyardLocation();
         }
 
         #endregion

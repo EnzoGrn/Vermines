@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -69,6 +69,7 @@ public class HoverPhaseLocation : MonoBehaviour
     private void OnMouseDown()
     {
         Debug.Log("OnMouseDown Detected");
+        return; // TODO: remove this
         if (!_CanHoverLocations || !_CanClickLocations)
             return;
         

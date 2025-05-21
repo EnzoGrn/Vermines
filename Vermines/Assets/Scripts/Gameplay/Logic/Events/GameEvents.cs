@@ -35,6 +35,7 @@ public static class GameEvents
     public static UnityEvent<ICard> OnCardSacrified = new();
 
     public static UnityEvent<ICard> OnCardClicked = new();
+    public static UnityEvent<ShopType, int> OnCardClickedInShopWithSlotIndex = new();
 
     public static UnityEvent<PhaseType> OnPhaseChanged = new();
     public static UnityEvent<int> OnTurnChanged = new();
