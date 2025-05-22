@@ -1,11 +1,11 @@
-using Fusion;
-using OMGG.Menu.Screen;
 using System.Collections.Generic;
+using OMGG.Menu.Screen;
 using UnityEngine;
-using UnityEngine.Audio;
-using Vermines.Menu.Tools;
+using Fusion;
 
 namespace Vermines.Menu.Screen {
+
+    using Vermines.Menu.Tools;
 
     public partial class VMUI_LaunchLoading : MenuUIScreen {
 

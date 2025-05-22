@@ -116,19 +116,45 @@ namespace OMGG.Menu.Screen {
                 plugin.Init(this);
         }
 
-        /// <summary>
-        /// The screen hide method.
-        /// </summary>
-        public virtual void Hide()
+        public virtual IEnumerator HideCoroutine()
         {
             if (_Animator) {
                 if (_HideCoroutine != null)
                     StopCoroutine(_HideCoroutine);
                 _HideCoroutine = StartCoroutine(HideAnimCoroutine());
 
-                return;
+                yield return _HideCoroutine;
+
+                _HideCoroutine = null;
+
+                yield break;
             }
 
+            Hide();
+
+            yield break;
+        }
+
+        public virtual IEnumerator ShowCoroutine()
+        {
+            if (_HideCoroutine != null) {
+                StopCoroutine(_HideCoroutine);
+
+                if (_Animator.gameObject.activeInHierarchy && _Animator.HasState(0, ShowAnimHash))
+                    _Animator.Play(ShowAnimHash, 0, 0);
+                yield return _Animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+            }
+
+            Show();
+
+            yield break;
+        }
+
+        /// <summary>
+        /// The screen hide method.
+        /// </summary>
+        public virtual void Hide()
+        {
             IsShowing = false;
 
             foreach (MenuScreenPlugin plugin in _Plugins)
@@ -141,13 +167,6 @@ namespace OMGG.Menu.Screen {
         /// </summary>
         public virtual void Show()
         {
-            if (_HideCoroutine != null) {
-                StopCoroutine(_HideCoroutine);
-
-                if (_Animator.gameObject.activeInHierarchy && _Animator.HasState(0, ShowAnimHash))
-                    _Animator.Play(ShowAnimHash, 0, 0);
-            }
-
             gameObject.SetActive(true);
 
             IsShowing = true;

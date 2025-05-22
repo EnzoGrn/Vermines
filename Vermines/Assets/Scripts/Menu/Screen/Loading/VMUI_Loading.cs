@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using OMGG.Menu.Connection;
 using OMGG.Menu.Screen;
 using UnityEngine;
-using Fusion;
 
 namespace Vermines.Menu.Screen {
 

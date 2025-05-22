@@ -12,6 +12,7 @@ namespace OMGG.Menu.Controller {
     using OMGG.Menu.Configuration;
     using OMGG.Menu.Connection;
     using OMGG.Menu.Screen;
+    using System.Collections;
 
     public class MenuUIController : FusionMonoBehaviour {
 
@@ -127,12 +128,7 @@ namespace OMGG.Menu.Controller {
             if (_ScreenLookup.TryGetValue(typeof(S), out var result)) {
                 _LastScreen = last;
 
-                if (!result.IsModal && _ActiveScreen != result && _ActiveScreen)
-                    _ActiveScreen.Hide();
-                if (_ActiveScreen != result)
-                    result.Show();
-                if (!result.IsModal)
-                    _ActiveScreen = result;
+                StartCoroutine(ShowTransition(result));
             } else
                 Debug.LogError($"Show() - Screen type '{typeof(S).Name}' not found.");
         }
@@ -144,15 +140,22 @@ namespace OMGG.Menu.Controller {
         public virtual void Show(MenuUIScreen screenToShow)
         {
             if (_ScreenLookup.TryGetValue(screenToShow.GetType(), out var result)) {
-                if (!result.IsModal && _ActiveScreen != result && _ActiveScreen)
-                    _ActiveScreen.Hide();
-                if (_ActiveScreen != result)
-                    result.Show();
-                if (!result.IsModal)
-                    _ActiveScreen = result;
                 _LastScreen = null;
+
+                StartCoroutine(ShowTransition(result));
             } else
                 Debug.LogError($"Show() - Screen type '{screenToShow.GetType().Name}' not found.");
+        }
+
+        private IEnumerator ShowTransition(MenuUIScreen nextScreen)
+        {
+            if (!nextScreen.IsModal && _ActiveScreen != null && _ActiveScreen != nextScreen)
+                yield return _ActiveScreen.HideCoroutine();
+            if (_ActiveScreen != nextScreen)
+                yield return nextScreen.ShowCoroutine();
+            if (!nextScreen.IsModal)
+                _ActiveScreen = nextScreen;
+            yield break;
         }
 
         /// <summary>
