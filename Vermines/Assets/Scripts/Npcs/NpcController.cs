@@ -1,9 +1,6 @@
-using log4net;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using UnityEngine.AI;
-using static Codice.Client.Common.WebApi.WebApiEndpoints;
 
 public class NpcController : MonoBehaviour
 {
@@ -13,6 +10,7 @@ public class NpcController : MonoBehaviour
     [SerializeField] private float maxIdleTime = 15f;
     [SerializeField] private Animator _animator;
     [SerializeField] private float _arrivalThresholdInterruption = 2f; // Threshold for arrival check
+    [SerializeField] private bool _reversed;
     #endregion
 
     #region Private Fields
@@ -30,15 +28,19 @@ public class NpcController : MonoBehaviour
 
     void Start()
     {
+        if (_reversed)
+        {
+            // Reverse using scale x
+            Vector3 scale = transform.localScale;
+            scale.x *= -1;
+            transform.localScale = scale;
+        }
+
         // Get the RoutineManager component
         _routineManager = FindFirstObjectByType<RoutineManager>();
         _startPositon = transform.position;
 
         _runningCoroutine = StartCoroutine(StartNpcRoutine());
-    }
-
-    void Update()
-    {
     }
 
     /// <summary>
@@ -85,6 +87,10 @@ public class NpcController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Interrupt the current routine and move the NPC to a specified position.
+    /// </summary>
+    /// <param name="position"></param>
     public void Interruption(Vector3 position)
     {
         _interruptPos = position;
@@ -112,6 +118,9 @@ public class NpcController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Resume the NPC routine after an interruption.
+    /// </summary>
     public void ResumeCoroutine()
     {
         // Resume the routine
@@ -123,7 +132,11 @@ public class NpcController : MonoBehaviour
     }
 
     #region Coroutines
-
+    /// <summary>
+    /// Wait until the NPC arrives at the destination.
+    /// </summary>
+    /// <param name="restartRoutine"></param>
+    /// <returns></returns>
     private IEnumerator WaitUntilArrived(bool restartRoutine)
     {
         // Wait for the path to be calculated

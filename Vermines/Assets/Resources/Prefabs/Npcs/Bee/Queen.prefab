@@ -86,6 +86,8 @@ MonoBehaviour:
   minIdleTime: 5
   maxIdleTime: 15
   _animator: {fileID: 1637794398024865442}
+  _arrivalThresholdInterruption: 2
+  _reversed: 1
   IsRoutineRunning: 0
 --- !u!1 &2481512481956251244
 GameObject:
