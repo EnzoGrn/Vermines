@@ -62,6 +62,15 @@ MonoBehaviour:
     m_Localized: It is not your time yet.
     m_Metadata:
       m_Items: []
+  - m_Id: 1058564054671360
+    m_Localized: Done
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1061831111303168
+    m_Localized: Let me know where I'll be working. Only one card can be changed
+      in each of them.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

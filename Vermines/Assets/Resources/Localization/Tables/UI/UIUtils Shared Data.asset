@@ -59,6 +59,14 @@ MonoBehaviour:
     m_Key: ui.button.wait_your_turn
     m_Metadata:
       m_Items: []
+  - m_Id: 1058564054671360
+    m_Key: ui.button.done
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1061831111303168
+    m_Key: bubble.replace
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -323,17 +323,6 @@ namespace Vermines.UI.Screen
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
-            if (UIContextManager.Instance.IsInContext<ForceDiscardContext>())
-            {
-                Debug.LogFormat(
-                    gameObject, 
-                    "[{0}] {1}", 
-                    nameof(GameplayUITable),
-                    "Back button pressed while in ForceDiscardContext. Ignoring."
-                    );
-                return;
-            }
-
             Controller.Hide();
         }
 

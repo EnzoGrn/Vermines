@@ -96,9 +96,6 @@ namespace Vermines.UI
             {
                 _LastScreen = last;
 
-                Debug.Log($"Last screen type: {_LastScreen?.GetType().Name}, Current screen type: {result.GetType().Name}");
-                Debug.Log($"Active screen type: {_ActiveScreen?.GetType().Name}");
-
                 if (!result.IsModal && _ActiveScreen != result && _ActiveScreen)
                     _ActiveScreen.Hide();
                 if (_ActiveScreen != result)
@@ -193,6 +190,11 @@ namespace Vermines.UI
             {
                 _ActiveScreen.Hide();
                 _ActiveScreen = null;
+            }
+            if (_LastScreen != null)
+            {
+                _LastScreen.Show();
+                _ActiveScreen = _LastScreen;
             }
         }
 

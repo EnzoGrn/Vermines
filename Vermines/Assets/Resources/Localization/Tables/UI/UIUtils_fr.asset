@@ -62,6 +62,15 @@ MonoBehaviour:
     m_Localized: "Ce n\u2019est pas encore votre moment."
     m_Metadata:
       m_Items: []
+  - m_Id: 1058564054671360
+    m_Localized: Valider
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1061831111303168
+    m_Localized: "Indiquez-moi les lieux o\xF9 je devrai intervenir. Une seule carte
+      pourra \xEAtre chang\xE9e dans chacun d\u2019eux."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
