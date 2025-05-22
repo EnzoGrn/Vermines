@@ -14,6 +14,7 @@ public class NpcController : MonoBehaviour
     #endregion
 
     #region Private Fields
+    private bool _isFacingToTheRight = true; // Default facing direction
     private Vector3 _startPositon;
     private Coroutine _runningCoroutine;
     private RoutineManager _routineManager;
@@ -42,6 +43,57 @@ public class NpcController : MonoBehaviour
 
         _runningCoroutine = StartCoroutine(StartNpcRoutine());
     }
+
+    private void Update()
+    {
+        if (!_agent.isStopped)
+        {
+            // Update Npc Facing direction
+            UpdateNpcFacingDirection();
+        }
+    }
+
+    private void UpdateNpcFacingDirection()
+    {
+        Vector3 toDestination = (_currentSlot.SlotTransform.position - transform.position).normalized;
+        Vector3 toPlayer = (Camera.main.transform.position - transform.position).normalized;
+
+        // Only care about XZ axis
+        toDestination.y = 0;
+        toPlayer.y = 0;
+
+        // Produit vectoriel pour savoir de quel côté est la destination par rapport au joueur
+        float cross = Vector3.Cross(toPlayer, toDestination).y;
+
+        // If cross > 0, destination is on the left from player POV
+        // If cross < 0, destination is on the right from player POV
+        if (_isFacingToTheRight && cross > 0)
+        {
+            // Flip to the left
+            Vector3 scale = transform.localScale;
+            scale.x *= -1;
+            transform.localScale = scale;
+            _isFacingToTheRight = !_isFacingToTheRight;
+        }
+        else if (!_isFacingToTheRight && cross < 0)
+        {
+            // Flip to the right
+            Vector3 scale = transform.localScale;
+            scale.x *= -1;
+            transform.localScale = scale;
+            _isFacingToTheRight = !_isFacingToTheRight;
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(Camera.main.transform.position, _currentSlot.SlotTransform.position);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position, Camera.main.transform.position);
+    }
+
 
     /// <summary>
     /// Move the NPC to a specified position.
