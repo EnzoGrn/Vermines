@@ -1,7 +1,9 @@
 using log4net;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using UnityEngine.AI;
+using static Codice.Client.Common.WebApi.WebApiEndpoints;
 
 public class NpcController : MonoBehaviour
 {
@@ -10,7 +12,7 @@ public class NpcController : MonoBehaviour
     [SerializeField] private float minIdleTime = 5f;
     [SerializeField] private float maxIdleTime = 15f;
     [SerializeField] private Animator _animator;
-    [SerializeField] private float _arrivalThreshold = 2f; // Threshold for arrival check
+    [SerializeField] private float _arrivalThresholdInterruption = 2f; // Threshold for arrival check
     #endregion
 
     #region Private Fields
@@ -48,6 +50,7 @@ public class NpcController : MonoBehaviour
         if (_agent != null)
         {
             _agent.SetDestination(posittion);
+            _agent.isStopped = false;
             _animator.SetBool("IsWalking", true);
         }
     }
@@ -99,12 +102,13 @@ public class NpcController : MonoBehaviour
         {
             IsRoutineRunning = false;
             StopCoroutine(_runningCoroutine);
+            _agent.isStopped = true; // Stop the agent
             _agent.ResetPath();
             MoveTo(_interruptPos);
 
             Debug.Log($"[OnInterruptionDone]: {gameObject.name} has been interrupted");
 
-            StartCoroutine(WaitUntilArrived());
+            StartCoroutine(WaitUntilArrived(false));
         }
     }
 
@@ -114,23 +118,41 @@ public class NpcController : MonoBehaviour
         if (!IsRoutineRunning)
         {
             TryMoveToSlot();
-            _runningCoroutine = StartCoroutine(StartNpcRoutine());
+            _runningCoroutine = StartCoroutine(WaitUntilArrived(true));
         }
     }
 
     #region Coroutines
 
-    private IEnumerator WaitUntilArrived()
+    private IEnumerator WaitUntilArrived(bool restartRoutine)
     {
-        // Wait until the NPC reaches the destination
-        while (_agent.pathPending && _agent.remainingDistance > Mathf.Max(_agent.stoppingDistance, _arrivalThreshold))
+        // Wait for the path to be calculated
+        while (_agent.pathPending)
         {
-            Debug.Log($"[StartNpcRoutine]: {gameObject.name}, reamainingDistance {_agent.remainingDistance}, stopping distance {_agent.stoppingDistance}, pending? {_agent.pathPending}");
-            if (!IsRoutineRunning) yield break; // Interrupt the coroutine if the routine is stopped
             yield return null;
         }
-        Debug.Log($"[OnInterruptionDone]: {gameObject.name} arrived (WaitUntilArrived)");
+
+        Debug.Log($"[WaitUntilArrived]: {gameObject.name} pathPending");
+
+        // Wait for the agent to reach the destination
+
+        while (_agent.remainingDistance > ((restartRoutine) ? 0f : _arrivalThresholdInterruption))
+        {
+            yield return null;
+        }
+
+        // Agent reached his destination
+        _agent.isStopped = true;
+        _agent.ResetPath();
         _animator.SetBool("IsWalking", false);
+
+        Debug.Log($"[WaitUntilArrived]: {gameObject.name} arrived");
+
+        if (restartRoutine)
+        {
+            Debug.Log("Restart Coroutine");
+            StartCoroutine(StartNpcRoutine());
+        }
     }
 
     /// <summary>
@@ -139,16 +161,6 @@ public class NpcController : MonoBehaviour
     /// <returns></returns>
     private IEnumerator StartNpcRoutine()
     {
-        // Wait until the NPC reaches his destination (in case we interrupt the routine and resume it)
-        while (_agent.pathPending || _agent.remainingDistance > _agent.stoppingDistance)
-        {
-            if (!IsRoutineRunning) yield break; // Interrupt the coroutine if the routine is stopped
-            yield return null;
-        }
-        _animator.SetBool("IsWalking", false);
-
-        //Debug.Log($"Starting NPC routine: {gameObject.name}");
-
         // Start the routine
         IsRoutineRunning = true;
         while (IsRoutineRunning)
@@ -156,6 +168,7 @@ public class NpcController : MonoBehaviour
             //yield return new WaitForSeconds(Random.Range(minIdleTime, maxIdleTime));
             float waitTime = Random.Range(minIdleTime, maxIdleTime);
             float timer = 0f;
+            Debug.Log($"[StartNpcRoutine]: {gameObject.name} is waiting for {waitTime} seconds");
             while (timer < waitTime)
             {
                 if (!IsRoutineRunning) yield break; // check pendant l'attente
@@ -175,6 +188,7 @@ public class NpcController : MonoBehaviour
             // Wait until the NPC reaches the destination
             while (_agent.pathPending || _agent.remainingDistance > _agent.stoppingDistance)
             {
+                Debug.Log("Processing in routine !");
                 if (!IsRoutineRunning) yield break; // Interrupt the coroutine if the routine is stopped
                 yield return null;
             }
