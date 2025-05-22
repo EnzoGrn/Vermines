@@ -32,7 +32,6 @@ namespace Vermines.Gameplay.Phases {
 
         public SacrificePhase()
         {
-            GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
         }
 
         #region Override Methods
@@ -48,6 +47,8 @@ namespace Vermines.Gameplay.Phases {
             Reset();
 
             List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
+
+            GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
 
             if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
             {
