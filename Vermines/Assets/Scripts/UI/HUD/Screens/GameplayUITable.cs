@@ -305,12 +305,10 @@ namespace Vermines.UI.Screen
             {
                 case PhaseType.Sacrifice:
                     if (GameManager.Instance.IsMyTurn() == false) return;
-                    SetSlotsInteractable(partisanSlots, true);
                     SetDiscardZoneInteractable(false);
                     break;
 
                 default:
-                    SetSlotsInteractable(partisanSlots, true);
                     SetDiscardZoneInteractable(true);
                     break;
             }
@@ -327,16 +325,23 @@ namespace Vermines.UI.Screen
         {
             if (UIContextManager.Instance.IsInContext<ForceDiscardContext>())
             {
-                Debug.Log("[GameTableManager] Cannot close UI during a forced discard.");
+                Debug.LogFormat(
+                    gameObject, 
+                    "[{0}] {1}", 
+                    nameof(GameplayUITable),
+                    "Back button pressed while in ForceDiscardContext. Ignoring."
+                    );
                 return;
             }
-            Hide();
+
+            Controller.Hide();
         }
 
         public void OnCardClicked(ICard card)
         {
             if (card == null || GameManager.Instance.IsMyTurn() == false) return;
-            if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice)
+
+            if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice || UIContextManager.Instance.IsInContext<SacrificeContext>())
             {
                 LocalizedString title = new LocalizedString("PopupTable", "sacrifice.title");
                 LocalizedString message = new LocalizedString("PopupTable", "sacrifice.message");

@@ -31,6 +31,11 @@ public class ReplaceEffectContext : IUIContext
         _onDone?.Invoke(dictShopSlot);
     }
 
+    public string GetName()
+    {
+        return "Replace Effect";
+    }
+
     private void OnDone(Dictionary<ShopType, int> result)
     {
         dictShopSlot = result;

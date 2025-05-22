@@ -131,4 +131,9 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
         Debug.Log($"[ShopConfirmPopup] Exiting shop confirm popup context");
         gameObject.SetActive(false);
     }
+
+    public string GetName()
+    {
+        return "Shop Confirm Popup";
+    }
 }

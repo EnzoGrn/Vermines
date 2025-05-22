@@ -206,25 +206,30 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
             _GoOnSpecialLocation = (int)CamSplineType.None;
         }
 
-        if (!UIManager.Instance)
+        GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+        GameplayUIScreen lastScreen = null;
+
+        if (!gameplayUIController)
             return;
+
+        gameplayUIController.GetLastScreen(out lastScreen);
 
         switch ((CamSplineType)_SplineID)
         {
             case CamSplineType.MainViewToCourtyard:
-                UIManager.Instance.OpenShopCourtyard();
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Courtyard, lastScreen);
                 break;
             case CamSplineType.MarketToCourtyard:
-                UIManager.Instance.OpenShopCourtyard();
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Courtyard, lastScreen);
                 break;
             case CamSplineType.MainViewToMarket:
-                UIManager.Instance.OpenShopMarket();
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Market, lastScreen);
                 break;
             case CamSplineType.CourtyardToMarket:
-                UIManager.Instance.OpenShopMarket();
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Market, lastScreen);
                 break;
             case CamSplineType.MainViewToSacrifice:
-                UIManager.Instance.OpenTable();
+                gameplayUIController.Show<GameplayUITable>();
                 break;
         }
     }

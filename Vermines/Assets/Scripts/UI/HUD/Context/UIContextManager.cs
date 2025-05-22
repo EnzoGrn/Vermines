@@ -11,6 +11,11 @@ public class UIContextManager : MonoBehaviour
     /// </summary>
     public static UIContextManager Instance { get; private set; }
 
+    [SerializeField]
+    private TMPro.TMP_Text _currentContext;
+    [SerializeField]
+    private GameObject _contextBanner;
+
     protected Stack<IUIContext> _contextStack = new();
 
     /// <summary>
@@ -25,6 +30,11 @@ public class UIContextManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+
+        if (_contextBanner != null)
+        {
+            _contextBanner.SetActive(false);
         }
     }
 
@@ -57,6 +67,15 @@ public class UIContextManager : MonoBehaviour
     {
         Debug.LogFormat(gameObject, "[{0}] Pushing context: {1}", nameof(UIContextManager), context);
         _contextStack.Push(context);
+        if (_contextBanner != null)
+        {
+            _contextBanner.SetActive(true);
+            _currentContext.text = GetContextName(context);
+        }
+        else
+        {
+            Debug.LogWarning("Context banner is not set.");
+        }
         context.Enter();
     }
 
@@ -73,6 +92,16 @@ public class UIContextManager : MonoBehaviour
         var context = GetContext<T>() ?? new T();
         Debug.LogFormat(gameObject, "[{0}] Pushing context: {1}", nameof(UIContextManager), context);
         _contextStack.Push(context);
+
+        if (_contextBanner != null)
+        {
+            _contextBanner.SetActive(true);
+            _currentContext.text = GetContextName(context);
+        }
+        else
+        {
+            Debug.LogWarning("Context banner is not set.");
+        }
         context.Enter();
     }
 
@@ -86,6 +115,21 @@ public class UIContextManager : MonoBehaviour
             var context = _contextStack.Pop();
             Debug.LogFormat(gameObject, "[{0}] Popping context: {1}, remaining: {2}", nameof(UIContextManager), context, _contextStack.Count);
             context.Exit();
+            if (_contextStack.Count == 0)
+            {
+                if (_contextBanner != null)
+                {
+                    _contextBanner.SetActive(false);
+                }
+            }
+            else
+            {
+                var newContext = _contextStack.Peek();
+                if (_contextBanner != null)
+                {
+                    _currentContext.text = GetContextName(newContext);
+                }
+            }
         }
     }
 
@@ -98,6 +142,10 @@ public class UIContextManager : MonoBehaviour
         {
             var context = _contextStack.Pop();
             context.Exit();
+        }
+        if (_contextBanner != null)
+        {
+            _contextBanner.SetActive(false);
         }
     }
 
@@ -142,6 +190,16 @@ public class UIContextManager : MonoBehaviour
             _contextStack.Push(newStack.Pop());
         }
 
+        if (_contextBanner != null)
+        {
+            _contextBanner.SetActive(_contextStack.Count > 0);
+            if (_contextStack.Count > 0)
+            {
+                var newContext = _contextStack.Peek();
+                _currentContext.text = GetContextName(newContext);
+            }
+        }
+
         Debug.LogFormat(gameObject, "[{0}] Popped context of type {1}. Remaining contexts: {2}", nameof(UIContextManager), typeof(T).Name, _contextStack.Count);
     }
 
@@ -170,5 +228,10 @@ public class UIContextManager : MonoBehaviour
                 return typedContext;
         }
         return null;
+    }
+
+    private string GetContextName(IUIContext context)
+    {
+        return "Context: " + context.GetName();
     }
 }

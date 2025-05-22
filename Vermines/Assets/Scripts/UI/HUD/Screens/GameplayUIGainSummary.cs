@@ -135,7 +135,7 @@ namespace Vermines.UI.Screen
         /// </summary>
         protected virtual void OnCloseButtonPressed()
         {
-            Hide();
+            Controller.Hide();
         }
 
         #endregion

@@ -81,7 +81,6 @@ namespace Vermines.UI.Plugin
                 {
                     continue;
                 }
-                Debug.Log($"[UI]: Player {player} found in the PlayerData.");
 
                 _players[player.PlayerId] = playerData;
             }

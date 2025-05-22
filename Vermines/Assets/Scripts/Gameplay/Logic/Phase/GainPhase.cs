@@ -51,7 +51,6 @@ namespace Vermines.Gameplay.Phases {
                 if (gameplayUIController != null)
                 {
                     gameplayUIController.Show<GameplayUIGainSummary>();
-                    //UIContextManager.Instance.PushContext<SacrificeContext>();
                 }
             }
         }

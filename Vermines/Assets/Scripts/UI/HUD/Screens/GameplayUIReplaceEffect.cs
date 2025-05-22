@@ -145,7 +145,7 @@ namespace Vermines.UI.Screen
             onDoneCallback?.Invoke(shopReplacements);
             UIContextManager.Instance.PopContext();
             GameEvents.OnCardClickedInShopWithSlotIndex.RemoveListener(OnShopCardClicked);
-            Hide();
+            Controller.Hide();
         }
 
         public void OnShopCardClicked(ShopType shopType, int slotId)

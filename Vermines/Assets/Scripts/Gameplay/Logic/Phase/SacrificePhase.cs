@@ -55,7 +55,6 @@ namespace Vermines.Gameplay.Phases {
                 if (gameplayUIController != null)
                 {
                     gameplayUIController.Show<GameplayUITable>();
-                    //UIContextManager.Instance.PushContext<SacrificeContext>();
                 }
             }
             else if (playedCards.Count == 0)
@@ -67,6 +66,12 @@ namespace Vermines.Gameplay.Phases {
         public override void Reset()
         {
             _NumberOfCardSacrified = 0;
+        }
+
+        public override void OnPhaseEnding(PlayerRef player, bool logic = false)
+        {
+            base.OnPhaseEnding(player, logic);
+            GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
         }
 
         #endregion

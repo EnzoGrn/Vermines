@@ -1,5 +1,6 @@
-public interface IUIContext
+﻿public interface IUIContext
 {
     void Enter();
     void Exit();
+    string GetName();
 }

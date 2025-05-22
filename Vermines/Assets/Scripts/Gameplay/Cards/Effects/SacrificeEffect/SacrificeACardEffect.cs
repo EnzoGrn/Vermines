@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -64,16 +64,17 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (deck.PlayedCards.Count == 0) {
                 base.Play(player);
             } else if (player == PlayerController.Local.PlayerRef) {
-                // TODO: Force the player to be in the sacrifice view.
-                // TODO: Implement the observer pattern here to trigger the sacrifice event.
+                UIContextManager.Instance.PushContext<SacrificeContext>();
+                GameEvents.OnCardSacrificedRequested.AddListener(OnSacrificed);
             }
         }
 
         public void OnSacrificed(ICard card)
         {
-            // TODO: Remove the event observer
+            GameEvents.OnCardSacrificedRequested.RemoveListener(OnSacrificed);
+            UIContextManager.Instance.PopContext();
             PlayerController.Local.OnCardSacrified(card.ID);
-            PlayerController.Local.NetworkEventCardEffect(card.ID);
+            //PlayerController.Local.NetworkEventCardEffect(card.ID);
         }
 
         public override void NetworkEventFunction(PlayerRef player, string data)

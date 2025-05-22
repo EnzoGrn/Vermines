@@ -404,6 +404,12 @@ namespace Vermines.Player {
                 return;
             }
 
+            if (data == null)
+            {
+                Debug.LogError($"[SERVER]: Player {playerID} tried to called an network event for a card with no data.");
+                return;
+            }
+
             foreach (AEffect effect in card.Data.Effects)
                 effect.NetworkEventFunction(player, data);
         }

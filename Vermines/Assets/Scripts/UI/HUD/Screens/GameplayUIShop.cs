@@ -158,6 +158,7 @@ namespace Vermines.UI.Screen
         /// <param name="shopType">The type of shop to load.</param>
         public void SetParam(ShopType shopType)
         {
+            Debug.Log($"[GameplayUIShop] SetParam called with {shopType}.");
             _ShopType = shopType;
         }
 
@@ -233,7 +234,7 @@ namespace Vermines.UI.Screen
         public virtual void OnBackButtonPressed()
         {
             UIContextManager.Instance.PopContextOfType<ShopConfirmPopup>();
-            Hide();
+            Controller.Hide();
             CamManager.Instance.GoOnNoneLocation();
         }
 

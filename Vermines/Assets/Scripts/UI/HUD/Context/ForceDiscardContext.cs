@@ -31,6 +31,11 @@ public class ForceDiscardContext : IUIContext
         GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
     }
 
+    public string GetName()
+    {
+        return "Force Discard";
+    }
+
     private void OnCardDiscarded(ICard card)
     {
         if (_hasDiscarded) return;
