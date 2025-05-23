@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using UnityEngine.Splines;
 using UnityEngine.Events;
 using UnityEngine;
 using Unity.Cinemachine;
@@ -13,92 +11,63 @@ namespace Vermines.Menu  {
         [Header("Camera")]
 
         [SerializeField]
-        private CinemachineCamera _CinemachineCamera;
+        private CinemachineSplineDolly _SplineDolly;
 
-        [SerializeField]
-        private Camera _MainFixCamera;
+        [Header("Settings")]
 
-        [SerializeField]
-        private Camera _MainCamera;
+        public float Speed = 1f;
 
-        [SerializeField]
-        private List<GameObject> _LookAt;
-
-        [Header("Spline")]
-
-        [SerializeField]
-        private SplineContainer _SplineContainerRef;
-
-        [SerializeField]
-        private Animator _SplineCameraAnimator;
-
-        [SerializeField]
-        private CinemachineSplineDolly _CinemachineSplineDolly;
-
-        private bool _IsAnimated = false;
+        private bool _IsPlaying = false;
 
         #endregion
 
         #region Events
 
-        public UnityEvent OnCamLocationChanged = new();
-        public UnityEvent OnCamLocationIsChanging = new();
+        public UnityEvent OnSplineStart = new();
+        public UnityEvent OnSplineEnd   = new();
+        public UnityEvent OnSplineReset = new();
 
-        public void OnCameraSplineCompleted()
+        public void OnSplineStarted()
         {
-            _SplineCameraAnimator.enabled = false;
-            _IsAnimated                   = false;
+            if (_IsPlaying == true)
+                return;
+            _IsPlaying = true;
 
-            OnCamLocationChanged?.Invoke();
+            OnSplineStart?.Invoke();
         }
 
-        public void OnCameraSplineStart()
+        private void OnSplineEnded()
         {
-            OnCamLocationIsChanging?.Invoke();
+            if (_IsPlaying == false)
+                return;
+            _IsPlaying = false;
+
+            OnSplineEnd?.Invoke();
+        }
+
+        public void OnSplineReseted()
+        {
+            _IsPlaying                  = false;
+            _SplineDolly.CameraPosition = 0f;
+
+            OnSplineReset?.Invoke();
         }
 
         #endregion
 
         #region Methods
 
-        public void StartSplineCameraAnimation(int splineID)
+        void Update()
         {
-            _IsAnimated = true;
+            if (_IsPlaying) {
+                _SplineDolly.CameraPosition += Speed * Time.deltaTime;
 
-            _CinemachineCamera.Follow = _LookAt[splineID].transform;
-            _CinemachineSplineDolly.SplineSettings.Spline.Spline = _SplineContainerRef.Splines[splineID - 1];
-
-            ResetAnimation();
-        }
-
-        private void ResetAnimation(bool reversed = false)
-        {
-            if (_SplineCameraAnimator != null) {
-                _SplineCameraAnimator.gameObject.SetActive(true);
-
-                _SplineCameraAnimator.enabled = true;
-                _SplineCameraAnimator.SetBool("IsReversed", reversed);
-
-                if (!reversed) {
-                    _SplineCameraAnimator.Rebind();        // Resets the animator's state
-                    _SplineCameraAnimator.Play(0, -1, 0f); // Restart animation from the beginning
+                if (_SplineDolly.CameraPosition >= 1f) {
+                    _SplineDolly.CameraPosition = 1f;
+                    
+                    OnSplineEnded();
                 }
-            } else
-                Debug.LogWarning($"[MainMenuCamera]: SplineCameraAnimator is null");
-        }
-
-        public void GoOnTavern() // TODO:
-        {
-            if (_IsAnimated)
-                return;
-            StartSplineCameraAnimation(1);
-        }
-
-        public void GoOnNoneLocation() // TODO: 
-        {
-            if (_IsAnimated)
-                return;
-            StartSplineCameraAnimation(0);
+            }
         }
 
         #endregion

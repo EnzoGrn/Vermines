@@ -9,8 +9,6 @@ namespace Vermines.Menu.Screen {
 
     using Text       = TMPro.TMP_Text;
     using InputField = TMPro.TMP_InputField;
-    using Codice.CM.Common;
-    using System.Security.Cryptography;
 
     /// <summary>
     /// Vermines Main Menu UI partial class.
@@ -69,12 +67,6 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         [InlineHelp, SerializeField]
         protected ButtonSignInteraction _PlayButton;
-
-        /// <summary>
-        /// The open party screen button.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected UnityEngine.UI.Button _PartyButton;
 
         /// <summary>
         /// The quit button.
@@ -217,31 +209,23 @@ namespace Vermines.Menu.Screen {
             MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
 
             if (camera) {
-                camera.OnCamLocationChanged.AddListener(() => InTavern());
+                camera.OnSplineEnd.AddListener(() => InTavern());
 
-                camera.GoOnTavern();
+                camera.OnSplineStarted();
+            } else {
+                Debug.LogWarning($"[VMUI_MainMenu]: No CinemachineCamera found in the scene. The spline will not be played. Automatically open the 'VMUI_Tavern'.");
+
+                InTavern();
             }
         }
 
-        private async void InTavern()
+        private void InTavern()
         {
-            /*ConnectionArgs.Session = null;
-            ConnectionArgs.Creating = false;
-            ConnectionArgs.Region = ConnectionArgs.PreferredRegion;
+            MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
 
-            Controller.Show<VMUI_Loading>(this);
-
-            var result = await Connection.ConnectAsync(ConnectionArgs);
-
-            await Controller.HandleConnectionResult(result, Controller);*/
-        }
-
-        /// <summary>
-        /// Is called when the <see cref="_PartyButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
-        protected virtual void OnPartyButtonPressed()
-        {
-            Controller.Show<VMUI_PartyMenu>(this);
+            if (camera)
+                camera.OnSplineEnd.RemoveListener(() => InTavern());
+            Controller.Show<VMUI_Tavern>(this);
         }
 
         /// <summary>
