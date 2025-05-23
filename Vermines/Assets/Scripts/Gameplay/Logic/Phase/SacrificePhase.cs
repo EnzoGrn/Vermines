@@ -39,6 +39,8 @@ namespace Vermines.Gameplay.Phases {
 
         public override void Run(PlayerRef player)
         {
+            PlayerController.Local.ClearTracker();
+
             _CurrentPlayer = player;
 
             Debug.Log($"Phase {Type} is now running");

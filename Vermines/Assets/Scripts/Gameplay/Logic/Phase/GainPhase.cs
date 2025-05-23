@@ -11,6 +11,7 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.HUD;
     using Vermines.Player;
+    using Vermines.UI;
 
     public class GainPhase : APhase {
 
@@ -38,9 +39,9 @@ namespace Vermines.Gameplay.Phases {
 
             CommandInvoker.ExecuteCommand(earnCommand);
 
-            GameDataStorage.Instance.PlayerData.TryGet(player, out Vermines.Player.PlayerData playerData);
+            GameDataStorage.Instance.PlayerData.TryGet(player, out PlayerData playerData);
 
-            HUDManager.instance.UpdateSpecificPlayer(playerData);
+            TurnManager.Instance.UpdatePlayer(playerData);
 
             OnPhaseEnding(player, true);
         }

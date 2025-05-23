@@ -47,7 +47,6 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (player != PlayerController.Local.PlayerRef)
                 return;
 
-
             // TODO: Subscribe to the function for copied the partisan's effect
         }
 
