@@ -4,7 +4,7 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Menu.Screen {
-
+    using System.Collections;
     using Vermines.Menu.Tools;
 
     public partial class VMUI_LaunchLoading : MenuUIScreen {
@@ -33,14 +33,21 @@ namespace Vermines.Menu.Screen {
             base.Init();
         }
 
+        public override IEnumerator ShowCoroutine()
+        {
+            if (_Camera != null)
+                _Camera.gameObject.SetActive(true);
+            yield return base.ShowCoroutine();
+        }
+
         public override void Show()
         {
-            if (_Camera)
-                _Camera.gameObject.SetActive(true);
             base.Show();
 
+            // Set has active only the first scene,
+            // here: The Vermines main maps, to have the skybox and light system on.
             for (int i = 0; i < ScenesToLoad.Count; i++)
-                LoadingManager.AddStep(new LoadSceneStep(ScenesToLoad[i], UnityEngine.SceneManagement.LoadSceneMode.Additive));
+                LoadingManager.AddStep(new LoadSceneStep(ScenesToLoad[i], UnityEngine.SceneManagement.LoadSceneMode.Additive, i == 0));
             LoadingManager.OnLoadingDone += OnLoadingDone;
 
             LoadingManager.StartLoading();
@@ -48,13 +55,12 @@ namespace Vermines.Menu.Screen {
 
         public override void Hide()
         {
-            base.Hide();
-
             LoadingManager.ClearSteps();
             LoadingManager.OnLoadingDone -= OnLoadingDone;
 
-            if (_Camera)
+            if (_Camera != null)
                 _Camera.gameObject.SetActive(false);
+            base.Hide();
         }
 
         #endregion

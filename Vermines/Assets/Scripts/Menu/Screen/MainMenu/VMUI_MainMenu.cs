@@ -9,6 +9,8 @@ namespace Vermines.Menu.Screen {
 
     using Text       = TMPro.TMP_Text;
     using InputField = TMPro.TMP_InputField;
+    using Codice.CM.Common;
+    using System.Security.Cryptography;
 
     /// <summary>
     /// Vermines Main Menu UI partial class.
@@ -135,10 +137,13 @@ namespace Vermines.Menu.Screen {
         {
             base.Show();
 
-            _UsernameView.SetActive(false);
+            if (_UsernameView) {
+                _UsernameView.SetActive(false);
 
-            if (_UsernameLabel)
-                _UsernameLabel.text = ConnectionArgs.Username;
+                if (_UsernameLabel)
+                    _UsernameLabel.text = ConnectionArgs.Username;
+            }
+
             _PlayButton.OnClicked     += OnPlayButtonPressed;
             _SettingsButton.OnClicked += OnSettingsButtonPressed;
             _QuitButton.OnClicked     += OnQuitButtonPressed;
@@ -178,12 +183,15 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         protected virtual void OnFinishUsernameEdit(string username)
         {
-            _UsernameView.SetActive(false);
+            if (_UsernameView) {
+                _UsernameView.SetActive(false);
 
-            if (string.IsNullOrEmpty(username) == false) {
-                _UsernameLabel.text     = username;
-                ConnectionArgs.Username = username;
-            }
+                if (string.IsNullOrEmpty(username) == false) {
+                    _UsernameLabel.text     = username;
+                    ConnectionArgs.Username = username;
+                }
+            } else
+                Debug.LogError("Username view is not assigned in the inspector.");
         }
 
         /// <summary>
@@ -191,26 +199,41 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         protected virtual void OnUsernameButtonPressed()
         {
-            _UsernameView.SetActive(true);
+            if (_UsernameView) {
+                _UsernameView.SetActive(true);
 
-            _UsernameInput.text = _UsernameLabel.text;
+                _UsernameInput.text = _UsernameLabel.text;
+            }
+            else
+                Debug.LogError("Username view is not assigned in the inspector.");
         }
 
         /// <summary>
         /// Is called when the <see cref="_PlayButton"/> is pressed using SendMessage() from the UI object.
         /// Intitiates the connection and expects the connection object to set further screen states.
         /// </summary>
-        protected virtual async void OnPlayButtonPressed()
+        protected virtual void OnPlayButtonPressed()
         {
-            ConnectionArgs.Session  = null;
+            MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
+
+            if (camera) {
+                camera.OnCamLocationChanged.AddListener(() => InTavern());
+
+                camera.GoOnTavern();
+            }
+        }
+
+        private async void InTavern()
+        {
+            /*ConnectionArgs.Session = null;
             ConnectionArgs.Creating = false;
-            ConnectionArgs.Region   = ConnectionArgs.PreferredRegion;
+            ConnectionArgs.Region = ConnectionArgs.PreferredRegion;
 
             Controller.Show<VMUI_Loading>(this);
 
             var result = await Connection.ConnectAsync(ConnectionArgs);
 
-            await Controller.HandleConnectionResult(result, Controller);
+            await Controller.HandleConnectionResult(result, Controller);*/
         }
 
         /// <summary>

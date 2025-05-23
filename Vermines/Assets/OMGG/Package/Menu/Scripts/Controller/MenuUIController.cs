@@ -174,6 +174,17 @@ namespace OMGG.Menu.Controller {
             }
         }
 
+        public virtual void HideModal(MenuUIScreen screenToHide)
+        {
+            if (_ScreenLookup.TryGetValue(screenToHide.GetType(), out var result)) {
+                if (result.IsModal)
+                    StartCoroutine(screenToHide.HideCoroutine());
+                else
+                    Debug.LogWarning($"HideModal() - Screen type '{screenToHide.GetType().Name}' is not a modal screen.");
+            } else
+                Debug.LogWarning($"HideModal() - Screen type '{screenToHide.GetType().Name}' not found.");
+        }
+
         /// <summary>
         /// Get a screen based on type.
         /// </summary>
@@ -183,7 +194,7 @@ namespace OMGG.Menu.Controller {
         {
             if (_ScreenLookup.TryGetValue(typeof(S), out var result))
                 return result as S;
-            Debug.LogError($"Show() - Screen type '{typeof(S).Name}' not found.");
+            Debug.LogError($"Get<S>() - Screen type '{typeof(S).Name}' not found.");
 
             return null;
         }

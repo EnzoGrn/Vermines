@@ -126,8 +126,6 @@ namespace OMGG.Menu.Screen {
                 yield return _HideCoroutine;
 
                 _HideCoroutine = null;
-
-                yield break;
             }
 
             Hide();
