@@ -27,6 +27,11 @@ namespace Vermines.Menu.Tools {
             StartCoroutine(ExecuteSteps());
         }
 
+        public void ClearSteps()
+        {
+            _LoadingSteps.Clear();
+        }
+
         private IEnumerator ExecuteSteps()
         {
             foreach (ILoadingSteps step in _LoadingSteps) {

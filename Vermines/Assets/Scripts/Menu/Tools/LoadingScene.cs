@@ -10,34 +10,34 @@ namespace Vermines.Menu.Tools {
 
         private LoadSceneMode _Mode; // Scene loading mode (single or additive).
 
-        public LoadSceneStep(string sceneName, LoadSceneMode mode)
+        private bool _SetToActive; // Flag to set the loaded scene as active.
+
+        public LoadSceneStep(string sceneName, LoadSceneMode mode, bool setToActive = false)
         {
-            _SceneName = sceneName;
-            _Mode      = mode;
+            _SceneName   = sceneName;
+            _Mode        = mode;
+            _SetToActive = setToActive;
         }
 
         public string StepName => $"Loading the scene...";
 
         public IEnumerator Execute()
         {
-            Debug.Log($"[LoadSceneStep]: Loading scene {_SceneName} in mode {_Mode}");
             AsyncOperation op = SceneManager.LoadSceneAsync(_SceneName, _Mode);
 
             while (!op.isDone)
                 yield return null;
-
             // Get the loaded scene by name
             Scene loadedScene = SceneManager.GetSceneByName(_SceneName);
 
-            if (loadedScene.IsValid() && loadedScene.isLoaded)
-            {
-                SceneManager.SetActiveScene(loadedScene);
-                DynamicGI.UpdateEnvironment();
-                Debug.Log($"[LoadSceneStep]: Scene {_SceneName} is now active.");
-            }
-            else
-            {
-                Debug.LogError($"[LoadSceneStep]: Failed to load or set active scene {_SceneName}.");
+            if (loadedScene.IsValid() && loadedScene.isLoaded) {
+                if (_SetToActive) {
+                    SceneManager.SetActiveScene(loadedScene);
+
+                    DynamicGI.UpdateEnvironment();
+                }
+            } else {
+                Debug.LogError($"[LoadSceneStep]: Failed to load {_SceneName}.");
             }
         }
     }
