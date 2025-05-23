@@ -59,6 +59,11 @@ namespace Vermines.UI
         public List<GameplayScreenPlugin> Plugins => _Plugins;
 
         /// <summary>
+        /// Should show plugins is a flag that can be used to hide the plugin UI elements.
+        /// </summary>
+        protected virtual bool ShouldShowPlugins => true;
+
+        /// <summary>
         /// Is the screen currently showing.
         /// </summary>
         public bool IsShowing { get; private set; }
@@ -105,7 +110,7 @@ namespace Vermines.UI
             IsShowing = false;
 
             foreach (GameplayScreenPlugin plugin in _Plugins)
-                plugin.Hide(this);
+                plugin.Hide();
             gameObject.SetActive(false);
         }
 
@@ -126,8 +131,28 @@ namespace Vermines.UI
 
             IsShowing = true;
 
-            foreach (GameplayScreenPlugin plugin in _Plugins)
-                plugin.Show(this);
+            if (ShouldShowPlugins)
+            {
+                foreach (GameplayScreenPlugin plugin in _Plugins)
+                    plugin.Show(this);
+            }
+        }
+
+        /// <summary>
+        /// Get a screen plugin based on its type.
+        /// </summary>
+        /// <typeparam name="S">The type of the plugin to retrieve.</typeparam>
+        /// <returns>The plugin of type S if found, otherwise null.</returns>
+        public virtual S Get<S>() where S : GameplayScreenPlugin
+        {
+            foreach (var plugin in _Plugins)
+            {
+                if (plugin is S typedPlugin)
+                    return typedPlugin;
+            }
+
+            Debug.LogError($"[GameplayScreen] Get<{typeof(S).Name}> - Plugin not found.");
+            return null;
         }
 
         /// <summary>

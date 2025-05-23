@@ -44,10 +44,9 @@ namespace Vermines.UI.Shop
         #region Override Methods
 
         /// <summary>
-        /// The parent screen is shown.
-        /// Cache the connection object.
+        /// Shows the parent screen.
         /// </summary>
-        /// <param name="screen">Parent screen</param>
+        /// <param name="screen">The parent screen that this plugin is attached to.</param>
         public override void Show(GameplayUIScreen screen)
         {
             base.Show(screen);
@@ -57,12 +56,11 @@ namespace Vermines.UI.Shop
         }
 
         /// <summary>
-        /// The parent screen is hidden. Clear the connection object.
+        /// Hides the parent screen.
         /// </summary>
-        /// <param name="screen">Parent screen</param>
-        public override void Hide(GameplayUIScreen screen)
+        public override void Hide()
         {
-            base.Hide(screen);
+            base.Hide();
             GameEvents.OnShopUpdated.RemoveListener(HandleShopUpdate);
         }
 
@@ -176,14 +174,14 @@ namespace Vermines.UI.Shop
         {
             foreach (var slot in activeSlots)
             {
-                _CardPool.ReturnSlot(slot);
+                CardSlotPool.Instance.ReturnSlot(slot);
             }
             activeSlots.Clear();
 
             for (int i = 0; i < currentEntries.Count; i++)
             {
                 Vermines.UI.Screen.ShopCardEntry entry = currentEntries[i];
-                var slot = _CardPool.GetSlot(cardSlotRoot);
+                var slot = CardSlotPool.Instance.GetSlot(cardSlotRoot);
 
                 if (slot == null)
                 {

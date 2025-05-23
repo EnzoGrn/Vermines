@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -74,7 +74,12 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             if (player != PlayerController.Local.PlayerRef)
                 return;
-            // TODO: Subscribe to the function for removed a card.
+
+            if (UIContextManager.Instance != null)
+            {
+                UIContextManager.Instance.PushContext(new RemoveToEarnContext(_CardType));
+            }
+            GameEvents.OnCardSacrificedRequested.AddListener(CardToRemove);
         }
 
         private void CardToRemove(ICard card)
@@ -85,10 +90,10 @@ namespace Vermines.Gameplay.Cards.Effect {
                 return;
             }
 
-            // TODO: Unsubscribe the function for removed a card.
+            GameEvents.OnCardSacrificedRequested.RemoveListener(CardToRemove);
 
             PlayerController.Local.OnCardSacrified(card.ID);
-            PlayerController.Local.NetworkEventCardEffect(Card.ID);
+            //PlayerController.Local.NetworkEventCardEffect(Card.ID);
         }
 
         public override void NetworkEventFunction(PlayerRef player, string data)

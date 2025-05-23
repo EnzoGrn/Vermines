@@ -214,7 +214,9 @@ namespace Vermines.UI.Screen
         /// </summary>
         protected virtual void OnTableButtonPressed()
         {
-            Controller.Show<GameplayUITable>(this);
+            Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
+            Debug.Log("Last screen: " + lastScreen);
+            Controller.Show<GameplayUITable>(lastScreen);
         }
 
         #endregion

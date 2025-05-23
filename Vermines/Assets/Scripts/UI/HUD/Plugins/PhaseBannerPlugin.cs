@@ -20,10 +20,11 @@ namespace Vermines.UI.Plugin
         protected Text _PhaseText;
 
         /// <summary>
-        /// The parent screen is shown.
-        /// Cache the connection object.
+        /// Show the plugin.
         /// </summary>
-        /// <param name="screen">Parent screen</param>
+        /// <param name="screen">
+        /// The parent screen that this plugin is attached to.
+        /// </param>
         public override void Show(GameplayUIScreen screen)
         {
             base.Show(screen);
@@ -32,12 +33,11 @@ namespace Vermines.UI.Plugin
         }
 
         /// <summary>
-        /// The parent screen is hidden. Clear the connection object.
+        /// Hide the plugin.
         /// </summary>
-        /// <param name="screen">Parent screen</param>
-        public override void Hide(GameplayUIScreen screen)
+        public override void Hide()
         {
-            base.Hide(screen);
+            base.Hide();
 
             GameEvents.OnPhaseChanged.RemoveListener(SetPhase);
         }

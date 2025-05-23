@@ -6,21 +6,22 @@
     public partial class NavButtonPlugin : GameplayScreenPlugin
     {
         /// <summary>
-        /// The parent screen is shown.
+        /// Show the plugin.
         /// </summary>
-        /// <param name="screen">Parent screen</param>
+        /// <param name="screen">
+        /// The parent screen that this plugin is attached to.
+        /// </param>
         public override void Show(GameplayUIScreen screen)
         {
             base.Show(screen);
         }
 
         /// <summary>
-        /// The parent screen is hidden.
+        /// Hide the plugin.
         /// </summary>
-        /// <param name="screen">Parent screen</param>
-        public override void Hide(GameplayUIScreen screen)
+        public override void Hide()
         {
-            base.Hide(screen);
+            base.Hide();
         }
     }
 }

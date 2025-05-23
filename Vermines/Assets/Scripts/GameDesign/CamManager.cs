@@ -207,12 +207,11 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
         }
 
         GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
-        GameplayUIScreen lastScreen = null;
 
         if (!gameplayUIController)
             return;
 
-        gameplayUIController.GetLastScreen(out lastScreen);
+        gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
 
         switch ((CamSplineType)_SplineID)
         {

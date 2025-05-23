@@ -18,10 +18,9 @@ public class ReplaceEffectContext : IUIContext
     public void Enter()
     {
         GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
-        GameplayUIScreen lastScreen = null;
         if (gameplayUIController != null)
         {
-            gameplayUIController.GetLastScreen(out lastScreen);
+            gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
             gameplayUIController.ShowWithParams<GameplayUIReplaceEffect, Action<Dictionary<ShopType, int>>>(OnDone, lastScreen);
         }
     }

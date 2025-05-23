@@ -50,7 +50,8 @@ namespace Vermines.Gameplay.Phases {
                 GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
                 if (gameplayUIController != null)
                 {
-                    gameplayUIController.Show<GameplayUIGainSummary>();
+                    gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
+                    gameplayUIController.Show<GameplayUIGainSummary>(lastScreen);
                 }
             }
         }

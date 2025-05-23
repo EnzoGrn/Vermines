@@ -55,7 +55,8 @@ namespace Vermines.Gameplay.Phases {
                 GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
                 if (gameplayUIController != null)
                 {
-                    gameplayUIController.Show<GameplayUITable>();
+                    gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
+                    gameplayUIController.Show<GameplayUITable>(lastScreen);
                 }
             }
             else if (playedCards.Count == 0)
@@ -72,7 +73,8 @@ namespace Vermines.Gameplay.Phases {
         public override void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
             base.OnPhaseEnding(player, logic);
-            GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
+            GameEvents.OnCardSacrificedRequested.RemoveAllListeners();
+            Debug.Log($"[Client]: Phase {Type} ended for player {player.PlayerId} with logic {logic}.");
         }
 
         #endregion

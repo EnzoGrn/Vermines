@@ -31,7 +31,7 @@ namespace Vermines.UI
         /// <summary>
         /// The popup handler is automatically set if present based on the interface <see cref="IFusionMenuPopup"/>.
         /// </summary>
-        protected Popup.GameplayPopup _PopupHandler;
+        protected Popup.GameplayUIPopup _PopupHandler;
 
         /// <summary>
         /// The current active screen.
@@ -62,7 +62,7 @@ namespace Vermines.UI
                     screenType = screenType.BaseType;
                 }
 
-                if (screen is Popup.GameplayPopup popupHandler)
+                if (screen is Popup.GameplayUIPopup popupHandler)
                     _PopupHandler = popupHandler;
             }
 
@@ -191,11 +191,7 @@ namespace Vermines.UI
                 _ActiveScreen.Hide();
                 _ActiveScreen = null;
             }
-            if (_LastScreen != null)
-            {
-                _LastScreen.Show();
-                _ActiveScreen = _LastScreen;
-            }
+            ShowLast();
         }
 
         /// <summary>
@@ -217,6 +213,12 @@ namespace Vermines.UI
             lastScreen = _LastScreen;
 
             return lastScreen != null;
+        }
+
+        public virtual bool GetActiveScreen(out GameplayUIScreen activeScreen)
+        {
+            activeScreen = _ActiveScreen;
+            return activeScreen != null;
         }
 
         /// <summary>

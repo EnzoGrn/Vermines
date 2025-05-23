@@ -11,7 +11,7 @@ namespace Vermines.UI.Popup
     /// The popup screen handles notificaction.
     /// The screen has be <see cref="GameplayUIScreen.IsModal"/> true.
     /// </summary>
-    public partial class GameplayPopup : GameplayUIScreen
+    public partial class GameplayUIPopup : GameplayUIScreen
     {
         #region Fields
 
