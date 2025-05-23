@@ -11,6 +11,7 @@ public class NpcController : MonoBehaviour
     [SerializeField] private Animator _animator;
     [SerializeField] private float _arrivalThresholdInterruption = 2f; // Threshold for arrival check
     [SerializeField] private bool _reversed;
+    [SerializeField] private bool _hasARoutine = true;
     #endregion
 
     #region Private Fields
@@ -37,11 +38,13 @@ public class NpcController : MonoBehaviour
             transform.localScale = scale;
         }
 
-        // Get the RoutineManager component
-        _routineManager = FindFirstObjectByType<RoutineManager>();
-        _startPositon = transform.position;
-
-        _runningCoroutine = StartCoroutine(StartNpcRoutine());
+        if (_hasARoutine)
+        {
+            // Get the RoutineManager component
+            _startPositon = transform.position;
+            _routineManager = FindFirstObjectByType<RoutineManager>();
+            _runningCoroutine = StartCoroutine(StartNpcRoutine());
+        }
     }
 
     private void Update()
@@ -53,8 +56,14 @@ public class NpcController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Update the NPC's facing direction based on the current slot position and player position.
+    /// </summary>
     private void UpdateNpcFacingDirection()
     {
+        if (!_currentSlot)
+            return;
+            
         Vector3 toDestination = (_currentSlot.SlotTransform.position - transform.position).normalized;
         Vector3 toPlayer = (Camera.main.transform.position - transform.position).normalized;
 
@@ -84,16 +93,6 @@ public class NpcController : MonoBehaviour
             _isFacingToTheRight = !_isFacingToTheRight;
         }
     }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(Camera.main.transform.position, _currentSlot.SlotTransform.position);
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, Camera.main.transform.position);
-    }
-
 
     /// <summary>
     /// Move the NPC to a specified position.
@@ -130,12 +129,12 @@ public class NpcController : MonoBehaviour
         {
             // Move to the slot position
             MoveTo(_currentSlot.SlotTransform.position);
-            Debug.Log("Available slot found.");
+            //Debug.Log("Available slot found.");
         }
         else
         {
             MoveTo(_startPositon);
-            Debug.LogWarning("No available slots found.");
+            //Debug.LogWarning("No available slots found.");
         }
     }
 
@@ -164,8 +163,7 @@ public class NpcController : MonoBehaviour
             _agent.ResetPath();
             MoveTo(_interruptPos);
 
-            Debug.Log($"[OnInterruptionDone]: {gameObject.name} has been interrupted");
-
+            //Debug.Log($"[OnInterruptionDone]: {gameObject.name} has been interrupted");
             StartCoroutine(WaitUntilArrived(false));
         }
     }
@@ -197,7 +195,7 @@ public class NpcController : MonoBehaviour
             yield return null;
         }
 
-        Debug.Log($"[WaitUntilArrived]: {gameObject.name} pathPending");
+        //Debug.Log($"[WaitUntilArrived]: {gameObject.name} pathPending");
 
         // Wait for the agent to reach the destination
 
@@ -211,11 +209,11 @@ public class NpcController : MonoBehaviour
         _agent.ResetPath();
         _animator.SetBool("IsWalking", false);
 
-        Debug.Log($"[WaitUntilArrived]: {gameObject.name} arrived");
+        //Debug.Log($"[WaitUntilArrived]: {gameObject.name} arrived");
 
         if (restartRoutine)
         {
-            Debug.Log("Restart Coroutine");
+            //Debug.Log("Restart Coroutine");
             StartCoroutine(StartNpcRoutine());
         }
     }
@@ -233,7 +231,7 @@ public class NpcController : MonoBehaviour
             //yield return new WaitForSeconds(Random.Range(minIdleTime, maxIdleTime));
             float waitTime = Random.Range(minIdleTime, maxIdleTime);
             float timer = 0f;
-            Debug.Log($"[StartNpcRoutine]: {gameObject.name} is waiting for {waitTime} seconds");
+            //Debug.Log($"[StartNpcRoutine]: {gameObject.name} is waiting for {waitTime} seconds");
             while (timer < waitTime)
             {
                 if (!IsRoutineRunning) yield break; // check pendant l'attente
@@ -253,7 +251,7 @@ public class NpcController : MonoBehaviour
             // Wait until the NPC reaches the destination
             while (_agent.pathPending || _agent.remainingDistance > _agent.stoppingDistance)
             {
-                Debug.Log("Processing in routine !");
+                //Debug.Log("Processing in routine !");
                 if (!IsRoutineRunning) yield break; // Interrupt the coroutine if the routine is stopped
                 yield return null;
             }
