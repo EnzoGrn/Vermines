@@ -29,12 +29,12 @@ namespace OMGG.Menu.Screen {
         /// <summary>
         /// The animator component.
         /// </summary>
-        private Animator _Animator;
+        protected Animator _Animator;
 
         /// <summary>
         /// The hide animation coroutine.
         /// </summary>
-        private Coroutine _HideCoroutine;
+        protected Coroutine _HideCoroutine;
 
         #endregion
 

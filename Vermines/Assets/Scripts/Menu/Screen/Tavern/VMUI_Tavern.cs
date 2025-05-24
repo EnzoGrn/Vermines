@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OMGG.Menu.Screen;
 using UnityEngine;
 using Fusion;
@@ -125,14 +126,21 @@ namespace Vermines.Menu.Screen {
         /// <summary>
         /// Is called when the <see cref="_MainMenuButton"/> is pressed using SendMessage() from the UI object.
         /// </summary>
-        protected virtual void OnMainMenuButtonPressed()
+        protected virtual async void OnMainMenuButtonPressed()
         {
             MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
 
             Controller.Show<VMUI_MainMenu>(this);
 
-            if (camera != null)
+            if (camera) {
+                AnimatorStateInfo stateInfo = _Animator.GetCurrentAnimatorStateInfo(0);
+
+                float duration = stateInfo.length;
+
+                await Task.Delay((int)(duration * 1000));
+
                 camera.OnSplineReseted();
+            }
         }
 
         #endregion
