@@ -64,12 +64,18 @@ namespace Vermines.Gameplay.Phases {
 
             List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
 
+            Debug.Log($"[Client]: Player {_CurrentPlayer} has {playedCards.Count} played cards.");
+
             foreach (ICard card in playedCards)
             {
                 foreach (IEffect effect in card.Data.Effects)
                 {
                     if (effect.Type == EffectType.Passive)
+                    {
                         effect.Play(_CurrentPlayer);
+
+                        Debug.Log($"[Client]: Card {card.ID} is {card.Data.Name}, effect played");
+                    }
                 }
             }
 

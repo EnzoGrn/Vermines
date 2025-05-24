@@ -330,6 +330,7 @@ namespace Vermines.UI.Screen
         {
             if (card == null || GameManager.Instance.IsMyTurn() == false) return;
 
+            Debug.Log($"[TableCardClickHandler] Card clicked: {card.Data.Name}");
             if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice || UIContextManager.Instance.IsInContext<SacrificeContext>())
             {
                 LocalizedString title = new LocalizedString("PopupTable", "sacrifice.title");
@@ -352,7 +353,6 @@ namespace Vermines.UI.Screen
                 {
                     if (effect.Type != EffectType.Activate) return;
 
-                    Debug.Log($"[TableCardClickHandler] Card clicked: {card.Data.Name}");
                     LocalizedString title = new LocalizedString("PopupTable", "action.title");
                     LocalizedString message = new LocalizedString("PopupTable", "action.message");
                     var popup = _CloseView.GetComponent<PopupConfirm>();
