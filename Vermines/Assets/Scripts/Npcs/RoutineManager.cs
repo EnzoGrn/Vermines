@@ -11,17 +11,24 @@ public class RoutineManager : MonoBehaviour
 
     [SerializeField] private float _radiusOfAreaInterruption;
     [SerializeField] private float _rateOfInterestForInterruption;
+    [SerializeField] private Transform _interruptTransform;
     #endregion
 
     #region Private Fields
     private float _percentOfNpcInterest = 0;
-    private Vector3 _interruptPos = Vector3.zero;
     #endregion
 
     private void Start()
     {
         _percentOfNpcInterest = _npcs.Count * _rateOfInterestForInterruption;
     }
+
+    /* TODO: Plug the routine manager public methods to the game.
+    * 1. Start routien when starting the game.
+    * 2. Interrupt the routine when the player is in a specific area.
+    * 3. Resume the routine when the player leaves the area.
+    * 4. Stop the routine when the game is over.
+    */
 
     /// <summary>
     /// Start the NPC routine if it has one.
@@ -113,8 +120,6 @@ public class RoutineManager : MonoBehaviour
     /// </summary>
     public void InterruptNpcRoutine()
     {
-        _interruptPos = Vector3.zero;
-
         foreach (NpcController npc in _npcs)
         {
             int randomIndex = Random.Range(0, _npcs.Count);
@@ -123,7 +128,7 @@ public class RoutineManager : MonoBehaviour
                 Debug.Log($"Interrupting NPC: {npc.gameObject.name}");
                 
                 // TODO: Run the interact animation that will then start the InterruptCoroutine
-                npc.Interruption(GetRandomPointInRadius(_interruptPos));
+                npc.Interruption(GetRandomPointInRadius(_interruptTransform.position));
             }
         }
     }

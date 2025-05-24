@@ -12,6 +12,7 @@ public class NpcController : MonoBehaviour
     [SerializeField] private float _arrivalThresholdInterruption = 2f; // Threshold for arrival check
     [SerializeField] private bool _reversed;
     [SerializeField] private bool _hasARoutine = true;
+    [SerializeField] private string _cameraName = "Main Travelling Camera";
     #endregion
 
     #region Private Fields
@@ -20,12 +21,14 @@ public class NpcController : MonoBehaviour
     private Coroutine _runningCoroutine;
     private RoutineManager _routineManager;
     private PointOfInterestSlot _currentSlot;
-
+    private Camera _camera;
+    
     private Vector3 _interruptPos = Vector3.zero;
     #endregion
 
     #region Public Fields
     [HideInInspector] public bool IsRoutineRunning = false;
+    public Camera Camera => _camera;
     #endregion
 
     void Start()
@@ -41,7 +44,7 @@ public class NpcController : MonoBehaviour
 
     private void Update()
     {
-        if (!_agent.isStopped)
+        if (gameObject.activeSelf)
         {
             // Update Npc Facing direction
             UpdateNpcFacingDirection();
@@ -97,12 +100,39 @@ public class NpcController : MonoBehaviour
         transform.position = _startPositon;
     }
 
+    private bool TryGetCamera()
+    {
+        Camera[] cameras = FindObjectsByType<Camera>(FindObjectsSortMode.None);
+
+        foreach (Camera cam in cameras)
+        {
+            Debug.Log("[TryGetCamera]: Found camera: " + cam.name);
+            if (cam.name == _cameraName)
+            {
+                Debug.Log("[TryGetCamera]: Camera found: " + cam.name);
+                _camera = cam;
+                return true;
+            }
+        }
+
+        Debug.Log("[TryGetCamera]: Cannot find camera");
+        return false;
+    }
+
     /// <summary>
     /// Update the NPC's facing direction based on the current slot position and player position.
     /// </summary>
     private void UpdateNpcFacingDirection()
     {
-        Vector3 toPlayer = (Camera.main.transform.position - transform.position).normalized;
+        // Try get camera
+        
+        if (_camera == null && !TryGetCamera())
+        {
+            Debug.Log("[UpdateNpcFacingDirection]: Cannot find camera");
+            return;
+        }
+
+        Vector3 toPlayer = (_camera.transform.position - transform.position).normalized;
         Vector3 toDestination;
 
         if (!_currentSlot)

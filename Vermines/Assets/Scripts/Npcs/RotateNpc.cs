@@ -2,20 +2,26 @@ using UnityEngine;
 
 public class RotateNpc : MonoBehaviour
 {
-    [SerializeField] private Camera _camera;
+    private NpcController _npcController;
 
     // https://youtube.com/shorts/KGG2V4ZkXTg?si=TnOfEIoMn83hSeWV
 
     private void Start()
     {
-        if (_camera == null)
+        _npcController = GetComponent<NpcController>();
+        if (_npcController == null)
         {
-            _camera = Camera.main;
+            Debug.LogError("NpcController component not found on the GameObject.");
+            return;
         }
     }
+
     private void LateUpdate()
     {
-        Vector3 cameraPosition = _camera.transform.position;
+        if (_npcController.Camera == null)
+            return;
+
+        Vector3 cameraPosition = _npcController.Camera.transform.position;
         cameraPosition.y = gameObject.transform.position.y;
 
         gameObject.transform.LookAt(cameraPosition);
