@@ -12,6 +12,7 @@ namespace OMGG.Menu.Controller {
     using OMGG.Menu.Configuration;
     using OMGG.Menu.Connection;
     using OMGG.Menu.Screen;
+    using System.Collections;
 
     public class MenuUIController : FusionMonoBehaviour {
 
@@ -127,12 +128,7 @@ namespace OMGG.Menu.Controller {
             if (_ScreenLookup.TryGetValue(typeof(S), out var result)) {
                 _LastScreen = last;
 
-                if (!result.IsModal && _ActiveScreen != result && _ActiveScreen)
-                    _ActiveScreen.Hide();
-                if (_ActiveScreen != result)
-                    result.Show();
-                if (!result.IsModal)
-                    _ActiveScreen = result;
+                StartCoroutine(ShowTransition(result));
             } else
                 Debug.LogError($"Show() - Screen type '{typeof(S).Name}' not found.");
         }
@@ -144,15 +140,22 @@ namespace OMGG.Menu.Controller {
         public virtual void Show(MenuUIScreen screenToShow)
         {
             if (_ScreenLookup.TryGetValue(screenToShow.GetType(), out var result)) {
-                if (!result.IsModal && _ActiveScreen != result && _ActiveScreen)
-                    _ActiveScreen.Hide();
-                if (_ActiveScreen != result)
-                    result.Show();
-                if (!result.IsModal)
-                    _ActiveScreen = result;
                 _LastScreen = null;
+
+                StartCoroutine(ShowTransition(result));
             } else
                 Debug.LogError($"Show() - Screen type '{screenToShow.GetType().Name}' not found.");
+        }
+
+        private IEnumerator ShowTransition(MenuUIScreen nextScreen)
+        {
+            if (!nextScreen.IsModal && _ActiveScreen != null && _ActiveScreen != nextScreen)
+                yield return _ActiveScreen.HideCoroutine();
+            if (_ActiveScreen != nextScreen)
+                yield return nextScreen.ShowCoroutine();
+            if (!nextScreen.IsModal)
+                _ActiveScreen = nextScreen;
+            yield break;
         }
 
         /// <summary>
@@ -171,6 +174,17 @@ namespace OMGG.Menu.Controller {
             }
         }
 
+        public virtual void HideModal(MenuUIScreen screenToHide)
+        {
+            if (_ScreenLookup.TryGetValue(screenToHide.GetType(), out var result)) {
+                if (result.IsModal)
+                    StartCoroutine(screenToHide.HideCoroutine());
+                else
+                    Debug.LogWarning($"HideModal() - Screen type '{screenToHide.GetType().Name}' is not a modal screen.");
+            } else
+                Debug.LogWarning($"HideModal() - Screen type '{screenToHide.GetType().Name}' not found.");
+        }
+
         /// <summary>
         /// Get a screen based on type.
         /// </summary>
@@ -180,7 +194,7 @@ namespace OMGG.Menu.Controller {
         {
             if (_ScreenLookup.TryGetValue(typeof(S), out var result))
                 return result as S;
-            Debug.LogError($"Show() - Screen type '{typeof(S).Name}' not found.");
+            Debug.LogError($"Get<S>() - Screen type '{typeof(S).Name}' not found.");
 
             return null;
         }
@@ -229,12 +243,12 @@ namespace OMGG.Menu.Controller {
         /// <returns>When handling is completed</returns>
         public virtual async Task HandleConnectionResult(ConnectResult result, MenuUIController controller)
         {
-            return;
+            await Task.CompletedTask;
         }
 
         public virtual async Task HandleSceneChangeResult(ConnectResult result, MenuUIController controller, MenuUIScreen screenToShow)
         {
-            return;
+            await Task.CompletedTask;
         }
 
         #endregion

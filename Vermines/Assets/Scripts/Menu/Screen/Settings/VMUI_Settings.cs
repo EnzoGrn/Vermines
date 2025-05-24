@@ -215,7 +215,7 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
-            Controller.ShowLast();
+            Controller.HideModal(this);
         }
 
         #endregion

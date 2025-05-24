@@ -1,11 +1,11 @@
-using Fusion.Menu;
 using Fusion;
 using OMGG.Menu.Screen;
-using UnityEngine.UI;
 using UnityEngine;
 using OMGG.Menu.Configuration;
 
 namespace Vermines.Menu.Screen {
+
+    using Vermines.Environment.Interaction.Button;
 
     using Text       = TMPro.TMP_Text;
     using InputField = TMPro.TMP_InputField;
@@ -60,25 +60,19 @@ namespace Vermines.Menu.Screen {
         /// The open setting button.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected UnityEngine.UI.Button _SettingsButton;
+        protected ButtonSignInteraction _SettingsButton;
 
         /// <summary>
         /// The quick play button.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected UnityEngine.UI.Button _PlayButton;
-
-        /// <summary>
-        /// The open party screen button.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected UnityEngine.UI.Button _PartyButton;
+        protected ButtonSignInteraction _PlayButton;
 
         /// <summary>
         /// The quit button.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected UnityEngine.UI.Button _QuitButton;
+        protected ButtonSignInteraction _QuitButton;
 
         #endregion
 
@@ -135,10 +129,17 @@ namespace Vermines.Menu.Screen {
         {
             base.Show();
 
-            _UsernameView.SetActive(false);
+            if (_UsernameView) {
+                _UsernameView.SetActive(false);
 
-            if (_UsernameLabel)
-                _UsernameLabel.text = ConnectionArgs.Username;
+                if (_UsernameLabel)
+                    _UsernameLabel.text = ConnectionArgs.Username;
+            }
+
+            _PlayButton.OnClicked     += OnPlayButtonPressed;
+            _SettingsButton.OnClicked += OnSettingsButtonPressed;
+            _QuitButton.OnClicked     += OnQuitButtonPressed;
+
             ShowUser();
         }
 
@@ -149,6 +150,10 @@ namespace Vermines.Menu.Screen {
         public override void Hide()
         {
             base.Hide();
+
+            _PlayButton.OnClicked     -= OnPlayButtonPressed;
+            _SettingsButton.OnClicked -= OnSettingsButtonPressed;
+            _QuitButton.OnClicked     -= OnQuitButtonPressed;
 
             HideUser();
         }
@@ -170,12 +175,15 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         protected virtual void OnFinishUsernameEdit(string username)
         {
-            _UsernameView.SetActive(false);
+            if (_UsernameView) {
+                _UsernameView.SetActive(false);
 
-            if (string.IsNullOrEmpty(username) == false) {
-                _UsernameLabel.text     = username;
-                ConnectionArgs.Username = username;
-            }
+                if (string.IsNullOrEmpty(username) == false) {
+                    _UsernameLabel.text     = username;
+                    ConnectionArgs.Username = username;
+                }
+            } else
+                Debug.LogError("Username view is not assigned in the inspector.");
         }
 
         /// <summary>
@@ -183,34 +191,41 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         protected virtual void OnUsernameButtonPressed()
         {
-            _UsernameView.SetActive(true);
+            if (_UsernameView) {
+                _UsernameView.SetActive(true);
 
-            _UsernameInput.text = _UsernameLabel.text;
+                _UsernameInput.text = _UsernameLabel.text;
+            }
+            else
+                Debug.LogError("Username view is not assigned in the inspector.");
         }
 
         /// <summary>
         /// Is called when the <see cref="_PlayButton"/> is pressed using SendMessage() from the UI object.
         /// Intitiates the connection and expects the connection object to set further screen states.
         /// </summary>
-        protected virtual async void OnPlayButtonPressed()
+        protected virtual void OnPlayButtonPressed()
         {
-            ConnectionArgs.Session  = null;
-            ConnectionArgs.Creating = false;
-            ConnectionArgs.Region   = ConnectionArgs.PreferredRegion;
+            MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
 
-            Controller.Show<VMUI_Loading>(this);
+            if (camera) {
+                camera.OnSplineEnd.AddListener(() => InTavern());
 
-            var result = await Connection.ConnectAsync(ConnectionArgs);
+                camera.OnSplineStarted();
+            } else {
+                Debug.LogWarning($"[VMUI_MainMenu]: No CinemachineCamera found in the scene. The spline will not be played. Automatically open the 'VMUI_Tavern'.");
 
-            await Controller.HandleConnectionResult(result, Controller);
+                InTavern();
+            }
         }
 
-        /// <summary>
-        /// Is called when the <see cref="_PartyButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
-        protected virtual void OnPartyButtonPressed()
+        private void InTavern()
         {
-            Controller.Show<VMUI_PartyMenu>(this);
+            MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
+
+            if (camera)
+                camera.OnSplineEnd.RemoveListener(() => InTavern());
+            Controller.Show<VMUI_Tavern>(this);
         }
 
         /// <summary>
