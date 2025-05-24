@@ -34,10 +34,15 @@ namespace Vermines.UI
         protected Popup.GameplayUIPopup _PopupHandler;
 
         /// <summary>
+        /// The dual button popup handler, if present.
+        /// </summary>
+        [SerializeField]
+        protected Popup.GameplayUIDualButtonPopup _DualPopupHandler;
+
+        /// <summary>
         /// The current active screen.
         /// </summary>
         protected GameplayUIScreen _ActiveScreen;
-
 
         #endregion
 
@@ -64,6 +69,9 @@ namespace Vermines.UI
 
                 if (screen is Popup.GameplayUIPopup popupHandler)
                     _PopupHandler = popupHandler;
+
+                if (screen is Popup.GameplayUIDualButtonPopup dualPopup)
+                    _DualPopupHandler = dualPopup;
             }
 
             foreach (var screen in _Screens)
@@ -221,6 +229,25 @@ namespace Vermines.UI
             return activeScreen != null;
         }
 
+        public virtual async void ShowDualPopup(IDiscardPopupStrategy strategy)
+        {
+            bool? result = await PopupDualAsync(
+                strategy.GetMessage(),
+                strategy.GetTitle(),
+                strategy.GetCancelText(),
+                strategy.GetConfirmText()
+            );
+
+            if (result == true)
+            {
+                strategy.OnConfirm();
+            }
+            else
+            {
+                strategy.OnCancel();
+            }
+        }
+
         /// <summary>
         /// Show the popup/notification.
         /// </summary>
@@ -250,6 +277,30 @@ namespace Vermines.UI
             }
 
             return _PopupHandler.OpenPopupAsync(message, header);
+        }
+
+        public void PopupDual(string message, string header, string leftButtonLabel, string rightButtonLabel, Action<bool?> callback)
+        {
+            if (_DualPopupHandler == null)
+            {
+                Debug.LogError("PopupDual() - no dual popup handler found");
+                callback?.Invoke(null);
+                return;
+            }
+
+            _DualPopupHandler.OpenDualButtonPopupAsync(message, header, leftButtonLabel, rightButtonLabel)
+                             .ContinueWith(t => callback?.Invoke(t.Result));
+        }
+
+        public Task<bool> PopupDualAsync(string message, string header, string leftButtonLabel, string rightButtonLabel)
+        {
+            if (_DualPopupHandler == null)
+            {
+                Debug.LogError("PopupDualAsync() - no dual popup handler found");
+                return Task.FromResult<bool>(false);
+            }
+
+            return _DualPopupHandler.OpenDualButtonPopupAsync(message, header, leftButtonLabel, rightButtonLabel);
         }
 
         #endregion

@@ -14,15 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Assassin
   Exemplars: 2
-  IsStartingCard: 0
+  IsStartingCard: 1
   Type: 0
   IsFamilyCard: 0
   _Family: 5
-  _Level: 2
+  _Level: 1
   Effects:
   - {fileID: 11400000, guid: d1865dd2552290e4db8f944098a60f8d, type: 2}
-  _Eloquence: 10
-  CurrentEloquence: 10
+  ReduceInSilence: 0
+  _Eloquence: 0
+  IsFree: 0
+  CurrentEloquence: 0
   _Souls: 20
   CurrentSouls: 20
   _SpriteName: 

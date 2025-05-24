@@ -333,19 +333,7 @@ namespace Vermines.UI.Screen
             Debug.Log($"[TableCardClickHandler] Card clicked: {card.Data.Name}");
             if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice || UIContextManager.Instance.IsInContext<SacrificeContext>())
             {
-                LocalizedString title = new LocalizedString("PopupTable", "sacrifice.title");
-                LocalizedString message = new LocalizedString("PopupTable", "sacrifice.message");
-
-                var popup = _CloseView.GetComponent<PopupConfirm>();
-                popup.Setup(
-                    title.GetLocalizedString(),
-                    message.GetLocalizedString(),
-                    () => { GameEvents.OnCardSacrificedRequested.Invoke(card); },
-                    () => { Debug.Log("[TableCardClickHandler] Sacrifice cancelled."); }
-                );
-
-                popup.OnClosed += () => _CloseView.SetActive(false);
-                _CloseView.SetActive(true);
+                Controller.ShowDualPopup(new SacrificeStrategy(card));
             }
             if (PhaseManager.Instance.CurrentPhase == PhaseType.Gain)
             {
@@ -353,20 +341,7 @@ namespace Vermines.UI.Screen
                 {
                     if (effect.Type != EffectType.Activate) return;
 
-                    LocalizedString title = new LocalizedString("PopupTable", "action.title");
-                    LocalizedString message = new LocalizedString("PopupTable", "action.message");
-                    var popup = _CloseView.GetComponent<PopupConfirm>();
-                    popup.Setup(
-                        title.GetLocalizedString(),
-                        message.GetLocalizedString(),
-                        () =>
-                        {
-                            effect.Play(PlayerController.Local.PlayerRef);
-                        },
-                        () => { Debug.Log("[TableCardClickHandler] Action cancelled."); }
-                    );
-                    popup.OnClosed += () => _CloseView.SetActive(false);
-                    _CloseView.SetActive(true);
+                    Controller.ShowDualPopup(new PlayCardEffectStrategy(effect));
                 }
             }
         }

@@ -1,11 +1,9 @@
 ﻿using Fusion;
-using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using UnityEngine.Localization;
 using Vermines.Gameplay.Phases;
 using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.UI.Card;
-using Vermines.UI.Popup;
 using Vermines.Player;
 
 namespace Vermines.UI.Screen
@@ -29,14 +27,6 @@ namespace Vermines.UI.Screen
         /// </summary>
         [InlineHelp, SerializeField]
         protected UnityEngine.UI.Button _TableButton;
-
-        [Header("Discard All View")]
-
-        /// <summary>
-        /// The discard all view.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected GameObject _DiscardAllView;
 
         #endregion
 
@@ -103,8 +93,6 @@ namespace Vermines.UI.Screen
 
             HideUser();
 
-            _DiscardAllView.SetActive(false);
-
             GameEvents.OnPhaseChanged.RemoveListener(UpdateTurnButton);
         }
 
@@ -151,30 +139,6 @@ namespace Vermines.UI.Screen
             return localized.GetLocalizedString();
         }
 
-        protected void ShowDiscardPopup(IDiscardPopupStrategy strategy)
-        {
-            if (_DiscardAllView == null)
-            {
-                Debug.LogError("Discard popup is not assigned.");
-                return;
-            }
-
-            var popup = _DiscardAllView.GetComponent<PopupConfirm>();
-            popup.Setup(
-                strategy.GetTitle(),
-                strategy.GetMessage(),
-                strategy.OnConfirm,
-                strategy.OnCancel
-            );
-
-            popup.ClearOnClosed();
-            popup.OnClosed += () =>
-            {
-                _DiscardAllView.SetActive(false);
-            };
-            _DiscardAllView.SetActive(true);
-        }
-
         #endregion
 
         #region Events
@@ -184,29 +148,21 @@ namespace Vermines.UI.Screen
         /// </summary>
         protected virtual void OnAttemptToNextPhase()
         {
-            UIContextManager.Instance.ClearContext();
+            //UIContextManager.Instance.ClearContext();
 
             if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice)
             {
-                ShowDiscardPopup(new SacrificeSkipStrategy());
+                Controller.ShowDualPopup(new SacrificeSkipStrategy());
                 return;
             }
 
             if (HandManager.Instance.HasCards() && PhaseManager.Instance.CurrentPhase == PhaseType.Action)
             {
-                ShowDiscardPopup(new DefaultDiscardStrategy());
+                Controller.ShowDualPopup(new DefaultDiscardStrategy());
                 return;
             }
 
             PhaseManager.Instance.Phases[PhaseManager.Instance.CurrentPhase].OnPhaseEnding(PlayerController.Local.PlayerRef, false);
-        }
-
-        /// <summary>
-        /// Is called when the <see cref="_DiscardAllView"/> is clicked outside the popup.
-        /// </summary>
-        protected virtual void OnCloseDiscardAllView()
-        {
-            _DiscardAllView.SetActive(false);
         }
 
         /// <summary>
