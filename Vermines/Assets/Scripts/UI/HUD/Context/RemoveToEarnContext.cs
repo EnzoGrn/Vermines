@@ -19,7 +19,6 @@ public class RemoveToEarnContext : IUIContext
 
     public void Enter()
     {
-        Debug.Log("[RemoveToEarnContext] Entering sacrifice context");
         var gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
         if (gameplayUIController == null) return;
 

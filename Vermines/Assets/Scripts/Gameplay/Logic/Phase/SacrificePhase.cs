@@ -73,16 +73,17 @@ namespace Vermines.Gameplay.Phases {
         public override void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
             base.OnPhaseEnding(player, logic);
-            GameEvents.OnCardSacrificedRequested.RemoveAllListeners();
-            Debug.Log($"[Client]: Phase {Type} ended for player {player.PlayerId} with logic {logic}.");
+            GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
         }
 
         #endregion
 
-        #region Events
+            #region Events
 
         public void OnCardSacrified(ICard cardSacrified)
         {
+            if (Type != PhaseType.Sacrifice)
+                return;
             Debug.Log("[Client]: Card Sacrified");
             int cardId = cardSacrified.ID;
             ICard card = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Find(card => card.ID == cardId);

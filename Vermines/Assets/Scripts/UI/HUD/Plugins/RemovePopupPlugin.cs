@@ -200,14 +200,12 @@ namespace Vermines.UI.Plugin
 
             removeButton.onClick.AddListener(() =>
             {
-                Debug.Log($"Remove card {_cardData.Data.Name} from the game.");
-                GameEvents.OnCardSacrificedRequested?.Invoke(_cardData);
+                GameEvents.OnCardSacrificedRequested.Invoke(_cardData);
                 Hide();
             });
 
             cancelButton.onClick.AddListener(() =>
             {
-                Debug.Log($"Cancel button clicked, exiting context.");
                 Hide();
             });
         }

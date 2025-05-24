@@ -1,4 +1,7 @@
-﻿public class SacrificeSkipStrategy : IDiscardPopupStrategy
+﻿using Vermines.Gameplay.Phases;
+using Vermines.Player;
+
+public class SacrificeSkipStrategy : IDiscardPopupStrategy
 {
     public string GetTitle() => "End of Sacrifice Phase";
     public string GetMessage() =>
@@ -6,7 +9,7 @@
 
     public void OnConfirm()
     {
-        GameEvents.OnAttemptNextPhase.Invoke(); // or something more specific
+        PhaseManager.Instance.Phases[PhaseManager.Instance.CurrentPhase].OnPhaseEnding(PlayerController.Local.PlayerRef, false);
     }
 
     public void OnCancel()

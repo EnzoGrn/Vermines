@@ -79,6 +79,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             {
                 UIContextManager.Instance.PushContext(new RemoveToEarnContext(_CardType));
             }
+
             GameEvents.OnCardSacrificedRequested.AddListener(CardToRemove);
         }
 
@@ -91,9 +92,8 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
 
             GameEvents.OnCardSacrificedRequested.RemoveListener(CardToRemove);
-
             PlayerController.Local.OnCardSacrified(card.ID);
-            //PlayerController.Local.NetworkEventCardEffect(Card.ID);
+            PlayerController.Local.NetworkEventCardEffect(Card.ID);
         }
 
         public override void NetworkEventFunction(PlayerRef player, string data)

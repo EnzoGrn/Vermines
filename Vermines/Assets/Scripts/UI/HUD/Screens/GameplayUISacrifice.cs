@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.UI.Plugin;
-using System.Linq;
 using Fusion;
 using Vermines.CardSystem.Enumerations;
 using Vermines.UI.Card;
@@ -169,7 +168,21 @@ namespace Vermines.UI.Screen
                 }
             }
 
-            Debug.Log($"[GameplayUISacrifice] Found {currentEntries.Count} cards of type {type}.");
+            foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].PlayedCards)
+            {
+                if (card.Data.Type == type)
+                {
+                    currentEntries.Add(new ShopCardEntry(card));
+                }
+            }
+
+            foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Discard)
+            {
+                if (card.Data.Type == type)
+                {
+                    currentEntries.Add(new ShopCardEntry(card));
+                }
+            }
         }
 
         #endregion
@@ -181,8 +194,8 @@ namespace Vermines.UI.Screen
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
-            UIContextManager.Instance.PopContext();
             Controller.Hide();
+            UIContextManager.Instance.PopContext();
         }
 
         public void OnCardClicked(ICard card)

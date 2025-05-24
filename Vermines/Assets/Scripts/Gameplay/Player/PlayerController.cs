@@ -280,6 +280,8 @@ namespace Vermines.Player {
 
                 response = CommandInvoker.ExecuteCommand(earnCommand);
 
+                Debug.Log($"[SERVER1]: {response.Message}");
+
                 if (response.Status == CommandStatus.Success) {
                     GameEvents.OnCardSacrified.Invoke(card);
                 }

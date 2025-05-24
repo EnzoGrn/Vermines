@@ -14,17 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Crusader
   Exemplars: 2
-  IsStartingCard: 0
+  IsStartingCard: 1
   Type: 0
   IsFamilyCard: 0
   _Family: 2
-  _Level: 2
+  _Level: 1
   Effects:
   - {fileID: 11400000, guid: 3bf17b65b3f444c429d407822ca4348d, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 10
+  _Eloquence: 0
   IsFree: 0
-  CurrentEloquence: 10
+  CurrentEloquence: 0
   _Souls: 20
   CurrentSouls: 20
   _SpriteName: 

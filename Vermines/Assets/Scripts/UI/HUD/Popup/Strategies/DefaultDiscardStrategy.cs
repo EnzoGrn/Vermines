@@ -1,4 +1,6 @@
-﻿using Vermines.UI.Card;
+﻿using Vermines.Gameplay.Phases;
+using Vermines.Player;
+using Vermines.UI.Card;
 
 public class DefaultDiscardStrategy : IDiscardPopupStrategy
 {
@@ -9,7 +11,7 @@ public class DefaultDiscardStrategy : IDiscardPopupStrategy
     public void OnConfirm()
     {
         HandManager.Instance.DiscardAllCards();
-        GameEvents.OnAttemptNextPhase.Invoke();
+        PhaseManager.Instance.Phases[PhaseManager.Instance.CurrentPhase].OnPhaseEnding(PlayerController.Local.PlayerRef, false);
     }
 
     public void OnCancel()

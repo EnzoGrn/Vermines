@@ -6,6 +6,7 @@ using Vermines.Gameplay.Phases;
 using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.UI.Card;
 using Vermines.UI.Popup;
+using Vermines.Player;
 
 namespace Vermines.UI.Screen
 {
@@ -197,7 +198,7 @@ namespace Vermines.UI.Screen
                 return;
             }
 
-            GameEvents.OnAttemptNextPhase.Invoke();
+            PhaseManager.Instance.Phases[PhaseManager.Instance.CurrentPhase].OnPhaseEnding(PlayerController.Local.PlayerRef, false);
         }
 
         /// <summary>

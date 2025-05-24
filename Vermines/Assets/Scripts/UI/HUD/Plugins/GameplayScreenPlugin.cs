@@ -40,6 +40,9 @@ namespace Vermines.UI.Plugin
         /// <summary>
         /// Hide the plugin.
         /// </summary>
-        public virtual void Hide() { }
+        public virtual void Hide()
+        {
+            gameObject.SetActive(false);
+        }
     }
 }

@@ -23,6 +23,7 @@ namespace Vermines.Gameplay.Phases {
         public PhaseType CurrentPhase { get; set; }
 
         private Dictionary<PhaseType, IPhase> _Phases;
+        public Dictionary<PhaseType, IPhase> Phases => _Phases;
 
         #endregion
 
