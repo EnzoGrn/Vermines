@@ -37,14 +37,6 @@ public class NpcController : MonoBehaviour
             scale.x *= -1;
             transform.localScale = scale;
         }
-
-        if (_hasARoutine)
-        {
-            // Get the RoutineManager component
-            _startPositon = transform.position;
-            _routineManager = FindFirstObjectByType<RoutineManager>();
-            _runningCoroutine = StartCoroutine(StartNpcRoutine());
-        }
     }
 
     private void Update()
@@ -57,15 +49,70 @@ public class NpcController : MonoBehaviour
     }
 
     /// <summary>
+    /// Start the NPC routine if it has one.
+    /// </summary>
+    public void StartRoutine()
+    {
+        if (_hasARoutine)
+        {
+            // Get the RoutineManager component
+            _routineManager = FindFirstObjectByType<RoutineManager>();
+            _runningCoroutine = StartCoroutine(StartNpcRoutine());
+        }
+
+        _startPositon = transform.position;
+    }
+
+    public void ResetNpc()
+    {
+        if (_hasARoutine)
+        {
+            if (_currentSlot != null)
+            {
+                _currentSlot.Free();
+                _currentSlot = null;
+            }
+
+            if (_agent.isOnNavMesh)
+            {
+                if (!_agent.isStopped)
+                {
+                    _agent.isStopped = true; // Stop the agent
+                }
+
+                if (_agent.hasPath)
+                {
+                    _agent.ResetPath();
+                }
+            }
+        
+            _animator.SetBool("IsWalking", false);
+            _isFacingToTheRight = true; // Reset facing direction
+        
+            _interruptPos = Vector3.zero;
+            IsRoutineRunning = false;
+            _runningCoroutine = null;
+        }
+
+        transform.position = _startPositon;
+    }
+
+    /// <summary>
     /// Update the NPC's facing direction based on the current slot position and player position.
     /// </summary>
     private void UpdateNpcFacingDirection()
     {
-        if (!_currentSlot)
-            return;
-            
-        Vector3 toDestination = (_currentSlot.SlotTransform.position - transform.position).normalized;
         Vector3 toPlayer = (Camera.main.transform.position - transform.position).normalized;
+        Vector3 toDestination;
+
+        if (!_currentSlot)
+        {
+            toDestination = (_startPositon - transform.position).normalized;
+        }
+        else
+        {
+            toDestination = (_currentSlot.SlotTransform.position - transform.position).normalized;
+        }
 
         // Only care about XZ axis
         toDestination.y = 0;
@@ -144,6 +191,9 @@ public class NpcController : MonoBehaviour
     /// <param name="position"></param>
     public void Interruption(Vector3 position)
     {
+        if (!_hasARoutine)
+            return;
+
         _interruptPos = position;
 
         // Start animation
@@ -155,10 +205,13 @@ public class NpcController : MonoBehaviour
     /// </summary>
     public void OnInterruptionDone()
     {
+        // TODO: (see if needed) if !IsRoutineRunning maybe call resumeCoroutine() or call a resume when leaving a place like the courtyard 
+
         if (IsRoutineRunning)
         {
             IsRoutineRunning = false;
-            StopCoroutine(_runningCoroutine);
+            if (_runningCoroutine != null)
+                StopCoroutine(_runningCoroutine);
             _agent.isStopped = true; // Stop the agent
             _agent.ResetPath();
             MoveTo(_interruptPos);
@@ -173,6 +226,9 @@ public class NpcController : MonoBehaviour
     /// </summary>
     public void ResumeCoroutine()
     {
+        if (!_hasARoutine)
+            return;
+
         // Resume the routine
         if (!IsRoutineRunning)
         {

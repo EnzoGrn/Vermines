@@ -24,6 +24,39 @@ public class RoutineManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Start the NPC routine if it has one.
+    /// </summary>
+    public void StartRoutine()
+    {
+        foreach (NpcController npc in _npcs)
+        {
+            if (npc.gameObject.activeSelf == false)
+            {
+                npc.gameObject.SetActive(true);
+            }
+
+            // Start the NPC routine
+            if (npc.IsRoutineRunning == false)
+            {
+                npc.StartRoutine();
+            }
+        }
+    }
+
+    public void StopRoutine()
+    {
+        foreach (NpcController npc in _npcs)
+        {
+            if (npc.gameObject.activeSelf == true)
+            {
+                npc.gameObject.SetActive(false);
+            }
+            // Reset the NPC position
+            npc.ResetNpc();
+        }
+    }
+
+    /// <summary>
     /// Get a random destination slot from the list of PointOfInterest.
     /// </summary>
     /// <returns></returns>
@@ -56,6 +89,11 @@ public class RoutineManager : MonoBehaviour
         return chosenSlot;
     }
 
+    /// <summary>
+    /// Get a random point in a radius around the center position.
+    /// </summary>
+    /// <param name="center"></param>
+    /// <returns></returns>
     private Vector3 GetRandomPointInRadius(Vector3 center)
     {
         Vector2 randomPoint = Random.insideUnitCircle * _radiusOfAreaInterruption;
@@ -90,6 +128,9 @@ public class RoutineManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Resume the NPC routine after an interruption.
+    /// </summary>
     public void ResumeNpcRoutine()
     {
         foreach (NpcController npc in _npcs)
