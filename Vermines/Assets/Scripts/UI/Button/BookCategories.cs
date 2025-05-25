@@ -37,9 +37,9 @@ namespace Vermines.UI {
         [Header("Linked Page")]
 
         [SerializeField]
-        private GameObject _LinkedPage;
+        private MenuScreenPlugin _LinkedPage;
 
-        public GameObject LinkedPage => _LinkedPage;
+        public MenuScreenPlugin LinkedPage => _LinkedPage;
 
         #endregion
 
@@ -68,7 +68,10 @@ namespace Vermines.UI {
             _ButtonBorder?.SetActive(isActive);
             _Cursor?.SetActive(isActive);
             _Toggle?.SetActive(isActive);
-            _LinkedPage?.SetActive(isActive);
+            _LinkedPage?.gameObject.SetActive(isActive);
+
+            if (isActive)
+                _LinkedPage?.Show(_SettingsScreen);
         }
 
         #endregion
