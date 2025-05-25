@@ -4,6 +4,9 @@ using OMGG.Menu.Tools;
 using UnityEngine.UI;
 using UnityEngine;
 using Fusion;
+using System.Collections.Generic;
+using Vermines.UI;
+using System.Threading.Tasks;
 
 namespace Vermines.Menu.Screen {
 
@@ -24,6 +27,22 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         [InlineHelp, SerializeField]
         protected Button _BackButton;
+
+        [Header("Book Navigation")]
+
+        [SerializeField]
+        private List<BookCategories> _Categories;
+
+        private BookCategories _CurrentSelectedCategory;
+
+        #endregion
+
+        #region Content
+
+        [Header("Content")]
+
+        [SerializeField]
+        private GameObject _Content;
 
         #endregion
 
@@ -147,15 +166,35 @@ namespace Vermines.Menu.Screen {
             base.Init();
 
             InitUser();
+
+            _Content?.SetActive(gameObject.activeSelf);
+
+            foreach (var category in _Categories) {
+                category.Init(this);
+                category.SetActiveCategorie(false);
+            }
+            SelectCategory(_Categories[0]);
         }
 
         /// <summary>
         /// The screen show method.
         /// Calls partial method <see cref="ShowUser"/> to be implemented on the SDK side.
         /// </summary>
-        public override void Show()
+        public override async void Show()
         {
+            if (Controller.GetLastScreen(out MenuUIScreen screen) && screen.GetType() == typeof(VMUI_MainMenu))
+                (screen as VMUI_MainMenu)?.DeactiveButton();
             base.Show();
+
+            AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(0);
+
+            float duration = stateInfo.length;
+
+            await Task.Delay((int)(duration * 1000));
+
+            _Content?.SetActive(true);
+
+            SelectCategory(_Categories[0]);
 
             _EntryFramerate.SetOptions(_GraphicsSettings.CreateFramerateOptions, _GraphicsSettings.Framerate, s => (s == -1 ? "Platform Default" : s.ToString()));
 
@@ -183,6 +222,8 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         public override void Hide()
         {
+            if (Controller.GetLastScreen(out MenuUIScreen screen) && screen.GetType() == typeof(VMUI_MainMenu))
+                (screen as VMUI_MainMenu)?.ActiveButton();
             base.Hide();
 
             HideUser();
@@ -206,6 +247,17 @@ namespace Vermines.Menu.Screen {
             SaveChangesUser();
         }
 
+        public void SelectCategory(BookCategories category)
+        {
+            if (_CurrentSelectedCategory == category)
+                return;
+            if (_CurrentSelectedCategory != null)
+                _CurrentSelectedCategory.SetActiveCategorie(false);
+            _CurrentSelectedCategory = category;
+
+            _CurrentSelectedCategory.SetActiveCategorie(true);
+        }
+
         #endregion
 
         #region Events
@@ -215,6 +267,7 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
+            _Content?.SetActive(false);
             Controller.HideModal(this);
         }
 

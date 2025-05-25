@@ -31,6 +31,8 @@ namespace OMGG.Menu.Screen {
         /// </summary>
         protected Animator _Animator;
 
+        protected Animator Animator => _Animator ?? (_Animator = GetComponent<Animator>());
+
         /// <summary>
         /// The hide animation coroutine.
         /// </summary>
