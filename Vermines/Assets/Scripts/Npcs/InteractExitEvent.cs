@@ -20,12 +20,12 @@ public class InteractExitEvent : StateMachineBehaviour
             }
             else
             {
-                Debug.LogWarning($"Script 'ScriptDeMonPrefab' not found from {animator.gameObject.name}");
+                Debug.LogWarning($"[OnStateExit]: NpcController not found from {animator.gameObject.name}");
             }
         }
         else
         {
-            Debug.LogWarning($"GameObject {animator.gameObject.name} doesn't have parent");
+            Debug.LogWarning($"[OnStateExit]: GameObject {animator.gameObject.name} doesn't have parent");
         }
     }
 }
