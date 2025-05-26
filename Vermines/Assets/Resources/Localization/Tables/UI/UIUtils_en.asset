@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UIUtils_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: fd60ce5b03f03914796b99917545f236, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 10350714880
+    m_Localized: Close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 73391104000
+    m_Localized: Don't forget to activate your partisans' powers.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1247523594240
+    m_Localized: The Courtyard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1227936194560
+    m_Localized: The City
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1203298852864
+    m_Localized: The Market
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3782237970432
+    m_Localized: Proceed to Gain Phase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4012412985344
+    m_Localized: Proceed to Action Phase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4039248142336
+    m_Localized: Proceed to Resolution Phase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4062866268160
+    m_Localized: Pass to Next Player
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4111939624960
+    m_Localized: Unknown Phase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4136274976768
+    m_Localized: It is not your time yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1058564054671360
+    m_Localized: Done
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1061831111303168
+    m_Localized: Let me know where I'll be working. Only one card can be changed
+      in each of them.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

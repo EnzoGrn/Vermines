@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using OMGG.Network.Fusion;
 using OMGG.DesignPattern;
@@ -21,6 +21,7 @@ namespace Vermines {
     using Vermines.Gameplay.Phases;
     using Vermines.HUD;
     using Vermines.HUD.Card;
+    using Mono.Cecil.Cil;
 
     public class GameInitializer : NetworkBehaviour {
 
@@ -34,10 +35,9 @@ namespace Vermines {
             if (Runner.IsServer)
             {
                 Debug.Log("LoadYourAsyncScene.");
+                Runner.LoadScene("UIv3", LoadSceneMode.Additive);
                 Runner.LoadScene("EnvironmentDay", LoadSceneMode.Additive);
                 Runner.LoadScene("GameplayCameraTravelling", LoadSceneMode.Additive);
-                Runner.LoadScene("UI v2", LoadSceneMode.Additive);
-                //Runner.LoadScene("Environment", LoadSceneMode.Additive); TODO: Uncomment this
             }
         }
 

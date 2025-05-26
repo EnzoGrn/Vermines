@@ -1,11 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Splines;
 using Unity.Cinemachine;
 using System.Collections.Generic;
 using OMGG.DesignPattern;
 using UnityEngine.Events;
-using Vermines.HUD;
 using Vermines.UI;
+using Vermines.ShopSystem.Enumerations;
+using Vermines.UI.Screen;
 
 public class CamManager : MonoBehaviourSingleton<CamManager>
 {
@@ -35,6 +36,8 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
     // If different of 0 must be a special location to go after completed first cam animation to return in the none location
     private int _GoOnSpecialLocation = 0;
 
+    private RoutineManager _routineManager;
+
     #endregion
 
     #region Methods
@@ -45,7 +48,14 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
 
         if (_CinemachineSplineDolly == null )
         {
-            Debug.Log("Cannot find _CinemachineSplineDolly");
+            Debug.Log("[CamManager]: Cannot find _CinemachineSplineDolly");
+        }
+
+        _routineManager = FindFirstObjectByType<RoutineManager>();
+
+        if (!_routineManager)
+        {
+            Debug.LogError("[CamManager]: Cannot find RoutineManager in the scene, please add it to the scene.");
         }
     }
 
@@ -61,7 +71,7 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
             _SplineCameraAnimator.Rebind();  // Resets the animator's state
             _SplineCameraAnimator.Play(0, -1, 0f);  // Restart animation from the beginning
         }
-            
+
     }
 
     /// <summary>
@@ -74,7 +84,7 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
 
         if (splineID == _SplineID) return;
 
-        // TODO: Change the (int)CamSplineType.None to futur last index of none shop location OR use different container (maybe both) 
+        // TODO: Change the (int)CamSplineType.None to futur last index of none shop location OR use different container (maybe both)
         if (splineID > ((int)CamSplineType.MainViewToCourtyard - 1) && _SplineID > ((int)CamSplineType.MainViewToCourtyard - 1))
         {
             // splineId - LastNoneShop + (LastShop - splineId)
@@ -167,7 +177,7 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
     public void GoOnCourtyardLocation()
     {
         if (_IsAnimated) return;
-        
+
         if (_SplineID == (int)CamSplineType.MainViewToSacrifice)
         {
             OnSplineAnimationRequest((int)CamSplineType.None);
@@ -191,7 +201,7 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
     public void OnCamSplineCompleted()
     {
         Debug.Log("[CamManager]: OnCamSplineCompleted");
-         
+
         _SplineCameraAnimator.enabled = false;
         _IsAnimated = false;
 
@@ -199,30 +209,45 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
 
         if (_GoOnSpecialLocation != 0)
         {
-            // UIManager.Instance.OpenShopCourtyard();
             OnSplineAnimationRequest(_GoOnSpecialLocation);
             _GoOnSpecialLocation = (int)CamSplineType.None;
+            Debug.Log("[CamManager]: Resume Npc Routine now");
+            _routineManager.ResumeNpcRoutine();
         }
 
-        if (!UIManager.Instance)
+        GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+
+        if (!gameplayUIController)
             return;
+
+        gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
+        Debug.Log($"[CamManager]: Check the current spline type {((CamSplineType)_SplineID).ToString()}");
 
         switch ((CamSplineType)_SplineID)
         {
+            case CamSplineType.None:
+                _routineManager.ResumeNpcRoutine();
+                Debug.Log("[CamManager]: Resume Npc Routine now");
+                break;
             case CamSplineType.MainViewToCourtyard:
-                UIManager.Instance.OpenShopCourtyard();
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Courtyard, lastScreen);
+                _routineManager.InterruptNpcRoutine();
                 break;
             case CamSplineType.MarketToCourtyard:
-                UIManager.Instance.OpenShopCourtyard();
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Courtyard, lastScreen);
+                _routineManager.InterruptNpcRoutine();
                 break;
             case CamSplineType.MainViewToMarket:
-                UIManager.Instance.OpenShopMarket();
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Market, lastScreen);
+                _routineManager.ResumeNpcRoutine();
                 break;
             case CamSplineType.CourtyardToMarket:
-                UIManager.Instance.OpenShopMarket();
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Market, lastScreen);
+                _routineManager.ResumeNpcRoutine();
                 break;
             case CamSplineType.MainViewToSacrifice:
-                UIManager.Instance.OpenTable();
+                gameplayUIController.Show<GameplayUITable>();
+                _routineManager.ResumeNpcRoutine();
                 break;
         }
     }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using OMGG.DesignPattern;
 using UnityEngine;
 using Fusion;
@@ -91,6 +91,8 @@ namespace Vermines.Gameplay.Cards.Effect {
             ICommand spendCommand = new SpendCommand(player, Amount, DataToSpend);
 
             CommandInvoker.ExecuteCommand(spendCommand);
+
+            Debug.Log($"[SpendEffect] Player {player} spend {Amount} {DataToSpend}.");
 
             base.Play(player);
         }

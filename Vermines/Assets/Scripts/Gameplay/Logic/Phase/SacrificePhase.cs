@@ -1,15 +1,15 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Phases {
 
-    using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
-    using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.HUD;
     using Vermines.Player;
+    using Vermines.UI.GameTable;
+    using Vermines.UI;
+    using Vermines.UI.Screen;
 
     public class SacrificePhase : APhase {
 
@@ -32,7 +32,6 @@ namespace Vermines.Gameplay.Phases {
 
         public SacrificePhase()
         {
-            GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
         }
 
         #region Override Methods
@@ -49,17 +48,21 @@ namespace Vermines.Gameplay.Phases {
 
             List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
 
-            foreach (ICard card in playedCards) {
-                foreach (IEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Passive)
-                        effect.Play(_CurrentPlayer);
-                }
-            }
+            GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
 
             if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
-                HUDManager.instance.OpenDeskOverlay();
-            else
+            {
+                GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+                if (gameplayUIController != null)
+                {
+                    gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
+                    gameplayUIController.Show<GameplayUITable>(lastScreen);
+                }
+            }
+            else if (playedCards.Count == 0)
+            {
                 OnPhaseEnding(_CurrentPlayer, true);
+            }
         }
 
         public override void Reset()
@@ -67,19 +70,27 @@ namespace Vermines.Gameplay.Phases {
             _NumberOfCardSacrified = 0;
         }
 
+        public override void OnPhaseEnding(PlayerRef player, bool logic = false)
+        {
+            base.OnPhaseEnding(player, logic);
+            GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
+        }
+
         #endregion
 
-        #region Events
+            #region Events
 
-        public void OnCardSacrified(int cardId)
+        public void OnCardSacrified(ICard cardSacrified)
         {
+            if (Type != PhaseType.Sacrifice)
+                return;
             Debug.Log("[Client]: Card Sacrified");
+            int cardId = cardSacrified.ID;
             ICard card = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Find(card => card.ID == cardId);
-
-            Debug.Log($"[Client]: Card {card.ID} is now sacrificed");
 
             if (card != null)
             {
+                Debug.Log($"[Client]: Card {card.ID} is now sacrificed");
                 if (_CurrentPlayer == PlayerController.Local.PlayerRef)
                 {
                     PlayerController.Local.OnCardSacrified(card.ID);
@@ -87,13 +98,19 @@ namespace Vermines.Gameplay.Phases {
 
                 _NumberOfCardSacrified++;
 
-                if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value)
+                if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value
+                    || GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Count == 0)
                 {
+                    // Pop up context
                     OnPhaseEnding(_CurrentPlayer, true);
                 }
             }
+            else
+            {
+                Debug.LogWarning($"[Client]: Card {cardId} not found in played cards.");
+                GameEvents.OnCardSacrifiedRefused.Invoke(cardSacrified);
+            }
         }
-
         #endregion
     }
 }

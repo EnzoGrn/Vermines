@@ -77,10 +77,13 @@ public class HoverPhaseLocation : IGGD_Behaviour {
 
     private void OnMouseDown()
     {
+        Debug.Log("OnMouseDown Detected");
+        return; // TODO: remove this
         if (_CameraManager == null)
             return;
         if (!_CanHoverLocations || !_CanClickLocations)
-            return;        
+            return;
+
         _CanHoverLocations = false;
 
         ApplyOutline(false);

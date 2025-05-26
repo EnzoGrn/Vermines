@@ -1,9 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Splines;
 using DG.Tweening;
 using Vermines.CardSystem.Elements;
-using Vermines.UI.GameTable;
+using UnityEditor.Graphs;
 
 namespace Vermines.UI.Card
 {
@@ -13,22 +12,22 @@ namespace Vermines.UI.Card
 
         [Header("References")]
         [SerializeField] private GameObject cardPrefab;
-        [SerializeField] private SplineContainer splineContainer;
         [SerializeField] private Transform spawnPoint;
-        [SerializeField] private Transform handContainer;
+        [SerializeField] private HandLayout handLayout;
 
         [Header("Settings")]
         [SerializeField] private int maxHandSize = 50;
 
-        [Header("Debug")]
-        [SerializeField] private bool debugMode;
-
         private readonly List<GameObject> handCards = new();
+
+        public bool HasCards() => handCards.Count > 0;
 
         private void Awake()
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
+
+            GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
         }
 
         private void Start()
@@ -36,37 +35,23 @@ namespace Vermines.UI.Card
             GameEvents.OnCardDrawn.AddListener(DrawCard);
         }
 
-        private void Update()
-        {
-            if (debugMode && Input.GetKeyDown(KeyCode.Space))
-                DrawCard();
-        }
-
         #region Public Methods
 
-        public void DrawCard()
+        public void DrawCard(ICard card)
         {
             if (handCards.Count >= maxHandSize) return;
 
-            GameObject card = CreateCard();
-            handCards.Add(card);
+            Debug.Log($"[HandManager] Drawing card: {card.Data.Name}");
+            GameObject cardGO = CreateCard();
 
-            UpdateCardPositions();
-        }
-
-        public void DrawCard(ICard cardData)
-        {
-            if (handCards.Count >= maxHandSize) return;
-
-            GameObject card = CreateCard();
-            if (card.TryGetComponent<CardDisplay>(out var display))
-                display.Display(cardData, null);
+            if (cardGO.TryGetComponent<CardDisplay>(out var display))
+                display.Display(card, null);
             else
                 Debug.LogWarning("CardDisplay component missing on card prefab.");
 
-            handCards.Add(card);
+            handCards.Add(cardGO);
 
-            UpdateCardPositions();
+            RefreshHand();
         }
 
         public void DrawCards(List<ICard> cards, int count)
@@ -79,7 +64,18 @@ namespace Vermines.UI.Card
         {
             handCards.Remove(card);
             card.transform.DOKill(true);
-            UpdateCardPositions();
+            RefreshHand();
+        }
+
+        private void OnCardDiscarded(ICard card)
+        {
+            GameObject go = HandManager.Instance.GetCardDisplayGO(card);
+            if (go != null)
+            {
+                HandManager.Instance.RemoveCard(go);
+                go.transform.DOKill(true);
+                Destroy(go);
+            }
         }
 
         public void AddCard(GameObject card)
@@ -87,16 +83,7 @@ namespace Vermines.UI.Card
             if (!handCards.Contains(card))
                 handCards.Add(card);
 
-            UpdateCardPositions();
-        }
-
-        public void LockAllCards(bool state)
-        {
-            foreach (var card in handCards)
-            {
-                if (card.TryGetComponent<CardHover>(out var hover))
-                    hover.SetLocked(state);
-            }
+            RefreshHand();
         }
 
         public void DiscardAllCards()
@@ -104,76 +91,38 @@ namespace Vermines.UI.Card
             List<GameObject> cards = new List<GameObject>(handCards);
             foreach (var card in cards)
             {
-                Debug.Log("[HandManager] Discard all cards");
-                CardDisplay cardBase = card.GetComponent<CardDisplay>();
-                GameEvents.OnCardDiscardRequestedNoEffect.Invoke(cardBase.Card);
+                Debug.Log("[HandManager] Discarding card.");
+                CardDisplay display = card.GetComponent<CardDisplay>();
+                if (display != null)
+                    GameEvents.OnCardDiscardedRequestedNoEffect.Invoke(display.Card);
             }
-        }
-
-        public bool HasRemainingCards() => handCards.Count > 0;
-
-        #endregion
-
-        #region Positioning
-
-        public void UpdateCardPositions()
-        {
-            LockAllCards(true);
-
-            float spacing = 1f / maxHandSize;
-            float startT = 0.5f - (handCards.Count - 1) * spacing / 2;
-            Spline spline = splineContainer.Spline;
-
-            for (int i = 0; i < handCards.Count; i++)
-            {
-                Debug.Log("Update dotween");
-                float t = startT + i * spacing;
-                Vector3 worldOffset = handContainer.position;
-                Vector3 position = (Vector3)spline.EvaluatePosition(t) + worldOffset;
-                Vector3 forward = spline.EvaluateTangent(t);
-                Vector3 up = spline.EvaluateUpVector(t);
-                Quaternion rotation = Quaternion.LookRotation(up, Vector3.Cross(up, forward).normalized);
-
-                var card = handCards[i];
-                var localCard = card;
-
-                card.transform.DOMove(position, 0.25f);
-                card.transform.DORotateQuaternion(rotation, 0.25f);
-
-                DOVirtual.DelayedCall(0.25f, () =>
-                {
-                    if (localCard != null && localCard.TryGetComponent<CardHover>(out var hover))
-                        hover.SetInitialPosition();
-                });
-            }
-
-            DOVirtual.DelayedCall(0.3f, () => LockAllCards(false));
-        }
-
-        #endregion
-
-        #region Utils
-
-        private GameObject CreateCard()
-        {
-            GameObject card = Instantiate(cardPrefab, spawnPoint.position, spawnPoint.rotation, handContainer);
-            card.name = $"Card_{handCards.Count + 1}";
-            //card.AddComponent<CardHover>();
-            //card.AddComponent<DraggableCard>();
-            return card;
         }
 
         public GameObject GetCardDisplayGO(ICard card)
         {
             foreach (var cardGO in handCards)
             {
-                var display = cardGO.GetComponent<CardDisplay>();
-                if (display != null && display.Card.ID == card.ID)
-                {
+                if (cardGO.TryGetComponent<CardDisplay>(out var display) && display.Card.ID == card.ID)
                     return cardGO;
-                }
             }
             return null;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private GameObject CreateCard()
+        {
+            GameObject card = Instantiate(cardPrefab, spawnPoint.position, spawnPoint.rotation, handLayout.transform);
+            card.name = $"Card_{handCards.Count + 1}";
+            card.transform.localScale = Vector3.one * 2f;
+            return card;
+        }
+
+        private void RefreshHand()
+        {
+            handLayout.UpdateLayout(handCards);
         }
 
         #endregion

@@ -1,4 +1,4 @@
-using OMGG.DesignPattern;
+﻿using OMGG.DesignPattern;
 using UnityEngine;
 using System.Linq;
 using Fusion;
@@ -36,7 +36,8 @@ namespace Vermines.Gameplay.Phases {
 
             if (response.Status == CommandStatus.Success) {
                 foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
-                    ShopManager.Instance.ReceiveFullShopList(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
+                    //ShopManager.Instance.ReceiveFullShopList(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
+                    GameEvents.OnShopRefilled.Invoke(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
             }
 
             // Refill Hand

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
 using Vermines.UI.Card;
@@ -11,6 +11,7 @@ namespace Vermines.UI.GameTable
         private CanvasGroup _canvasGroup;
         private RectTransform _rectTransform;
         private Transform _originalParent;
+        private Vector2 _originalPosition;
         private ICard _card;
 
         public void Init(ICard card)
@@ -44,7 +45,8 @@ namespace Vermines.UI.GameTable
         public void OnBeginDrag(PointerEventData eventData)
         {
             _originalParent = transform.parent;
-            transform.SetParent(transform.root);
+            _originalPosition = _rectTransform.anchoredPosition;
+            //transform.SetParent(transform.root);
             _canvasGroup.blocksRaycasts = false;
         }
 
@@ -56,6 +58,11 @@ namespace Vermines.UI.GameTable
         public void OnEndDrag(PointerEventData eventData)
         {
             _canvasGroup.blocksRaycasts = true;
+            CardDropHandler dropHandler = eventData.pointerDrag?.GetComponent<CardDropHandler>();
+            if (dropHandler == null)
+            {
+                ReturnToOriginalPosition();
+            }
         }
 
         public void OnDroppedOnTable()
@@ -70,7 +77,7 @@ namespace Vermines.UI.GameTable
         public void ReturnToOriginalPosition()
         {
             transform.SetParent(_originalParent);
-            _rectTransform.anchoredPosition = Vector2.zero;
+            _rectTransform.anchoredPosition = _originalPosition;
             _canvasGroup.blocksRaycasts = true;
         }
     }

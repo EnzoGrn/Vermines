@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using OMGG.Network.Fusion;
 using UnityEngine;
 using Fusion;
@@ -27,7 +27,7 @@ namespace Vermines {
 
         #region Player's Data
 
-        [Networked]
+        [Networked, OnChangedRender(nameof(OnPlayerDataUpdated))]
         [Capacity(32)]
         [HideInInspector]
         public NetworkDictionary<PlayerRef, PlayerData> PlayerData { get; }
@@ -35,6 +35,11 @@ namespace Vermines {
         public Dictionary<PlayerRef, PlayerDeck> PlayerDeck { get; set; } = new Dictionary<PlayerRef, PlayerDeck>();
 
         #endregion
+
+        public void OnPlayerDataUpdated()
+        {
+            GameEvents.InvokeOnPlayerUpdated(PlayerData);
+        }
 
         #region Shop's Data
 

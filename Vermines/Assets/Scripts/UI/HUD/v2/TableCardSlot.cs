@@ -6,7 +6,6 @@ namespace Vermines.UI.Card
 {
     public class TableCardSlot : CardSlotBase
     {
-
         public void Setup(CardType accepted)
         {
             _acceptedType = accepted;
