@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Vermines.GameDesign.Initializer;
 
-public class HoverPhaseLocation : MonoBehaviour
-{
+public class HoverPhaseLocation : IGGD_Behaviour {
     #region Exposed Fields
     [SerializeField] private CamSplineType _CamSplineType;
     [SerializeField] private Material _OutlineMaterial;
@@ -20,53 +20,57 @@ public class HoverPhaseLocation : MonoBehaviour
     private Color _TransparentColor = new(0f, 1f, 0f, 0f); // Transparent color
     #endregion
 
-    private void Awake()
+    CamManager _CameraManager;
+
+    public override void Init()
     {
-        _InstanceOfMaterial = new Material(_OutlineMaterial);
-        _PropBlock = new MaterialPropertyBlock();
+        if (_CameraManager == null)
+            _CameraManager = FindAnyObjectByType<CamManager>(FindObjectsInactive.Include);
 
-        foreach (MeshRenderer r in _MeshRendererList)
-        {
+        // TODO: Called the Init() methods when launch a game.
+        if (_CameraManager) {
+            _InstanceOfMaterial = new Material(_OutlineMaterial);
+            _PropBlock = new MaterialPropertyBlock();
 
-            // Get the current list of materials
-            Material[] materials = r.materials;
+            foreach (MeshRenderer r in _MeshRendererList) {
+                // Get the current list of materials
+                Material[] materials = r.materials;
 
-            // Create a new array with one more slot
-            Material[] newMaterials = new Material[materials.Length + 1];
+                // Create a new array with one more slot
+                Material[] newMaterials = new Material[materials.Length + 1];
 
-            // Copy the existing materials to the new array
-            materials.CopyTo(newMaterials, 0);
+                // Copy the existing materials to the new array
+                materials.CopyTo(newMaterials, 0);
 
-            // Add the new material to the last slot in the new array
-            newMaterials[materials.Length] = _InstanceOfMaterial;
+                // Add the new material to the last slot in the new array
+                newMaterials[materials.Length] = _InstanceOfMaterial;
 
-            // Assign the new material array to the MeshRenderer
-            r.materials = newMaterials;
+                // Assign the new material array to the MeshRenderer
+                r.materials = newMaterials;
+            }
+
+            ApplyOutline(false);
+
+            //CamManager.Instance.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
+            CamManager.Instance.OnCamLocationChanged.AddListener(OnCamAnimationCompleted);
+            CamManager.Instance.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
         }
-        ApplyOutline(false);
-
-        //CamManager.Instance.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
-        CamManager.Instance.OnCamLocationChanged.AddListener(OnCamAnimationCompleted);
-        CamManager.Instance.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
     }
-
 
     private void OnMouseEnter()
     {
-        Debug.Log("OnMouseEnter: Set the color of the material to green");
-
+        if (_CameraManager == null)
+            return;
         if (_CanHoverLocations)
             ApplyOutline(true);
-
         foreach(HoverPhaseLocation location in _Locations)
-        {
             location.ApplyOutline(false);
-        }
     }
 
     private void OnMouseExit()
     {
-        Debug.Log("OnMouseExit: Set the color of the material to transparent color");
+        if (_CameraManager == null)
+            return;
         if (_CanHoverLocations)
             ApplyOutline(false);
     }
@@ -75,11 +79,15 @@ public class HoverPhaseLocation : MonoBehaviour
     {
         Debug.Log("OnMouseDown Detected");
         return; // TODO: remove this
+        if (_CameraManager == null)
+            return;
         if (!_CanHoverLocations || !_CanClickLocations)
             return;
 
         _CanHoverLocations = false;
+
         ApplyOutline(false);
+
         CamManager.Instance.OnSplineAnimationRequest((int)_CamSplineType);
     }
 
@@ -97,12 +105,10 @@ public class HoverPhaseLocation : MonoBehaviour
 
     public void ApplyOutline(bool enable)
     {
-        foreach (MeshRenderer r in _MeshRendererList)
-        {
+        foreach (MeshRenderer r in _MeshRendererList) {
             r.GetPropertyBlock(_PropBlock);
             _PropBlock.SetColor("_OutlineColor", enable ? _OutlineColor : _TransparentColor);
             r.SetPropertyBlock(_PropBlock);
         }
     }
-
 }
