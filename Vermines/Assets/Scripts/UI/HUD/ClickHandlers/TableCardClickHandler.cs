@@ -1,6 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Vermines.CardSystem.Elements;
-using Vermines.ShopSystem.Enumerations;
+using Vermines.Gameplay.Phases;
+using Vermines.UI;
+using Vermines.UI.Popup;
 
 public class TableCardClickHandler : ICardClickHandler
 {
@@ -13,7 +15,6 @@ public class TableCardClickHandler : ICardClickHandler
 
     public void OnCardClicked(ICard card)
     {
-        Debug.Log($"[TableCardClickHandler] Card clicked: {card.Data.Name}");
-        //if (UIContextManager.Instance.HasContext()) return;
+        GameEvents.OnCardClicked.Invoke(card);
     }
 }

@@ -82,6 +82,8 @@ namespace Vermines.Gameplay.Cards.Effect {
                     PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
 
                     GameEvents.InvokeOnDrawCard(deck.Hand.Last());
+
+                    Debug.Log($"[DrawEffect] Player {player} drew a card from his deck. He drew {deck.Hand.Last().Data.Name}.");
                 }
             }
 

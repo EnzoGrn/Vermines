@@ -1,6 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
+using Vermines.UI.GameTable;
 
 namespace Vermines.UI.Card
 {
@@ -23,6 +24,11 @@ namespace Vermines.UI.Card
             if (CardDisplay == null)
             {
                 GameObject obj = Instantiate(_CardDisplayPrefab, transform);
+                DraggableCard draggableCard = obj.GetComponent<DraggableCard>();
+                if (draggableCard != null)
+                {
+                    Destroy(draggableCard);
+                }
                 CardDisplay = obj.GetComponent<CardDisplay>();
             }
 
@@ -38,6 +44,8 @@ namespace Vermines.UI.Card
                 Debug.Log($"[{GetType().Name}] Card {card.Data.Name} is new.");
             }
 
+            //Debug.Log($"[{GetType().Name}] Initializing slot {_SlotIndex} with card {card.Data.Name} of type {card.Data.Type}.");
+
             CardDisplay.gameObject.SetActive(true);
         }
 
@@ -45,7 +53,6 @@ namespace Vermines.UI.Card
         {
             if (CardDisplay != null)
             {
-                Debug.Log($"[{GetType().Name}] Resetting slot {_SlotIndex}");
                 CardDisplay.Clear();
                 CardDisplay.gameObject.SetActive(false);
             }
@@ -53,8 +60,7 @@ namespace Vermines.UI.Card
 
         public virtual bool CanAcceptCard(ICard card)
         {
-            Debug.Log($"[{GetType().Name}] Checking if card {card?.Data.Name} can be accepted in slot {_SlotIndex} of type {_acceptedType}.");
-            return card != null && (_acceptedType == CardType.None || card.Data.Type == _acceptedType);
+            return card != null && (_acceptedType == CardType.None || card.Data.Type == _acceptedType) && IsInteractable;
         }
 
         public virtual void SetAcceptedType(CardType type)
@@ -77,6 +83,11 @@ namespace Vermines.UI.Card
             {
                 Debug.LogWarning($"[{GetType().Name}] Cannot accept card {card.Data.Name} in slot {_SlotIndex}");
             }
+        }
+
+        public void SetClickHandler(ICardClickHandler handler)
+        {
+            CardDisplay.SetClickHandler(handler);
         }
 
         public int GetIndex() => _SlotIndex;

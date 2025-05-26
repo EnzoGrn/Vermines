@@ -1,4 +1,4 @@
-using OMGG.DesignPattern;
+﻿using OMGG.DesignPattern;
 using Fusion;
 using UnityEngine;
 
@@ -14,8 +14,12 @@ namespace Vermines.Player {
     using Vermines.HUD;
     using Vermines.Network.Utilities;
     using Vermines.ShopSystem.Commands;
+    using Vermines.ShopSystem.Data;
     using Vermines.ShopSystem.Enumerations;
     using Vermines.UI;
+    using Vermines.UI.Card;
+    using Vermines.UI.GameTable;
+    using Vermines.UI.Shop;
 
     public class PlayerController : NetworkBehaviour {
 
@@ -143,8 +147,6 @@ namespace Vermines.Player {
             CommandResponse response = CommandInvoker.ExecuteCommand(buyCommand);
 
             if (response.Status == CommandStatus.Success) {
-                TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[parameters.Player]);
-
                 GameEvents.OnCardPurchased.Invoke(shopType, slot);
 
                 Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[parameters.Player].Serialize()}");
@@ -161,11 +163,19 @@ namespace Vermines.Player {
 
             CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
 
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
             if (response.Status == CommandStatus.Success) {
-                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+                Debug.Log($"[SERVER]: {response.Message}");
+
+                //GameEvents.OnCardDiscarded.Invoke(card);
 
                 if (_DiscardedCardTrackerPerTurn.HasCard(card) && card.Data.Type == CardType.Tools && !card.Data.IsStartingCard) {
                     Debug.Log($"[SERVER]: This tool '{card.Data.Name}' card already discarded this turn");
+                    if (HasStateAuthority)
+                    {
+                        RPC_DiscardCardNoEffect(playerId, cardId);
+                    }
                 } else {
                     Debug.Log($"[SERVER]: {response.Message}");
 
@@ -174,15 +184,14 @@ namespace Vermines.Player {
                     foreach (AEffect effect in card.Data.Effects) {
                         if (effect.Type == EffectType.Discard) {
                             effect.Play(player);
-
-                            TurnManager.Instance.UpdatePlayer(GameDataStorage.Instance.PlayerData[player]);
                         }
                     }
+                    GameEvents.OnCardDiscarded.Invoke(card);
                 }
 
-                GameEvents.OnCardDiscarded.Invoke(card);
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
+                GameEvents.OnCardDiscardedRefused.Invoke(card);
             }
         }
 
@@ -201,6 +210,7 @@ namespace Vermines.Player {
                 ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
                 GameEvents.OnCardDiscarded.Invoke(card);
+                GameEvents.OnPlayerUpdated.Invoke(GameDataStorage.Instance.PlayerData[player]);
             }
             else
             {
@@ -217,10 +227,16 @@ namespace Vermines.Player {
 
             CommandResponse response = CommandInvoker.ExecuteCommand(cardPlayedCommand);
 
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
             if (response.Status == CommandStatus.Invalid)
+            {
+
                 Debug.LogWarning($"[SERVER]: {response.Message}");
+                GameEvents.OnCardPlayedRefused.Invoke(card);
+            }
             if (response.Status == CommandStatus.Success) {
-                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+                GameEvents.OnCardPlayed.Invoke(card);
 
                 foreach (AEffect effect in card.Data.Effects)
                     effect.OnAction("Play", player, card);
@@ -235,7 +251,7 @@ namespace Vermines.Player {
 
             if (card == null) {
                 Debug.LogError($"[SERVER]: Player {player} tried to sacrify a card that doesn't exist.");
-
+                GameEvents.OnCardSacrifiedRefused.Invoke(card);
                 return;
             }
 
@@ -264,12 +280,14 @@ namespace Vermines.Player {
 
                 response = CommandInvoker.ExecuteCommand(earnCommand);
 
+                Debug.Log($"[SERVER1]: {response.Message}");
+
                 if (response.Status == CommandStatus.Success) {
-                    GameDataStorage.Instance.PlayerData.TryGet(player, out PlayerData playerData);
-                    HUDManager.instance.UpdateSpecificPlayer(playerData);
+                    GameEvents.OnCardSacrified.Invoke(card);
                 }
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
+                GameEvents.OnCardSacrifiedRefused.Invoke(card);
             }
         }
 
@@ -298,7 +316,15 @@ namespace Vermines.Player {
 
             CommandResponse response = CommandInvoker.ExecuteCommand(replaceCommand);
 
-            // TODO: Update shop 'here' or in the ChangeCardCommand.
+            if (response.Status == CommandStatus.Success)
+            {
+                //ShopManager.Instance.ReceiveFullShopList(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
+                GameEvents.OnShopRefilled.Invoke(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
+            }
+            else
+            {
+                Debug.LogWarning($"[SERVER]: {response.Message}");
+            }
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -377,6 +403,12 @@ namespace Vermines.Player {
             if (card == null) {
                 Debug.LogError($"[SERVER]: Player {playerID} tried to called an network event for a card that doesn't exist.");
 
+                return;
+            }
+
+            if (data == null)
+            {
+                Debug.LogError($"[SERVER]: Player {playerID} tried to called an network event for a card with no data.");
                 return;
             }
 

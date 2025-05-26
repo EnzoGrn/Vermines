@@ -1,14 +1,13 @@
-using Fusion ;
+﻿using Fusion ;
 using OMGG.Network.Fusion;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Vermines.HUD;
 
 namespace Vermines.Gameplay.Phases {
 
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.UI;
+    using Vermines.UI.Plugin;
 
     public class PhaseManager : NetworkBehaviour {
 
@@ -24,6 +23,7 @@ namespace Vermines.Gameplay.Phases {
         public PhaseType CurrentPhase { get; set; }
 
         private Dictionary<PhaseType, IPhase> _Phases;
+        public Dictionary<PhaseType, IPhase> Phases => _Phases;
 
         #endregion
 
@@ -54,7 +54,7 @@ namespace Vermines.Gameplay.Phases {
 
         private void SetUpUI()
         {
-            TurnManager.Instance.Init(GameDataStorage.Instance.PlayerData);
+            GameEvents.OnPlayerInitialized.Invoke();
         }
 
         private void SetUpEvents()
@@ -113,13 +113,14 @@ namespace Vermines.Gameplay.Phases {
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
         public void RPC_UpdatePhaseUI()
         {
-            GameEvents.OnPhaseChanged?.Invoke(CurrentPhase);
+            GameEvents.OnPhaseChanged.Invoke(CurrentPhase);
         }
 
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
         public void RPC_UpdateTurnUI()
         {
-            GameEvents.OnTurnChanged?.Invoke(GameManager.Instance.CurrentPlayerIndex);
+            GameEvents.OnTurnChanged.Invoke(GameManager.Instance.CurrentPlayerIndex);
+            GameEvents.OnPhaseChanged.Invoke(CurrentPhase);
         }
 
         /// <summary>
@@ -146,7 +147,10 @@ namespace Vermines.Gameplay.Phases {
         {
             if (!Runner.IsServer || !GameManager.Instance.Start || Runner.ActivePlayers.Count() < GameManager.Instance.Config.MinPlayers.Value)
                 return;
-            TurnManager.Instance.UpdateAllPlayers(GameDataStorage.Instance.PlayerData);
+            foreach (var player in GameDataStorage.Instance.PlayerData)
+            {
+                GameEvents.OnPlayerUpdated.Invoke(player.Value);
+            }
             RPC_ProcessPhase(CurrentPhase, GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex));
         }
 

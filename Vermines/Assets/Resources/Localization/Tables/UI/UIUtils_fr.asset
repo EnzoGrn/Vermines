@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UIUtils_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: fd60ce5b03f03914796b99917545f236, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 10350714880
+    m_Localized: Fermer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 73391104000
+    m_Localized: N'oubliez pas d'activer les effets de vos partisans.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1247523594240
+    m_Localized: La Cour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1227936194560
+    m_Localized: La Ville
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1203298852864
+    m_Localized: "Le March\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3782237970432
+    m_Localized: "Passer \xE0 la phase de gain"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4012412985344
+    m_Localized: "Passer \xE0 la phase d\u2019action"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4039248142336
+    m_Localized: "Passer \xE0 la phase de r\xE9solution"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4062866268160
+    m_Localized: Passer au joueur suivant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4111939624960
+    m_Localized: Phase inconnue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4136274976768
+    m_Localized: "Ce n\u2019est pas encore votre moment."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1058564054671360
+    m_Localized: Valider
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1061831111303168
+    m_Localized: "Indiquez-moi les lieux o\xF9 je devrai intervenir. Une seule carte
+      pourra \xEAtre chang\xE9e dans chacun d\u2019eux."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

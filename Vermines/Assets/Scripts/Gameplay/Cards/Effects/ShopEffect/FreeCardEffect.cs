@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -74,19 +74,26 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
+            Debug.Log($"FreeCardEffect.Play() - Player: {player} - Amount: {_Amount} - ShopTarget: {_ShopTarget}");
             GameDataStorage.Instance.Shop.Sections[_ShopTarget].SetFree(true);
 
             // TODO: Link this to a shop event OnBuy that is link to a specific shop!!!
+            if (UIContextManager.Instance != null)
+                UIContextManager.Instance.PushContext(new FreeCardContext(_ShopTarget));
+
+            GameEvents.OnCardPurchased.AddListener(OnBuy);
         }
 
-        public void OnBuy(ICard card)
+        public void OnBuy(ShopType shopType, int slotId)
         {
+            if (_ShopTarget != shopType) return;
             _CurrentBuy++;
 
             if (_CurrentBuy == _Amount) {
                 GameDataStorage.Instance.Shop.Sections[_ShopTarget].SetFree(false);
 
-                // TODO: Unlink this to a shop event OnBuy that is link to a specific shop!!!
+                UIContextManager.Instance.PopContext();
+                GameEvents.OnCardPurchased.RemoveListener(OnBuy);
             }
         }
 

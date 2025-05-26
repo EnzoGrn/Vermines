@@ -13,6 +13,7 @@ namespace Vermines.UI.Popup
         [SerializeField] private GameObject popupConfirmPrefab;
 
         private GameObject _currentOverlay;
+        private GameObject _currentPopup;
 
         private void Awake()
         {
@@ -64,6 +65,42 @@ namespace Vermines.UI.Popup
                     }
                 }
             };
+            _currentPopup = popup;
+        }
+
+        public void CloseCurrentPopup()
+        {
+            if (_currentPopup != null)
+            {
+                var popupScript = _currentPopup.GetComponent<PopupConfirm>();
+                if (popupScript != null)
+                {
+                    popupScript.ForceClose();
+                }
+                else
+                {
+                    Destroy(_currentPopup);
+                }
+                _currentPopup = null;
+            }
+
+            if (_currentOverlay != null)
+            {
+                var canvasGroup = _currentOverlay.GetComponent<CanvasGroup>();
+                if (canvasGroup != null)
+                {
+                    canvasGroup.DOFade(0f, 0.2f).OnComplete(() =>
+                    {
+                        Destroy(_currentOverlay);
+                        _currentOverlay = null;
+                    });
+                }
+                else
+                {
+                    Destroy(_currentOverlay);
+                    _currentOverlay = null;
+                }
+            }
         }
 
         public void ShowBGOverlay()

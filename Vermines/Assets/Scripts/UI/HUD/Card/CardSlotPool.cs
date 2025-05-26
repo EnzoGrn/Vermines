@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.UI.Card
@@ -33,10 +33,15 @@ namespace Vermines.UI.Card
             else
             {
                 var obj = Instantiate(cardSlotPrefab, parent);
+                if (obj == null)
+                {
+                    Debug.LogError($"[CardSlotPool] Failed to instantiate card slot prefab.");
+                    return null;
+                }
                 slot = obj.GetComponent<ShopCardSlot>();
             }
 
-            slot.transform.SetParent(parent, false);
+            //slot.transform.SetParent(parent, false);
             return slot;
         }
 

@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Phases {
@@ -25,9 +25,9 @@ namespace Vermines.Gameplay.Phases {
         public ActionPhase()
         {
             GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
-            GameEvents.OnCardDiscardRequested.AddListener(OnDiscard);
-            GameEvents.OnCardDiscardRequestedNoEffect.AddListener(OnDiscardNoEffect);
-            GameEvents.OnCardPlayed.AddListener(OnCardPlayed);
+            GameEvents.OnCardDiscardedRequested.AddListener(OnDiscard);
+            GameEvents.OnCardDiscardedRequestedNoEffect.AddListener(OnDiscardNoEffect);
+            GameEvents.OnCardPlayedRequested.AddListener(OnCardPlayed);
         }
 
         #region Override Methods
@@ -36,9 +36,6 @@ namespace Vermines.Gameplay.Phases {
         {
             _CurrentPlayerRef = player;
             Debug.Log($"Phase {Type} is now running");
-
-            if (HUDManager.instance)
-                HUDManager.instance.EnablePhaseButton(false);
         }
 
         private void OnCardPurchaseRequested(ShopType type, int id)
@@ -69,6 +66,7 @@ namespace Vermines.Gameplay.Phases {
             else
             {
                 Debug.LogWarning("You can't discard a card if it's not your turn.");
+                GameEvents.OnCardDiscardedRefused.Invoke(card);
             }
         }
 
@@ -88,11 +86,18 @@ namespace Vermines.Gameplay.Phases {
             else
             {
                 Debug.LogWarning("You can't discard a card if it's not your turn.");
+                GameEvents.OnCardDiscardedRefused.Invoke(card);
             }
         }
 
-        private void OnCardPlayed(int cardId)
+        private void OnCardPlayed(ICard card)
         {
+            if (card == null)
+            {
+                Debug.LogWarning("Card is null, can't play.");
+                return;
+            }
+            int cardId = card.ID;
             // Switch the card from the hand deck to the played deck
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
             {
@@ -101,6 +106,7 @@ namespace Vermines.Gameplay.Phases {
             else
             {
                 Debug.LogWarning("You can't play a card if it's not your turn.");
+                GameEvents.OnCardPlayedRefused.Invoke(card);
             }
         }
         #endregion
