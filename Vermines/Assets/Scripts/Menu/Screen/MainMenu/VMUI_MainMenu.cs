@@ -136,10 +136,7 @@ namespace Vermines.Menu.Screen {
                     _UsernameLabel.text = ConnectionArgs.Username;
             }
 
-            _PlayButton.OnClicked     += OnPlayButtonPressed;
-            _SettingsButton.OnClicked += OnSettingsButtonPressed;
-            _QuitButton.OnClicked     += OnQuitButtonPressed;
-
+            ActiveButton();
             ShowUser();
         }
 
@@ -151,11 +148,26 @@ namespace Vermines.Menu.Screen {
         {
             base.Hide();
 
+            DeactiveButton();
+            HideUser();
+        }
+
+        #endregion
+
+        #region Methods
+
+        public void ActiveButton()
+        {
+            _PlayButton.OnClicked     += OnPlayButtonPressed;
+            _SettingsButton.OnClicked += OnSettingsButtonPressed;
+            _QuitButton.OnClicked     += OnQuitButtonPressed;
+        }
+
+        public void DeactiveButton()
+        {
             _PlayButton.OnClicked     -= OnPlayButtonPressed;
             _SettingsButton.OnClicked -= OnSettingsButtonPressed;
             _QuitButton.OnClicked     -= OnQuitButtonPressed;
-
-            HideUser();
         }
 
         #endregion

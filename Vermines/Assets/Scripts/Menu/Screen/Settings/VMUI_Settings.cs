@@ -4,10 +4,11 @@ using OMGG.Menu.Tools;
 using UnityEngine.UI;
 using UnityEngine;
 using Fusion;
+using System.Collections.Generic;
+using Vermines.UI;
+using System.Threading.Tasks;
 
 namespace Vermines.Menu.Screen {
-
-    using Dropdown = TMPro.TMP_Dropdown;
 
     /// <summary>
     /// Vermines Settings Menu UI partial class.
@@ -25,73 +26,21 @@ namespace Vermines.Menu.Screen {
         [InlineHelp, SerializeField]
         protected Button _BackButton;
 
+        [Header("Book Navigation")]
+
+        [SerializeField]
+        private List<BookCategories> _Categories;
+
+        private BookCategories _CurrentSelectedCategory;
+
         #endregion
 
-        #region Settings Fields
+        #region Content
 
-        [Header("Settings Fields")]
+        [Header("Content")]
 
-        /// <summary>
-        /// The fullscreen toggle.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected Toggle _UIFullscreen;
-
-        /// <summary>
-        /// The fullscreen GameObject to disable this option.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected GameObject _GoFullscreen;
-
-        /// <summary>
-        /// The framerate dropdown.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected Dropdown _UIFramerate;
-
-        /// <summary>
-        /// The graphics quality dropdown.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected Dropdown _UIGraphicsQuality;
-
-        /// <summary>
-        /// The resolution dropdown.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected Dropdown _UIResolution;
-
-        /// <summary>
-        /// The resoltion GameObject to disable this option.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected GameObject _GoResolution;
-
-        /// <summary>
-        /// The VSync toggle.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected Toggle _UIVSyncCount;
-
-        /// <summary>
-        /// The framerate dropdown option map.
-        /// </summary>
-        protected DropDownEntry<int> _EntryFramerate;
-
-        /// <summary>
-        /// The resolution dropdown option map.
-        /// </summary>
-        protected DropDownEntry<int> _EntryResolution;
-
-        /// <summary>
-        /// The graphics quality dropdown option map.
-        /// </summary>
-        protected DropDownEntry<int> _EntryGraphicsQuality;
-
-        /// <summary>
-        /// The graphics settings object.
-        /// </summary>
-        protected MenuGraphicsSettings _GraphicsSettings;
+        [SerializeField]
+        private GameObject _Content;
 
         #endregion
 
@@ -101,7 +50,6 @@ namespace Vermines.Menu.Screen {
         partial void InitUser();
         partial void ShowUser();
         partial void HideUser();
-        partial void SaveChangesUser();
 
         #endregion
 
@@ -114,22 +62,6 @@ namespace Vermines.Menu.Screen {
         public override void Awake()
         {
             base.Awake();
-
-            _EntryFramerate       = new DropDownEntry<int>(_UIFramerate, SaveChanges);
-            _EntryResolution      = new DropDownEntry<int>(_UIResolution, SaveChanges);
-            _EntryGraphicsQuality = new DropDownEntry<int>(_UIGraphicsQuality, SaveChanges);
-
-            _UIVSyncCount.onValueChanged.AddListener(_ => SaveChanges());
-            _UIFullscreen.onValueChanged.AddListener(_ => SaveChanges());
-
-            // TODO: Maybe create a Vermines Graphics Settings (that store data in a Vermines config and not an OMGG one.),
-            // Than inherits MenuGraphicsSettings and override variables getters and setters.
-            _GraphicsSettings = new MenuGraphicsSettings();
-
-            #if UNITY_IOS || UNITY_ANDROID
-                _goResolution.SetActive(false);
-                _goFullscreenn.SetActive(false);
-            #endif
 
             AwakeUser();
         }
@@ -147,32 +79,35 @@ namespace Vermines.Menu.Screen {
             base.Init();
 
             InitUser();
+
+            _Content?.SetActive(gameObject.activeSelf);
+
+            foreach (var category in _Categories) {
+                category.Init(this);
+                category.SetActiveCategorie(false);
+            }
+            SelectCategory(_Categories[0]);
         }
 
         /// <summary>
         /// The screen show method.
         /// Calls partial method <see cref="ShowUser"/> to be implemented on the SDK side.
         /// </summary>
-        public override void Show()
+        public override async void Show()
         {
+            if (Controller.GetLastScreen(out MenuUIScreen screen) && screen.GetType() == typeof(VMUI_MainMenu))
+                (screen as VMUI_MainMenu)?.DeactiveButton();
             base.Show();
 
-            _EntryFramerate.SetOptions(_GraphicsSettings.CreateFramerateOptions, _GraphicsSettings.Framerate, s => (s == -1 ? "Platform Default" : s.ToString()));
+            AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(0);
 
-            {
-                _EntryResolution.SetOptions(_GraphicsSettings.CreateResolutionOptions, _GraphicsSettings.Resolution, s =>
+            float duration = stateInfo.length;
 
-                #if UNITY_2022_2_OR_NEWER
-                    $"{UnityEngine.Screen.resolutions[s].width} x {UnityEngine.Screen.resolutions[s].height} @ {Mathf.RoundToInt((float)UnityEngine.Screen.resolutions[s].refreshRateRatio.value)}");
-                #else
-                    UnityEngine.Screen.resolutions[s].ToString());
-                #endif
-            }
+            await Task.Delay((int)(duration * 1000));
 
-            _EntryGraphicsQuality.SetOptions(_GraphicsSettings.CreateGraphicsQualityOptions, _GraphicsSettings.QualityLevel, s => QualitySettings.names[s]);
+            _Content?.SetActive(true);
 
-            _UIFullscreen.isOn = _GraphicsSettings.Fullscreen;
-            _UIVSyncCount.isOn = _GraphicsSettings.VSync;
+            SelectCategory(_Categories[0]);
 
             ShowUser();
         }
@@ -183,27 +118,22 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         public override void Hide()
         {
+            if (Controller.GetLastScreen(out MenuUIScreen screen) && screen.GetType() == typeof(VMUI_MainMenu))
+                (screen as VMUI_MainMenu)?.ActiveButton();
             base.Hide();
 
             HideUser();
         }
 
-        /// <summary>
-        /// Saving changes callbacks are registered to all ui elements during <see cref="Show()"/>.
-        /// If defined the partial SaveChangesUser() is also called in the end.
-        /// </summary>
-        protected virtual void SaveChanges()
+        public void SelectCategory(BookCategories category)
         {
-            if (IsShowing == false)
+            if (_CurrentSelectedCategory == category)
                 return;
-            _GraphicsSettings.Fullscreen = _UIFullscreen.isOn;
-            _GraphicsSettings.Framerate = _EntryFramerate.Value;
-            _GraphicsSettings.Resolution = _EntryResolution.Value;
-            _GraphicsSettings.QualityLevel = _EntryGraphicsQuality.Value;
-            _GraphicsSettings.VSync = _UIVSyncCount.isOn;
-            _GraphicsSettings.Apply();
+            if (_CurrentSelectedCategory != null)
+                _CurrentSelectedCategory.SetActiveCategorie(false);
+            _CurrentSelectedCategory = category;
 
-            SaveChangesUser();
+            _CurrentSelectedCategory.SetActiveCategorie(true);
         }
 
         #endregion
@@ -215,6 +145,7 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
+            _Content?.SetActive(false);
             Controller.HideModal(this);
         }
 
