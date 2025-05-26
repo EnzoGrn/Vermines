@@ -5,6 +5,11 @@ using UnityEngine.AI;
 
 public class RoutineManager : MonoBehaviour
 {
+    #region Public Properties
+    public bool IsInterrupted = false;
+    public bool IsStarted = false;
+    #endregion
+
     #region Exposed Fields
     [SerializeField] private List<PointOfInterest> _pointsOfInterest;
     [SerializeField] private List<NpcController> _npcs;
@@ -35,6 +40,11 @@ public class RoutineManager : MonoBehaviour
     /// </summary>
     public void StartRoutine()
     {
+        if (IsStarted)
+            return;
+
+        IsStarted = true;
+
         foreach (NpcController npc in _npcs)
         {
             if (npc.gameObject.activeSelf == false)
@@ -52,6 +62,11 @@ public class RoutineManager : MonoBehaviour
 
     public void StopRoutine()
     {
+        if (!IsStarted)
+            return;
+
+        IsStarted = false;
+
         foreach (NpcController npc in _npcs)
         {
             if (npc.gameObject.activeSelf == true)
@@ -120,6 +135,11 @@ public class RoutineManager : MonoBehaviour
     /// </summary>
     public void InterruptNpcRoutine()
     {
+        if (IsInterrupted || !IsStarted)
+            return;
+
+        IsInterrupted = true;
+
         foreach (NpcController npc in _npcs)
         {
             int randomIndex = Random.Range(0, _npcs.Count);
@@ -138,6 +158,11 @@ public class RoutineManager : MonoBehaviour
     /// </summary>
     public void ResumeNpcRoutine()
     {
+        if (!IsInterrupted || !IsStarted)
+            return;
+
+        IsInterrupted = false;
+
         foreach (NpcController npc in _npcs)
         {
             npc.ResumeCoroutine();

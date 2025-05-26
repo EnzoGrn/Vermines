@@ -4,7 +4,6 @@ using Unity.Cinemachine;
 using System.Collections.Generic;
 using OMGG.DesignPattern;
 using UnityEngine.Events;
-using Vermines.HUD;
 using Vermines.UI;
 
 public class CamManager : MonoBehaviourSingleton<CamManager>
@@ -35,6 +34,8 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
     // If different of 0 must be a special location to go after completed first cam animation to return in the none location
     private int _GoOnSpecialLocation = 0;
 
+    private RoutineManager _routineManager;
+
     #endregion
 
     #region Methods
@@ -45,7 +46,14 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
 
         if (_CinemachineSplineDolly == null )
         {
-            Debug.Log("Cannot find _CinemachineSplineDolly");
+            Debug.Log("[CamManager]: Cannot find _CinemachineSplineDolly");
+        }
+
+        _routineManager = FindFirstObjectByType<RoutineManager>();
+
+        if (!_routineManager)
+        {
+            Debug.LogError("[CamManager]: Cannot find RoutineManager in the scene, please add it to the scene.");
         }
     }
 
@@ -199,30 +207,45 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
 
         if (_GoOnSpecialLocation != 0)
         {
-            // UIManager.Instance.OpenShopCourtyard();
             OnSplineAnimationRequest(_GoOnSpecialLocation);
             _GoOnSpecialLocation = (int)CamSplineType.None;
+            Debug.Log("[CamManager]: Resume Npc Routine now");
+            _routineManager.ResumeNpcRoutine();
         }
 
         if (!UIManager.Instance)
             return;
 
+        Debug.Log($"[CamManager]: Check the current spline type {((CamSplineType)_SplineID).ToString()}");
+
         switch ((CamSplineType)_SplineID)
         {
+            case CamSplineType.None:
+                _routineManager.ResumeNpcRoutine();
+                Debug.Log("[CamManager]: Resume Npc Routine now");
+                break;
             case CamSplineType.MainViewToCourtyard:
                 UIManager.Instance.OpenShopCourtyard();
+                _routineManager.InterruptNpcRoutine();
+                Debug.Log("[CamManager]: Interrupt Npc Routine now");
                 break;
             case CamSplineType.MarketToCourtyard:
                 UIManager.Instance.OpenShopCourtyard();
+                _routineManager.InterruptNpcRoutine();
+                Debug.Log("[CamManager]: Interrupt Npc Routine now");
                 break;
             case CamSplineType.MainViewToMarket:
                 UIManager.Instance.OpenShopMarket();
+                _routineManager.ResumeNpcRoutine();
                 break;
             case CamSplineType.CourtyardToMarket:
                 UIManager.Instance.OpenShopMarket();
+                _routineManager.ResumeNpcRoutine();
+                Debug.Log("[CamManager]: Resume Npc Routine now");
                 break;
             case CamSplineType.MainViewToSacrifice:
                 UIManager.Instance.OpenTable();
+                _routineManager.ResumeNpcRoutine();
                 break;
         }
     }
