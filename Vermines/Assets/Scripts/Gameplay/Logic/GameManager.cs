@@ -14,6 +14,10 @@ namespace Vermines {
 
     public class GameManager : NetworkBehaviour {
 
+        #region Private Properties
+        private RoutineManager _routineManager;
+        #endregion
+
         #region Editor
 
         [SerializeField]
@@ -106,6 +110,8 @@ namespace Vermines {
 
             Start = true;
 
+            RPC_StartClientSideStuff();
+
             PhaseManager.Instance.OnStartPhases();
         }
 
@@ -121,6 +127,21 @@ namespace Vermines {
         }
 
         #region Rpcs
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_StartClientSideStuff()
+        {
+            _routineManager = FindFirstObjectByType<RoutineManager>();
+
+            if (_routineManager)
+            {
+                _routineManager.StartRoutine();
+            }
+            else
+            {
+                Debug.LogError("[CamManager]: Cannot find RoutineManager in the scene, please add it to the scene.");
+            }
+        }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_BuyCard(ShopType shopType, int slot, int playerId)
