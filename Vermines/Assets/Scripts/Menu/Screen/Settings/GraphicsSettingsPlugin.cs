@@ -1,17 +1,15 @@
 using Fusion;
 using OMGG.Menu.Configuration;
+using OMGG.Menu.Screen;
 using OMGG.Menu.Tools;
 using UnityEngine.UI;
 using UnityEngine;
-using OMGG.Menu.Screen;
 
 namespace Vermines.Menu.Pluggin {
 
     using Dropdown = TMPro.TMP_Dropdown;
 
     public class GraphicsSettingsPlugin : MenuScreenPlugin {
-
-        private bool _IsInitialized = false;
 
         #region Settings Fields
 
@@ -93,24 +91,10 @@ namespace Vermines.Menu.Pluggin {
 
         #region Overrides Methods
 
-        public void OnEnable()
-        {
-            if (!_IsInitialized)
-                Init(null);
-        }
-
-        public void OnDisable()
-        {
-            if (!_IsInitialized)
-                Init(null);
-        }
-
         public override void Show(MenuUIScreen screen)
         {
             base.Show(screen);
 
-            if (!_IsInitialized)
-                Init(screen);
             _EntryFramerate.SetOptions(_GraphicsSettings.CreateFramerateOptions, _GraphicsSettings.Framerate, s => (s == -1 ? "Platform Default" : s.ToString()));
             {
                 _EntryResolution.SetOptions(_GraphicsSettings.CreateResolutionOptions, _GraphicsSettings.Resolution, s =>
@@ -146,8 +130,6 @@ namespace Vermines.Menu.Pluggin {
                 _GoResolution.SetActive(false);
                 _GoFullscreenn.SetActive(false);
             #endif
-
-            _IsInitialized = true;
         }
 
         #endregion

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vermines.Plugin.Sounds;
 
 public class TooggleSound : MonoBehaviour
 {
@@ -23,12 +24,13 @@ public class TooggleSound : MonoBehaviour
     {
         if (_clipList == null || _clipList.Count == 0)
             return;
+        UserMixerPlugin mixerManager = FindFirstObjectByType<UserMixerPlugin>(FindObjectsInactive.Include);
 
         int randomIndex = Random.Range(0, _clipList.Count);
         AudioClip clip = _clipList[randomIndex];
-        Debug.Log("Play Song");
-        SoundManager.Instance.PlaySoundFXClip(clip, gameObject.transform, 1f, true, _minDistance, _maxDistance);
-        
+
+        SoundManager.Instance.PlaySoundFXClip(clip, gameObject.transform, mixerManager.FXVolume, true, _minDistance, _maxDistance);
+
         _timeToWait = clip.length;
         _isPlayingSound = true;
 
@@ -38,7 +40,7 @@ public class TooggleSound : MonoBehaviour
     private IEnumerator SoundDone()
     {
         yield return new WaitForSeconds(_timeToWait + Random.Range(3f, 10f));
-        Debug.Log("Sound Done");
+
         _timeToWait = 0;
         _isPlayingSound = false;
     }

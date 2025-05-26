@@ -50,7 +50,7 @@ AudioMixerController:
   m_UpdateMode: 0
   m_ExposedParameters:
   - guid: 2c3761618e9f72947a3913f78df37621
-    name: AtmospjereVolume
+    name: AtmosphereVolume
   - guid: 166eaf56edf553a48b325d3e85e83f2a
     name: MasterVolume
   - guid: f0d4ad8cc189dc1429ecdca2f98fdafd
@@ -111,7 +111,12 @@ AudioMixerSnapshotController:
   m_Name: Snapshot
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: 8cc52442d373959448f8bec70a25bfb6
-  m_FloatValues: {}
+  m_FloatValues:
+    673c3690f62969a4c88b8c98fd2ac5f0: 1
+    166eaf56edf553a48b325d3e85e83f2a: 0
+    656157a6081c4464cb96c010f4af3bef: 1
+    f0d4ad8cc189dc1429ecdca2f98fdafd: 0
+    cb1d613fa1caaa946a2980ade4f4adf9: 1
   m_TransitionOverrides: {}
 --- !u!243 &125028996676376366
 AudioMixerGroupController:

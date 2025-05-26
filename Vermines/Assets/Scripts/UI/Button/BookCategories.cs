@@ -57,6 +57,8 @@ namespace Vermines.UI {
                 _Label.text = _CategoryName;
             if (_Button != null)
                 _Button.onClick.AddListener(OnCategoryClicked);
+            if (LinkedPage != null)
+                LinkedPage.Init(screen);
         }
 
         #endregion
