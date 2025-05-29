@@ -8,6 +8,7 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Cards.Effects;
+    using Vermines.Player;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Spend/Spend data.")]
     public class SpendEffect : AEffect {
@@ -88,11 +89,15 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
+            if (PlayerController.Local.PlayerRef == player)
+                PlayerController.Local.NetworkEventCardEffect(Card.ID);
+        }
+
+        public override void NetworkEventFunction(PlayerRef player, string data)
+        {
             ICommand spendCommand = new SpendCommand(player, Amount, DataToSpend);
 
             CommandInvoker.ExecuteCommand(spendCommand);
-
-            Debug.Log($"[SpendEffect] Player {player} spend {Amount} {DataToSpend}.");
 
             base.Play(player);
         }
