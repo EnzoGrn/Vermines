@@ -115,7 +115,7 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_RemoveCopiedEffect(Object.InputAuthority.RawEncoded, card.ID);
         }
 
-        public void NetworkEventCardEffect(int cardID, string data = null)
+        public void NetworkEventCardEffect(int cardID, string data = "")
         {
             GameManager.Instance.RPC_NetworkEventCardEffect(Object.InputAuthority.RawEncoded, cardID, data);
         }
@@ -403,12 +403,6 @@ namespace Vermines.Player {
             if (card == null) {
                 Debug.LogError($"[SERVER]: Player {playerID} tried to called an network event for a card that doesn't exist.");
 
-                return;
-            }
-
-            if (data == null)
-            {
-                Debug.LogError($"[SERVER]: Player {playerID} tried to called an network event for a card with no data.");
                 return;
             }
 
