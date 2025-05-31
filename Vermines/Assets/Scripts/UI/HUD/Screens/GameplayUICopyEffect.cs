@@ -1,15 +1,18 @@
-﻿using UnityEngine;
-using Vermines.CardSystem.Elements;
-using Vermines.UI.Plugin;
-using Fusion;
-using Vermines.CardSystem.Enumerations;
-using Vermines.UI.Card;
+﻿using Fusion;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Enumerations;
 using Vermines.Player;
+using Vermines.ShopSystem.Enumerations;
+using Vermines.UI.Card;
+using Vermines.UI.Plugin;
 
 namespace Vermines.UI.Screen
 {
-    public partial class GameplayUISacrifice : GameplayUIScreen, IParamReceiver<CardType>, ICardClickReceiver
+    public partial class GameplayUICopyEffect : GameplayUIScreen, IParamReceiver<CardCopyEffectContext>, ICardClickReceiver
     {
         #region Attributes
 
@@ -17,11 +20,6 @@ namespace Vermines.UI.Screen
         /// Should show plugins is a flag that can be used to hide the plugin UI elements.
         /// </summary>
         protected override bool ShouldShowPlugins => false;
-
-        /// <summary>
-        /// The type of deck to be displayed.
-        /// </summary>
-        private CardType _deckType = CardType.Partisan;
 
         protected List<ShopCardSlot> activeSlots = new();
 
@@ -33,6 +31,18 @@ namespace Vermines.UI.Screen
         /// </summary>
         [InlineHelp, SerializeField]
         private GameObject _cardHolder;
+
+        /// <summary>
+        /// The type of deck to be displayed.
+        /// </summary>
+        private CardType _deckType = CardType.Partisan;
+
+        private ICard activeCard;
+
+        private int currentPage = 0;
+        private const int entriesPerPage = 5;
+        [SerializeField]
+        private Button _nextPageButton;
 
         #endregion
 
@@ -72,6 +82,7 @@ namespace Vermines.UI.Screen
         /// </summary>
         public override void Show()
         {
+            Debug.Log($"[{nameof(GameplayUICopyEffect)}] Show called with deck type: {_deckType}");
             if (_cardHolder == null)
             {
                 Debug.LogErrorFormat(
@@ -86,8 +97,19 @@ namespace Vermines.UI.Screen
             PopulateSlots();
 
             base.Show();
-            
+
+            foreach (var plugin in Plugins)
+            {
+                if (plugin is not CopyPopupPlugin)
+                {
+                    plugin.Show(this);
+                }
+            }
+
             ShowUser();
+
+            GameEvents.OnCardClicked.AddListener(OnCardClicked);
+            _nextPageButton.onClick.AddListener(NextPage);
         }
 
         /// <summary>
@@ -99,21 +121,56 @@ namespace Vermines.UI.Screen
             base.Hide();
 
             HideUser();
-        }
 
-        /// <summary>
-        /// Set the shop type and load corresponding data.
-        /// </summary>
-        /// <param name="cardType">The type of shop to load.</param>
-        public void SetParam(CardType cardType)
-        {
-            Debug.Log($"[GameplayUIShop] SetParam called with {cardType}.");
-            _deckType = cardType;
+            GameEvents.OnCardClicked.RemoveListener(OnCardClicked);
+            _nextPageButton.onClick.RemoveListener(NextPage);
         }
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Set the callback to be called when the effect is done.
+        /// </summary>
+        /// <param name="onDone">The callback to be called when the effect is done.</param>
+        public void SetParam(CardCopyEffectContext cardContext)
+        {
+            _deckType = cardContext.Type;
+            activeCard = cardContext.Card;
+
+            Debug.Log($"[{nameof(GameplayUICopyEffect)}] SetParam called with deck type: {_deckType} and card: {activeCard?.Data.Name}");
+
+            foreach (var plugin in Plugins)
+            {
+                if (plugin is CopyEffectPlugin copyPlugin && copyPlugin.CardTypeTrigger == _deckType)
+                {
+                    copyPlugin.SetParam(activeCard);
+                }
+            }
+        }
+
+        protected void GetCardFromType(CardType type)
+        {
+            currentEntries.Clear();
+            currentPage = 0;
+
+            foreach (var plugin in Plugins)
+            {
+                if (plugin is CopyEffectPlugin copyPlugin && copyPlugin.CardTypeTrigger == type)
+                {
+                    var entries = copyPlugin.GetEntries();
+                    currentEntries.AddRange(entries);
+                }
+            }
+        }
+
+        private void NextPage()
+        {
+            int maxPage = Mathf.CeilToInt((float)currentEntries.Count / entriesPerPage);
+            currentPage = (currentPage + 1) % maxPage; // Boucle sur les pages
+            PopulateSlots();
+        }
 
         protected virtual void PopulateSlots()
         {
@@ -123,11 +180,13 @@ namespace Vermines.UI.Screen
             }
             activeSlots.Clear();
 
-            for (int i = 0; i < currentEntries.Count; i++)
-            {
-                Vermines.UI.Screen.ShopCardEntry entry = currentEntries[i];
-                var slot = CardSlotPool.Instance.GetSlot(_cardHolder.transform);
+            int startIndex = currentPage * entriesPerPage;
 
+            for (int i = 0; i < entriesPerPage; i++)
+            {
+                int entryIndex = startIndex + i;
+
+                var slot = CardSlotPool.Instance.GetSlot(_cardHolder.transform);
                 if (slot == null)
                 {
                     Debug.LogErrorFormat(
@@ -141,47 +200,20 @@ namespace Vermines.UI.Screen
                 slot.transform.SetParent(_cardHolder.transform, false);
                 slot.SetIndex(i);
 
-                slot.Init(entry.Data, entry.IsNew, new CardClickHandler(this));
+                if (entryIndex < currentEntries.Count)
+                {
+                    var entry = currentEntries[entryIndex];
+                    slot.Init(entry.Data, entry.IsNew, new CardClickHandler(this));
+                }
+                else
+                {
+                    slot.ResetSlot(); // Vide visuellement le slot (à toi d’implémenter ça proprement)
+                }
 
                 activeSlots.Add(slot);
             }
-        }
 
-        protected void GetCardFromType(CardType type)
-        {
-            currentEntries.Clear();
-
-            foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Hand)
-            {
-                if (card.Data.Type == type)
-                {
-                    currentEntries.Add(new ShopCardEntry(card));
-                }
-            }
-
-            foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Equipments)
-            {
-                if (card.Data.Type == type)
-                {
-                    currentEntries.Add(new ShopCardEntry(card));
-                }
-            }
-
-            foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].PlayedCards)
-            {
-                if (card.Data.Type == type)
-                {
-                    currentEntries.Add(new ShopCardEntry(card));
-                }
-            }
-
-            foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Discard)
-            {
-                if (card.Data.Type == type)
-                {
-                    currentEntries.Add(new ShopCardEntry(card));
-                }
-            }
+            _nextPageButton.gameObject.SetActive(currentEntries.Count > entriesPerPage);
         }
 
         #endregion
@@ -202,12 +234,12 @@ namespace Vermines.UI.Screen
             if (card == null || GameManager.Instance.IsMyTurn() == false || card.Data.Type != _deckType)
                 return;
 
-            RemovePopupPlugin plugin = Get<RemovePopupPlugin>();
+            CopyPopupPlugin plugin = Get<CopyPopupPlugin>();
             if (plugin == null)
             {
                 Debug.LogErrorFormat(
                     gameObject,
-                    "[{0}] Critical Error: Missing 'RemovePopupPlugin' reference on GameObject '{1}'. This component is required to render the card list. Please assign a valid GameObject in the Inspector.",
+                    "[{0}] Critical Error: Missing 'CopyPopupPlugin' reference on GameObject '{1}'. This component is required to render the card list. Please assign a valid GameObject in the Inspector.",
                     nameof(GameplayUISacrifice),
                     gameObject.name
                 );
@@ -218,26 +250,5 @@ namespace Vermines.UI.Screen
         }
 
         #endregion
-
-    }
-
-    public interface ICardClickReceiver
-    {
-        void OnCardClicked(ICard card);
-    }
-
-    public class CardClickHandler : ICardClickHandler
-    {
-        private readonly ICardClickReceiver _receiver;
-
-        public CardClickHandler(ICardClickReceiver receiver)
-        {
-            _receiver = receiver;
-        }
-
-        public void OnCardClicked(ICard card)
-        {
-            _receiver.OnCardClicked(card);
-        }
     }
 }

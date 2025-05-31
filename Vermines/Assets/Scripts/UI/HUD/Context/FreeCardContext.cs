@@ -1,7 +1,4 @@
 ﻿using Vermines.ShopSystem.Enumerations;
-using UnityEngine;
-using Vermines.UI.Screen;
-using Vermines.UI;
 
 public class FreeCardContext : IUIContext
 {

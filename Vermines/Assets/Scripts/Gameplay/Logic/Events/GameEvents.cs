@@ -47,6 +47,9 @@ public static class GameEvents
     public static TrackedEvent<ShopType, List<ShopCardEntry>> OnShopUpdated = new("OnShopUpdated");
     public static TrackedEvent<ShopType, Dictionary<int, ICard>> OnShopRefilled = new("OnShopRefilled");
 
+    // --- CARD EFFECTS ---
+    public static TrackedEvent<ICard> OnCardCopiedEffect = new("OnCardCopiedEffect");
+
     static GameEvents()
     {
         foreach (ShopType shopType in Enum.GetValues(typeof(ShopType)))

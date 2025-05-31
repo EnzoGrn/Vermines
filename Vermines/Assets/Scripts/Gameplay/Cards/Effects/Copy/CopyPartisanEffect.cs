@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -6,7 +6,9 @@ namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
+    using Vermines.UI.Screen;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Copy/Copy a partisan effect.")]
     public class CopyPartisanEffect : AEffect {
@@ -47,7 +49,13 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (player != PlayerController.Local.PlayerRef)
                 return;
 
-            // TODO: Subscribe to the function for copied the partisan's effect
+            if (UIContextManager.Instance)
+            {
+                CardCopyEffectContext cardCopyEffectContext = new CardCopyEffectContext(CardType.Partisan, Card);
+                CopyContext copyContext = new CopyContext(cardCopyEffectContext);
+                UIContextManager.Instance.PushContext(copyContext);
+            }
+            GameEvents.OnCardCopiedEffect.AddListener(CopiedEffect);
         }
 
         public override void Stop(PlayerRef player)
@@ -59,8 +67,9 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         private void CopiedEffect(ICard card)
         {
-            // TODO: Unsubscribe the function for copied the partisan's effect
-
+            GameEvents.OnCardCopiedEffect.RemoveListener(CopiedEffect);
+            Debug.Log($"[CopyPartisanEffect] {card.Data.Name} effect copied by {Card.Data.Name}.");
+            UIContextManager.Instance.PopContext();
             _CardCopied = card;
 
             RoundEventDispatcher.RegisterEvent(PlayerController.Local.PlayerRef, Stop);
