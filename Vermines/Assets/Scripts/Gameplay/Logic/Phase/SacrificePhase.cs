@@ -78,7 +78,7 @@ namespace Vermines.Gameplay.Phases {
 
         #endregion
 
-            #region Events
+        #region Events
 
         public void OnCardSacrified(ICard cardSacrified)
         {

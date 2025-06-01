@@ -4,14 +4,18 @@ using UnityEngine.UI;
 using Vermines.CardSystem.Elements;
 using Vermines.UI.Card;
 using Vermines.UI.Shop;
+using Vermines.UI.Utils;
 
-public class ShopConfirmPopup : MonoBehaviour, IUIContext
+public class ShopConfirmPopup : MonoBehaviour
 {
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text costText;
     [SerializeField] private TMP_Text soulValueText;
     [SerializeField] private TMP_Text questionText;
+    [SerializeField] private TMP_Text typeText;
+    [SerializeField] private Image typeIcon;
+
     [SerializeField] private Button buyButton;
     [SerializeField] private Button cancelButton;
 
@@ -83,11 +87,26 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
         }
 
         // TODO: This needs to be changed with Localization later, using SmartString
-        costText.text = $"Cost: {_CardData.Data.Eloquence} eloquences";
-        soulValueText.text = $"+{_CardData.Data.Souls} souls if sacrificed";
+
+        // If we have a free context, we write "Free" instead of the cost
+        costText.text = UIContextManager.Instance.IsInContext<FreeCardContext>()
+        ? "Free"
+        : $"Cost: {_CardData.Data.CurrentEloquence} eloquences";
+
+        // If the card has a cost > 0 in souls, display it
+        soulValueText.text = _CardData.Data.Souls > 0
+            ? $"+{_CardData.Data.CurrentSouls} souls if sacrificed"
+            : string.Empty;
+
         questionText.text = isReplace
-        ? $"Replace {_CardData.Data.Name} ?"
-        : $"Buy {_CardData.Data.Name} ?";
+            ? $"Replace {_CardData.Data.Name} ?"
+            : $"Buy {_CardData.Data.Name} ?";
+
+        typeText.text = _CardData.Data.Type == Vermines.CardSystem.Enumerations.CardType.Partisan
+            ? _CardData.Data.Family.ToString()
+            : _CardData.Data.Type.ToString();
+
+        typeIcon.sprite = typeIcon.sprite = UISpriteLoader.GetDefaultSprite(_CardData.Data.Type, _CardData.Data.Family, "Icon");
 
         CardDisplay display = cardDisplay.GetComponent<CardDisplay>();
         display.Display(_CardData, null);
@@ -111,7 +130,6 @@ public class ShopConfirmPopup : MonoBehaviour, IUIContext
 
         cancelButton.onClick.AddListener(() =>
         {
-            UIContextManager.Instance.PopContext();
             if (activeShop is ShopUIController controller)
             {
                 controller.SetDialogueVisible(true);

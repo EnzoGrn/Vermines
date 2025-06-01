@@ -52,7 +52,6 @@ namespace Vermines.UI.Shop
             base.Show(screen);
 
             _popup.gameObject.SetActive(false);
-            GameEvents.OnShopUpdated.AddListener(HandleShopUpdate);
         }
 
         /// <summary>
@@ -61,7 +60,7 @@ namespace Vermines.UI.Shop
         public override void Hide()
         {
             base.Hide();
-            GameEvents.OnShopUpdated.RemoveListener(HandleShopUpdate);
+            //GameEvents.OnShopUpdated.RemoveListener(HandleShopUpdate);
         }
 
         #endregion
@@ -94,6 +93,7 @@ namespace Vermines.UI.Shop
                 Debug.LogError("[ShopUIController] Popup is null.");
                 return;
             }
+            GameEvents.OnShopUpdated.AddListener(HandleShopUpdate);
         }
 
         private void SetupUI()

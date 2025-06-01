@@ -20,8 +20,6 @@ public class ShopCardClickHandler : ICardClickHandler
     {
         Debug.Log($"[ShopCardClickHandler] Card clicked: {card.Data.Name}");
 
-        UIContextManager.Instance.PushUniqueContext(_popup);
-
         if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
         {
             _popup.Setup(card, (c) =>

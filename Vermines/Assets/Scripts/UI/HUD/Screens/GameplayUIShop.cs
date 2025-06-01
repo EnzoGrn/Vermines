@@ -121,6 +121,7 @@ namespace Vermines.UI.Screen
         public override void Show()
         {
             base.Show();
+
             if (shopConfigs.TryGetValue(_ShopType, out var config))
             {
                 if (_ShopController != null)
@@ -233,7 +234,6 @@ namespace Vermines.UI.Screen
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
-            UIContextManager.Instance.PopContextOfType<ShopConfirmPopup>();
             Controller.Hide();
             CamManager.Instance.GoOnNoneLocation();
         }
