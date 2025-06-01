@@ -1,163 +1,124 @@
-﻿using TMPro;
+﻿using Fusion;
 using UnityEngine;
-using UnityEngine.UI;
 using Vermines.CardSystem.Elements;
 using Vermines.ShopSystem.Enumerations;
-using Vermines.UI.Card;
 using Vermines.UI.Shop;
-using Vermines.UI.Utils;
 
-public class ShopConfirmPopup : MonoBehaviour
+namespace Vermines.UI.Plugin
 {
-    [SerializeField] private TMP_Text nameText;
-    [SerializeField] private TMP_Text descriptionText;
-    [SerializeField] private TMP_Text costText;
-    [SerializeField] private TMP_Text soulValueText;
-    [SerializeField] private TMP_Text questionText;
-    [SerializeField] private TMP_Text typeText;
-    [SerializeField] private Image typeIcon;
+    using Text = TMPro.TMP_Text;
 
-    [SerializeField] private Button buyButton;
-    [SerializeField] private Button cancelButton;
-
-    [Header("Card Display")]
-    [SerializeField] private GameObject cardDisplay;
-    [SerializeField] private Transform cardDisplayParent;
-
-    private ICard _CardData;
-
-    private void Awake()
+    /// <summary>
+    /// A popup for confirming the purchase of a card in the shop.
+    /// </summary>
+    public class ShopPopupPlugin : CardPopupBase
     {
-        #region ERROR HANDLING
+        #region Attributes
 
-        if (cardDisplayParent == null)
-        {
-            Debug.LogError("[ShopConfirmPopup] Card display parent is not assigned.");
-        }
+        /// <summary>
+        /// The text component for displaying the cost of the card.
+        /// Can't be null.
+        /// </summary>
+        [InlineHelp, SerializeField]
+        protected Text costText;
 
-        if (nameText == null)
-        {
-            Debug.LogError("[ShopConfirmPopup] Name text is not assigned.");
-        }
+        /// <summary>
+        /// The text component for displaying the question to the player (e.g., "Buy this card?").
+        /// Can't be null.
+        /// </summary>
+        [InlineHelp, SerializeField]
+        protected Text questionText;
 
-        if (descriptionText == null)
-        {
-            Debug.LogError("[ShopConfirmPopup] Description text is not assigned.");
-        }
+        /// <summary>
+        /// The action to be invoked when the card is bought.
+        /// </summary>
+        protected System.Action<ICard> _onBuy;
 
-        if (costText == null)
-        {
-            Debug.LogError("[ShopConfirmPopup] Cost text is not assigned.");
-        }
+        protected ShopType _shopType = ShopType.Market;
 
-        if (buyButton == null)
-        {
-            Debug.LogError("[ShopConfirmPopup] Buy button is not assigned.");
-        }
-
-        if (cancelButton == null)
-        {
-            Debug.LogError("[ShopConfirmPopup] Cancel button is not assigned.");
-        }
+        protected bool _isReplace = false;
 
         #endregion
 
-        buyButton.onClick.RemoveAllListeners();
-        cancelButton.onClick.RemoveAllListeners();
+        #region Override Methods
 
-        nameText.text = string.Empty;
-        descriptionText.text = string.Empty;
-        costText.text = string.Empty;
-    }
-
-    public void Setup(ICard cardData, System.Action<ICard> onBuy, bool isReplace = false, ShopType shopType = ShopType.Market)
-    {
-        nameText.text = string.Empty;
-        descriptionText.text = string.Empty;
-        costText.text = string.Empty;
-
-        buyButton.onClick.RemoveAllListeners();
-        cancelButton.onClick.RemoveAllListeners();
-
-        _CardData = cardData;
-
-        nameText.text = _CardData.Data.Name;
-        foreach (var effect in _CardData.Data.Effects)
+        /// <summary>
+        /// Show the plugin.
+        /// </summary>
+        /// <param name="screen">
+        /// The parent screen that this plugin is attached to.
+        /// </param>
+        public override void Show(GameplayUIScreen screen)
         {
-            descriptionText.text += effect.Description + "\n";
+            base.Show(screen);
         }
 
-        // TODO: This needs to be changed with Localization later, using SmartString
-
-        // If we have a free context, we write "Free" instead of the cost
-        costText.text = UIContextManager.Instance.IsInContext<FreeCardContext>() && UIContextManager.Instance.GetContext<FreeCardContext>().ShopType == shopType
-        ? "Free"
-        : $"Cost: {_CardData.Data.CurrentEloquence} eloquences";
-
-        // If the card has a cost > 0 in souls, display it
-        soulValueText.text = _CardData.Data.Souls > 0
-            ? $"+{_CardData.Data.CurrentSouls} souls if sacrificed"
-            : string.Empty;
-
-        questionText.text = isReplace
-            ? $"Replace {_CardData.Data.Name} ?"
-            : $"Buy {_CardData.Data.Name} ?";
-
-        typeText.text = _CardData.Data.Type == Vermines.CardSystem.Enumerations.CardType.Partisan
-            ? _CardData.Data.Family.ToString()
-            : _CardData.Data.Type.ToString();
-
-        typeIcon.sprite = typeIcon.sprite = UISpriteLoader.GetDefaultSprite(_CardData.Data.Type, _CardData.Data.Family, "Icon");
-
-        CardDisplay display = cardDisplay.GetComponent<CardDisplay>();
-        display.Display(_CardData, null);
-
-        // Hide the shop dialogue
-        var activeShop = GameObject.FindAnyObjectByType<ShopUIController>();
-        if (activeShop != null)
+        public void Setup(System.Action<ICard> onBuy, bool isReplace, ShopType shopType)
         {
-            activeShop.SetDialogueVisible(false);
+            _onBuy = onBuy;
+            _isReplace = isReplace;
+            _shopType = shopType;
         }
 
-        buyButton.onClick.AddListener(() =>
+        /// <summary>
+        /// Injects content and sets up the popup with card data and optional replace mode.
+        /// </summary>
+        protected override void SetupBase(ICard card)
         {
-            onBuy?.Invoke(_CardData);
-            gameObject.SetActive(false);
+            base.SetupBase(card);
+
+            SetupButtons(confirmButton, cancelButton);
+
+            // TODO: This needs to be changed with Localization later, using SmartString
+
+            // If we have a free context, we write "Free" instead of the cost
+            costText.text = UIContextManager.Instance.IsInContext<FreeCardContext>() && UIContextManager.Instance.GetContext<FreeCardContext>().ShopType == _shopType
+                ? "Free"
+                : $"Cost: {card.Data.CurrentEloquence} eloquences";
+
+            questionText.text = _isReplace
+                ? $"Replace {card.Data.Name} ?"
+                : $"Buy {card.Data.Name} ?";
+
+            var activeShop = GameObject.FindAnyObjectByType<ShopUIController>();
+
+            if (activeShop != null)
+            {
+                activeShop.SetDialogueVisible(false);
+            }
+        }
+
+        protected override void OnConfirm()
+        {
+            _onBuy?.Invoke(_cardData);
+
+            Hide();
+
             if (UIContextManager.Instance.IsInContext<FreeCardContext>())
             {
                 UIContextManager.Instance.PopContextOfType<FreeCardContext>();
             }
+
+            var activeShop = GameObject.FindAnyObjectByType<ShopUIController>();
+
             if (activeShop is ShopUIController controller)
             {
                 controller.SetDialogueVisible(true);
             }
-        });
+        }
 
-        cancelButton.onClick.AddListener(() =>
+        protected override void OnCancel()
         {
-            gameObject.SetActive(false);
+            Hide();
+
+            var activeShop = GameObject.FindAnyObjectByType<ShopUIController>();
+
             if (activeShop is ShopUIController controller)
             {
                 controller.SetDialogueVisible(true);
             }
-            Debug.Log($"[ShopConfirmPopup] Cancel button clicked, exiting context.");
-        });
-    }
+        }
 
-    public void Enter()
-    {
-        Debug.Log($"[ShopConfirmPopup] Entering shop confirm popup context");
-        gameObject.SetActive(true);
-    }
-
-    public void Exit()
-    {
-        Debug.Log($"[ShopConfirmPopup] Exiting shop confirm popup context");
-        gameObject.SetActive(false);
-    }
-
-    public string GetName()
-    {
-        return "Shop Confirm Popup";
+        #endregion
     }
 }

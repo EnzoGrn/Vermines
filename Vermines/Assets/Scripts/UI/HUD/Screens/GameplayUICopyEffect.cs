@@ -229,7 +229,7 @@ namespace Vermines.UI.Screen
             UIContextManager.Instance.PopContext();
         }
 
-        public void OnCardClicked(ICard card)
+        public void OnCardClicked(ICard card, int slodId)
         {
             if (card == null || GameManager.Instance.IsMyTurn() == false || card.Data.Type != _deckType)
                 return;

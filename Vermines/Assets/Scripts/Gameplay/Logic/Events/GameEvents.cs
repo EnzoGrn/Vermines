@@ -36,7 +36,7 @@ public static class GameEvents
     public static TrackedEvent<ICard> OnCardDiscarded = new("OnCardDiscarded");
 
     // --- CARD UI EVENTS ---
-    public static TrackedEvent<ICard> OnCardClicked = new("OnCardClicked");
+    public static TrackedEvent<ICard, int> OnCardClicked = new("OnCardClicked");
     public static TrackedEvent<ShopType, int> OnCardClickedInShopWithSlotIndex = new("OnCardClickedInShopWithSlotIndex");
 
     // --- SHOP EVENTS ---

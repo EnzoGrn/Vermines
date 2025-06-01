@@ -326,7 +326,7 @@ namespace Vermines.UI.Screen
             Controller.Hide();
         }
 
-        public void OnCardClicked(ICard card)
+        public void OnCardClicked(ICard card, int slodId)
         {
             if (card == null || GameManager.Instance.IsMyTurn() == false) return;
 
@@ -342,8 +342,7 @@ namespace Vermines.UI.Screen
                 {
                     if (effect.Type != EffectType.Activate) return;
                     if (card.HasBeenActivatedThisTurn) return;
-                    Controller.ShowDualPopup(new PlayCardEffectStrategy(effect));
-                    card.HasBeenActivatedThisTurn = true;
+                    Controller.ShowDualPopup(new PlayCardEffectStrategy(effect, card));
                 }
             }
         }

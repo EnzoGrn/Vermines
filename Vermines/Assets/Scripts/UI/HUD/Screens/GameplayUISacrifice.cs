@@ -202,7 +202,7 @@ namespace Vermines.UI.Screen
             UIContextManager.Instance.PopContext();
         }
 
-        public void OnCardClicked(ICard card)
+        public void OnCardClicked(ICard card, int slodId)
         {
             if (card == null || GameManager.Instance.IsMyTurn() == false || card.Data.Type != _deckType)
                 return;
@@ -228,7 +228,7 @@ namespace Vermines.UI.Screen
 
     public interface ICardClickReceiver
     {
-        void OnCardClicked(ICard card);
+        void OnCardClicked(ICard card, int slodId);
     }
 
     public class CardClickHandler : ICardClickHandler
@@ -242,7 +242,7 @@ namespace Vermines.UI.Screen
 
         public void OnCardClicked(ICard card)
         {
-            _receiver.OnCardClicked(card);
+            _receiver.OnCardClicked(card, 0);
         }
     }
 }

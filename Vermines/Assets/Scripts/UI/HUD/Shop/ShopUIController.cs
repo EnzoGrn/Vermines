@@ -38,9 +38,6 @@ namespace Vermines.UI.Shop
         [SerializeField]
         public ShopType ShopType;
 
-        [SerializeField]
-        private ShopConfirmPopup _popup;
-
         #region Override Methods
 
         /// <summary>
@@ -50,8 +47,6 @@ namespace Vermines.UI.Shop
         public override void Show(GameplayUIScreen screen)
         {
             base.Show(screen);
-
-            _popup.gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -84,15 +79,6 @@ namespace Vermines.UI.Shop
             currentEntries = entries;
             PopulateShop();
 
-            if (_popup != null)
-            {
-                _popup.gameObject.SetActive(false);
-            }
-            else
-            {
-                Debug.LogError("[ShopUIController] Popup is null.");
-                return;
-            }
             GameEvents.OnShopUpdated.AddListener(HandleShopUpdate);
         }
 
@@ -204,21 +190,9 @@ namespace Vermines.UI.Shop
             }
         }
 
-        public void EnterReplaceMode(Action onCardReplaced)
-        {
-            Debug.Log("[ShopUIManager] Entered replace mode.");
-
-            int shopSlotCount = currentEntries.Count;
-            for (int i = 0; i < shopSlotCount; i++)
-            {
-                var slot = activeSlots[i];
-                //slot.SetClickHandler(new ReplaceClickHandler(ShopType, i, onCardReplaced));
-            }
-        }
-
         protected virtual ICardClickHandler CreateClickHandler(int slotIndex)
         {
-            return new ShopCardClickHandler(ShopType, slotIndex, _popup);
+            return new ShopCardClickHandler(slotIndex);
         }
     }
 }
