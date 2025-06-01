@@ -6,6 +6,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
+    using Vermines.Player;
     using Vermines.ShopSystem.Enumerations;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Shop/Free card in shop.")]
@@ -78,8 +79,11 @@ namespace Vermines.Gameplay.Cards.Effect {
             GameDataStorage.Instance.Shop.Sections[_ShopTarget].SetFree(true);
 
             // TODO: Link this to a shop event OnBuy that is link to a specific shop!!!
-            if (UIContextManager.Instance != null)
-                UIContextManager.Instance.PushContext(new FreeCardContext(_ShopTarget));
+            if (player == PlayerController.Local.PlayerRef)
+            {
+                if (UIContextManager.Instance != null)
+                    UIContextManager.Instance.PushContext(new FreeCardContext(_ShopTarget));
+            }
 
             GameEvents.OnCardPurchased.AddListener(OnBuy);
         }

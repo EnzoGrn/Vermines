@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
-using Vermines.Gameplay.Phases.Enumerations;
-using Vermines.Gameplay.Phases;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Shop;
 
@@ -43,8 +41,7 @@ namespace Vermines.UI.Screen
         protected Dictionary<ShopType, ShopUIConfig> shopConfigs = new();
         protected Dictionary<ShopType, Dictionary<int, ICard>> previousShopStates = new();
 
-        [InlineHelp, SerializeField]
-        private ShopUIController _ShopController;
+        protected override bool ShouldHidePlugins => false;
 
         /// <summary>
         /// The type of shop to display (e.g., Market, Courtyard, etc.).
@@ -122,17 +119,15 @@ namespace Vermines.UI.Screen
         {
             base.Show();
 
-            if (shopConfigs.TryGetValue(_ShopType, out var config))
+            // Get the ShopUIController in the plugin list.
+            ShopUIController shopUIController = Get<ShopUIController>();
+            if (shopUIController == null)
             {
-                if (_ShopController != null)
-                {
-                    var entries = GetEntries(_ShopType);
-                    _ShopController.Init(entries, config);
-                }
+                Debug.LogErrorFormat(gameObject, "[{0}] Error: {1}", nameof(GameplayUIShop), "ShopUIController not found in plugins.");
+                return;
             }
-            else
-                Debug.LogWarningFormat(gameObject, "[{0}] Warning: {1}", nameof(GameplayUIShop), "SetParam called but no config found for {0}.");
-
+            var entries = GetEntries(_ShopType);
+            shopUIController.Init(entries, shopConfigs[_ShopType]);
             ShowUser();
         }
 
@@ -146,7 +141,7 @@ namespace Vermines.UI.Screen
 
             HideUser();
             Debug.LogFormat(gameObject, "[{0}] {1}", nameof(GameplayUIShop), "Hide called.");
-            GameEvents.OnCardPurchased.RemoveListener(OnCardPurchased);
+            //GameEvents.OnCardPurchased.RemoveListener(OnCardPurchased);
         }
 
         #endregion

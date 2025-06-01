@@ -40,8 +40,6 @@ namespace Vermines.UI.Utils
 
             path += spriteName;
 
-            Debug.Log($"[UISpriteLoader] Loading sprite from path: {path}");
-
             return Resources.Load<Sprite>(path);
         }
 

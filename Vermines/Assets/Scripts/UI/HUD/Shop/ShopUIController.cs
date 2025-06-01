@@ -189,11 +189,16 @@ namespace Vermines.UI.Shop
                     continue;
                 }
 
+                slot.ResetSlot();
+
                 slot.transform.SetParent(cardSlotRoot, false);
                 slot.SetIndex(i);
 
-                var clickHandler = CreateClickHandler(i);
-                slot.Init(entry.Data, entry.IsNew, clickHandler);
+                if (entry != null)
+                {
+                    var clickHandler = CreateClickHandler(i);
+                    slot.Init(entry.Data, entry.IsNew, clickHandler);
+                }
 
                 activeSlots.Add(slot);
             }

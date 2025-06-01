@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Vermines.CardSystem.Elements;
+using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Card;
 using Vermines.UI.Shop;
 using Vermines.UI.Utils;
@@ -69,7 +70,7 @@ public class ShopConfirmPopup : MonoBehaviour
         costText.text = string.Empty;
     }
 
-    public void Setup(ICard cardData, System.Action<ICard> onBuy, bool isReplace = false)
+    public void Setup(ICard cardData, System.Action<ICard> onBuy, bool isReplace = false, ShopType shopType = ShopType.Market)
     {
         nameText.text = string.Empty;
         descriptionText.text = string.Empty;
@@ -89,7 +90,7 @@ public class ShopConfirmPopup : MonoBehaviour
         // TODO: This needs to be changed with Localization later, using SmartString
 
         // If we have a free context, we write "Free" instead of the cost
-        costText.text = UIContextManager.Instance.IsInContext<FreeCardContext>()
+        costText.text = UIContextManager.Instance.IsInContext<FreeCardContext>() && UIContextManager.Instance.GetContext<FreeCardContext>().ShopType == shopType
         ? "Free"
         : $"Cost: {_CardData.Data.CurrentEloquence} eloquences";
 
@@ -121,7 +122,11 @@ public class ShopConfirmPopup : MonoBehaviour
         buyButton.onClick.AddListener(() =>
         {
             onBuy?.Invoke(_CardData);
-            UIContextManager.Instance.PopContext();
+            gameObject.SetActive(false);
+            if (UIContextManager.Instance.IsInContext<FreeCardContext>())
+            {
+                UIContextManager.Instance.PopContextOfType<FreeCardContext>();
+            }
             if (activeShop is ShopUIController controller)
             {
                 controller.SetDialogueVisible(true);
@@ -130,6 +135,7 @@ public class ShopConfirmPopup : MonoBehaviour
 
         cancelButton.onClick.AddListener(() =>
         {
+            gameObject.SetActive(false);
             if (activeShop is ShopUIController controller)
             {
                 controller.SetDialogueVisible(true);

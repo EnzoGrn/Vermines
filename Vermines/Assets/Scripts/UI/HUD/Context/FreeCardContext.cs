@@ -7,6 +7,8 @@ public class FreeCardContext : IUIContext
     /// </summary>
     protected ShopType _shopType;
 
+    public ShopType ShopType => _shopType;
+
     public FreeCardContext(ShopType shopType)
     {
         _shopType = shopType;

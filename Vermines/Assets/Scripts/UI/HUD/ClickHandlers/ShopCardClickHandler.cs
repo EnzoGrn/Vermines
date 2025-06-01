@@ -31,7 +31,7 @@ public class ShopCardClickHandler : ICardClickHandler
                 {
                     controller.ShowLast();
                 }
-            }, isReplace: true);
+            }, isReplace: true, _shopType);
         }
         else
         {
@@ -39,7 +39,7 @@ public class ShopCardClickHandler : ICardClickHandler
             {
                 Debug.Log($"[ShopCardClickHandler] Setup popup for {card.Data.Name}");
                 GameEvents.InvokeOnCardPurchaseRequested(_shopType, _slotId);
-            }, isReplace: false);
+            }, isReplace: false, _shopType);
         }
 
         _popup.gameObject.SetActive(true);
