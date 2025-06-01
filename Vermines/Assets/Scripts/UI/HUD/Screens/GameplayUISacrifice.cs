@@ -123,6 +123,11 @@ namespace Vermines.UI.Screen
             }
             activeSlots.Clear();
 
+            if (currentEntries == null || currentEntries.Count == 0)
+            {
+                // TODO: show empty state or message
+            }
+
             for (int i = 0; i < currentEntries.Count; i++)
             {
                 Vermines.UI.Screen.ShopCardEntry entry = currentEntries[i];

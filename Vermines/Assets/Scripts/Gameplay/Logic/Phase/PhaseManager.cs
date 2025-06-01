@@ -72,12 +72,24 @@ namespace Vermines.Gameplay.Phases {
                 return;
             CurrentPhase = PhaseType.Sacrifice;
 
+            ResetCardActivations();
+
             GameManager.Instance.CurrentPlayerIndex = (GameManager.Instance.CurrentPlayerIndex + 1) % GameDataStorage.Instance.PlayerData.Count;
 
             // TODO: Add to the config a limit of turn and end the game if reach
             if (GameManager.Instance.CurrentPlayerIndex == 0)
                 GameManager.Instance.TotalTurnPlayed++;
             RPC_UpdateTurnUI();
+        }
+
+        private void ResetCardActivations()
+        {
+            PlayerRef playerRef = GameManager.Instance.PlayerTurnOrder[GameManager.Instance.CurrentPlayerIndex];
+
+            foreach (var card in GameDataStorage.Instance.PlayerDeck[playerRef].PlayedCards)
+            {
+                card.HasBeenActivatedThisTurn = false;
+            }
         }
 
         public void ProcessPhase(PhaseType currentPhase, PlayerRef playerRef)

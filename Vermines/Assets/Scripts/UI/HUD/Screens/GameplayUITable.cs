@@ -335,13 +335,15 @@ namespace Vermines.UI.Screen
             {
                 Controller.ShowDualPopup(new SacrificeStrategy(card));
             }
+
             if (PhaseManager.Instance.CurrentPhase == PhaseType.Gain)
             {
                 foreach (AEffect effect in card.Data.Effects)
                 {
                     if (effect.Type != EffectType.Activate) return;
-
+                    if (card.HasBeenActivatedThisTurn) return;
                     Controller.ShowDualPopup(new PlayCardEffectStrategy(effect));
+                    card.HasBeenActivatedThisTurn = true;
                 }
             }
         }
