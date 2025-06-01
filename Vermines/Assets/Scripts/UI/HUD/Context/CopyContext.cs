@@ -1,11 +1,6 @@
-﻿using System.Collections.Generic;
-using System;
-using UnityEngine;
-using Vermines.ShopSystem.Enumerations;
+﻿using UnityEngine;
 using Vermines.UI;
-using Vermines.CardSystem.Elements;
 using Vermines.UI.Screen;
-using Vermines.CardSystem.Enumerations;
 
 public class CopyContext : IUIContext
 {

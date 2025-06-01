@@ -11,8 +11,6 @@ public class CopyEffectPartisanPlugin : CopyEffectPlugin
         {
             foreach (var card in playerDeck.Value.PlayedCards)
             {
-                Debug.Log($"Card stored is: {activatedCard.Data.Name} with ID: {activatedCard.ID}");
-                Debug.Log($"Card in played cards is: {card.Data.Name} with ID: {card.ID}");
                 if (card.Data.Type == CardTypeTrigger &&
                     card.ID != activatedCard.ID) // Ensure we don't include the activated card itself
                 {

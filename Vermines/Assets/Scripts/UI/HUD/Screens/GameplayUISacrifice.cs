@@ -198,8 +198,7 @@ namespace Vermines.UI.Screen
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
-            Controller.Hide();
-            UIContextManager.Instance.PopContext();
+            Controller.ShowDualPopup(new CancelEffectStrategy());
         }
 
         public void OnCardClicked(ICard card, int slodId)

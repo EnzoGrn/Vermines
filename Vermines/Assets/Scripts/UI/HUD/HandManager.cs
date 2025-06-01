@@ -28,6 +28,7 @@ namespace Vermines.UI.Card
             else Destroy(gameObject);
 
             GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
+            GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
         }
 
         private void Start()
@@ -69,10 +70,21 @@ namespace Vermines.UI.Card
 
         private void OnCardDiscarded(ICard card)
         {
-            GameObject go = HandManager.Instance.GetCardDisplayGO(card);
+            GameObject go = GetCardDisplayGO(card);
             if (go != null)
             {
-                HandManager.Instance.RemoveCard(go);
+                RemoveCard(go);
+                go.transform.DOKill(true);
+                Destroy(go);
+            }
+        }
+
+        private void OnCardSacrified(ICard card)
+        {
+            GameObject go = GetCardDisplayGO(card);
+            if (go != null)
+            {
+                RemoveCard(go);
                 go.transform.DOKill(true);
                 Destroy(go);
             }
