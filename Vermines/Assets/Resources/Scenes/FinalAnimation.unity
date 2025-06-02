@@ -168,6 +168,10 @@ MonoBehaviour:
   _playableDirector: {fileID: 1016808696}
   _narrationDialog: {fileID: 1484241894}
   skipTime: 21.5
+  _cinematicCanva: {fileID: 1659584283}
+  _canvas: {fileID: 1093533762}
+  _camera: {fileID: 1829845892}
+  _cinemachineCamera: {fileID: 575640208}
 --- !u!114 &32697544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1459,7 +1463,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &575640208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1473,7 +1477,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Priority:
-    Enabled: 0
+    Enabled: 1
     m_Value: 0
   OutputChannel: 1
   StandbyUpdate: 2
@@ -2748,7 +2752,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1093533760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3416,7 +3420,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1394977292
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4158,7 +4162,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1659584281
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4266,7 +4270,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1667557078
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4732,7 +4736,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1829845893}
   - component: {fileID: 1829845892}
-  - component: {fileID: 1829845891}
   - component: {fileID: 1829845894}
   - component: {fileID: 1829845895}
   m_Layer: 0
@@ -4741,15 +4744,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!81 &1829845891
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1829845890}
-  m_Enabled: 1
+  m_IsActive: 0
 --- !u!20 &1829845892
 Camera:
   m_ObjectHideFlags: 0

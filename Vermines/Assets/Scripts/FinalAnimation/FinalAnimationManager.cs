@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Playables;
 using Vermines.CardSystem.Enumerations;
@@ -9,6 +10,10 @@ public class FinalAnimationManager : MonoBehaviour
     [SerializeField] private PlayableDirector _playableDirector;
     [SerializeField] private NarrationDialog _narrationDialog;
     [SerializeField] private float skipTime; // Time to skip to when skipping the cinematic
+    [SerializeField] private Canvas _cinematicCanva;
+    [SerializeField] private Canvas _canvas;
+    [SerializeField] private Camera _camera;
+    [SerializeField] private CinemachineCamera _cinemachineCamera;
     #endregion
 
     #region Private Properties
@@ -18,10 +23,10 @@ public class FinalAnimationManager : MonoBehaviour
     private void Start()
     {
         // TODO: remove
-        StartFinalAnimation(true, CardFamily.Cricket);
+        //StartFinalAnimation(true, CardFamily.Cricket);
 
         // TODO: Register to a win event to start the final animation
-        // GameEvents.OnPlayerWin.AddListener(OnPlayerWin);
+        GameEvents.OnPlayerWin.AddListener(OnPlayerWin);
     }
 
     private void OnDisable()
@@ -50,6 +55,12 @@ public class FinalAnimationManager : MonoBehaviour
 
     private void StartFinalAnimation(bool isWinner, CardFamily family)
     {
+        Debug.Log($"[FinalAnimationManager] Starting final animation. Is winner: {isWinner}, Family: {family}");
+        _cinematicCanva.gameObject.SetActive(true);
+        _canvas.gameObject.SetActive(true);
+        _camera.gameObject.SetActive(true);
+        _cinemachineCamera.gameObject.SetActive(true);
+
         _isWinner = isWinner;
         _winText.text = "";
 
