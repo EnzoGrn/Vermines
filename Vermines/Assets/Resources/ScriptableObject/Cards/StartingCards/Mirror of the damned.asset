@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Dragoleon
+  m_Name: Mirror of the damned
   m_EditorClassIdentifier: 
-  Name: Dragoleon
-  Exemplars: 1
-  IsStartingCard: 0
-  Type: 0
+  Name: Mirror of the damned
+  Exemplars: 3
+  IsStartingCard: 1
+  Type: 2
   IsFamilyCard: 0
-  _Family: 0
-  _Level: 2
+  _Family: -1
+  _Level: 0
   Effects:
-  - {fileID: 11400000, guid: 1aa37c0bfb1c66e43834a49680863771, type: 2}
+  - {fileID: 11400000, guid: b045c2c6126819b4983bd489e6cf22c5, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 12
+  _Eloquence: 6
   IsFree: 0
-  CurrentEloquence: 12
-  _Souls: 20
-  CurrentSouls: 20
+  CurrentEloquence: 6
+  _Souls: 0
+  CurrentSouls: 0
   _SpriteName: 
-  _Sprite: {fileID: 21300000, guid: 722e2cb09d177014a85aa256106da5cf, type: 3}
+  _Sprite: {fileID: 21300000, guid: cecf307aa9433154cb0a98cbc6706b44, type: 3}

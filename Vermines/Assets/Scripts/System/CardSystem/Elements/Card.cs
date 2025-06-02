@@ -1,4 +1,4 @@
-namespace Vermines.CardSystem.Elements {
+﻿namespace Vermines.CardSystem.Elements {
 
     using Fusion;
     using Vermines.CardSystem.Data;
@@ -15,6 +15,8 @@ namespace Vermines.CardSystem.Elements {
         int ID { get; set; }
 
         bool IsAnonyme { get; set; }
+
+        bool HasBeenActivatedThisTurn { get; set; }
 
         public CardData Data { get; set; }
 
@@ -37,6 +39,8 @@ namespace Vermines.CardSystem.Elements {
             get => IsAnonyme ? null : _Data; // Security check
             set => _Data = value;
         }
+
+        public bool HasBeenActivatedThisTurn { get; set; }
 
         public PlayerRef Owner { get; set; }
     }

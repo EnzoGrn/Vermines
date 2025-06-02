@@ -15,6 +15,6 @@ public class TableCardClickHandler : ICardClickHandler
 
     public void OnCardClicked(ICard card)
     {
-        GameEvents.OnCardClicked.Invoke(card);
+        GameEvents.OnCardClicked.Invoke(card, _slotId);
     }
 }

@@ -2,14 +2,17 @@
 using Vermines.Player;
 using UnityEngine.Localization;
 using Vermines.CardSystem.Data.Effect;
+using Vermines.CardSystem.Elements;
 
 public class PlayCardEffectStrategy : IDiscardPopupStrategy
 {
     private readonly AEffect effect;
+    private readonly ICard card = null; // Assuming you have a reference to the card that is being played
 
-    public PlayCardEffectStrategy(AEffect effect)
+    public PlayCardEffectStrategy(AEffect effect, ICard card)
     {
         this.effect = effect;
+        this.card = card;
     }
 
     public string GetTitle() =>
@@ -31,6 +34,7 @@ public class PlayCardEffectStrategy : IDiscardPopupStrategy
 
     public void OnConfirm()
     {
+        card.HasBeenActivatedThisTurn = true;
         effect.Play(PlayerController.Local.PlayerRef);
     }
 

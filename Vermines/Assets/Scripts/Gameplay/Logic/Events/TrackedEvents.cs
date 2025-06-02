@@ -39,6 +39,18 @@ public class TrackedEvent : ITrackedEvent
     public void Invoke() => _event.Invoke();
 
     public int ListenerCount => _listeners.Count;
+
+    public void PrintListeners()
+    {
+        Debug.Log($"[TrackedEvent<void>: {_eventName}] Printing listeners:");
+        foreach (var listener in _listeners)
+        {
+            var method = listener.Method;
+            var target = listener.Target;
+            string targetName = target != null ? target.GetType().Name : "Static";
+            Debug.Log($"  - {targetName}.{method.Name}");
+        }
+    }
 }
 
 public class TrackedEvent<T> : ITrackedEvent
@@ -73,6 +85,18 @@ public class TrackedEvent<T> : ITrackedEvent
     public void Invoke(T arg) => _event.Invoke(arg);
 
     public int ListenerCount => _listeners.Count;
+
+    public void PrintListeners()
+    {
+        Debug.Log($"[TrackedEvent<{typeof(T).Name}>: {_eventName}] Printing listeners:");
+        foreach (var listener in _listeners)
+        {
+            var method = listener.Method;
+            var target = listener.Target;
+            string targetName = target != null ? target.GetType().Name : "Static";
+            Debug.Log($"  - {targetName}.{method.Name}");
+        }
+    }
 }
 
 public class TrackedEvent<T1, T2> : ITrackedEvent
@@ -107,4 +131,16 @@ public class TrackedEvent<T1, T2> : ITrackedEvent
     public void Invoke(T1 a, T2 b) => _event.Invoke(a, b);
 
     public int ListenerCount => _listeners.Count;
+
+    public void PrintListeners()
+    {
+        Debug.Log($"[TrackedEvent<{typeof(T1).Name}, {typeof(T2).Name}>: {_eventName}] Printing listeners:");
+        foreach (var listener in _listeners)
+        {
+            var method = listener.Method;
+            var target = listener.Target;
+            string targetName = target != null ? target.GetType().Name : "Static";
+            Debug.Log($"  - {targetName}.{method.Name}");
+        }
+    }
 }

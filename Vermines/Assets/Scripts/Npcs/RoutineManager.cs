@@ -1,4 +1,4 @@
-using log4net;
+ï»¿using log4net;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -73,7 +73,7 @@ public class RoutineManager : MonoBehaviour
             {
                 npc.gameObject.SetActive(false);
             }
-            // Reset the NPC position
+
             npc.ResetNpc();
         }
     }
@@ -81,7 +81,6 @@ public class RoutineManager : MonoBehaviour
     /// <summary>
     /// Get a random destination slot from the list of PointOfInterest.
     /// </summary>
-    /// <returns></returns>
     public PointOfInterestSlot GetRandomDestinationSlot()
     {
         // Get a list of all POI with available POI slots
@@ -121,13 +120,11 @@ public class RoutineManager : MonoBehaviour
         Vector2 randomPoint = Random.insideUnitCircle * _radiusOfAreaInterruption;
         Vector3 result = center + new Vector3(randomPoint.x, 0f, randomPoint.y);
 
-        // On s'assure que le point est navigable (optionnel mais recommandé)
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(result, out hit, 2.0f, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(result, out NavMeshHit hit, 2.0f, NavMesh.AllAreas))
         {
             return hit.position;
         }
-        return center; // fallback au centre si aucun point n’est trouvé
+        return center;
     }
 
     /// <summary>
@@ -145,8 +142,6 @@ public class RoutineManager : MonoBehaviour
             int randomIndex = Random.Range(0, _npcs.Count);
             if (randomIndex < _percentOfNpcInterest)
             {
-                Debug.Log($"Interrupting NPC: {npc.gameObject.name}");
-                
                 // TODO: Run the interact animation that will then start the InterruptCoroutine
                 npc.Interruption(GetRandomPointInRadius(_interruptTransform.position));
             }
