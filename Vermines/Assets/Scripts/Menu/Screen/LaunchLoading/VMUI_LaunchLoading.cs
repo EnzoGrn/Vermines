@@ -6,6 +6,7 @@ using Fusion;
 namespace Vermines.Menu.Screen {
     using System.Collections;
     using Vermines.Menu.Tools;
+    using Vermines.Sound;
 
     public partial class VMUI_LaunchLoading : MenuUIScreen {
 
@@ -71,6 +72,10 @@ namespace Vermines.Menu.Screen {
         {
             LoadingManager.OnLoadingDone -= OnLoadingDone;
 
+            MusicManager musicManager = FindFirstObjectByType<MusicManager>(FindObjectsInactive.Include);
+
+            if (musicManager)
+                musicManager.Play();
             Controller.Show<VMUI_MainMenu>(this);
         }
 

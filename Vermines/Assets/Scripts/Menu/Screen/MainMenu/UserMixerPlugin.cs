@@ -1,8 +1,8 @@
-using log4net.Core;
-using OMGG.Menu.Screen;
-using UnityEditorInternal;
-using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine;
+using OMGG.Menu.Screen;
+using System.Collections;
+using Vermines.Sound;
 
 namespace Vermines.Plugin.Sounds {
 
@@ -103,16 +103,9 @@ namespace Vermines.Plugin.Sounds {
 
         #region Override Methods
 
-        public void Awake()
+        public void Start()
         {
-            if (_AudioMixer == null) {
-                Debug.LogWarning("[UserMixerPlugin]: There is no 'AudioMixer' set to the component. Try to fetch one...");
-
-                _AudioMixer = FindAnyObjectByType<AudioMixer>(FindObjectsInactive.Include);
-
-                if (_AudioMixer == null)
-                    Debug.LogError("[UserMixerPlugin]: Failed to fetch. There is no 'AudioMixer' in the scene.");
-            }
+            LoadSettings();
         }
 
         public override void Init(MenuUIScreen screen)
@@ -125,17 +118,28 @@ namespace Vermines.Plugin.Sounds {
                 return;
             }
 
-            SetMainVolume();
-            SetFXVolume();
-            SetAmbianceVolume();
-            SetMusicVolume();
+            LoadSettings();
         }
 
         #endregion
 
         #region Methods
 
-        private void SetMainVolume()
+        public void LoadSettings()
+        {
+            SoundEnabled = SoundEnabled;
+            MainVolume   = MainVolume;
+
+            FXEnabled = FXEnabled;
+            FXVolume  = FXVolume;
+
+            AmbianceEnabled = AmbianceEnabled;
+
+            MusicEnabled = MusicEnabled;
+            MusicVolume  = MusicVolume;
+        }
+
+        public void SetMainVolume()
         {
             const string label = "MasterVolume";
 
@@ -145,7 +149,7 @@ namespace Vermines.Plugin.Sounds {
                 SetValue(label, 0.0f);
         }
 
-        private void SetFXVolume()
+        public void SetFXVolume()
         {
             const string label = "SoundFXVolume";
 
@@ -155,7 +159,7 @@ namespace Vermines.Plugin.Sounds {
                 SetValue(label, 0.0f);
         }
 
-        private void SetAmbianceVolume()
+        public void SetAmbianceVolume()
         {
             const string label = "AtmosphereVolume";
 
@@ -165,7 +169,7 @@ namespace Vermines.Plugin.Sounds {
                 SetValue(label, 0.0f);
         }
 
-        private void SetMusicVolume()
+        public void SetMusicVolume()
         {
             const string label = "MusicVolume";
 

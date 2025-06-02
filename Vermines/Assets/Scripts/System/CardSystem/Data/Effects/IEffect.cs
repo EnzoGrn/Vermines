@@ -87,7 +87,9 @@ namespace Vermines.CardSystem.Data.Effect {
         public void Initialize(ICard card)
         {
             Card = card;
-        
+
+            if (SubEffect != null)
+                SubEffect.Initialize(card);
             UpdateDescription();
         }
 
