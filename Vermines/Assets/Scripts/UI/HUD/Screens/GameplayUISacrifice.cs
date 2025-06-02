@@ -9,6 +9,8 @@ using Vermines.Player;
 
 namespace Vermines.UI.Screen
 {
+    using Button = UnityEngine.UI.Button;
+
     public partial class GameplayUISacrifice : GameplayUIScreen, IParamReceiver<CardType>, ICardClickReceiver
     {
         #region Attributes
@@ -33,6 +35,12 @@ namespace Vermines.UI.Screen
         /// </summary>
         [InlineHelp, SerializeField]
         private GameObject _cardHolder;
+
+
+        private int currentPage = 0;
+        private const int entriesPerPage = 5;
+        [SerializeField]
+        private Button _nextPageButton;
 
         #endregion
 
@@ -88,6 +96,7 @@ namespace Vermines.UI.Screen
             base.Show();
             
             ShowUser();
+            _nextPageButton.onClick.AddListener(NextPage);
         }
 
         /// <summary>
@@ -99,6 +108,7 @@ namespace Vermines.UI.Screen
             base.Hide();
 
             HideUser();
+            _nextPageButton.onClick.RemoveListener(NextPage);
         }
 
         /// <summary>
@@ -128,11 +138,13 @@ namespace Vermines.UI.Screen
                 // TODO: show empty state or message
             }
 
-            for (int i = 0; i < currentEntries.Count; i++)
-            {
-                Vermines.UI.Screen.ShopCardEntry entry = currentEntries[i];
-                var slot = CardSlotPool.Instance.GetSlot(_cardHolder.transform);
+            int startIndex = currentPage * entriesPerPage;
 
+            for (int i = 0; i < entriesPerPage; i++)
+            {
+                int entryIndex = startIndex + i;
+
+                var slot = CardSlotPool.Instance.GetSlot(_cardHolder.transform);
                 if (slot == null)
                 {
                     Debug.LogErrorFormat(
@@ -146,15 +158,33 @@ namespace Vermines.UI.Screen
                 slot.transform.SetParent(_cardHolder.transform, false);
                 slot.SetIndex(i);
 
-                slot.Init(entry.Data, entry.IsNew, new CardClickHandler(this));
+                if (entryIndex < currentEntries.Count)
+                {
+                    var entry = currentEntries[entryIndex];
+                    slot.Init(entry.Data, entry.IsNew, new CardClickHandler(this));
+                }
+                else
+                {
+                    slot.ResetSlot();
+                }
 
                 activeSlots.Add(slot);
             }
+
+            _nextPageButton.gameObject.SetActive(currentEntries.Count > entriesPerPage);
+        }
+
+        private void NextPage()
+        {
+            int maxPage = Mathf.CeilToInt((float)currentEntries.Count / entriesPerPage);
+            currentPage = (currentPage + 1) % maxPage;
+            PopulateSlots();
         }
 
         protected void GetCardFromType(CardType type)
         {
             currentEntries.Clear();
+            currentPage = 0;
 
             foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Hand)
             {

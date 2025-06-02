@@ -1,17 +1,15 @@
 ﻿using Fusion;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
-using Vermines.Player;
-using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Card;
 using Vermines.UI.Plugin;
 
 namespace Vermines.UI.Screen
 {
+    using Button = UnityEngine.UI.Button;
+
     public partial class GameplayUICopyEffect : GameplayUIScreen, IParamReceiver<CardCopyEffectContext>, ICardClickReceiver
     {
         #region Attributes
@@ -168,7 +166,7 @@ namespace Vermines.UI.Screen
         private void NextPage()
         {
             int maxPage = Mathf.CeilToInt((float)currentEntries.Count / entriesPerPage);
-            currentPage = (currentPage + 1) % maxPage; // Boucle sur les pages
+            currentPage = (currentPage + 1) % maxPage;
             PopulateSlots();
         }
 
@@ -207,7 +205,7 @@ namespace Vermines.UI.Screen
                 }
                 else
                 {
-                    slot.ResetSlot(); // Vide visuellement le slot (à toi d’implémenter ça proprement)
+                    slot.ResetSlot();
                 }
 
                 activeSlots.Add(slot);
