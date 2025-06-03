@@ -128,7 +128,7 @@ namespace Vermines.Config {
         public IntSetting MaxSoulsToWin = new("Max Souls To Win", 100, 1, 100, "Game Rules Settings");
 
         [Tooltip("Initial number of souls each player starts with.")]
-        public IntSetting SoulsToStartWith = new("Souls To Start With", 0, 0, 100, "Game Rules Settings");
+        public IntSetting SoulsToStartWith = new("Souls To Start With", 99, 0, 100, "Game Rules Settings");
 
         #endregion
 

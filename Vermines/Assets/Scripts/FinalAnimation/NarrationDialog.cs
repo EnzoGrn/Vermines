@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Localization.Settings;
 using UnityEngine.Localization.Tables;
 
@@ -19,10 +20,13 @@ public class NarrationDialog : MonoBehaviour
     private string _keyName;
     #endregion
 
+    #region Public Properties
+    public UnityEvent OnDialogComplete = new UnityEvent();
+    #endregion
+
     void Start()
     {
         _dialogLines = new List<string>();
-        _subtitleText.text = "";
     }
 
     private void OnEnable()
@@ -37,6 +41,7 @@ public class NarrationDialog : MonoBehaviour
     public void StartDialog()
     {
         StringTable table = LocalizationSettings.StringDatabase.GetTable(_tableName);
+        _subtitleText.text = "";
 
         if (table == null)
         {
@@ -87,7 +92,7 @@ public class NarrationDialog : MonoBehaviour
                 yield return null;
             }
         }
-
+        OnDialogComplete.Invoke();
         _subtitleText.text = "";
         _dialogLines.Clear();
     }

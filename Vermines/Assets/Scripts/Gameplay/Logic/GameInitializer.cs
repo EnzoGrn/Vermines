@@ -5,6 +5,7 @@ using OMGG.DesignPattern;
 using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Vermines.Config;
 
 namespace Vermines {
     using Vermines.Gameplay.Commands.Internal;
@@ -19,9 +20,6 @@ namespace Vermines {
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
     using Vermines.Gameplay.Phases;
-    using Vermines.HUD;
-    using Vermines.HUD.Card;
-    using Mono.Cecil.Cil;
 
     public class GameInitializer : NetworkBehaviour {
 
@@ -38,10 +36,11 @@ namespace Vermines {
                 Runner.LoadScene("EnvironmentDay", LoadSceneMode.Additive);
                 Runner.LoadScene("GameplayCameraTravelling", LoadSceneMode.Additive);
                 Runner.LoadScene("FinalAnimation", LoadSceneMode.Additive);
+                Runner.LoadScene("UIv3", LoadSceneMode.Additive);
             }
         }
 
-        public int InitializePlayers(int seed, int startingEloquence)
+        public int InitializePlayers(GameConfiguration config)
         {
             GameDataStorage storage = GameDataStorage.Instance;
             int numberOfPlayer = storage.PlayerData.Count;
@@ -50,14 +49,15 @@ namespace Vermines {
             // For now just check if the number of player is 2 or more.
             if (numberOfPlayer < 2)
                 return -1;
-            InitializePlayers(seed, numberOfPlayer, startingEloquence);
+            
+            InitializePlayers(config, numberOfPlayer);
 
             return 0;
         }
 
-        private void InitializePlayers(int seed, int numberOfPlayer, int startingEloquence)
+        private void InitializePlayers(GameConfiguration config, int numberOfPlayer)
         {
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(seed, numberOfPlayer);
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(config.Seed, numberOfPlayer);
             int orderIndex = 0;
 
             foreach (var player in GameDataStorage.Instance.PlayerData)
@@ -65,14 +65,15 @@ namespace Vermines {
                 Vermines.Player.PlayerData data = player.Value;
 
                 data.Family = families[orderIndex];
-                data.Eloquence = GiveEloquence(orderIndex, startingEloquence);
+                data.Eloquence = GiveEloquence(orderIndex, config.EloquenceToStartWith.Value);
+                data.Souls = config.SoulsToStartWith.Value;
 
                 GameDataStorage.Instance.PlayerData.Set(player.Key, data);
 
                 orderIndex++;
             }
 
-            RPC_InitializeGame(seed, FamilyUtils.FamiliesListToIds(families));
+            RPC_InitializeGame(config.Seed, FamilyUtils.FamiliesListToIds(families));
         }
 
         public int InitalizePhase()

@@ -122,7 +122,7 @@ MonoBehaviour:
     Category: Game Rules Settings
     Name: Souls To Start With
     Type: 1
-    Value: 0
+    Value: 99
     MinValue: 0
     MaxValue: 100
   MaxCardsPartisanToPlay:
@@ -199,3 +199,10 @@ MonoBehaviour:
     Name: Random Seed
     Type: 0
     Value: 1
+  GameSeed:
+    Category: Advanced Settings
+    Name: Seed
+    Type: 1
+    Value: 2061089540
+    MinValue: 0
+    MaxValue: 2147483647
