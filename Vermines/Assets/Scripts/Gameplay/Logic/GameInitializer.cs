@@ -37,7 +37,7 @@ namespace Vermines {
                 Debug.Log("LoadYourAsyncScene.");
                 Runner.LoadScene("EnvironmentDay", LoadSceneMode.Additive);
                 Runner.LoadScene("GameplayCameraTravelling", LoadSceneMode.Additive);
-                Runner.LoadScene("UIv3", LoadSceneMode.Additive);
+                Runner.LoadScene("UI", LoadSceneMode.Additive);
             }
         }
 
