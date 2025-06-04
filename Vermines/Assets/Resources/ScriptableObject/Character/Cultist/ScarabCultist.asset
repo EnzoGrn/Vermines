@@ -16,4 +16,3 @@ MonoBehaviour:
   family: 6
   Name: Scarab
   CultistSprite: {fileID: 21300000, guid: cbc89b9f820b2464da0a692dd74905cb, type: 3}
-  FamilyIcon: {fileID: 21300000, guid: 1f592bd8243019646b20a3c9876d711b, type: 3}
