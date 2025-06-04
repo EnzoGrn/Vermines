@@ -122,7 +122,7 @@ MonoBehaviour:
     Category: Game Rules Settings
     Name: Souls To Start With
     Type: 1
-    Value: 99
+    Value: 0
     MinValue: 0
     MaxValue: 100
   MaxCardsPartisanToPlay:
