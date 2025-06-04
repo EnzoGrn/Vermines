@@ -280,8 +280,6 @@ namespace Vermines.Player {
 
                 response = CommandInvoker.ExecuteCommand(earnCommand);
 
-                Debug.Log($"[SERVER1]: {response.Message}");
-
                 if (response.Status == CommandStatus.Success) {
                     GameEvents.OnCardSacrified.Invoke(card);
                 }
@@ -376,6 +374,13 @@ namespace Vermines.Player {
             card.Data.CopyEffect(cardToCopied.Data.Effects);
 
             // TODO: Maybe update the card UI, of the card (effect)
+            // If the effect is an active effect, we can also call the Play method
+            foreach (AEffect effect in card.Data.Effects)
+            {
+                if (effect.Type == EffectType.Activate)
+                    effect.Play(PlayerRef.FromEncoded(playerId));
+            }
+            // There is other effect to be played?
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

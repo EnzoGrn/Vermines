@@ -26,6 +26,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 16d02b2cd5642754d91eabcf06221246
+    m_Address: Assets/Resources/Localization/Tables/UI/EffectTable Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 558b806d900de704c9aec117efd14098
     m_Address: Assets/Resources/Localization/Tables/Scriptable Objects/Settings/Settings
       Shared Data.asset

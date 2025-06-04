@@ -9,9 +9,10 @@ using Vermines.Player;
 
 namespace Vermines.UI.Screen
 {
-    public partial class GameplayUISacrifice : GameplayUIScreen, IParamReceiver<CardType>
-    {
+    using Button = UnityEngine.UI.Button;
 
+    public partial class GameplayUISacrifice : GameplayUIScreen, IParamReceiver<CardType>, ICardClickReceiver
+    {
         #region Attributes
 
         /// <summary>
@@ -34,6 +35,12 @@ namespace Vermines.UI.Screen
         /// </summary>
         [InlineHelp, SerializeField]
         private GameObject _cardHolder;
+
+
+        private int currentPage = 0;
+        private const int entriesPerPage = 5;
+        [SerializeField]
+        private Button _nextPageButton;
 
         #endregion
 
@@ -89,6 +96,7 @@ namespace Vermines.UI.Screen
             base.Show();
             
             ShowUser();
+            _nextPageButton.onClick.AddListener(NextPage);
         }
 
         /// <summary>
@@ -100,6 +108,7 @@ namespace Vermines.UI.Screen
             base.Hide();
 
             HideUser();
+            _nextPageButton.onClick.RemoveListener(NextPage);
         }
 
         /// <summary>
@@ -124,11 +133,18 @@ namespace Vermines.UI.Screen
             }
             activeSlots.Clear();
 
-            for (int i = 0; i < currentEntries.Count; i++)
+            if (currentEntries == null || currentEntries.Count == 0)
             {
-                Vermines.UI.Screen.ShopCardEntry entry = currentEntries[i];
-                var slot = CardSlotPool.Instance.GetSlot(_cardHolder.transform);
+                // TODO: show empty state or message
+            }
 
+            int startIndex = currentPage * entriesPerPage;
+
+            for (int i = 0; i < entriesPerPage; i++)
+            {
+                int entryIndex = startIndex + i;
+
+                var slot = CardSlotPool.Instance.GetSlot(_cardHolder.transform);
                 if (slot == null)
                 {
                     Debug.LogErrorFormat(
@@ -142,15 +158,33 @@ namespace Vermines.UI.Screen
                 slot.transform.SetParent(_cardHolder.transform, false);
                 slot.SetIndex(i);
 
-                slot.Init(entry.Data, entry.IsNew, new CardClickHandler(this));
+                if (entryIndex < currentEntries.Count)
+                {
+                    var entry = currentEntries[entryIndex];
+                    slot.Init(entry.Data, entry.IsNew, new CardClickHandler(this));
+                }
+                else
+                {
+                    slot.ResetSlot();
+                }
 
                 activeSlots.Add(slot);
             }
+
+            _nextPageButton.gameObject.SetActive(currentEntries.Count > entriesPerPage);
+        }
+
+        private void NextPage()
+        {
+            int maxPage = Mathf.CeilToInt((float)currentEntries.Count / entriesPerPage);
+            currentPage = (currentPage + 1) % maxPage;
+            PopulateSlots();
         }
 
         protected void GetCardFromType(CardType type)
         {
             currentEntries.Clear();
+            currentPage = 0;
 
             foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Hand)
             {
@@ -194,11 +228,10 @@ namespace Vermines.UI.Screen
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
-            Controller.Hide();
-            UIContextManager.Instance.PopContext();
+            Controller.ShowDualPopup(new CancelEffectStrategy());
         }
 
-        public void OnCardClicked(ICard card)
+        public void OnCardClicked(ICard card, int slodId)
         {
             if (card == null || GameManager.Instance.IsMyTurn() == false || card.Data.Type != _deckType)
                 return;
@@ -222,16 +255,23 @@ namespace Vermines.UI.Screen
 
     }
 
+    public interface ICardClickReceiver
+    {
+        void OnCardClicked(ICard card, int slodId);
+    }
+
     public class CardClickHandler : ICardClickHandler
     {
-        private readonly GameplayUISacrifice _sacrificeUI;
-        public CardClickHandler(GameplayUISacrifice sacrificeUI)
+        private readonly ICardClickReceiver _receiver;
+
+        public CardClickHandler(ICardClickReceiver receiver)
         {
-            _sacrificeUI = sacrificeUI;
+            _receiver = receiver;
         }
+
         public void OnCardClicked(ICard card)
         {
-            _sacrificeUI.OnCardClicked(card);
+            _receiver.OnCardClicked(card, 0);
         }
     }
 }

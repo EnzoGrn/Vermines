@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-fr
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ec4e47b1d80bbe4e8242035d151ec69
+    m_Address: EffectTable_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 686695408f434fe4db69aac801bec787
     m_Address: Final Animaton Dialog_fr
     m_ReadOnly: 1

@@ -1,4 +1,4 @@
-namespace Vermines.CardSystem.Enumerations {
+﻿namespace Vermines.CardSystem.Enumerations {
 
     /// <summary>
     /// Enumeration of the different card family.

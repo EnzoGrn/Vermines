@@ -47,7 +47,7 @@ namespace Vermines.UI.Card
             {
                 GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
                 GameEvents.OnCardDiscardedRequested.Invoke(card);
-                drag.gameObject.SetActive(false);
+                //drag.gameObject.SetActive(false);
             }
             else
             {
@@ -72,10 +72,10 @@ namespace Vermines.UI.Card
             GameObject go = HandManager.Instance.GetCardDisplayGO(card);
             if (go != null)
             {
-                DraggableCard drag = go.GetComponent<DraggableCard>();
-                if (drag != null)
+                if (go.TryGetComponent<DraggableCard>(out var drag))
                 {
                     drag.ReturnToOriginalPosition();
+                    drag.gameObject.SetActive(true);
                 }
             }
             GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);

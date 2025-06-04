@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -9,6 +9,7 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
+    using Vermines.UI.Screen;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Copy/Copy a tools effect.")]
     public class CopyToolEffect : AEffect {
@@ -47,16 +48,23 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (player != PlayerController.Local.PlayerRef)
                 return;
 
-            // TODO: Subscribe to the function for copied the tool's effect (only on market && and only tools)
+            if (UIContextManager.Instance)
+            {
+                CardCopyEffectContext cardCopyEffectContext = new CardCopyEffectContext(CardType.Tools, Card);
+                CopyContext copyContext = new CopyContext(cardCopyEffectContext);
+                UIContextManager.Instance.PushContext(copyContext);
+            }
+            GameEvents.OnCardCopiedEffect.AddListener(OnCardCopied);
         }
 
         private void OnCardCopied(ICard card)
         {
+            GameEvents.OnCardCopiedEffect.RemoveListener(OnCardCopied);
+            Debug.Log($"[CopyPartisanEffect] {card.Data.Name} effect copied by {Card.Data.Name}.");
+            UIContextManager.Instance.PopContext();
             if (card.Data.Type != CardType.Tools)
                 return;
             PlayerController.Local.NetworkEventCardEffect(Card.ID, card.ID.ToString());
-
-            // TODO: Unsubscribe the function for copied the partisan's effect
         }
 
         public override void NetworkEventFunction(PlayerRef player, string data)

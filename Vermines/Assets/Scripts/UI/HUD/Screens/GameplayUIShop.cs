@@ -1,11 +1,9 @@
-﻿using Fusion;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
-using Vermines.Gameplay.Phases.Enumerations;
-using Vermines.Gameplay.Phases;
 using Vermines.ShopSystem.Enumerations;
+using Vermines.UI.Plugin;
 using Vermines.UI.Shop;
 
 namespace Vermines.UI.Screen
@@ -33,6 +31,11 @@ namespace Vermines.UI.Screen
     {
         #region Attributes
 
+        /// <summary>
+        /// Should show plugins is a flag that can be used to hide the plugin UI elements.
+        /// </summary>
+        protected override bool ShouldShowPlugins => false;
+
         [Header("Shop Configs")]
 
         /// <summary>
@@ -43,13 +46,12 @@ namespace Vermines.UI.Screen
         protected Dictionary<ShopType, ShopUIConfig> shopConfigs = new();
         protected Dictionary<ShopType, Dictionary<int, ICard>> previousShopStates = new();
 
-        [InlineHelp, SerializeField]
-        private ShopUIController _ShopController;
+        protected override bool ShouldHidePlugins => false;
 
         /// <summary>
         /// The type of shop to display (e.g., Market, Courtyard, etc.).
         /// </summary>
-        protected ShopType _ShopType;
+        protected ShopType _shopType;
 
         #endregion
 
@@ -121,18 +123,27 @@ namespace Vermines.UI.Screen
         public override void Show()
         {
             base.Show();
-            if (shopConfigs.TryGetValue(_ShopType, out var config))
+
+            // Get the ShopUIController in the plugin list.
+            ShopUIController shopUIController = Get<ShopUIController>();
+            if (shopUIController == null)
             {
-                if (_ShopController != null)
+                Debug.LogErrorFormat(gameObject, "[{0}] Error: {1}", nameof(GameplayUIShop), "ShopUIController not found in plugins.");
+                return;
+            }
+            var entries = GetEntries(_shopType);
+            shopUIController.Init(entries, shopConfigs[_shopType]);
+            ShowUser();
+
+            foreach (var plugin in Plugins)
+            {
+                if (plugin is not ShopPopupPlugin)
                 {
-                    var entries = GetEntries(_ShopType);
-                    _ShopController.Init(entries, config);
+                    plugin.Show(this);
                 }
             }
-            else
-                Debug.LogWarningFormat(gameObject, "[{0}] Warning: {1}", nameof(GameplayUIShop), "SetParam called but no config found for {0}.");
 
-            ShowUser();
+            GameEvents.OnCardClicked.AddListener(OnCardClicked);
         }
 
         /// <summary>
@@ -144,8 +155,8 @@ namespace Vermines.UI.Screen
             base.Hide();
 
             HideUser();
-            Debug.LogFormat(gameObject, "[{0}] {1}", nameof(GameplayUIShop), "Hide called.");
-            GameEvents.OnCardPurchased.RemoveListener(OnCardPurchased);
+
+            GameEvents.OnCardClicked.RemoveListener(OnCardClicked);
         }
 
         #endregion
@@ -159,7 +170,7 @@ namespace Vermines.UI.Screen
         public void SetParam(ShopType shopType)
         {
             Debug.Log($"[GameplayUIShop] SetParam called with {shopType}.");
-            _ShopType = shopType;
+            _shopType = shopType;
         }
 
         public List<Vermines.UI.Screen.ShopCardEntry> GetEntries(ShopType type)
@@ -228,12 +239,56 @@ namespace Vermines.UI.Screen
             ReceiveFullShopList(shopType, shopList);
         }
 
+        public void OnCardClicked(ICard card, int slodId)
+        {
+            Debug.Log($"[ShopCardClickHandler] Card clicked: {card.Data.Name}");
+
+            if (card == null)
+                return;
+
+            ShopPopupPlugin plugin = Get<ShopPopupPlugin>();
+
+            if (plugin == null)
+            {
+                Debug.LogErrorFormat(
+                    gameObject,
+                    "[{0}] Critical Error: Missing 'ShopPopupPlugin' reference on GameObject '{1}'. This component is required to render the card list. Please assign a valid GameObject in the Inspector.",
+                    nameof(GameplayUISacrifice),
+                    gameObject.name
+                );
+                return;
+            }
+
+            plugin.SetParam(card);
+
+            if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
+            {
+                plugin.Setup((c) =>
+                {
+                    GameEvents.OnCardClickedInShopWithSlotIndex.Invoke(_shopType, slodId);
+                    GameplayUIController controller = GameObject.FindAnyObjectByType<GameplayUIController>();
+                    if (controller != null)
+                    {
+                        controller.ShowLast();
+                    }
+                }, isReplace: true, _shopType);
+            }
+            else
+            {
+                plugin.Setup((c) =>
+                {
+                    GameEvents.InvokeOnCardPurchaseRequested(_shopType, slodId);
+                }, isReplace: false, _shopType);
+            }
+
+            plugin.Show(this);
+        }
+
         /// <summary>
         /// Is called when the <see cref="_CloseButton"/> is pressed using SendMessage() from the UI object.
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
-            UIContextManager.Instance.PopContextOfType<ShopConfirmPopup>();
             Controller.Hide();
             CamManager.Instance.GoOnNoneLocation();
         }

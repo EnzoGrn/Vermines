@@ -63,6 +63,8 @@ namespace Vermines.UI
         /// </summary>
         protected virtual bool ShouldShowPlugins => true;
 
+        protected virtual bool ShouldHidePlugins => true;
+
         /// <summary>
         /// Is the screen currently showing.
         /// </summary>
@@ -109,8 +111,11 @@ namespace Vermines.UI
 
             IsShowing = false;
 
-            foreach (GameplayScreenPlugin plugin in _Plugins)
-                plugin.Hide();
+            if (ShouldHidePlugins)
+            {
+                foreach (GameplayScreenPlugin plugin in _Plugins)
+                    plugin.Hide();
+            }
             gameObject.SetActive(false);
         }
 

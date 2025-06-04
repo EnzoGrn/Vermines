@@ -326,7 +326,7 @@ namespace Vermines.UI.Screen
             Controller.Hide();
         }
 
-        public void OnCardClicked(ICard card)
+        public void OnCardClicked(ICard card, int slodId)
         {
             if (card == null || GameManager.Instance.IsMyTurn() == false) return;
 
@@ -335,13 +335,14 @@ namespace Vermines.UI.Screen
             {
                 Controller.ShowDualPopup(new SacrificeStrategy(card));
             }
+
             if (PhaseManager.Instance.CurrentPhase == PhaseType.Gain)
             {
                 foreach (AEffect effect in card.Data.Effects)
                 {
                     if (effect.Type != EffectType.Activate) return;
-
-                    Controller.ShowDualPopup(new PlayCardEffectStrategy(effect));
+                    if (card.HasBeenActivatedThisTurn) return;
+                    Controller.ShowDualPopup(new PlayCardEffectStrategy(effect, card));
                 }
             }
         }

@@ -41,7 +41,7 @@ namespace Vermines.UI.Card
             {
                 GameEvents.OnCardPlayed.AddListener(OnCardPlayed);
                 GameEvents.OnCardPlayedRequested.Invoke(card);
-                drag.gameObject.SetActive(false);
+                //drag.gameObject.SetActive(false);
             }
             else
             {
@@ -71,15 +71,13 @@ namespace Vermines.UI.Card
 
         private void OnPlayRefused(ICard card)
         {
-            // Handle the discard refusal event here if needed
-            Debug.Log($"[CardDropHandler] Card {card.Data.Name} play refused.");
             GameObject go = HandManager.Instance.GetCardDisplayGO(card);
             if (go != null)
             {
-                DraggableCard drag = go.GetComponent<DraggableCard>();
-                if (drag != null)
+                if (go.TryGetComponent<DraggableCard>(out var drag))
                 {
                     drag.ReturnToOriginalPosition();
+                    drag.gameObject.SetActive(true);
                 }
             }
             GameEvents.OnCardPlayed.RemoveListener(OnCardPlayed);

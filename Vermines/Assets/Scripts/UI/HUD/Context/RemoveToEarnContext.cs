@@ -30,6 +30,9 @@ public class RemoveToEarnContext : IUIContext
 
     public void Exit()
     {
+        var gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+        if (gameplayUIController == null) return;
+        gameplayUIController.Hide();
     }
 
     public string GetName()
