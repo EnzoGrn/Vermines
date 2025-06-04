@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -106,16 +106,13 @@ public class NpcController : MonoBehaviour
 
         foreach (Camera cam in cameras)
         {
-            Debug.Log("[TryGetCamera]: Found camera: " + cam.name);
             if (cam.name == _cameraName)
             {
-                Debug.Log("[TryGetCamera]: Camera found: " + cam.name);
                 _camera = cam;
                 return true;
             }
         }
 
-        Debug.Log("[TryGetCamera]: Cannot find camera");
         return false;
     }
 
@@ -148,7 +145,7 @@ public class NpcController : MonoBehaviour
         toDestination.y = 0;
         toPlayer.y = 0;
 
-        // Produit vectoriel pour savoir de quel côté est la destination par rapport au joueur
+        // Calculate the cross product to determine the relative position
         float cross = Vector3.Cross(toPlayer, toDestination).y;
 
         // If cross > 0, destination is on the left from player POV

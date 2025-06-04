@@ -1,4 +1,4 @@
-using Vermines.CardSystem.Elements;
+﻿using Vermines.CardSystem.Elements;
 
 public interface ICardClickHandler
 {

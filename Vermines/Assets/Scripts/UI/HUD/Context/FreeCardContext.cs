@@ -1,7 +1,4 @@
 ﻿using Vermines.ShopSystem.Enumerations;
-using UnityEngine;
-using Vermines.UI.Screen;
-using Vermines.UI;
 
 public class FreeCardContext : IUIContext
 {
@@ -9,6 +6,8 @@ public class FreeCardContext : IUIContext
     /// The shop where the player can buy a card for free.
     /// </summary>
     protected ShopType _shopType;
+
+    public ShopType ShopType => _shopType;
 
     public FreeCardContext(ShopType shopType)
     {

@@ -38,9 +38,6 @@ namespace Vermines.UI.Shop
         [SerializeField]
         public ShopType ShopType;
 
-        [SerializeField]
-        private ShopConfirmPopup _popup;
-
         #region Override Methods
 
         /// <summary>
@@ -50,9 +47,6 @@ namespace Vermines.UI.Shop
         public override void Show(GameplayUIScreen screen)
         {
             base.Show(screen);
-
-            _popup.gameObject.SetActive(false);
-            GameEvents.OnShopUpdated.AddListener(HandleShopUpdate);
         }
 
         /// <summary>
@@ -61,7 +55,7 @@ namespace Vermines.UI.Shop
         public override void Hide()
         {
             base.Hide();
-            GameEvents.OnShopUpdated.RemoveListener(HandleShopUpdate);
+            //GameEvents.OnShopUpdated.RemoveListener(HandleShopUpdate);
         }
 
         #endregion
@@ -85,15 +79,7 @@ namespace Vermines.UI.Shop
             currentEntries = entries;
             PopulateShop();
 
-            if (_popup != null)
-            {
-                _popup.gameObject.SetActive(false);
-            }
-            else
-            {
-                Debug.LogError("[ShopUIController] Popup is null.");
-                return;
-            }
+            GameEvents.OnShopUpdated.AddListener(HandleShopUpdate);
         }
 
         private void SetupUI()
@@ -189,31 +175,24 @@ namespace Vermines.UI.Shop
                     continue;
                 }
 
+                slot.ResetSlot();
+
                 slot.transform.SetParent(cardSlotRoot, false);
                 slot.SetIndex(i);
 
-                var clickHandler = CreateClickHandler(i);
-                slot.Init(entry.Data, entry.IsNew, clickHandler);
+                if (entry != null)
+                {
+                    var clickHandler = CreateClickHandler(i);
+                    slot.Init(entry.Data, entry.IsNew, clickHandler);
+                }
 
                 activeSlots.Add(slot);
             }
         }
 
-        public void EnterReplaceMode(Action onCardReplaced)
-        {
-            Debug.Log("[ShopUIManager] Entered replace mode.");
-
-            int shopSlotCount = currentEntries.Count;
-            for (int i = 0; i < shopSlotCount; i++)
-            {
-                var slot = activeSlots[i];
-                //slot.SetClickHandler(new ReplaceClickHandler(ShopType, i, onCardReplaced));
-            }
-        }
-
         protected virtual ICardClickHandler CreateClickHandler(int slotIndex)
         {
-            return new ShopCardClickHandler(ShopType, slotIndex, _popup);
+            return new ShopCardClickHandler(slotIndex);
         }
     }
 }

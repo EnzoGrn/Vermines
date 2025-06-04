@@ -65,20 +65,12 @@ namespace Vermines.UI.GameTable
             }
         }
 
-        public void OnDroppedOnTable()
-        {
-            // Lock, disable the drop or something like that
-            _canvasGroup.blocksRaycasts = true;
-            HandManager.Instance.RemoveCard(gameObject);
-            gameObject.transform.DOKill(true);
-            Destroy(gameObject);
-        }
-
         public void ReturnToOriginalPosition()
         {
             transform.SetParent(_originalParent);
             _rectTransform.anchoredPosition = _originalPosition;
             _canvasGroup.blocksRaycasts = true;
+            gameObject.SetActive(true);
         }
     }
 }

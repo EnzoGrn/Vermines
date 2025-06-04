@@ -90,7 +90,10 @@ namespace Vermines.Gameplay.Cards.Effect {
 
                 return;
             }
-
+            if (UIContextManager.Instance != null)
+            {
+                UIContextManager.Instance.PopContextOfType<RemoveToEarnContext>();
+            }
             GameEvents.OnCardSacrificedRequested.RemoveListener(CardToRemove);
             PlayerController.Local.OnCardSacrified(card.ID);
             PlayerController.Local.NetworkEventCardEffect(Card.ID);
