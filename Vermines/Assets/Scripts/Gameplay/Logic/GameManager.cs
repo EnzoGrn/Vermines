@@ -11,6 +11,7 @@ namespace Vermines {
     using Vermines.Gameplay.Phases;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
+    using Vermines.CardSystem.Enumerations;
 
     public class GameManager : NetworkBehaviour {
 

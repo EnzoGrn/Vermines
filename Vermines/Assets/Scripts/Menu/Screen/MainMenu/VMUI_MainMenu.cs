@@ -222,6 +222,7 @@ namespace Vermines.Menu.Screen {
 
             if (camera) {
                 camera.OnSplineEnd.AddListener(() => InTavern());
+                camera.OnKnotPassed.AddListener((knotIndex) => OnKnotPassed(knotIndex));
 
                 camera.OnSplineStarted();
             } else {
@@ -231,12 +232,25 @@ namespace Vermines.Menu.Screen {
             }
         }
 
+        private void OnKnotPassed(int knotIndex)
+        {
+            MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
+
+            if (camera) {
+                if (camera.GetKnotsCount() / 2 == knotIndex)
+                    camera.SetEndLookAt();
+            }
+        }
+
         private void InTavern()
         {
             MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
 
-            if (camera)
+            if (camera) {
                 camera.OnSplineEnd.RemoveListener(() => InTavern());
+                camera.OnKnotPassed.RemoveListener((knotIndex) => OnKnotPassed(knotIndex));
+            }
+
             Controller.Show<VMUI_Tavern>(this);
         }
 
