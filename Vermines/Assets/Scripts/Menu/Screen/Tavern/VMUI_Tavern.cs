@@ -7,11 +7,20 @@ namespace Vermines.Menu.Screen {
 
     using Button = UnityEngine.UI.Button;
 
+    using Vermines.Menu.Screen.Tavern;
+    using Vermines.Characters;
+
     /// <summary>
     /// Vermines Tarvern UI partial class.
     /// Extends of the <see cref="MenuUIScreen" /> from OMGG Menu package.
     /// </summary>
     public partial class VMUI_Tavern : MenuUIScreen {
+
+        #region User
+
+        public Cultist SelectedCultist;
+
+        #endregion
 
         #region Navigation Buttons
 
@@ -34,6 +43,12 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         [InlineHelp, SerializeField]
         protected Button _MainMenuButton;
+
+        /// <summary>
+        /// The open settings screen button.
+        /// </summary>
+        [InlineHelp, SerializeField]
+        protected Button _SettingsButton;
 
         #endregion
 
@@ -104,6 +119,10 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         protected virtual async void OnPlayButtonPressed()
         {
+            CultistSelectDisplay cultistSelectDisplay = FindFirstObjectByType<CultistSelectDisplay>();
+
+            if (cultistSelectDisplay)
+                SelectedCultist = cultistSelectDisplay.GetSelectedCultist();
             ConnectionArgs.Session  = null;
             ConnectionArgs.Creating = false;
             ConnectionArgs.Region   = ConnectionArgs.PreferredRegion;
@@ -128,6 +147,8 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         protected virtual async void OnMainMenuButtonPressed()
         {
+            SelectedCultist = null;
+
             MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
 
             Controller.Show<VMUI_MainMenu>(this);
@@ -141,6 +162,24 @@ namespace Vermines.Menu.Screen {
 
                 camera.OnSplineReseted();
             }
+        }
+
+        /// <summary>
+        /// Is called when the <see cref="_SettingsButton"/> is pressed using SendMessage() from the UI object.
+        /// </summary>
+        protected virtual void OnSettingsButtonPressed()
+        {
+            Controller.Show<VMUI_Settings>(this);
+        }
+
+        /// <summary>
+        /// Is called when the <see cref="_PartyButton"/> is pressed using SendMessage() from the UI object.
+        /// </summary>
+        protected virtual void OnPartyMenuButtonPressed()
+        {
+            SelectedCultist = null;
+
+            Controller.Show<VMUI_PartyMenu>(this);
         }
 
         #endregion

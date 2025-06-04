@@ -19,9 +19,6 @@ namespace Vermines {
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
     using Vermines.Gameplay.Phases;
-    using Vermines.HUD;
-    using Vermines.HUD.Card;
-    using Mono.Cecil.Cil;
 
     public class GameInitializer : NetworkBehaviour {
 
@@ -57,14 +54,16 @@ namespace Vermines {
 
         private void InitializePlayers(int seed, int numberOfPlayer, int startingEloquence)
         {
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(seed, numberOfPlayer);
+            List<CardFamily> playersFamily = GameDataStorage.Instance.GetPlayersFamily();
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(seed, numberOfPlayer, playersFamily);
             int orderIndex = 0;
 
             foreach (var player in GameDataStorage.Instance.PlayerData)
             {
                 Vermines.Player.PlayerData data = player.Value;
 
-                data.Family = families[orderIndex];
+                if (data.Family == CardFamily.None)
+                    data.Family = families[orderIndex];
                 data.Eloquence = GiveEloquence(orderIndex, startingEloquence);
 
                 GameDataStorage.Instance.PlayerData.Set(player.Key, data);

@@ -4,7 +4,7 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines {
-
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
     using Vermines.ShopSystem.Data;
 
@@ -39,6 +39,35 @@ namespace Vermines {
         public void OnPlayerDataUpdated()
         {
             GameEvents.InvokeOnPlayerUpdated(PlayerData);
+        }
+
+        public void AddPlayer(PlayerRef player, string username, CardFamily family = CardFamily.None)
+        {
+            if (HasStateAuthority == false)
+                return;
+            if (PlayerData.TryGet(player, out PlayerData data) == false) {
+                data = new PlayerData(player);
+
+                PlayerData.Set(player, data);
+            }
+
+            data.PlayerRef = player;
+            data.Nickname  = username;
+            data.Family    = family;
+
+            PlayerData.Set(player, data);
+        }
+
+        public List<CardFamily> GetPlayersFamily()
+        {
+            List<CardFamily> families = new();
+
+            foreach (var playerData in PlayerData) {
+                if (playerData.Value.Family != CardFamily.None)
+                    families.Add(playerData.Value.Family);
+            }
+
+            return families;
         }
 
         #region Shop's Data
