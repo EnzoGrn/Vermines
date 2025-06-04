@@ -15,9 +15,10 @@ namespace Vermines.UI.Screen
     {
         #region Attributes
 
-        public enum BookTabType { Profile, Map, Inventory, Quests, Settings }
+        protected override bool ShouldShowPlugins => false;
 
-        [SerializeField] private List<BookPagePlugin> _Pages;
+        public enum BookTabType { Profile, Map, Inventory, Quests, Settings, None }
+
         [SerializeField] private BookTabType _DefaultPage = BookTabType.Profile;
 
         private Dictionary<BookTabType, BookPagePlugin> _BookPages;
@@ -52,6 +53,7 @@ namespace Vermines.UI.Screen
             base.Init();
 
             _BookPages = new Dictionary<BookTabType, BookPagePlugin>();
+            _CurrentPage = BookTabType.None;
 
             foreach (var plugin in Plugins)
             {
@@ -62,7 +64,6 @@ namespace Vermines.UI.Screen
                 }
             }
 
-            SwitchToPage(BookTabType.Profile); // ou celui que tu veux par défaut
         }
 
         /// <summary>
@@ -75,7 +76,6 @@ namespace Vermines.UI.Screen
             base.Show();
             
             ShowUser();
-            SwitchToPage(BookTabType.Profile);
         }
 
         /// <summary>
@@ -84,6 +84,10 @@ namespace Vermines.UI.Screen
         /// </summary>
         public override void Hide()
         {
+            // Hide the current page if it exists
+            if (_BookPages.TryGetValue(_CurrentPage, out var currentPage))
+                currentPage.Hide();
+            _CurrentPage = BookTabType.None; // Reset current page
             base.Hide();
 
             HideUser();
@@ -92,6 +96,12 @@ namespace Vermines.UI.Screen
         #endregion
 
         #region Methods
+
+        public void SwitchToPage()
+        {
+            Debug.Log($"Switching to default page: {_DefaultPage}");
+            SwitchToPage(_DefaultPage);
+        }
 
         public void SwitchToPage(BookTabType newPage)
         {
@@ -116,7 +126,7 @@ namespace Vermines.UI.Screen
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
-            //TODO: Close the book and display the last screen.
+            Controller.Hide();
         }
 
         #endregion
