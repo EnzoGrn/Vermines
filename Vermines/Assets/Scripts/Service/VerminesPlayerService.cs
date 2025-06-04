@@ -1,3 +1,4 @@
+using OMGG.Menu.Connection;
 using Fusion.Sockets;
 using Fusion;
 using System.Collections.Generic;
@@ -5,7 +6,8 @@ using System;
 using UnityEngine;
 
 namespace Vermines.Service {
-    using OMGG.Menu.Connection;
+
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Menu.Connection.Element;
     using Vermines.Menu.Screen;
 
@@ -74,13 +76,19 @@ namespace Vermines.Service {
 
                 return;
             }
+
             _Connection = connectionBehaviour;
 
             CheckMaxPlayerCount();
 
             _ChangeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
-            RPC_AddPlayer(Runner.LocalPlayer, PlayerPrefs.GetString("OMGG.Profile.Username"));
+            VMUI_Tavern tavern = FindFirstObjectByType<VMUI_Tavern>(FindObjectsInactive.Include);
+
+            if (tavern && tavern.SelectedCultist != null)
+                RPC_AddPlayer(Runner.LocalPlayer, PlayerPrefs.GetString("OMGG.Profile.Username"), tavern.SelectedCultist.family);
+            else
+                RPC_AddPlayer(Runner.LocalPlayer, PlayerPrefs.GetString("OMGG.Profile.Username"));
         }
 
         public override void Render()
@@ -118,9 +126,14 @@ namespace Vermines.Service {
         #region RPCs
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPC_AddPlayer(PlayerRef player, string username)
+        private void RPC_AddPlayer(PlayerRef player, string username, CardFamily family = CardFamily.None)
         {
             _PlayersUsernames.Add(player, username);
+
+            GameDataStorage gameDataStorage = FindFirstObjectByType<GameDataStorage>(FindObjectsInactive.Include);
+
+            if (gameDataStorage)
+                gameDataStorage.AddPlayer(player, username, family);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
