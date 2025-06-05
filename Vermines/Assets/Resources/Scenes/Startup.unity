@@ -8320,7 +8320,6 @@ MonoBehaviour:
   _CultistInfoPanel: {fileID: 292795066}
   _CultistNameText: {fileID: 780880323}
   _PlayButton: {fileID: 669463450}
-  PlayerCultistID: 0
 --- !u!222 &1739652593
 CanvasRenderer:
   m_ObjectHideFlags: 0
