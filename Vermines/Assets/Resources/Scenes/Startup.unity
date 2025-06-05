@@ -8226,7 +8226,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1712928574}
   - component: {fileID: 1712928577}
-  - component: {fileID: 1712928576}
   m_Layer: 5
   m_Name: CultistInformation
   m_TagString: Untagged
@@ -8256,24 +8255,6 @@ RectTransform:
   m_AnchoredPosition: {x: 680, y: 50}
   m_SizeDelta: {x: -1440, y: -180}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1712928576
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1712928573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e44834052051e045b788e5cc8e284cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _CultistDatabase: {fileID: 11400000, guid: bcf36aae321d60c408c9cb3400afd7e3, type: 2}
-  _CultistHolder: {fileID: 1712928574}
-  _SelectButtonPrefab: {fileID: 6781445080321768587, guid: d33fd0241c31aea4693a3b0a6d78ebc8, type: 3}
-  _CultistInfoPanel: {fileID: 0}
-  _CultistNameText: {fileID: 0}
-  _PlayButton: {fileID: 0}
 --- !u!222 &1712928577
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8339,6 +8320,7 @@ MonoBehaviour:
   _CultistInfoPanel: {fileID: 292795066}
   _CultistNameText: {fileID: 780880323}
   _PlayButton: {fileID: 669463450}
+  PlayerCultistID: 0
 --- !u!222 &1739652593
 CanvasRenderer:
   m_ObjectHideFlags: 0
