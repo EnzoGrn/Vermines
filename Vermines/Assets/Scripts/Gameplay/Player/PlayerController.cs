@@ -276,7 +276,11 @@ namespace Vermines.Player {
                     }
                 }
 
-                ICommand earnCommand = new EarnCommand(player, card.Data.Souls, DataType.Soul);
+                int soulToEarn = card.Data.Souls;
+
+                if (card.Data.Type == CardType.Partisan && card.Data.Family == GameDataStorage.Instance.PlayerData[player].Family)
+                    soulToEarn += GameManager.Instance.Config.SoulsBonusForSacrifice.Value;
+                ICommand earnCommand = new EarnCommand(player, soulToEarn, DataType.Soul);
 
                 response = CommandInvoker.ExecuteCommand(earnCommand);
 

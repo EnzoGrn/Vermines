@@ -57,14 +57,16 @@ namespace Vermines {
 
         private void InitializePlayers(GameConfiguration config, int numberOfPlayer)
         {
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(config.Seed, numberOfPlayer);
+            List<CardFamily> playersFamily = GameDataStorage.Instance.GetPlayersFamily();
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(config.Seed, numberOfPlayer, playersFamily);
             int orderIndex = 0;
 
             foreach (var player in GameDataStorage.Instance.PlayerData)
             {
                 Vermines.Player.PlayerData data = player.Value;
 
-                data.Family = families[orderIndex];
+                if (data.Family == CardFamily.None)
+                    data.Family = families[orderIndex];
                 data.Eloquence = GiveEloquence(orderIndex, config.EloquenceToStartWith.Value);
                 data.Souls = config.SoulsToStartWith.Value;
 

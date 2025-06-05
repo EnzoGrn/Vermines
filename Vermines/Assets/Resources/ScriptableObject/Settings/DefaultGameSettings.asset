@@ -125,6 +125,13 @@ MonoBehaviour:
     Value: 0
     MinValue: 0
     MaxValue: 100
+  SoulsBonusForSacrifice:
+    Category: Game Rules Settings
+    Name: Souls Bonus For Sacrifice
+    Type: 1
+    Value: 5
+    MinValue: 0
+    MaxValue: 25
   MaxCardsPartisanToPlay:
     Category: Cards Settings
     Name: Max Cards To Play
