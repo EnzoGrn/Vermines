@@ -28,7 +28,7 @@ MonoBehaviour:
     - Locale-fr
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 686695408f434fe4db69aac801bec787
-    m_Address: Final Animaton Dialog_fr
+    m_Address: Final Animation Dialog_fr
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-fr

@@ -35,7 +35,7 @@ MonoBehaviour:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 433f28c505af5e64a822da93a2755136
-    m_Address: Final Animaton Dialog_en
+    m_Address: Final Animation Dialog_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en

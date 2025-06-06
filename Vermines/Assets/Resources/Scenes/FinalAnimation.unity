@@ -1424,7 +1424,7 @@ MonoBehaviour:
   _subtitleText: {fileID: 2013984329}
   _charDelay: 0.03
   _lineDelay: 2
-  _tableName: Final Animaton Dialog
+  _tableName: Final Animation Dialog
   OnDialogComplete:
     m_PersistentCalls:
       m_Calls: []
