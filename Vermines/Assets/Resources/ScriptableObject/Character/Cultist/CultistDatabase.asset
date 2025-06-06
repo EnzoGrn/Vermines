@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2207ab865454190438dc0885e50401fa, type: 3}
+  m_Name: CultistDatabase
+  m_EditorClassIdentifier: 
+  _Cultists:
+  - {fileID: 11400000, guid: cb3daa4c22518d749aa209414da3377f, type: 2}
+  - {fileID: 11400000, guid: 238b5143cf1c66b43b6a5c4a46bee3b8, type: 2}
+  - {fileID: 11400000, guid: 571b436e4a8ae184d82c77441f940bbb, type: 2}
+  - {fileID: 11400000, guid: c2cd9a1707ff4dc4eb69e2355b03889d, type: 2}

@@ -130,6 +130,9 @@ namespace Vermines.Config {
         [Tooltip("Initial number of souls each player starts with.")]
         public IntSetting SoulsToStartWith = new("Souls To Start With", 0, 0, 100, "Game Rules Settings");
 
+        [Tooltip("The bonus of souls given to a player that sacrifices a follower.")]
+        public IntSetting SoulsBonusForSacrifice = new("Souls Bonus For Sacrifice", 5, 0, 25, "Game Rules Settings");
+
         #endregion
 
         #region Cards configuration
