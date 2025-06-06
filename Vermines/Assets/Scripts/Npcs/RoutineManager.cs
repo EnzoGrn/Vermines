@@ -29,10 +29,7 @@ public class RoutineManager : MonoBehaviour
     }
 
     /* TODO: Plug the routine manager public methods to the game.
-    * 1. Start routien when starting the game.
-    * 2. Interrupt the routine when the player is in a specific area.
-    * 3. Resume the routine when the player leaves the area.
-    * 4. Stop the routine when the game is over.
+    * Stop the routine when the game is over.
     */
 
     /// <summary>
@@ -42,6 +39,8 @@ public class RoutineManager : MonoBehaviour
     {
         if (IsStarted)
             return;
+
+        Debug.Log("Start NPC Routine");
 
         IsStarted = true;
 

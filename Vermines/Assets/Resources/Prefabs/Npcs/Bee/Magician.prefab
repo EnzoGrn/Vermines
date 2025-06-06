@@ -57,7 +57,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b06a6aa103869e3458b89c35b12e1eb5, type: 2}
+  - {fileID: 2100000, guid: 4e6be67d5d4cd2d4eafdf1193d1d8eaf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -245,7 +245,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f6e9d8928e3f849993f7497c5944f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _camera: {fileID: 0}
 --- !u!195 &2031819198218599693
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -284,4 +283,8 @@ MonoBehaviour:
   minIdleTime: 5
   maxIdleTime: 15
   _animator: {fileID: 5582522565012916615}
+  _arrivalThresholdInterruption: 2
+  _reversed: 0
+  _hasARoutine: 1
+  _cameraName: Main Travelling Camera
   IsRoutineRunning: 0
