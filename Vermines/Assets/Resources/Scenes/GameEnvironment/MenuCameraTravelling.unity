@@ -248,27 +248,9 @@ MonoBehaviour:
           z: 0
           w: 1
     - Position:
-        x: 1.75
+        x: 2
         y: -1
-        z: 11.23
-      TangentIn:
-        x: 0
-        y: 0
-        z: -0.50990194
-      TangentOut:
-        x: 0
-        y: 0
-        z: 0.50990194
-      Rotation:
-        value:
-          x: 0
-          y: 0
-          z: 0
-          w: 1
-    - Position:
-        x: 2.28
-        y: -1
-        z: 14.03
+        z: 11
       TangentIn:
         x: 0
         y: 0
@@ -286,15 +268,15 @@ MonoBehaviour:
     - Position:
         x: 2.3
         y: -1
-        z: 18.05
+        z: 14
       TangentIn:
         x: 0
         y: 0
-        z: -0
+        z: -0.50990194
       TangentOut:
         x: 0
         y: 0
-        z: 0
+        z: 0.50990194
       Rotation:
         value:
           x: 0
@@ -302,23 +284,59 @@ MonoBehaviour:
           z: 0
           w: 1
     - Position:
-        x: 1.53
-        y: -0.5
-        z: 19.28
+        x: 2.3
+        y: -1
+        z: 16.5
       TangentIn:
-        x: -0
-        y: -0
-        z: -0.15348627
+        x: 0
+        y: 0
+        z: -0.7111529
       TangentOut:
         x: 0
         y: 0
-        z: 0.15348627
+        z: 0.83036315
       Rotation:
         value:
-          x: -0.13159777
-          y: -0.28634635
-          z: -0.13725224
-          w: 0.93906844
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+    - Position:
+        x: -1.4
+        y: -1
+        z: 17
+      TangentIn:
+        x: 0
+        y: 0
+        z: -0.6368359
+      TangentOut:
+        x: 0
+        y: 0
+        z: 0.3468395
+      Rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+    - Position:
+        x: -2.699711
+        y: -1
+        z: 18
+      TangentIn:
+        x: 0
+        y: 0
+        z: -0.11000004
+      TangentOut:
+        x: 0
+        y: 0
+        z: 0.11000004
+      Rotation:
+        value:
+          x: 0
+          y: -0.70710677
+          z: -0
+          w: 0.70710677
     m_MetaData:
     - Mode: 2
       Tension: 0.5
@@ -330,9 +348,11 @@ MonoBehaviour:
       Tension: 0.5
     - Mode: 2
       Tension: 0.5
-    - Mode: 2
+    - Mode: 3
       Tension: 0.5
-    - Mode: 0
+    - Mode: 3
+      Tension: 0.5
+    - Mode: 3
       Tension: 0.5
     m_Closed: 0
     m_IntData:
@@ -355,7 +375,7 @@ GameObject:
   m_Component:
   - component: {fileID: 545347054}
   m_Layer: 0
-  m_Name: InitialLookAt
+  m_Name: BoardLookAt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -370,7 +390,69 @@ Transform:
   m_GameObject: {fileID: 545347053}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.28770447, y: -1.351, z: 23.463}
+  m_LocalPosition: {x: -3.986, y: -1, z: 18.218}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2041407296}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &656084847
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 656084848}
+  m_Layer: 0
+  m_Name: BufferLookAt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &656084848
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 656084847}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.25, y: -1.1, z: 23.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2041407296}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &805370862
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 805370863}
+  m_Layer: 0
+  m_Name: InitialLookAt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &805370863
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805370862}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.25, y: -1.1, z: 23.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -405,7 +487,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 880677186}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.028807923, y: 0.0061401716, z: -0.00017696235, w: -0.99956614}
+  m_LocalRotation: {x: -0.023383398, y: 0.0053174696, z: -0.00012437627, w: -0.99971247}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -693,7 +775,7 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 545347054}
+    TrackingTarget: {fileID: 656084848}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -724,7 +806,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1629333562}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.02880792, y: 0.0061401716, z: -0.00017696232, w: -0.99956614}
+  m_LocalRotation: {x: -0.023383398, y: 0.0053174696, z: -0.00012437628, w: -0.99971247}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -744,7 +826,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SplineDolly: {fileID: 1629333566}
+  _SplineContainer: {fileID: 321680140}
   Speed: 0.25
+  _InitialTarget: {fileID: 805370863}
+  _FinalTarget: {fileID: 545347054}
+  OnKnotPassed:
+    m_PersistentCalls:
+      m_Calls: []
   OnSplineStart:
     m_PersistentCalls:
       m_Calls: []
@@ -783,6 +871,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 656084848}
+  - {fileID: 805370863}
   - {fileID: 545347054}
   m_Father: {fileID: 1263408154}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
