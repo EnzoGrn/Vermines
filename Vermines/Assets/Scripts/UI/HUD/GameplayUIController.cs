@@ -196,6 +196,7 @@ namespace Vermines.UI
         {
             if (_ActiveScreen != null)
             {
+                Debug.Log($"Hiding screen: {_ActiveScreen.GetType().Name}");
                 _ActiveScreen.Hide();
                 _ActiveScreen = null;
             }

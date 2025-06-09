@@ -17,10 +17,6 @@ namespace Vermines.UI.Plugin
         [SerializeField] private BookTabType _PageType;
         public BookTabType PageType => _PageType;
 
-        [Header("Player List UI")]
-        [SerializeField] private Transform playerListContainer;
-        [SerializeField] private GameObject playerButtonPrefab;
-
         [Header("Player Info UI")]
         [SerializeField] private GameObject playerInfoPanel;
         [SerializeField] private Text playerNameText;
@@ -45,7 +41,6 @@ namespace Vermines.UI.Plugin
                 canvasGroup.blocksRaycasts = false;
             }
             base.Show(screen);
-            RefreshPlayerList();
         }
 
         /// <summary>
@@ -53,33 +48,16 @@ namespace Vermines.UI.Plugin
         /// </summary>
         public override void Hide()
         {
-            base.Hide();
-            ClearPlayerList();
-        }
-
-        private void RefreshPlayerList()
-        {
-            ClearPlayerList();
-
-            foreach (var player in GameDataStorage.Instance.PlayerData)
+            if (playerInfoPanel.TryGetComponent<CanvasGroup>(out var canvasGroup))
             {
-                GameObject btnObj = Instantiate(playerButtonPrefab, playerListContainer);
-                var btnText = btnObj.GetComponentInChildren<Text>();
-                var button = btnObj.GetComponent<Button>();
-
-                btnText.text = player.Value.Nickname + (player.Value.PlayerRef == PlayerController.Local.PlayerRef ? " (You)" : string.Empty);
-
-                button.onClick.AddListener(() => ShowPlayerInfo(player.Value));
+                canvasGroup.alpha = 0f;
+                canvasGroup.interactable = false;
+                canvasGroup.blocksRaycasts = false;
             }
+            base.Hide();
         }
 
-        private void ClearPlayerList()
-        {
-            foreach (Transform child in playerListContainer)
-                Destroy(child.gameObject);
-        }
-
-        private void ShowPlayerInfo(PlayerData player)
+        public void ShowPlayerInfo(PlayerData player)
         {
             if (playerInfoPanel.TryGetComponent<CanvasGroup>(out var canvasGroup))
             {

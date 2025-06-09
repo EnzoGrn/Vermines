@@ -143,6 +143,35 @@ namespace Vermines.UI
             }
         }
 
+        public IEnumerator ShowRoutine()
+        {
+            if (_HideCoroutine != null)
+            {
+                StopCoroutine(_HideCoroutine);
+
+                if (_Animator.gameObject.activeInHierarchy && _Animator.HasState(0, ShowAnimHash))
+                    _Animator.Play(ShowAnimHash, 0, 0);
+            }
+
+            gameObject.SetActive(true);
+
+            _Animator.Play(ShowAnimHash);
+
+            yield return null;
+
+            while (_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
+                yield return null;
+
+            IsShowing = true;
+
+            if (ShouldShowPlugins)
+            {
+                foreach (GameplayScreenPlugin plugin in _Plugins)
+                    plugin.Show(this);
+            }
+        }
+
+
         /// <summary>
         /// Get a screen plugin based on its type.
         /// </summary>

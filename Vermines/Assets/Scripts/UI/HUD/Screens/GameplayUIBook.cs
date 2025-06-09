@@ -6,6 +6,7 @@ using Vermines.CardSystem.Enumerations;
 using Vermines.UI.Card;
 using System.Collections.Generic;
 using Vermines.Player;
+using System.Collections;
 
 namespace Vermines.UI.Screen
 {
@@ -21,7 +22,7 @@ namespace Vermines.UI.Screen
 
         [SerializeField] private BookTabType _DefaultPage = BookTabType.Profile;
 
-        private Dictionary<BookTabType, BookPagePlugin> _BookPages;
+        private Dictionary<BookTabType, GameplayScreenPlugin> _BookPages;
         private BookTabType _CurrentPage;
 
         #endregion
@@ -52,7 +53,7 @@ namespace Vermines.UI.Screen
         {
             base.Init();
 
-            _BookPages = new Dictionary<BookTabType, BookPagePlugin>();
+            _BookPages = new Dictionary<BookTabType, GameplayScreenPlugin>();
             _CurrentPage = BookTabType.None;
 
             foreach (var plugin in Plugins)
@@ -61,6 +62,15 @@ namespace Vermines.UI.Screen
                 {
                     _BookPages[bookPage.PageType] = bookPage;
                     bookPage.Hide(); // toutes les pages sont masquées au début
+                }
+
+                if (plugin is PlayerBookTabPlugin playerTabsPlugin)
+                {
+                    BookPagePlugin bookPagePlugin = _BookPages.GetValueOrDefault(BookTabType.Profile) as BookPagePlugin;
+                    if (bookPagePlugin != null)
+                    {
+                        playerTabsPlugin.OnTabClicked = bookPagePlugin.ShowPlayerInfo;
+                    }
                 }
             }
 
@@ -73,9 +83,23 @@ namespace Vermines.UI.Screen
         /// </summary>
         public override void Show()
         {
-            base.Show();
-            
+            gameObject.SetActive(true);
+            StartCoroutine(ShowScreenCoroutine());
+
             ShowUser();
+        }
+
+        private IEnumerator ShowScreenCoroutine()
+        {
+            yield return base.ShowRoutine();
+
+            foreach (var plugin in Plugins)
+            {
+                if (plugin is PlayerBookTabPlugin bookPage)
+                {
+                    bookPage.Show(this);
+                }
+            }
         }
 
         /// <summary>
@@ -126,6 +150,24 @@ namespace Vermines.UI.Screen
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
+            StartCoroutine(CloseScreen());
+        }
+
+        private IEnumerator CloseScreen()
+        {
+            foreach (var plugin in Plugins)
+            {
+                if (plugin is PlayerBookTabPlugin bookPage)
+                {
+                    yield return bookPage.HidePlayerTabsSequentially();
+                }
+            }
+
+            // Hide the current page if it exists
+            if (_BookPages.TryGetValue(_CurrentPage, out var currentPage))
+                currentPage.Hide();
+
+            _CurrentPage = BookTabType.None;
             Controller.Hide();
         }
 
