@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _MaxPlayers: 4
   _AdaptFramerateForMobilePlatform: 1
-  _AvailableRegions: []
+  _AvailableRegions:
+  - 
   _AvailableScenes:
   - Name: Vermines
     ScenePath: Assets/Resources/Scenes/Game.unity

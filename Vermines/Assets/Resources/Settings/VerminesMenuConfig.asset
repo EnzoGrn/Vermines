@@ -16,9 +16,7 @@ MonoBehaviour:
   _adaptFramerateForMobilePlatform: 0
   _availableAppVersions: []
   _availableRegions:
-  - asia
-  - eu
-  - us
+  -
   _availableScenes:
   - Name: Game
     ScenePath: Assets/Resources/Scenes/Game.unity

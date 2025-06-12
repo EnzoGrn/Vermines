@@ -132,7 +132,7 @@ namespace Vermines.Menu.Screen {
 
             if (_RegionRequest.IsCompleted == false) {
                 Controller.Show<VMUI_Loading>(this);
-                Controller.Get<VMUI_Loading>().SetStatusText("Fetching Regions");
+                Controller.Get<VMUI_Loading>().SetStatusText("Fetching Regions...");
 
                 try {
                     await _RegionRequest;
@@ -144,7 +144,7 @@ namespace Vermines.Menu.Screen {
             if (_RegionRequest.IsCompletedSuccessfully == false && _RegionRequest.Result.Count == 0) {
                 await Controller.PopupAsync($"Failed to request regions.", "Connection Failed");
 
-                Controller.Show<VMUI_MainMenu>(this);
+                Controller.Show<VMUI_Tavern>(this);
 
                 return;
             }
@@ -159,20 +159,17 @@ namespace Vermines.Menu.Screen {
                 if (regionIndex == -1) {
                     await Controller.PopupAsync($"Selected region is not available.", "Connection Failed");
 
-                    Controller.Show<VMUI_MainMenu>(this);
+                    Controller.Show<VMUI_Tavern>(this);
 
                     return;
                 }
 
                 ConnectionArgs.Session = Config.CodeGenerator.EncodeRegion(Config.CodeGenerator.Create(), regionIndex);
-                ConnectionArgs.Region = _RegionRequest.Result[regionIndex].Code;
+                ConnectionArgs.Region  = _RegionRequest.Result[regionIndex].Code;
             } else {
                 int regionIndex = Config.CodeGenerator.DecodeRegion(inputRegionCode);
 
-                Debug.LogError($"ConnectAsync: {inputRegionCode} - {creating}");
-                Debug.LogError(regionIndex);
-
-                if (regionIndex < 0 || regionIndex > Config.AvailableRegions.Count) {
+                if (regionIndex < 0 || regionIndex >= Config.AvailableRegions.Count) {
                     await Controller.PopupAsync($"The session code '{inputRegionCode}' is not a valid session code (cannot decode the region).", "Invalid Session Code");
 
                     return;
@@ -184,9 +181,10 @@ namespace Vermines.Menu.Screen {
 
             ConnectionArgs.Creating = creating;
 
+            Controller.HideModal(this);
             Controller.Show<VMUI_Loading>(this);
 
-            var result = await Connection.ConnectAsync(ConnectionArgs);
+            var result = await Connection.ConnectAsync(ConnectionArgs, true);
 
             await Controller.HandleConnectionResult(result, Controller);
         }
@@ -216,7 +214,7 @@ namespace Vermines.Menu.Screen {
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
-            Controller.ShowLast();
+            Controller.HideModal(this);
         }
 
         #endregion

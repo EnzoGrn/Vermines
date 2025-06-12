@@ -20,6 +20,11 @@ namespace OMGG.Menu.Connection.Element {
         public abstract string SessionName { get; }
 
         /// <summary>
+        /// Access the custom lobby name.
+        /// </summary>
+        public abstract string LobbyCustomName { get; }
+
+        /// <summary>
         /// Access the max player count.
         /// </summary>
         public abstract int MaxPlayerCount { get; }
@@ -77,7 +82,7 @@ namespace OMGG.Menu.Connection.Element {
         /// </summary>
         /// <param name="connectionArgs">Connection arguments.</param>
         /// <returns>When the connection is established</returns>
-        public virtual async Task<ConnectResult> ConnectAsync(ConnectionArgs connectionArgs)
+        public virtual async Task<ConnectResult> ConnectAsync(ConnectionArgs connectionArgs, bool isCustom = false)
         {
             if (OnBeforeConnect != null) {
                 try {
@@ -92,7 +97,7 @@ namespace OMGG.Menu.Connection.Element {
                 }
             }
 
-            return await ConnectAsyncInternal(connectionArgs);
+            return await ConnectAsyncInternal(connectionArgs, isCustom);
         }
 
         public virtual async Task<ConnectResult> ChangeScene(SceneInformation sceneInfo, List<SceneInformation> sceneInfos)
@@ -137,7 +142,7 @@ namespace OMGG.Menu.Connection.Element {
         /// </summary>
         /// <param name="connectArgs">Connection args.</param>
         /// <returns>When the connection is established and the game ready.</returns>
-        protected abstract Task<ConnectResult> ConnectAsyncInternal(ConnectionArgs connectArgs);
+        protected abstract Task<ConnectResult> ConnectAsyncInternal(ConnectionArgs connectArgs, bool isCustom);
 
         /// <summary>
         /// The scene change task.

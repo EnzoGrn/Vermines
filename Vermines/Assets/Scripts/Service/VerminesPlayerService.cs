@@ -69,6 +69,8 @@ namespace Vermines.Service {
                 return;
             }
 
+            Debug.Log($"You join the session: {connectionBehaviour.IsCustomLobby}");
+
             _MenuUIGameplay = FindFirstObjectByType<VMUI_Gameplay>(FindObjectsInactive.Include);
 
             if (_MenuUIGameplay == false) {

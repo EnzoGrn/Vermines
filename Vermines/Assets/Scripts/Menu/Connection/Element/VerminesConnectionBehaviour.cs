@@ -50,6 +50,13 @@ namespace Vermines.Menu.Connection.Element {
         public override string SessionName => _SessionName;
 
         [NonSerialized]
+        private string _LobbyCustomName;
+
+        public override string LobbyCustomName => _LobbyCustomName;
+
+        public bool IsCustomLobby => LobbyCustomName != null && LobbyCustomName.Length > 0;
+
+        [NonSerialized]
         private int _MaxPlayerCount;
         public override int MaxPlayerCount => _MaxPlayerCount;
 
@@ -119,13 +126,13 @@ namespace Vermines.Menu.Connection.Element {
             OnBeforeDisconnect.AddListener(EnableMenuCamera);
         }
 
-        protected override async Task<ConnectResult> ConnectAsyncInternal(ConnectionArgs connectArgs)
+        protected override async Task<ConnectResult> ConnectAsyncInternal(ConnectionArgs connectArgs, bool isCustom = false)
         {
             if (_ConnectingSafeCheck) {
                 return new ConnectResult {
                     CustomResultHandling = true,
-                    Success              = false,
-                    FailReason           = ConnectFailReason.None
+                    Success = false,
+                    FailReason = ConnectFailReason.None
                 };
             }
 
@@ -148,11 +155,12 @@ namespace Vermines.Menu.Connection.Element {
 
             // Solve StartGameArgs
             StartGameArgs args = new() {
-                OnGameStarted           = SpawnPlayerListService,
+                OnGameStarted = SpawnPlayerListService,
                 CustomPhotonAppSettings = appSettings,
-                GameMode                = connectArgs.GameMode ?? ResolveGameMode(connectArgs),
-                SessionName             = _SessionName = connectArgs.Session,
-                PlayerCount             = _MaxPlayerCount = connectArgs.MaxPlayerCount,
+                GameMode = connectArgs.GameMode ?? ResolveGameMode(connectArgs),
+                SessionName = _SessionName = connectArgs.Session,
+                PlayerCount = _MaxPlayerCount = connectArgs.MaxPlayerCount,
+                CustomLobbyName = _LobbyCustomName = isCustom ? "CustomLobby" : null
             };
 
             // Scene info
@@ -166,7 +174,7 @@ namespace Vermines.Menu.Connection.Element {
             _CancellationTokenSource?.Dispose();
 
             _CancellationTokenSource = new CancellationTokenSource();
-            _CancellationToken       = _CancellationTokenSource.Token;
+            _CancellationToken = _CancellationTokenSource.Token;
 
             args.StartGameCancellationToken = _CancellationToken;
 
@@ -175,7 +183,7 @@ namespace Vermines.Menu.Connection.Element {
             args.SessionNameGenerator = () => _Config.CodeGenerator.EncodeRegion(_Config.CodeGenerator.Create(), regionIndex);
 
             StartGameResult startGameResult = default;
-            ConnectResult   connectResult   = new();
+            ConnectResult connectResult = new();
 
             startGameResult = await _Runner.StartGame(args);
 
@@ -187,15 +195,17 @@ namespace Vermines.Menu.Connection.Element {
             if (connectResult.Success) {
                 _SessionName = _Runner.SessionInfo.Name;
 
-                DisableMenuCamera();
+                // DisableMenuCamera();
             }
 
-            FusionMppm.MainEditor?.Send(new VerminesMPPMCommand() {
-                Region       = _Region,
-                Session      = _SessionName,
-                AppVersion   = _AppVersion,
-                IsSharedMode = args.GameMode == GameMode.Shared,
-            });
+            if (!isCustom) { // Only force join the host if it's a matchmaking session
+                FusionMppm.MainEditor?.Send(new VerminesMPPMCommand() {
+                    Region       = _Region,
+                    Session      = _SessionName,
+                    AppVersion   = _AppVersion,
+                    IsSharedMode = args.GameMode == GameMode.Shared,
+                });
+            }
 
             return connectResult;
         }

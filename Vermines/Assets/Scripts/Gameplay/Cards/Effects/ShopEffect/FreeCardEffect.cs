@@ -5,7 +5,6 @@ using Fusion;
 namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
-    using Vermines.CardSystem.Elements;
     using Vermines.Player;
     using Vermines.ShopSystem.Enumerations;
 
@@ -90,7 +89,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public void OnBuy(ShopType shopType, int slotId)
         {
-            if (_ShopTarget != shopType) return;
+            if (_ShopTarget != shopType)
+                return;
             _CurrentBuy++;
 
             if (_CurrentBuy == _Amount) {
