@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Vermines.Player;
+using Vermines.UI.Plugin;
 using Vermines.UI.Utils;
 
 namespace Vermines.UI
@@ -22,9 +23,19 @@ namespace Vermines.UI
         protected static readonly int ShowAnimHash = Animator.StringToHash("Show");
 
         /// <summary>
+        /// Cached 'Active' animation hash.
+        /// </summary>
+        protected static readonly int ActiveAnimHash = Animator.StringToHash("Active");
+
+        /// <summary>
+        /// Cached 'Idle' animation hash.
+        /// </summary>
+        protected static readonly int IdleAnimHash = Animator.StringToHash("Idle");
+
+        /// <summary>
         /// The animator component.
         /// </summary>
-        private Animator _Animator;
+        private Animator _animator;
 
         /// <summary>
         /// The hide animation coroutine.
@@ -41,6 +52,7 @@ namespace Vermines.UI
         private Image _cultistBgImage;
 
         private PlayerRef _playerRef;
+        public PlayerRef PlayerRef => _playerRef;
 
         #endregion
 
@@ -48,7 +60,10 @@ namespace Vermines.UI
 
         public virtual void Awake()
         {
-            TryGetComponent(out _Animator);
+            TryGetComponent(out _animator);
+            if (!_animator)
+                Debug.LogErrorFormat(gameObject, "[{0}] {1} {2}", nameof(PlayerBookTab), gameObject.name, "PlayerBookTab is not properly initialized. Animator component is missing.");
+
 
             _playerCultist.SetActive(false);
         }
@@ -62,8 +77,8 @@ namespace Vermines.UI
             {
                 StopCoroutine(_HideCoroutine);
 
-                if (_Animator.gameObject.activeInHierarchy && _Animator.HasState(0, ShowAnimHash))
-                    _Animator.Play(ShowAnimHash, 0, 0);
+                if (_animator.gameObject.activeInHierarchy && _animator.HasState(0, ShowAnimHash))
+                    _animator.Play(ShowAnimHash, 0, 0);
             }
 
             gameObject.SetActive(true);
@@ -74,11 +89,11 @@ namespace Vermines.UI
         /// </summary>
         public void Hide()
         {
-            if (_Animator != null && _Animator.gameObject.activeInHierarchy && _Animator.HasState(0, HideAnimHash))
+            if (_animator != null && _animator.gameObject.activeInHierarchy && _animator.HasState(0, HideAnimHash))
             {
                 if (_HideCoroutine != null)
                     StopCoroutine(_HideCoroutine);
-                _HideCoroutine = StartCoroutine(HideAnimCoroutine());
+                _HideCoroutine = StartCoroutine(PlayHideAnimation());
 
                 return;
             }
@@ -102,9 +117,9 @@ namespace Vermines.UI
             }
         }
 
-        public void UpdateTab(PlayerData player)
+        public void UpdateTab(PlayerData player, bool force = false)
         {
-            if (player.PlayerRef != _playerRef)
+            if (force || player.PlayerRef != _playerRef)
             {
                 _playerRef = player.PlayerRef;
                 UpdateVisuals(player);
@@ -124,36 +139,21 @@ namespace Vermines.UI
         }
 
         /// <summary>
-        /// Play the hide animation wrapped in a coroutine.
-        /// Forces the target framerate to 60 during the transition animations.
+        /// Plays the 'Active' animation to visually indicate the tab is selected.
         /// </summary>
-        /// <returns>When done</returns>
-        private IEnumerator HideAnimCoroutine()
+        public void PlayActiveAnimation(bool isActive = true)
         {
-#if UNITY_IOS || UNITY_ANDROID
-                var changedFramerate = false;
-                
-                if (Config.AdaptFramerateForMobilePlatform) {
-                    if (Application.targetFrameRate < 60) {
-                        Application.targetFrameRate = 60;
-                        changedFramerate            = true;
-                    }
+            if (_animator != null && _animator.gameObject.activeInHierarchy && _animator.HasState(0, ActiveAnimHash))
+            {
+                if (isActive)
+                {
+                    _animator.Play(ActiveAnimHash, 0, 0f);
                 }
-#endif
-
-            _Animator.Play(HideAnimHash);
-
-            yield return null;
-
-            while (_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
-                yield return null;
-
-#if UNITY_IOS || UNITY_ANDROID
-                  if (changedFramerate)
-                    new FusionMenuGraphicsSettings().Apply();
-#endif
-
-            gameObject.SetActive(false);
+                else
+                {
+                    _animator.Play(IdleAnimHash, 0, 0f);
+                }
+            }
         }
 
         public IEnumerator PlayShowAnimCoroutine()
@@ -173,13 +173,13 @@ namespace Vermines.UI
 
             gameObject.SetActive(true);
 
-            if (_Animator != null && _Animator.gameObject.activeInHierarchy && _Animator.HasState(0, ShowAnimHash))
+            if (_animator != null && _animator.gameObject.activeInHierarchy && _animator.HasState(0, ShowAnimHash))
             {
-                _Animator.Play(ShowAnimHash, 0, 0f);
+                _animator.Play(ShowAnimHash, 0, 0f);
 
                 yield return null;
 
-                while (_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
+                while (_animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
                 {
                     yield return null;
                 }
@@ -191,19 +191,36 @@ namespace Vermines.UI
 #endif
         }
 
-        public IEnumerator PlayHideAnimCoroutine()
+        public IEnumerator PlayHideAnimation(bool adjustFramerate = true)
         {
-            if (_Animator != null && _Animator.gameObject.activeInHierarchy && _Animator.HasState(0, HideAnimHash))
+#if UNITY_IOS || UNITY_ANDROID
+    bool changedFramerate = false;
+
+    if (adjustFramerate && Config.AdaptFramerateForMobilePlatform && Application.targetFrameRate < 60)
+    {
+        Application.targetFrameRate = 60;
+        changedFramerate = true;
+    }
+#endif
+
+            if (_animator != null && _animator.gameObject.activeInHierarchy && _animator.HasState(0, HideAnimHash))
             {
-                _Animator.Play(HideAnimHash, 0, 0f);
+                _animator.Play(HideAnimHash, 0, 0f);
 
-                yield return null;
+                yield return null; // Wait one frame for animation to start
 
-                while (_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
+                while (_animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
                 {
                     yield return null;
                 }
             }
+
+#if UNITY_IOS || UNITY_ANDROID
+    if (changedFramerate)
+    {
+        new FusionMenuGraphicsSettings().Apply();
+    }
+#endif
 
             gameObject.SetActive(false);
         }

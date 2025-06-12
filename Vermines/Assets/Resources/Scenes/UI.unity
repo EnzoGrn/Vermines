@@ -14330,6 +14330,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1980602747}
   - component: {fileID: 1980602748}
+  - component: {fileID: 1980602749}
   m_Layer: 5
   m_Name: Left
   m_TagString: Untagged
@@ -14384,6 +14385,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 1
   m_ReverseArrangement: 0
+--- !u!225 &1980602749
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1980602746}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1981020795
 GameObject:
   m_ObjectHideFlags: 0
@@ -14603,12 +14616,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _PageType: 0
   playerInfoPanel: {fileID: 1980602746}
-  playerNameText: {fileID: 332868450}
+  playerNameText: {fileID: 1303335583}
   eloquenceText: {fileID: 2093016477}
   soulsText: {fileID: 1532690454}
   familyText: {fileID: 332868450}
   familyIcon: {fileID: 987819215}
   cultistImage: {fileID: 1341991136119564902}
+  cultistBgImage: {fileID: 8195508160737559256}
 --- !u!1 &2013353842
 GameObject:
   m_ObjectHideFlags: 0

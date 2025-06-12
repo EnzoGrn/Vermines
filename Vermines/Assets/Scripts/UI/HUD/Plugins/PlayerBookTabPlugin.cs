@@ -35,7 +35,7 @@ namespace Vermines.UI.Plugin
         public override void Show(GameplayUIScreen screen)
         {
             base.Show(screen);
-            StartCoroutine(ShowPlayerTabsSequentially());
+            OnTabClicked += SetPlayerTabActive;
         }
 
         /// <summary>
@@ -45,9 +45,10 @@ namespace Vermines.UI.Plugin
         {
             StartCoroutine(HidePlayerTabsSequentially());
             base.Hide();
+            OnTabClicked -= SetPlayerTabActive;
         }
 
-        private IEnumerator ShowPlayerTabsSequentially()
+        public IEnumerator ShowPlayerTabsSequentially()
         {
             var players = GameDataStorage.Instance.PlayerData;
             int index = 0;
@@ -63,11 +64,12 @@ namespace Vermines.UI.Plugin
                 }
                 else
                 {
-                    GameObject btnObj = Instantiate(playerTabPrefab, playerTabContainer);
-                    tab = btnObj.GetComponentInChildren<PlayerBookTab>();
+                    GameObject tabObj = Instantiate(playerTabPrefab, playerTabContainer);
+                    tab = tabObj.GetComponentInChildren<PlayerBookTab>();
+                    tab.UpdateTab(player.Value);
                     _cachedTabs.Add(tab);
 
-                    Button button = btnObj.GetComponentInChildren<Button>();
+                    Button button = tabObj.GetComponentInChildren<Button>();
                     button.onClick.AddListener(() => OnTabClicked?.Invoke(player.Value));
                 }
 
@@ -87,8 +89,16 @@ namespace Vermines.UI.Plugin
                 var tab = _cachedTabs[i];
                 if (tab.gameObject.activeSelf)
                 {
-                    yield return tab.PlayHideAnimCoroutine();
+                    yield return tab.PlayHideAnimation();
                 }
+            }
+        }
+
+        public void SetPlayerTabActive(PlayerData playerData)
+        {
+            foreach (var tab in _cachedTabs)
+            {
+                tab.PlayActiveAnimation(tab.PlayerRef == playerData.PlayerRef);
             }
         }
     }

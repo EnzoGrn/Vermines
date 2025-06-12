@@ -7,6 +7,8 @@ using Vermines.UI.Card;
 using System.Collections.Generic;
 using Vermines.Player;
 using System.Collections;
+using System.Linq;
+
 
 namespace Vermines.UI.Screen
 {
@@ -61,15 +63,18 @@ namespace Vermines.UI.Screen
                 if (plugin is BookPagePlugin bookPage)
                 {
                     _BookPages[bookPage.PageType] = bookPage;
-                    bookPage.Hide(); // toutes les pages sont masquées au début
+                    bookPage.Hide();
                 }
 
                 if (plugin is PlayerBookTabPlugin playerTabsPlugin)
                 {
-                    BookPagePlugin bookPagePlugin = _BookPages.GetValueOrDefault(BookTabType.Profile) as BookPagePlugin;
+                    BookPagePlugin bookPagePlugin = Plugins
+                        .OfType<BookPagePlugin>()
+                        .FirstOrDefault();
+
                     if (bookPagePlugin != null)
                     {
-                        playerTabsPlugin.OnTabClicked = bookPagePlugin.ShowPlayerInfo;
+                        playerTabsPlugin.OnTabClicked += bookPagePlugin.ShowPlayerInfo;
                     }
                 }
             }
@@ -98,6 +103,19 @@ namespace Vermines.UI.Screen
                 if (plugin is PlayerBookTabPlugin bookPage)
                 {
                     bookPage.Show(this);
+                    yield return bookPage.ShowPlayerTabsSequentially();
+                }
+            }
+
+            foreach (var plugin in Plugins)
+            {
+                if (plugin is BookPagePlugin bookPage)
+                {
+                    bookPage.ShowPlayerInfo(GameDataStorage.Instance.PlayerData[PlayerController.Local.PlayerRef]);
+                }
+                if (plugin is PlayerBookTabPlugin bookTab)
+                {
+                    bookTab.SetPlayerTabActive(GameDataStorage.Instance.PlayerData[PlayerController.Local.PlayerRef]);
                 }
             }
         }
