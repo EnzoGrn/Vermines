@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Final Animation Dialog_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: d28e4db54bcae5e43ade05072f4285a4, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 60936429568
+    m_Localized: When the final soul vibrated, we, the Crickets, echoed our strident
+      song across the ruins. Once ruled by bees, the entire kingdom bowed to our
+      sacred dissonance. The Whistling God rose behind the city, and His whisper
+      now forever drowns out the silence of the old kings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4550129360896
+    m_Localized: 'We gathered every rotten soul, patiently, mercilessly. The bees
+      ruled, but they were only a golden mask over a rotting carcass. We, the Flies,
+      tore the veil. Our Crawling God rose behind the ashes, and now all breathe
+      in the stench of truth.
+
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4562968125440
+    m_Localized: The peoples of the kingdom followed the bees, believing their light
+      eternal. But we, the Beetles, rolled the souls to the edge of the abyss. From
+      the broken earth, our God rose, gigantic and silent. The old order is crushed.
+      A new era begins, carved in sacred mud.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4575970467840
+    m_Localized: Beneath the bright colors burned a smoldering faith. We, the Ladybugs,
+      lived long under the golden reign of the bees. But the waiting is over. The
+      sky split open, revealing our God with fractal wings. In the flames, justice
+      was done. And the future is now painted in red.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

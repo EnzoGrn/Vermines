@@ -115,16 +115,23 @@ MonoBehaviour:
     Category: Game Rules Settings
     Name: Max Souls To Win
     Type: 1
-    Value: 99
+    Value: 100
     MinValue: 1
     MaxValue: 100
   SoulsToStartWith:
     Category: Game Rules Settings
     Name: Souls To Start With
     Type: 1
-    Value: 1
+    Value: 0
     MinValue: 0
     MaxValue: 100
+  SoulsBonusForSacrifice:
+    Category: Game Rules Settings
+    Name: Souls Bonus For Sacrifice
+    Type: 1
+    Value: 5
+    MinValue: 0
+    MaxValue: 25
   MaxCardsPartisanToPlay:
     Category: Cards Settings
     Name: Max Cards To Play
@@ -199,3 +206,10 @@ MonoBehaviour:
     Name: Random Seed
     Type: 0
     Value: 0
+  GameSeed:
+    Category: Advanced Settings
+    Name: Seed
+    Type: 1
+    Value: 0
+    MinValue: 0
+    MaxValue: 2147483647

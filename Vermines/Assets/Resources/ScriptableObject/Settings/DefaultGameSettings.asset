@@ -12,3 +12,204 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f8066587305ca645a51cf1d7688d5ba, type: 3}
   m_Name: DefaultGameSettings
   m_EditorClassIdentifier: 
+  MaxPlayers:
+    Category: Player Settings
+    Name: Max Players
+    Type: 1
+    Value: 4
+    MinValue: 2
+    MaxValue: 4
+  MinPlayers:
+    Category: Player Settings
+    Name: Min Players
+    Type: 1
+    Value: 2
+    MinValue: 2
+    MaxValue: 4
+  IsRoundLimited:
+    Category: Game Flow Settings
+    Name: Is Round Based
+    Type: 0
+    Value: 0
+  MaxRounds:
+    Category: Game Flow Settings
+    Name: Max Rounds
+    Type: 1
+    Value: 15
+    MinValue: 1
+    MaxValue: 100
+  MaxTurnTime:
+    Category: Game Flow Settings
+    Name: Max Turn Time
+    Type: 1
+    Value: 120
+    MinValue: 60
+    MaxValue: 300
+  NumberOfCardsToStartWith:
+    Category: Hand Settings
+    Name: Number Of Cards To Start With
+    Type: 1
+    Value: 2
+    MinValue: 1
+    MaxValue: 5
+  NumberOfCardsToDrawAtEndOfTurn:
+    Category: Hand Settings
+    Name: Number Of Cards To Draw At End Of Turn
+    Type: 1
+    Value: 3
+    MinValue: 1
+    MaxValue: 5
+  IsMaxCardsPerPlayerInHandBased:
+    Category: Hand Settings
+    Name: Is Max Cards Per Player In Hand Based
+    Type: 0
+    Value: 0
+  MaxCardsPerPlayerInHand:
+    Category: Hand Settings
+    Name: Max Cards Per Player In Hand
+    Type: 1
+    Value: 10
+    MinValue: 5
+    MaxValue: 25
+  NumberOfCardsToDrawPerTurn:
+    Category: Deck Settings
+    Name: Number Of Cards To Draw Per Turn
+    Type: 1
+    Value: 1
+    MinValue: 1
+    MaxValue: 5
+  IsMaxCardsPerPlayerInDeckBased:
+    Category: Deck Settings
+    Name: Is Max Cards Number Based
+    Type: 0
+    Value: 0
+  MaxCardsNumberPerDeck:
+    Category: Deck Settings
+    Name: Max Cards Number
+    Type: 1
+    Value: 20
+    MinValue: 10
+    MaxValue: 25
+  MaxEloquence:
+    Category: Game Rules Settings
+    Name: Max Eloquence
+    Type: 1
+    Value: 20
+    MinValue: 1
+    MaxValue: 50
+  EloquenceToStartWith:
+    Category: Game Rules Settings
+    Name: Eloquence To Start With
+    Type: 1
+    Value: 0
+    MinValue: 0
+    MaxValue: 50
+  NumberOfEloquencesToStartTheTurnWith:
+    Category: Game Rules Settings
+    Name: Number Of Eloquences To Start The Turn With
+    Type: 1
+    Value: 2
+    MinValue: 1
+    MaxValue: 50
+  MaxSoulsToWin:
+    Category: Game Rules Settings
+    Name: Max Souls To Win
+    Type: 1
+    Value: 100
+    MinValue: 1
+    MaxValue: 100
+  SoulsToStartWith:
+    Category: Game Rules Settings
+    Name: Souls To Start With
+    Type: 1
+    Value: 0
+    MinValue: 0
+    MaxValue: 100
+  SoulsBonusForSacrifice:
+    Category: Game Rules Settings
+    Name: Souls Bonus For Sacrifice
+    Type: 1
+    Value: 5
+    MinValue: 0
+    MaxValue: 25
+  MaxCardsPartisanToPlay:
+    Category: Cards Settings
+    Name: Max Cards To Play
+    Type: 1
+    Value: 3
+    MinValue: 1
+    MaxValue: 3
+  MaxCardsToPlayPerTurn:
+    Category: Cards Settings
+    Name: Max Cards To Play Per Turn
+    Type: 1
+    Value: 3
+    MinValue: 1
+    MaxValue: 3
+  IsPlayerHaveLimitedEquipment:
+    Category: Cards Settings
+    Name: Is Player Have Limited Equipment
+    Type: 0
+    Value: 0
+  MaxPlayerEquipementCards:
+    Category: Cards Settings
+    Name: Max Player Equipement Cards
+    Type: 1
+    Value: 3
+    MinValue: 1
+    MaxValue: 3
+  MaxSacrificesPerTurn:
+    Category: Sacrifice Settings
+    Name: Max Sacrifices Per Turn
+    Type: 1
+    Value: 2
+    MinValue: 1
+    MaxValue: 3
+  SacrificeMultiplicator:
+    Category: Sacrifice Settings
+    Name: Sacrifice Multiplicator
+    Type: 1
+    Value: 1
+    MinValue: 1
+    MaxValue: 3
+  MaxMarketCards:
+    Category: Market Settings
+    Name: Max Market Cards
+    Type: 1
+    Value: 5
+    MinValue: 1
+    MaxValue: 5
+  AllowMarketReshuffle:
+    Category: Market Settings
+    Name: Allow Market Reshuffle
+    Type: 0
+    Value: 0
+  MaxCourtyardCards:
+    Category: Courtyard Settings
+    Name: Max Courtyard Cards
+    Type: 1
+    Value: 5
+    MinValue: 1
+    MaxValue: 5
+  AllowCourtyardReshuffle:
+    Category: Courtyard Settings
+    Name: Allow Market Reshuffle
+    Type: 0
+    Value: 1
+  DebugMode:
+    Category: Advanced Settings
+    Name: Debug Mode
+    Type: 0
+    Value: 0
+  RandomSeed:
+    Category: Advanced Settings
+    Name: Random Seed
+    Type: 0
+    Value: 1
+  GameSeed:
+    Category: Advanced Settings
+    Name: Seed
+    Type: 1
+    Value: 0
+    MinValue: 0
+    MaxValue: 2147483647

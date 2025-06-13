@@ -5,6 +5,7 @@ using OMGG.DesignPattern;
 using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Vermines.Config;
 
 namespace Vermines {
     using Vermines.Gameplay.Commands.Internal;
@@ -34,11 +35,12 @@ namespace Vermines {
                 Debug.Log("LoadYourAsyncScene.");
                 Runner.LoadScene("EnvironmentDay", LoadSceneMode.Additive);
                 Runner.LoadScene("GameplayCameraTravelling", LoadSceneMode.Additive);
+                Runner.LoadScene("FinalAnimation", LoadSceneMode.Additive);
                 Runner.LoadScene("UIv3", LoadSceneMode.Additive);
             }
         }
 
-        public int InitializePlayers(int seed, int startingEloquence)
+        public int InitializePlayers(GameConfiguration config)
         {
             GameDataStorage storage = GameDataStorage.Instance;
             int numberOfPlayer = storage.PlayerData.Count;
@@ -47,15 +49,16 @@ namespace Vermines {
             // For now just check if the number of player is 2 or more.
             if (numberOfPlayer < 2)
                 return -1;
-            InitializePlayers(seed, numberOfPlayer, startingEloquence);
+            
+            InitializePlayers(config, numberOfPlayer);
 
             return 0;
         }
 
-        private void InitializePlayers(int seed, int numberOfPlayer, int startingEloquence)
+        private void InitializePlayers(GameConfiguration config, int numberOfPlayer)
         {
             List<CardFamily> playersFamily = GameDataStorage.Instance.GetPlayersFamily();
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(seed, numberOfPlayer, playersFamily);
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(config.Seed, numberOfPlayer, playersFamily);
             int orderIndex = 0;
 
             foreach (var player in GameDataStorage.Instance.PlayerData)
@@ -64,14 +67,15 @@ namespace Vermines {
 
                 if (data.Family == CardFamily.None)
                     data.Family = families[orderIndex];
-                data.Eloquence = GiveEloquence(orderIndex, startingEloquence);
+                data.Eloquence = GiveEloquence(orderIndex, config.EloquenceToStartWith.Value);
+                data.Souls = config.SoulsToStartWith.Value;
 
                 GameDataStorage.Instance.PlayerData.Set(player.Key, data);
 
                 orderIndex++;
             }
 
-            RPC_InitializeGame(seed, FamilyUtils.FamiliesListToIds(families));
+            RPC_InitializeGame(config.Seed, FamilyUtils.FamiliesListToIds(families));
         }
 
         public int InitalizePhase()

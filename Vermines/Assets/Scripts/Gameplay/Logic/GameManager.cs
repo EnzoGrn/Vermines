@@ -12,6 +12,7 @@ namespace Vermines {
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
     using Vermines.CardSystem.Enumerations;
+    using System.Collections.Generic;
 
     public class GameManager : NetworkBehaviour {
 
@@ -98,7 +99,7 @@ namespace Vermines {
             // TODO: need to handle it with the Waiting Room (before sending the Game Configuration to clients). // WIP
             if (Config.RandomSeed.Value == true)
                 Config.Seed = Random.Range(0, int.MaxValue);
-            if (_Initializer.InitializePlayers(Config.Seed, Config.EloquenceToStartWith.Value) == -1)
+            if (_Initializer.InitializePlayers(Config) == -1)
                 return;
             InitializePlayerOrder();
             if (_Initializer.InitalizePhase() == -1)
@@ -116,6 +117,24 @@ namespace Vermines {
             PhaseManager.Instance.OnStartPhases();
         }
 
+        public void UnloadSceneForCinematic(List<string> sceneToUnload)
+        {
+            if (HasStateAuthority == false)
+                return;
+
+            foreach (var scene in sceneToUnload)
+            {
+                Runner.UnloadScene(scene);
+            }
+        }
+
+        public void ReturnToMenu()
+        {
+            Runner.UnloadScene("FinalAnimation");
+
+            // TODO: Handle return to menu
+        }
+
         private void InitializePlayerOrder()
         {
             int orderIndex = 0;
@@ -128,7 +147,6 @@ namespace Vermines {
         }
 
         #region Rpcs
-
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_StartClientSideStuff()
         {

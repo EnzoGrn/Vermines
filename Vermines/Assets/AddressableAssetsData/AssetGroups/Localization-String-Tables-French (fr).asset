@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-fr
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 686695408f434fe4db69aac801bec787
+    m_Address: Final Animation Dialog_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6dec31583aa18cd4d84e95366f1b9531
     m_Address: UIUtils_fr
     m_ReadOnly: 1

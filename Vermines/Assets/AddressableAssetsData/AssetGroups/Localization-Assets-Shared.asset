@@ -54,6 +54,12 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d28e4db54bcae5e43ade05072f4285a4
+    m_Address: Assets/Resources/Localization/Tables/FinalAnimation/Final Animation
+      Dialog Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e0d9f7c0dd3b9d44898358fad611b989
     m_Address: Assets/Resources/Localization/Tables/UI/PopupTable Shared Data.asset
     m_ReadOnly: 1
