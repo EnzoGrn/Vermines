@@ -9,8 +9,6 @@ public class CopyEffectToolsPlugin : CopyEffectPlugin
     {
         foreach (var card in GameDataStorage.Instance.Shop.Sections[Vermines.ShopSystem.Enumerations.ShopType.Market].AvailableCards)
         {
-            Debug.Log($"Card stored is: {activatedCard.Data.Name} with ID: {activatedCard.ID}");
-            Debug.Log($"Card in market is: {card.Value.Data.Name} with ID: {card.Value.ID}");
             if (card.Value.Data.Type == CardTypeTrigger &&
                 card.Value.ID != activatedCard.ID) // Ensure we don't include the activated card itself
             {
