@@ -30,19 +30,15 @@ namespace Vermines.Gameplay.Phases {
         public override void Run(PlayerRef player)
         {
             _CurrentPlayer = player;
-
             ResetEveryEffectsThatWasActivatedDuringTheLastRound();
 
             Debug.Log($"Phase Gain is now running for player {_CurrentPlayer}");
 
             ExecuteCardEffect();
-
             ICommand earnCommand = new EarnCommand(_CurrentPlayer, GameManager.Instance.Config.NumberOfEloquencesToStartTheTurnWith.Value, DataType.Eloquence);
-
             CommandInvoker.ExecuteCommand(earnCommand);
 
             GameDataStorage.Instance.PlayerData.TryGet(_CurrentPlayer, out PlayerData playerData);
-
             GameEvents.OnPlayerUpdated.Invoke(playerData);
 
             if (_CurrentPlayer == PlayerController.Local.PlayerRef)

@@ -1,9 +1,8 @@
 ﻿using Fusion;
 
 namespace Vermines.Gameplay.Phases {
-
+    using UnityEngine;
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.Player;
 
     public interface IPhase {
 
@@ -26,16 +25,17 @@ namespace Vermines.Gameplay.Phases {
 
         /// <summary>
         /// Event that end the phase.
-        /// The logic value here represent if the function is called by the logic of the game or by the player.
-        /// - True: The function is called by the logic of the game.
-        /// - False: The function is called by the player.
+        /// The logic value here represent if the function is called by the logic of the game in trivial case, every player run this function with logic = ture.
+        /// - True: The function is called by the logic of the game, so every player run it.
+        /// - False: The function is called by the player, who the to play is.
         /// </summary>
-        /// <param name="logic">If the function is called by the logic of the game or by the player.</param>
+        /// <param name="logic">If the function is called by the logic of the game (every player) or just the current player to play</param>
         /// <param name="player">The player that end the phase.</param>
         public virtual void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
+            Debug.Log($"[Server]: ({Type}) OnPhaseEnding by logic {logic} processing");
             if (logic == true) {
-                PhaseManager.Instance.RPC_PhaseCompleted();
+                PhaseManager.Instance.PhaseCompleted();
             } else {
                 GameEvents.OnAttemptNextPhase.Invoke();
             }

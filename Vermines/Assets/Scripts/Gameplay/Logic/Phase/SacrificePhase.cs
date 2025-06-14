@@ -39,12 +39,11 @@ namespace Vermines.Gameplay.Phases {
         public override void Run(PlayerRef player)
         {
             PlayerController.Local.ClearTracker();
+            Reset();
 
             _CurrentPlayer = player;
 
             Debug.Log($"Phase {Type} is now running");
-
-            Reset();
 
             List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
 
@@ -61,6 +60,7 @@ namespace Vermines.Gameplay.Phases {
             }
             else if (playedCards.Count == 0)
             {
+                Debug.Log($"[Server]: ({Type}) Calling OnPhaseEnding by logic");
                 OnPhaseEnding(_CurrentPlayer, true);
             }
         }
@@ -84,25 +84,32 @@ namespace Vermines.Gameplay.Phases {
         {
             if (Type != PhaseType.Sacrifice)
                 return;
+            if (_CurrentPlayer != PlayerController.Local.PlayerRef)
+                return;
+            if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value)
+                return;
+
             Debug.Log("[Client]: Card Sacrified");
             int cardId = cardSacrified.ID;
             ICard card = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Find(card => card.ID == cardId);
 
             if (card != null)
             {
-                Debug.Log($"[Client]: Card {card.ID} is now sacrificed");
-                if (_CurrentPlayer == PlayerController.Local.PlayerRef)
-                {
-                    PlayerController.Local.OnCardSacrified(card.ID);
-                }
-
+                int cardCount = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Count;
+                PlayerController.Local.OnCardSacrified(card.ID);
+                cardCount--;
                 _NumberOfCardSacrified++;
 
                 if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value
-                    || GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Count == 0)
+                    || cardCount == 0)
                 {
                     // Pop up context
-                    OnPhaseEnding(_CurrentPlayer, true);
+                    OnPhaseEnding(_CurrentPlayer, false);
+                    GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+                    if (gameplayUIController != null)
+                    {
+                        // TODO: Hide the table
+                    }
                 }
             }
             else
