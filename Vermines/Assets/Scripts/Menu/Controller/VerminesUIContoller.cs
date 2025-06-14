@@ -38,7 +38,7 @@ namespace Vermines.Menu.Controller {
                     await Task.WhenAll(result.WaitForCleanup, popup);
                 else
                     await popup;
-                controller.Show<VMUI_MainMenu>();
+                controller.Show<VMUI_Tavern>();
             }
         }
 

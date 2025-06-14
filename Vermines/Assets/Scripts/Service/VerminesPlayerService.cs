@@ -1,8 +1,9 @@
-using OMGG.Menu.Connection;
-using Fusion.Sockets;
-using Fusion;
 using System.Collections.Generic;
 using System;
+using OMGG.Menu.Connection;
+using OMGG.Menu.Screen;
+using Fusion.Sockets;
+using Fusion;
 using UnityEngine;
 
 namespace Vermines.Service {
@@ -13,18 +14,16 @@ namespace Vermines.Service {
 
     public class VerminesPlayerService : NetworkBehaviour, IPlayerLeft, INetworkRunnerCallbacks {
 
-        private ChangeDetector              _ChangeDetector;
         private VerminesConnectionBehaviour _Connection;
-        private VMUI_Gameplay               _MenuUIGameplay;
 
         #region Players
 
-        private const int PLAYERS_MAX_COUNT = 4; // ! This value must be bigger than the one on the config file.
+        private const int PLAYERS_MAX_COUNT = 4; // ! Change this value if you edit it in the config file.
 
         /// <summary>
         /// The list of players usernames.
         /// </summary>
-        [Networked, Capacity(PLAYERS_MAX_COUNT)]
+        [Networked, Capacity(PLAYERS_MAX_COUNT), OnChangedRender(nameof(OnPlayersChange))]
         private NetworkDictionary<PlayerRef, NetworkString<_16>> _PlayersUsernames => default;
 
         public List<string> GetPlayersUsernames()
@@ -36,12 +35,6 @@ namespace Vermines.Service {
             return playersList;
         }
 
-        public void CheckMaxPlayerCount()
-        {
-            if (Runner.SessionInfo.MaxPlayers > PLAYERS_MAX_COUNT)
-                Debug.LogWarning($"Current gameplay overlay max clients capacity ({PLAYERS_MAX_COUNT}) is less than the session max players ({Runner.SessionInfo.MaxPlayers}). Consider increasing.");
-        }
-
         private void RemovePlayer(PlayerRef player)
         {
             _PlayersUsernames.Remove(player);
@@ -51,6 +44,76 @@ namespace Vermines.Service {
         {
             if (Object.HasStateAuthority)
                 RemovePlayer(player);
+            // TODO: Alert the current game or lobby selection that someone left the game.
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Function that checks if the current game is a custom game or not.
+        /// </summary>
+        /// <returns>
+        /// True if the game is a custom game, false otherwise.
+        /// </returns>
+        public bool IsCustomGame()
+        {
+            if (_Connection == null)
+                _Connection = FindFirstObjectByType<VerminesConnectionBehaviour>(FindObjectsInactive.Include);
+            return _Connection != null && _Connection.IsCustomLobby;
+        }
+
+        /// <summary>
+        /// Function that get the username and cultist selected by the player to give it to the game.
+        /// </summary>
+        private void AddPlayerMatchmaking()
+        {
+            // Those lines are here to ensure everyone has the same screen at the same time.
+            if (Object.HasStateAuthority)
+                RPC_Gameplay();
+            else
+                SwitchScreen<VMUI_Gameplay>();
+
+            // Get the tavern to access the local player's selected cultist.
+            VMUI_Tavern tavern = FindFirstObjectByType<VMUI_Tavern>(FindObjectsInactive.Include);
+
+            if (tavern && tavern.SelectedCultist != null)
+                RPC_UpdatePlayerState(Runner.LocalPlayer, PlayerPrefs.GetString("OMGG.Profile.Username"), tavern.SelectedCultist.family);
+            else // -> This condition is normaly called only by the MPPM clients (Multiplayer Player Play Mode), Editor side.
+                RPC_UpdatePlayerState(Runner.LocalPlayer, PlayerPrefs.GetString("OMGG.Profile.Username"));
+        }
+
+        /// <summary>
+        /// Function that initializes a player in a custom game.
+        /// </summary>
+        /// <remarks>
+        /// When the player join a custom lobby, they don't have selected a cultist yet.
+        /// </remarks>
+        private void AddPlayerCustom()
+        {
+            // Those lines are here to ensure everyone has the same screen at the same time.
+            if (Object.HasStateAuthority)
+                RPC_NetworkTavern();
+            else
+                SwitchScreen<VMUI_CustomTavern>();
+            RPC_UpdatePlayerState(Runner.LocalPlayer, PlayerPrefs.GetString("OMGG.Profile.Username"));
+        }
+
+        /// <summary>
+        /// Function that switches the current screen to the specified type of screen.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the screen to switch to. Must be a subclass of <see cref="MenuUIScreen" />.
+        /// </typeparam>
+        private void SwitchScreen<T>() where T : MenuUIScreen
+        {
+            T screen = FindFirstObjectByType<T>(FindObjectsInactive.Include);
+
+            if (screen != null)
+                screen.Controller.Show<T>();
+            else
+                Debug.LogError($"[VerminesPlayerService] SwitchScreen() - Screen of type {typeof(T).Name} not found.");
         }
 
         #endregion
@@ -61,44 +124,11 @@ namespace Vermines.Service {
         {
             Runner.AddCallbacks(this);
 
-            VerminesConnectionBehaviour connectionBehaviour = FindFirstObjectByType<VerminesConnectionBehaviour>(FindObjectsInactive.Include);
-
-            if (connectionBehaviour == false) {
-                Log.Error("Connection behaviour not found!");
-
-                return;
-            }
-
-            _MenuUIGameplay = FindFirstObjectByType<VMUI_Gameplay>(FindObjectsInactive.Include);
-
-            if (_MenuUIGameplay == false) {
-                Log.Error("FusionMenuUIGameplay not found!");
-
-                return;
-            }
-
-            _Connection = connectionBehaviour;
-
-            CheckMaxPlayerCount();
-
-            _ChangeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-
-            VMUI_Tavern tavern = FindFirstObjectByType<VMUI_Tavern>(FindObjectsInactive.Include);
-
-            if (tavern && tavern.SelectedCultist != null)
-                RPC_AddPlayer(Runner.LocalPlayer, PlayerPrefs.GetString("OMGG.Profile.Username"), tavern.SelectedCultist.family);
+            // ! Call a IsCustomGame at the beginning for initialize the _Connection variable.
+            if (IsCustomGame())
+                AddPlayerCustom();
             else
-                RPC_AddPlayer(Runner.LocalPlayer, PlayerPrefs.GetString("OMGG.Profile.Username"));
-        }
-
-        public override void Render()
-        {
-            if (_ChangeDetector == null)
-                return;
-            foreach (var change in _ChangeDetector.DetectChanges(this)) {
-                if (change == nameof(_PlayersUsernames))
-                    OnPlayersChange();
-            }
+                AddPlayerMatchmaking();
         }
 
         #endregion
@@ -107,17 +137,17 @@ namespace Vermines.Service {
 
         private void OnPlayersChange()
         {
-            (_Connection as VerminesConnectionBehaviour)?.SetSessionUsernames(GetPlayersUsernames());
+            if (_Connection != null)
+                _Connection.SetSessionUsernames(GetPlayersUsernames());
         }
 
         public async void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
             // Host / Server left
-            if (shutdownReason == ShutdownReason.DisconnectedByPluginLogic)
-            {
+            if (shutdownReason == ShutdownReason.DisconnectedByPluginLogic) {
                 await _Connection.DisconnectAsync(ConnectFailReason.Disconnect);
 
-                _MenuUIGameplay.Controller.Show<VMUI_MainMenu>(_MenuUIGameplay);
+                SwitchScreen<VMUI_Tavern>();
             }
         }
 
@@ -126,22 +156,38 @@ namespace Vermines.Service {
         #region RPCs
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPC_AddPlayer(PlayerRef player, string username, CardFamily family = CardFamily.None)
+        public void RPC_UpdatePlayerState(PlayerRef player, string username, CardFamily family = CardFamily.None)
         {
-            _PlayersUsernames.Add(player, username);
+            UpdatePlayerState(player, username, family);
+        }
 
-            GameDataStorage gameDataStorage = FindFirstObjectByType<GameDataStorage>(FindObjectsInactive.Include);
+        public void UpdatePlayerState(PlayerRef player, string username, CardFamily family = CardFamily.None)
+        {
+            if (HasStateAuthority) {
+                // Update or add the player username in the dictionary.
+                if (_PlayersUsernames.TryGet(player, out NetworkString<_16> _)) // Already exists, update the username.
+                    _PlayersUsernames.Set(player, username);
+                else // Does not exist, add the player with the username.
+                    _PlayersUsernames.Add(player, username);
 
-            if (gameDataStorage)
-                gameDataStorage.AddPlayer(player, username, family);
+                // Update or add the player in the GameDataStorage.
+                GameDataStorage gameDataStorage = FindFirstObjectByType<GameDataStorage>(FindObjectsInactive.Include);
+
+                if (gameDataStorage)
+                    gameDataStorage.AddPlayer(player, username, family);
+            }
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_Gameplay()
         {
-            VMUI_Gameplay gameplay = FindFirstObjectByType<VMUI_Gameplay>(FindObjectsInactive.Include);
+            SwitchScreen<VMUI_Gameplay>();
+        }
 
-            gameplay.Controller.Show<VMUI_Gameplay>();
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_NetworkTavern()
+        {
+            SwitchScreen<VMUI_CustomTavern>();
         }
 
         #endregion

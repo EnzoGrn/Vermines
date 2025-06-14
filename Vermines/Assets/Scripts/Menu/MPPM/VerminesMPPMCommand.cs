@@ -1,12 +1,11 @@
 using OMGG.Menu.Connection.Data;
 using System.Threading.Tasks;
 using System;
-using Fusion;
 using UnityEngine;
+using Fusion;
 
 namespace Vermines.Menu.MPPM {
 
-    using Vermines.Menu.Controller;
     using Vermines.Menu.Screen;
 
     using static UnityEngine.Object;
@@ -29,19 +28,19 @@ namespace Vermines.Menu.MPPM {
 
         private async Task ExecuteAsync()
         {
-            var controller = FindAnyObjectByType<VMUI_Controller>();
+            var tavern = FindAnyObjectByType<VMUI_Tavern>();
 
-            if (!controller)
+            if (!tavern)
                 return;
-            Assert.Check(controller.ConnectionArgs != null);
+            Assert.Check(tavern.Controller.ConnectionArgs != null);
 
-            Apply(controller.ConnectionArgs);
+            Apply(tavern.Controller.ConnectionArgs);
 
-            controller.Show<VMUI_Loading>();
+            tavern.Controller.Show<VMUI_Loading>();
 
-            var connectionResult = await controller.Connection.ConnectAsync(controller.ConnectionArgs);
+            var connectionResult = await tavern.Controller.Connection.ConnectAsync(tavern.Controller.ConnectionArgs, tavern.SceneRef);
 
-            await controller.HandleConnectionResult(connectionResult, controller);
+            await tavern.Controller.HandleConnectionResult(connectionResult, tavern.Controller);
         }
 
         public void Apply(ConnectionArgs args)
