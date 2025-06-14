@@ -188,12 +188,8 @@ namespace Vermines.Menu.Connection.Element {
 
             _ConnectingSafeCheck = false;
 
-            if (connectResult.Success) {
+            if (connectResult.Success)
                 _SessionName = _Runner.SessionInfo.Name;
-
-                // DisableMenuCamera();
-            }
-
             if (!isCustom) { // Only force join the host if it's a matchmaking session
                 FusionMppm.MainEditor?.Send(new VerminesMPPMCommand() {
                     Region       = _Region,

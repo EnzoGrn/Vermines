@@ -8,6 +8,7 @@ using Vermines.Player;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Screen;
 using Fusion;
+using Vermines.CardSystem.Enumerations;
 
 public static class GameEvents
 {
@@ -18,6 +19,7 @@ public static class GameEvents
     public static TrackedEvent<int> OnTurnChanged = new("OnTurnChanged");
     public static TrackedEvent OnPlayerInitialized = new("OnPlayerInitialized");
     public static TrackedEvent<PlayerData> OnPlayerUpdated = new("OnPlayerUpdated");
+    public static TrackedEvent<PlayerRef, PlayerRef> OnPlayerWin = new("OnPlayerWin");
 
     // --- CARD PLAYING ---
     public static TrackedEvent<ICard> OnCardPlayedRequested = new("OnCardPlayedRequested");
@@ -80,5 +82,11 @@ public static class GameEvents
     {
         Debug.Log($"[GameEvents] InvokeOnCardPurchaseRequested: {shopType}, Slot: {slotIndex}");
         OnCardPurchaseRequested.Invoke(shopType, slotIndex);
+    }
+
+    public static void InvokeOnPlayerWin(PlayerRef winnerRef, PlayerRef localPlayerRef)
+    {
+        Debug.Log($"[FinalAnimation]: Cardfamily -> {winnerRef}");
+        OnPlayerWin.Invoke(winnerRef, localPlayerRef);
     }
 }

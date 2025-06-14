@@ -39,6 +39,24 @@ namespace Vermines {
         public void OnPlayerDataUpdated()
         {
             GameEvents.InvokeOnPlayerUpdated(PlayerData);
+
+            // Check if a player has won the game
+
+            foreach (var playerData in PlayerData)
+            {
+                if (PlayerData.TryGet(playerData.Key, out PlayerData data) == false)
+                    continue;
+
+                if (data.IsConnected == false)
+                    continue;
+
+                if (data.Souls >= GameManager.Instance.Config.MaxSoulsToWin.Value)
+                {
+                    Debug.Log($"[SERVER]: Player {data.Nickname} has won the game with {data.Souls} souls.");
+                    GameEvents.InvokeOnPlayerWin(playerData.Key, Runner.LocalPlayer);
+                    return; // Exit after finding the first winner
+                }
+            }
         }
 
         public void AddPlayer(PlayerRef player, string username, CardFamily family = CardFamily.None)

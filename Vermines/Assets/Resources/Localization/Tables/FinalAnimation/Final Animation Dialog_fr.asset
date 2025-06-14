@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Final Animation Dialog_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: d28e4db54bcae5e43ade05072f4285a4, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 60936429568
+    m_Localized: "Quand la derni\xE8re \xE2me vibra, nous, les Crickets, f\xEEmes
+      r\xE9sonner notre chant strident \xE0 travers les ruines. Jadis domin\xE9 par
+      les abeilles, le royaume tout entier s'inclina devant notre dissonance sacr\xE9e.
+      Le Dieu Sifflant s\u2019est dress\xE9 derri\xE8re la ville, et son murmure
+      couvre \xE0 jamais le silence des anciens rois."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4550129360896
+    m_Localized: "Nous avons collect\xE9 chaque \xE2me moisie, patiemment, impitoyablement.
+      Les abeilles r\xE9gnaient, mais elles n\u2019\xE9taient qu\u2019un masque dor\xE9
+      sur une carcasse en d\xE9composition. Nous, les Mouches, avons fendu le voile.
+      Notre Dieu rampant s\u2019est lev\xE9 derri\xE8re les cendres, et d\xE9sormais,
+      tous respirent la puanteur de la v\xE9rit\xE9."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4562968125440
+    m_Localized: "Les peuples du royaume suivaient les abeilles, croyant leur lumi\xE8re
+      \xE9ternelle. Mais nous, les Scarab\xE9es, avons roul\xE9 les \xE2mes jusqu\u2019au
+      seuil de l\u2019ab\xEEme. De la terre fendue, notre Dieu s\u2019est \xE9lev\xE9,
+      gigantesque et silencieux. L\u2019ancien ordre est \xE9cras\xE9. Une nouvelle
+      \xE8re commence, sculpt\xE9e dans la boue sacr\xE9e."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4575970467840
+    m_Localized: "Sous les couleurs vives se cachait une foi br\xFBlante. Nous, les
+      Coccinelles, avons longtemps v\xE9cu sous le r\xE8gne dor\xE9 des abeilles.
+      Mais l\u2019attente a pris fin. Le ciel s\u2019est fendu, r\xE9v\xE9lant notre
+      Dieu aux ailes fractales. Dans les flammes, justice fut faite. Et l\u2019avenir
+      se peint d\xE9sormais en rouge."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []
