@@ -290,9 +290,8 @@ namespace Vermines.UI.Screen
         public virtual void OnBackButtonPressed()
         {
             Controller.Hide();
-            CamManager.Instance.GoOnNoneLocation();
+            //CamManager.Instance.GoOnNoneLocation();
         }
-
         #endregion
     }
 }
