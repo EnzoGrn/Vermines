@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Vermines.GameDesign.Initializer;
 
 public class HoverPhaseLocation : IGGD_Behaviour {
@@ -59,7 +60,7 @@ public class HoverPhaseLocation : IGGD_Behaviour {
 
     private void OnMouseEnter()
     {
-        if (_CameraManager == null)
+        if (_CameraManager == null || EventSystem.current.IsPointerOverGameObject())
             return;
         if (_CanHoverLocations)
             ApplyOutline(true);
@@ -78,16 +79,15 @@ public class HoverPhaseLocation : IGGD_Behaviour {
     private void OnMouseDown()
     {
         Debug.Log("OnMouseDown Detected");
-        return; // TODO: remove this
-        if (_CameraManager == null)
+
+        if (_CameraManager == null || EventSystem.current.IsPointerOverGameObject())
             return;
+
         if (!_CanHoverLocations || !_CanClickLocations)
             return;
 
         _CanHoverLocations = false;
-
         ApplyOutline(false);
-
         CamManager.Instance.OnSplineAnimationRequest((int)_CamSplineType);
     }
 
