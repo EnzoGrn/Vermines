@@ -26,7 +26,6 @@ public class FinalAnimationManager : MonoBehaviour
 
     private void Start()
     {
-        StartFinalAnimation(false, CardFamily.Scarab); // Initialize with default values
         GameEvents.OnPlayerWin.AddListener(OnPlayerWin);
     }
 
