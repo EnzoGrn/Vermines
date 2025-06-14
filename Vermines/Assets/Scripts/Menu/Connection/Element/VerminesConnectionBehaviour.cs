@@ -33,10 +33,6 @@ namespace Vermines.Menu.Connection.Element {
         [SerializeField]
         private GameObject _NetworkRunner;
 
-        [Tooltip("The scene to load when connecting.")]
-        [SerializeField]
-        private SceneRef _Scene;
-
         #endregion
 
         #region Non-Serialized Fields
@@ -126,7 +122,7 @@ namespace Vermines.Menu.Connection.Element {
             OnBeforeDisconnect.AddListener(EnableMenuCamera);
         }
 
-        protected override async Task<ConnectResult> ConnectAsyncInternal(ConnectionArgs connectArgs, bool isCustom = false)
+        protected override async Task<ConnectResult> ConnectAsyncInternal(ConnectionArgs connectArgs, SceneRef sceneRef, bool isCustom = false)
         {
             if (_ConnectingSafeCheck) {
                 return new ConnectResult {
@@ -166,7 +162,7 @@ namespace Vermines.Menu.Connection.Element {
             // Scene info
             NetworkSceneInfo sceneInfo = new();
 
-            sceneInfo.AddSceneRef(_Scene, LoadSceneMode.Additive);
+            sceneInfo.AddSceneRef(sceneRef, LoadSceneMode.Additive);
 
             args.Scene = sceneInfo;
 
@@ -224,9 +220,7 @@ namespace Vermines.Menu.Connection.Element {
                 result.FailReason = ConnectFailReason.Disconnect;
 
                 return result;
-            }
-
-            if (string.IsNullOrEmpty(sceneInfo.ScenePath)) {
+            } else if (string.IsNullOrEmpty(sceneInfo.ScenePath)) {
                 if (sceneInfos.Count > 1)
                     sceneInfo = sceneInfos[UnityEngine.Random.Range(1, sceneInfos.Count)];
                 else {
@@ -236,14 +230,6 @@ namespace Vermines.Menu.Connection.Element {
                 }
             }
 
-            for (int i = 0; i < SceneManager.sceneCount; i++) {
-                Scene scene = SceneManager.GetSceneAt(i);
-
-                if (scene.buildIndex == 0)
-                    continue;
-                _ = _Runner.UnloadScene(scene.path);
-            }
-
             await _Runner.LoadScene(sceneInfo.ScenePath, LoadSceneMode.Additive);
 
             result.Success = true;
@@ -251,6 +237,51 @@ namespace Vermines.Menu.Connection.Element {
 
             return result;
         }
+
+        protected override async Task<ConnectResult> ChangeSceneInternal(SceneRef sceneRef)
+        {
+            ConnectResult result = new() {
+                CustomResultHandling = true,
+                Success              = false,
+                FailReason           = ConnectFailReason.None
+            };
+
+            if (_Runner == null || !_Runner.IsRunning) {
+                Log.Error("Cannot change scene because NetworkRunner is not running.");
+
+                result.FailReason = ConnectFailReason.Disconnect;
+
+                return result;
+            } else if (sceneRef.IsValid == false) {
+                result.FailReason = ConnectFailReason.ArgumentError;
+
+                return result;
+            }
+
+            await _Runner.LoadScene(sceneRef, LoadSceneMode.Additive);
+
+            result.Success = true;
+
+            return result;
+        }
+
+        protected override async Task<bool> UnloadSceneInternal(SceneRef sceneRef)
+        {
+            if (_Runner == null || !_Runner.IsRunning) {
+                Log.Error("Cannot unload scene because NetworkRunner is not running.");
+
+                return false;
+            } else if (sceneRef.IsValid == false) {
+                Log.Error("Cannot unload scene because scene reference is invalid.");
+
+                return false;
+            }
+
+            await _Runner.UnloadScene(sceneRef);
+
+            return true;
+        }
+
 
         protected override async Task DisconnectAsyncInternal(int reason)
         {
@@ -262,8 +293,6 @@ namespace Vermines.Menu.Connection.Element {
 
             if (peerMode is NetworkProjectConfig.PeerModes.Multiple)
                 return;
-            for (int i = SceneManager.sceneCount - 1; i > 0; i--)
-                _ = SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i));
         }
 
         public override Task<List<OnlineRegion>> RequestAvailableOnlineRegionsAsync(ConnectionArgs connectArgs)

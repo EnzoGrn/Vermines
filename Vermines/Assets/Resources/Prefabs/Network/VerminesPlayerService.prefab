@@ -63,3 +63,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d015e0aebffc1046848cb4e9112e683, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _PlayerSelectionController:
+    RawGuidValue: ff7d22f9b94c1c645b88359304038865

@@ -20,6 +20,9 @@ MonoBehaviour:
   - Name: Vermines
     ScenePath: Assets/Resources/Scenes/Game.unity
     Preview: {fileID: 21300000, guid: dd93c049838fec145bca9e2c9eff758f, type: 3}
+  - Name: Player Selection (Custom Lobby)
+    ScenePath: Assets/Resources/Scenes/Lobby/CustomLobby.unity
+    Preview: {fileID: 21300000, guid: 3380642b05fc94d4699fa902f6249fc0, type: 3}
   - Name: EnvironmentDay
     ScenePath: Assets/Resources/Scenes/GameEnvironment/EnvironmentDay.unity
     Preview: {fileID: 21300000, guid: f0757143dadd00c4ea5c6d4b0ae789d4, type: 3}

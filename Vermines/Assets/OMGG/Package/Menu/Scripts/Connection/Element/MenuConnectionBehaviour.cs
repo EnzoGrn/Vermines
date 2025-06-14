@@ -82,7 +82,7 @@ namespace OMGG.Menu.Connection.Element {
         /// </summary>
         /// <param name="connectionArgs">Connection arguments.</param>
         /// <returns>When the connection is established</returns>
-        public virtual async Task<ConnectResult> ConnectAsync(ConnectionArgs connectionArgs, bool isCustom = false)
+        public virtual async Task<ConnectResult> ConnectAsync(ConnectionArgs connectionArgs, SceneRef sceneRef, bool isCustom = false)
         {
             if (OnBeforeConnect != null) {
                 try {
@@ -97,7 +97,7 @@ namespace OMGG.Menu.Connection.Element {
                 }
             }
 
-            return await ConnectAsyncInternal(connectionArgs, isCustom);
+            return await ConnectAsyncInternal(connectionArgs, sceneRef, isCustom);
         }
 
         public virtual async Task<ConnectResult> ChangeScene(SceneInformation sceneInfo, List<SceneInformation> sceneInfos)
@@ -110,6 +110,25 @@ namespace OMGG.Menu.Connection.Element {
             }
 
             return await ChangeSceneInternal(sceneInfo, sceneInfos);
+        }
+
+        public virtual async Task<ConnectResult> ChangeScene(SceneRef sceneRef)
+        {
+            if (sceneRef == null || !sceneRef.IsValid) {
+                return new ConnectResult() {
+                    FailReason   = ConnectFailReason.ArgumentError,
+                    DebugMessage = "Scene reference is null or invalid"
+                };
+            }
+
+            return await ChangeSceneInternal(sceneRef);
+        }
+
+        public virtual async Task<bool> UnloadScene(SceneRef sceneRef)
+        {
+            if (sceneRef == null || !sceneRef.IsValid)
+                return false;
+            return await UnloadSceneInternal(sceneRef);
         }
 
         /// <summary>
@@ -141,8 +160,10 @@ namespace OMGG.Menu.Connection.Element {
         /// The connection task.
         /// </summary>
         /// <param name="connectArgs">Connection args.</param>
+        /// <param name="sceneRef">The scene reference to connect to.</param>
+        /// <param name="isCustom">Is this a custom game?</param>
         /// <returns>When the connection is established and the game ready.</returns>
-        protected abstract Task<ConnectResult> ConnectAsyncInternal(ConnectionArgs connectArgs, bool isCustom);
+        protected abstract Task<ConnectResult> ConnectAsyncInternal(ConnectionArgs connectArgs, SceneRef sceneRef, bool isCustom);
 
         /// <summary>
         /// The scene change task.
@@ -151,6 +172,14 @@ namespace OMGG.Menu.Connection.Element {
         /// <param name="sceneInfos">All scene infos (in case of random).</param>
         /// <returns>When the scene change is completed.</returns>
         protected abstract Task<ConnectResult> ChangeSceneInternal(SceneInformation sceneInfo, List<SceneInformation> sceneInfos);
+        protected abstract Task<ConnectResult> ChangeSceneInternal(SceneRef sceneRef);
+
+        /// <summary>
+        /// Unload the scene task.
+        /// </summary>
+        /// <param name="sceneRef">The scene reference to unload.</param>
+        /// <returns>When the scene is unload.</returns>
+        protected abstract Task<bool> UnloadSceneInternal(SceneRef sceneRef);
 
         /// <summary>
         /// Disconnect task.

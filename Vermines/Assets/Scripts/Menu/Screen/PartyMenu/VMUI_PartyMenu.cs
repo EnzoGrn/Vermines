@@ -17,6 +17,10 @@ namespace Vermines.Menu.Screen {
     /// </summary>
     public partial class VMUI_PartyMenu : MenuUIScreen {
 
+        [SerializeField]
+        [Tooltip("The scene refence that will be load in network, when the custom game is create or join.")]
+        public SceneRef SceneRef;
+
         #region Fields
 
         /// <summary>
@@ -184,8 +188,11 @@ namespace Vermines.Menu.Screen {
             Controller.HideModal(this);
             Controller.Show<VMUI_Loading>(this);
 
-            var result = await Connection.ConnectAsync(ConnectionArgs, true);
+            var result = await Connection.ConnectAsync(ConnectionArgs, SceneRef, true);
 
+            if (result.Success != true) {
+                Controller.Show<VMUI_Tavern>(this);
+            }
             await Controller.HandleConnectionResult(result, Controller);
         }
 
