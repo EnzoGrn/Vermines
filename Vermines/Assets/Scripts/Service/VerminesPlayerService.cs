@@ -116,23 +116,6 @@ namespace Vermines.Service {
                 Debug.LogError($"[VerminesPlayerService] SwitchScreen() - Screen of type {typeof(T).Name} not found.");
         }
 
-        public async void ReturnToMenu()
-        {
-            if (IsCustomGame()) {
-                VMUI_PartyMenu party = FindFirstObjectByType<VMUI_PartyMenu>(FindObjectsInactive.Include);
-
-                await party.Connection.ChangeScene(party.SceneRef);
-
-                SwitchScreen<VMUI_CustomTavern>();
-            } else {
-                VMUI_Tavern tavern = FindFirstObjectByType<VMUI_Tavern>(FindObjectsInactive.Include);
-
-                await tavern.Connection.DisconnectAsync(ConnectFailReason.GameEnded);
-
-                SwitchScreen<VMUI_Tavern>();
-            }
-        }
-
         #endregion
 
         #region Override Methods
