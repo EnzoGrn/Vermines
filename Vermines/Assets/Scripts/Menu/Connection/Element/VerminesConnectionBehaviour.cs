@@ -333,6 +333,10 @@ namespace Vermines.Menu.Connection.Element {
                     return ShutdownReason.Ok;
                 case ConnectFailReason.Disconnect:
                     return ShutdownReason.DisconnectedByPluginLogic;
+                case ConnectFailReason.ArgumentError:
+                    return ShutdownReason.Error;
+                case ConnectFailReason.GameEnded:
+                    return ShutdownReason.DisconnectedByPluginLogic;
                 default:
                     return ShutdownReason.Error;
             }

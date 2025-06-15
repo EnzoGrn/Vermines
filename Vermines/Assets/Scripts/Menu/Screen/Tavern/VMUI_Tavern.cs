@@ -99,6 +99,11 @@ namespace Vermines.Menu.Screen {
             base.Show();
 
             ShowUser();
+
+            CultistSelectDisplay cultistSelectDisplay = FindFirstObjectByType<CultistSelectDisplay>();
+
+            if (cultistSelectDisplay)
+                SelectedCultist = cultistSelectDisplay.GetSelectedCultist();
         }
 
         /// <summary>

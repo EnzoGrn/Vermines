@@ -120,7 +120,7 @@ namespace OMGG.Menu.Screen {
 
         public virtual IEnumerator HideCoroutine()
         {
-            if (_Animator) {
+            if (_Animator && gameObject.activeSelf) {
                 if (_HideCoroutine != null)
                     StopCoroutine(_HideCoroutine);
                 _HideCoroutine = StartCoroutine(HideAnimCoroutine());

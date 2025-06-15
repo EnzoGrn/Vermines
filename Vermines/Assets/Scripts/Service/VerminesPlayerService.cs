@@ -106,7 +106,7 @@ namespace Vermines.Service {
         /// <typeparam name="T">
         /// The type of the screen to switch to. Must be a subclass of <see cref="MenuUIScreen" />.
         /// </typeparam>
-        private void SwitchScreen<T>() where T : MenuUIScreen
+        public void SwitchScreen<T>() where T : MenuUIScreen
         {
             T screen = FindFirstObjectByType<T>(FindObjectsInactive.Include);
 
@@ -114,6 +114,23 @@ namespace Vermines.Service {
                 screen.Controller.Show<T>();
             else
                 Debug.LogError($"[VerminesPlayerService] SwitchScreen() - Screen of type {typeof(T).Name} not found.");
+        }
+
+        public async void ReturnToMenu()
+        {
+            if (IsCustomGame()) {
+                VMUI_PartyMenu party = FindFirstObjectByType<VMUI_PartyMenu>(FindObjectsInactive.Include);
+
+                await party.Connection.ChangeScene(party.SceneRef);
+
+                SwitchScreen<VMUI_CustomTavern>();
+            } else {
+                VMUI_Tavern tavern = FindFirstObjectByType<VMUI_Tavern>(FindObjectsInactive.Include);
+
+                await tavern.Connection.DisconnectAsync(ConnectFailReason.GameEnded);
+
+                SwitchScreen<VMUI_Tavern>();
+            }
         }
 
         #endregion
