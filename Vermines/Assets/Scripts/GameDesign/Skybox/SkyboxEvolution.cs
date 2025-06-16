@@ -98,14 +98,14 @@ public class SkyboxEvolution : MonoBehaviour
     /// <returns></returns>
     private int GetMaxSoulsValue(NetworkDictionary<PlayerRef, PlayerData> playerData)
     {
-        int maxSlous = 0;
+        int maxSouls = 0;
 
         foreach (var key in playerData)
         {
-            maxSlous = Mathf.Max(maxSlous, key.Value.Souls);
+            maxSouls = Mathf.Max(maxSouls, key.Value.Souls);
         }
 
-        return maxSlous;
+        return maxSouls;
     }
 
     /// <summary>
