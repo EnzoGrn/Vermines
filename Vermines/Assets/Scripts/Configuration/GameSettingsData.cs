@@ -4,7 +4,7 @@ using System;
 namespace Vermines.Configuration.Network {
 
     [Serializable]
-    public struct GameSettingsData : INetworkStruct {
+    public struct GameSettingsData : INetworkStruct, IEquatable<GameSettingsData> {
 
         #region Game Information
 
@@ -36,5 +36,21 @@ namespace Vermines.Configuration.Network {
         public int MaxSacrificesPerTurn;
 
         #endregion
+
+        public readonly bool Equals(GameSettingsData other)
+        {
+            return (
+                Seed                              == other.Seed &&
+                NumberOfCardsToStartWith          == other.NumberOfCardsToStartWith &&
+                NumberOfCardsToDrawAtEndOfTurn    == other.NumberOfCardsToDrawAtEndOfTurn &&
+                MaxEloquence                      == other.MaxEloquence &&
+                EloquenceToStartWith              == other.EloquenceToStartWith &&
+                NumberOfEloquencesEarnInGainPhase == other.NumberOfEloquencesEarnInGainPhase &&
+                MaxSoul                           == other.MaxSoul &&
+                SoulToStartWith                   == other.SoulToStartWith &&
+                BonusSoulInFamilySacrifice        == other.BonusSoulInFamilySacrifice &&
+                MaxSacrificesPerTurn              == other.MaxSacrificesPerTurn
+            );
+        }
     }
 }
