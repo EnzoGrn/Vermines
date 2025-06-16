@@ -4,6 +4,7 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines {
+
     using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
     using Vermines.ShopSystem.Data;
@@ -51,10 +52,9 @@ namespace Vermines {
                 if (data.IsConnected == false)
                     continue;
 
-                if (data.Souls >= GameManager.Instance.Config.MaxSoulsToWin.Value)
-                {
-                    Debug.Log($"[SERVER]: Player {data.Nickname} has won the game with {data.Souls} souls.");
+                if (GameManager.Instance.Start && data.Souls >= GameManager.Instance.SettingsData.MaxSoul) {
                     GameEvents.InvokeOnPlayerWin(playerData.Key, Runner.LocalPlayer);
+
                     return; // Exit after finding the first winner
                 }
             }
@@ -157,7 +157,7 @@ namespace Vermines {
             if (HasStateAuthority == false)
                 return;
             if (PlayerData.TryGet(player, out PlayerData data) == true) {
-                int maxEloquence = GameManager.Instance.Config.MaxEloquence.Value;
+                int maxEloquence = GameManager.Instance.SettingsData.MaxEloquence;
 
                 if (maxEloquence < eloquence)
                     eloquence = maxEloquence;

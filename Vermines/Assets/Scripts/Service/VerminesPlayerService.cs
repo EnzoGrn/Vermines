@@ -129,6 +129,9 @@ namespace Vermines.Service {
                 AddPlayerCustom();
             else
                 AddPlayerMatchmaking();
+
+            if (HasStateAuthority && !IsCustomGame())
+                RPC_Gameplay();
         }
 
         #endregion

@@ -102,7 +102,7 @@ namespace Vermines.Gameplay.Phases {
 
                 _NumberOfCardSacrified++;
 
-                if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value
+                if (_NumberOfCardSacrified >= GameManager.Instance.SettingsData.MaxSacrificesPerTurn
                     || GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Count == 0)
                 {
                     // Pop up context

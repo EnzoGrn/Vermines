@@ -41,7 +41,7 @@ namespace Vermines.Gameplay.Phases {
             }
 
             // Refill Hand
-            for (int i = 0; i < GameManager.Instance.Config.NumberOfCardsToDrawAtEndOfTurn.Value; i++) {
+            for (int i = 0; i < GameManager.Instance.SettingsData.NumberOfCardsToDrawAtEndOfTurn; i++) {
                 ICommand drawCardCommand = new DrawCommand(player);
 
                 CommandResponse command = CommandInvoker.ExecuteCommand(drawCardCommand);

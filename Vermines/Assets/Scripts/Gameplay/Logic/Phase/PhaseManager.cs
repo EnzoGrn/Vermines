@@ -157,12 +157,10 @@ namespace Vermines.Gameplay.Phases {
 
         public void OnStartPhases()
         {
-            if (!Runner.IsServer || !GameManager.Instance.Start || Runner.ActivePlayers.Count() < GameManager.Instance.Config.MinPlayers.Value)
+            if (!Runner.IsServer || !GameManager.Instance.Start)
                 return;
             foreach (var player in GameDataStorage.Instance.PlayerData)
-            {
                 GameEvents.OnPlayerUpdated.Invoke(player.Value);
-            }
             RPC_ProcessPhase(CurrentPhase, GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex));
         }
 

@@ -152,7 +152,7 @@ public class SkyboxEvolution : MonoBehaviour
             return;
 
         _actualMaxSouls = maxSouls;
-        float value = Mathf.Clamp01((float)_actualMaxSouls / (float)GameManager.Instance.Config.MaxSoulsToWin.Value);
+        float value = Mathf.Clamp01((float)_actualMaxSouls / (float)GameManager.Instance.Configuration.MaxSoul);
 
         if (_skyboxTransitionCoroutine != null)
             StopCoroutine(_skyboxTransitionCoroutine);
