@@ -39,6 +39,7 @@ namespace Vermines {
         public void OnPlayerDataUpdated()
         {
             GameEvents.InvokeOnPlayerUpdated(PlayerData);
+            GameEvents.OnPlayersUpdated.Invoke(PlayerData);
 
             // Check if a player has won the game
 

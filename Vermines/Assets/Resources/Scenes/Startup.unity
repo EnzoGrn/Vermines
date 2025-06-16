@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -8320,7 +8320,6 @@ MonoBehaviour:
   _CultistInfoPanel: {fileID: 292795066}
   _CultistNameText: {fileID: 780880323}
   _PlayButton: {fileID: 669463450}
-  PlayerCultistID: 0
 --- !u!222 &1739652593
 CanvasRenderer:
   m_ObjectHideFlags: 0
