@@ -106,7 +106,7 @@ namespace Vermines.Service {
         /// <typeparam name="T">
         /// The type of the screen to switch to. Must be a subclass of <see cref="MenuUIScreen" />.
         /// </typeparam>
-        private void SwitchScreen<T>() where T : MenuUIScreen
+        public void SwitchScreen<T>() where T : MenuUIScreen
         {
             T screen = FindFirstObjectByType<T>(FindObjectsInactive.Include);
 

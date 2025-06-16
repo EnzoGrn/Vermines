@@ -1,18 +1,21 @@
-﻿using OMGG.Network.Fusion;
+﻿using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
+using OMGG.Menu.Connection;
+using OMGG.Network.Fusion;
+using OMGG.DesignPattern;
 using Fusion;
 
 namespace Vermines {
-    using OMGG.DesignPattern;
-    using Vermines.CardSystem.Data.Effect;
-    using Vermines.CardSystem.Data;
-    using Vermines.CardSystem.Elements;
+
     using Vermines.Config;
     using Vermines.Gameplay.Phases;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
-    using Vermines.CardSystem.Enumerations;
-    using System.Collections.Generic;
+    using Vermines.Menu.Screen;
+    using Vermines.Service;
+    using Vermines.Menu.Connection.Element;
+    using System.Threading.Tasks;
 
     public class GameManager : NetworkBehaviour {
 
@@ -53,6 +56,11 @@ namespace Vermines {
         {
             if (Runner.Mode == SimulationModes.Server)
                 Application.targetFrameRate = TickRate.Resolve(Runner.Config.Simulation.TickRateSelection).Server;
+            if (HasStateAuthority) {
+                VerminesPlayerService service = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
+
+                service.RPC_Gameplay();
+            }
         }
 
         #endregion
@@ -121,18 +129,64 @@ namespace Vermines {
         {
             if (HasStateAuthority == false)
                 return;
-
             foreach (var scene in sceneToUnload)
-            {
                 Runner.UnloadScene(scene);
+        }
+
+        public async Task ReturnToMenu()
+        {
+            // Get the Vermines Services
+            VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
+
+            if (services.IsCustomGame()) { // Custom game
+                if (HasStateAuthority) { // Load the lobby
+                    VerminesConnectionBehaviour connection = FindFirstObjectByType<VerminesConnectionBehaviour>(FindObjectsInactive.Include);
+                    VMUI_PartyMenu                   party = FindFirstObjectByType<VMUI_PartyMenu>(FindObjectsInactive.Include);
+
+                    await connection.ChangeScene(party.SceneRef);
+
+                    RPC_ForceReturnToLobbyEveryone();
+                } else
+                    await ReturnToCustomTavern();
+            } else { // Matchmaking game
+                if (HasStateAuthority) // When you are the host and you leave for disconnect everyone because you close the server.
+                    RPC_ForceReturnToTavernEveryone();
+                else // Local leave.
+                    await ReturnToTavern();
             }
         }
 
-        public void ReturnToMenu()
+        private async Task ReturnToTavern()
         {
-            Runner.UnloadScene("FinalAnimation");
+            // Put everyone on the loading screen
+            VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
 
-            // TODO: Handle return to menu
+            loading.Controller.Show<VMUI_Loading>();
+
+            // If you are the host, unload the scenes.
+            await SceneManager.UnloadSceneAsync("FinalAnimation");
+            await SceneManager.UnloadSceneAsync("Game");
+
+            // Disconnect
+            await loading.Connection.DisconnectAsync(ConnectFailReason.GameEnded);
+
+            // Switch to the tavern UI.
+            loading.Controller.Show<VMUI_Tavern>(loading);
+        }
+
+        private async Task ReturnToCustomTavern()
+        {
+            // Put everyone on the loading screen
+            VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
+
+            loading.Controller.Show<VMUI_Loading>();
+
+            // If you are the host, unload the scenes.
+            await SceneManager.UnloadSceneAsync("FinalAnimation");
+            await SceneManager.UnloadSceneAsync("Game");
+
+            // Switch to the tavern UI.
+            loading.Controller.Show<VMUI_CustomTavern>(loading);
         }
 
         private void InitializePlayerOrder()
@@ -147,6 +201,19 @@ namespace Vermines {
         }
 
         #region Rpcs
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPC_ForceReturnToTavernEveryone()
+        {
+            ReturnToTavern();
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPC_ForceReturnToLobbyEveryone()
+        {
+            ReturnToCustomTavern();
+        }
+
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_StartClientSideStuff()
         {

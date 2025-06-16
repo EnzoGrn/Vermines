@@ -251,6 +251,8 @@ namespace Vermines.Menu.Screen.Tavern.Network {
             for (int i = 0; i < controller.Players.Length; i++) {
                 CultistSelectState playerState = controller.Players.Get(i);
 
+                if (playerState.ClientID == default(PlayerRef))
+                    continue;
                 if (playerState.ClientID != Runner.LocalPlayer)
                     continue;
                 LockIn(!playerState.IsLockedIn);
