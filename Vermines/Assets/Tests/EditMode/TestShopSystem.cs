@@ -24,7 +24,7 @@ using Vermines.CardSystem.Enumerations;
 using Vermines.Test;
 #endregion
 
-using Vermines.Config;
+using Vermines.Configuration;
 using Vermines.Player;
 
 namespace Test.Vermines.ShopSystem {
@@ -37,6 +37,8 @@ namespace Test.Vermines.ShopSystem {
 
         private Dictionary<PlayerRef, PlayerDeck> _Decks;
 
+        int Seed => 0x015;
+
         #region Setup
 
         [SetUp]
@@ -45,10 +47,8 @@ namespace Test.Vermines.ShopSystem {
             // -- Initialize a default game configuration
             _Config = ScriptableObject.CreateInstance<GameConfiguration>();
 
-            _Config.Seed = 0x015;
-
             // -- Initialize a card data set for a two players game
-            CardSetDatabase.Instance.Initialize(FamilyUtils.GenerateFamilies(_Config.Seed, 2));
+            CardSetDatabase.Instance.Initialize(FamilyUtils.GenerateFamilies(Seed, 2));
 
             // -- Player initialization
             _LocalPlayer = PlayerRef.FromEncoded(0x01);
@@ -94,7 +94,7 @@ namespace Test.Vermines.ShopSystem {
 
             if (objectCards == null || objectCards.Count == 0)
                 return null;
-            objectCards.Shuffle(config.Seed);
+            objectCards.Shuffle(Seed);
 
             List<ICard> partisanCards = everyBuyableCard.Where(card => card.Data.Type == CardType.Partisan).ToList();
 
@@ -106,8 +106,8 @@ namespace Test.Vermines.ShopSystem {
 
             if (partisan1Cards == null || partisan2Cards == null || partisan1Cards.Count == 0 || partisan2Cards.Count == 0)
                 return null;
-            partisan1Cards.Shuffle(config.Seed);
-            partisan2Cards.Shuffle(config.Seed);
+            partisan1Cards.Shuffle(Seed);
+            partisan2Cards.Shuffle(Seed);
 
             partisan1Cards.Merge(partisan2Cards);
 
@@ -120,10 +120,10 @@ namespace Test.Vermines.ShopSystem {
         {
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
-            shop.Initialize(ShopType.Market, config.MaxMarketCards.Value);
+            shop.Initialize(ShopType.Market);
             shop.FillShop(ShopType.Market, objects);
 
-            shop.Initialize(ShopType.Courtyard, config.MaxCourtyardCards.Value);
+            shop.Initialize(ShopType.Courtyard);
             shop.FillShop(ShopType.Courtyard, partisans);
 
             return shop;
@@ -163,7 +163,7 @@ namespace Test.Vermines.ShopSystem {
             // -- Synchronise the shop2 with data of shop1
             ShopData shop2 = ShopBuilder(_Config, new List<ICard>(), new List<ICard>());
 
-            ICommand syncCommand = new SyncShopCommand(shop2, data1, _Config);
+            ICommand syncCommand = new SyncShopCommand(shop2, data1);
 
             CommandInvoker.ExecuteCommand(syncCommand);
 

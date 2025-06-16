@@ -710,6 +710,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gameplay
       objectReference: {fileID: 0}
+    - target: {fileID: 1456946192299027768, guid: cb80c6d807127d443947e5dff2466b3b, type: 3}
+      propertyPath: Configuration
+      value: 
+      objectReference: {fileID: 11400000, guid: fc5869764b520dd4ea425eefdc18626f, type: 2}
     - target: {fileID: 2676703785937154257, guid: cb80c6d807127d443947e5dff2466b3b, type: 3}
       propertyPath: SortKey
       value: 871877615

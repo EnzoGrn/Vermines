@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using OMGG.Menu.Connection;
@@ -8,14 +9,14 @@ using Fusion;
 
 namespace Vermines {
 
-    using Vermines.Config;
     using Vermines.Gameplay.Phases;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
     using Vermines.Menu.Screen;
     using Vermines.Service;
     using Vermines.Menu.Connection.Element;
-    using System.Threading.Tasks;
+    using Vermines.Configuration.Network;
+    using Vermines.Configuration;
 
     public class GameManager : NetworkBehaviour {
 
@@ -38,14 +39,16 @@ namespace Vermines {
 
         #region Game Rules
 
-        public GameConfiguration Config;
+        public GameConfiguration Configuration;
 
-        public void SetNewConfiguration(GameConfiguration newConfig)
+        [Networked, OnChangedRender(nameof(OnSettingsDataChanged))]
+        public GameSettingsData SettingsData { get; set; }
+
+        public System.Random Rand { get; set; } = new(0);
+
+        private void OnSettingsDataChanged()
         {
-            // -- Check if the game is already started
-            if (Start)
-                return;
-            Config = newConfig;
+            Rand = new System.Random(SettingsData.Seed);
         }
 
         #endregion
@@ -56,11 +59,6 @@ namespace Vermines {
         {
             if (Runner.Mode == SimulationModes.Server)
                 Application.targetFrameRate = TickRate.Resolve(Runner.Config.Simulation.TickRateSelection).Server;
-            if (HasStateAuthority) {
-                VerminesPlayerService service = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
-
-                service.RPC_Gameplay();
-            }
         }
 
         #endregion
@@ -91,7 +89,6 @@ namespace Vermines {
 
         #endregion
 
-
         [Networked]
         [HideInInspector]
         public bool Start
@@ -104,19 +101,18 @@ namespace Vermines {
         {
             if (HasStateAuthority == false)
                 return;
-            // TODO: need to handle it with the Waiting Room (before sending the Game Configuration to clients). // WIP
-            if (Config.RandomSeed.Value == true)
-                Config.Seed = Random.Range(0, int.MaxValue);
-            if (_Initializer.InitializePlayers(Config) == -1)
+            SettingsData = Configuration.ToGameSettingsData();
+
+            if (_Initializer.InitializePlayers(SettingsData) == -1)
                 return;
             InitializePlayerOrder();
             if (_Initializer.InitalizePhase() == -1)
                 return;
-            if (_Initializer.DeckDistribution(Config.Rand) == -1)
+            if (_Initializer.DeckDistribution(Rand) == -1)
                 return;
-            if (_Initializer.InitializeShop(Config.Seed) == -1)
+            if (_Initializer.InitializeShop(SettingsData.Seed) == -1)
                 return;
-            _Initializer.StartingDraw(Config.NumberOfCardsToStartWith.Value);
+            _Initializer.StartingDraw(SettingsData.NumberOfCardsToStartWith);
 
             Start = true;
 
@@ -203,15 +199,15 @@ namespace Vermines {
         #region Rpcs
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPC_ForceReturnToTavernEveryone()
+        private async void RPC_ForceReturnToTavernEveryone()
         {
-            ReturnToTavern();
+            await ReturnToTavern();
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPC_ForceReturnToLobbyEveryone()
+        private async void RPC_ForceReturnToLobbyEveryone()
         {
-            ReturnToCustomTavern();
+            await ReturnToCustomTavern();
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

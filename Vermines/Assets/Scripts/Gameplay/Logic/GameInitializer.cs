@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine.SceneManagement;
+using UnityEngine;
+using System.Collections.Generic;
 using System.Linq;
 using OMGG.Network.Fusion;
 using OMGG.DesignPattern;
 using Fusion;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using Vermines.Config;
 
 namespace Vermines {
+
     using Vermines.Gameplay.Commands.Internal;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.CardSystem.Enumerations;
@@ -20,58 +20,49 @@ namespace Vermines {
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
     using Vermines.Gameplay.Phases;
+    using Vermines.Configuration.Network;
 
     public class GameInitializer : NetworkBehaviour {
 
         private readonly NetworkQueue _Queue = new();
 
-        #region Methods
+        #region Overrides Methods
 
         public override void Spawned()
         {
-            if (Runner.IsServer) {
+            if (HasStateAuthority) {
                 Runner.LoadScene("GameplayCameraTravelling", LoadSceneMode.Additive); // Scene that active the camera travelling with spline on the map.
                 Runner.LoadScene("FinalAnimation"          , LoadSceneMode.Additive); // Scene that active the final animation when the game is over.
                 Runner.LoadScene("UIv3"                    , LoadSceneMode.Additive); // Scene that contains the UI elements for the game.
             }
         }
 
-        public int InitializePlayers(GameConfiguration config)
-        {
-            GameDataStorage storage = GameDataStorage.Instance;
-            int numberOfPlayer = storage.PlayerData.Count;
+        #endregion
 
-            // TODO: Create a Game config with a number of player required
-            // For now just check if the number of player is 2 or more.
-            if (numberOfPlayer < 2)
-                return -1;
-            
-            InitializePlayers(config, numberOfPlayer);
+        #region Methods
 
-            return 0;
-        }
-
-        private void InitializePlayers(GameConfiguration config, int numberOfPlayer)
+        public int InitializePlayers(GameSettingsData settings)
         {
             List<CardFamily> playersFamily = GameDataStorage.Instance.GetPlayersFamily();
-            List<CardFamily> families = FamilyUtils.GenerateFamilies(config.Seed, numberOfPlayer, playersFamily);
-            int orderIndex = 0;
+            List<CardFamily> families      = FamilyUtils.GenerateFamilies(settings.Seed, GameDataStorage.Instance.PlayerData.Count, playersFamily);
+            int              orderIndex    = 0;
 
-            foreach (var player in GameDataStorage.Instance.PlayerData)
-            {
+            foreach (var player in GameDataStorage.Instance.PlayerData) {
                 Vermines.Player.PlayerData data = player.Value;
 
                 if (data.Family == CardFamily.None)
                     data.Family = families[orderIndex];
-                data.Eloquence = GiveEloquence(orderIndex, config.EloquenceToStartWith.Value);
-                data.Souls = config.SoulsToStartWith.Value;
+                data.Eloquence = GiveEloquence(orderIndex, settings.EloquenceToStartWith);
+                data.Souls     = settings.SoulToStartWith;
 
                 GameDataStorage.Instance.PlayerData.Set(player.Key, data);
 
                 orderIndex++;
             }
 
-            RPC_InitializeGame(config.Seed, FamilyUtils.FamiliesListToIds(families));
+            RPC_InitializeGame(FamilyUtils.FamiliesListToIds(families));
+
+            return 0;
         }
 
         public int InitalizePhase()
@@ -112,10 +103,10 @@ namespace Vermines {
 
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
-            shop.Initialize(ShopType.Market, GameManager.Instance.Config.MaxMarketCards.Value);
+            shop.Initialize(ShopType.Market);
             shop.FillShop(ShopType.Market, objectCards);
 
-            shop.Initialize(ShopType.Courtyard, GameManager.Instance.Config.MaxCourtyardCards.Value);
+            shop.Initialize(ShopType.Courtyard);
             shop.FillShop(ShopType.Courtyard, partisanCards);
 
             GameDataStorage.Instance.Shop = shop;
@@ -128,24 +119,22 @@ namespace Vermines {
 
         public int DeckDistribution(System.Random rand)
         {
-            GameDataStorage storage = GameDataStorage.Instance;
+            GameDataStorage  storage = GameDataStorage.Instance;
             List<ICard> starterCards = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.IsStartingCard == true);
 
             if (starterCards == null || starterCards.Count == 0)
                 return -1;
-            int starterDeckLength = starterCards.Count / storage.PlayerData.Count;
+            int    starterDeckLength    = starterCards.Count / storage.PlayerData.Count;
             string serializedPlayerDeck = string.Empty;
 
             Dictionary<PlayerRef, PlayerDeck> decks = new();
 
-            foreach (var player in storage.PlayerData)
-            {
+            foreach (var player in storage.PlayerData) {
                 PlayerDeck deck = new();
 
                 deck.Initialize();
 
-                for (int i = 0; i < starterDeckLength; i++)
-                {
+                for (int i = 0; i < starterDeckLength; i++) {
                     ICard card = starterCards[rand.Next(starterDeckLength - deck.Deck.Count)];
 
                     deck.Deck.Add(card);
@@ -173,21 +162,14 @@ namespace Vermines {
             return startingEloquence + Mathf.Min(index, 2);
         }
 
-        private void SetGameSeed(int seed)
-        {
-            GameManager.Instance.Config.Seed = seed;
-        }
-
         #endregion
 
         #region Commands
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPC_InitializeGame(int seed, int[] familiesIds)
+        private void RPC_InitializeGame(int[] familiesIds)
         {
             _Queue.EnqueueRPC(() => {
-                SetGameSeed(seed);
-
                 List<CardFamily> familiesList = FamilyUtils.FamiliesIdsToList(familiesIds);
 
                 ICommand initializeCommand = new InitializeGameCommand(familiesList);
@@ -226,7 +208,7 @@ namespace Vermines {
                 {
                     GameDataStorage.Instance.Shop = ScriptableObject.CreateInstance<ShopData>();
 
-                    ICommand initializeCommand = new SyncShopCommand(GameDataStorage.Instance.Shop, data, GameManager.Instance.Config);
+                    ICommand initializeCommand = new SyncShopCommand(GameDataStorage.Instance.Shop, data);
 
                     CommandResponse syncStatus = CommandInvoker.ExecuteCommand(initializeCommand);
 

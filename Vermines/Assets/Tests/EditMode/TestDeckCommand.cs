@@ -1,18 +1,16 @@
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using Fusion;
 using NUnit.Framework;
 using OMGG.DesignPattern;
 using UnityEngine;
 using Vermines;
 
-
 #region Vermines namespace
-using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Utilities;
-    using Vermines.Config;
-using Vermines.Gameplay.Commands.Deck;
-using Vermines.Player;
+    using Vermines.Configuration;
+    using Vermines.Gameplay.Commands.Deck;
+    using Vermines.Player;
 #endregion
 
 namespace Test.Vermines.Gameplay.Deck {
@@ -25,6 +23,8 @@ namespace Test.Vermines.Gameplay.Deck {
 
         private Dictionary<PlayerRef, PlayerDeck> _Decks;
 
+        int Seed => 0x015;
+
         #region Setup
 
         [SetUp]
@@ -33,10 +33,8 @@ namespace Test.Vermines.Gameplay.Deck {
             // -- Initialize a default game configuration
             _Config = ScriptableObject.CreateInstance<GameConfiguration>();
 
-            _Config.Seed = 0x015;
-
             // -- Initialize a card data set for a two players game
-            CardSetDatabase.Instance.Initialize(FamilyUtils.GenerateFamilies(_Config.Seed, 2));
+            CardSetDatabase.Instance.Initialize(FamilyUtils.GenerateFamilies(Seed, 2));
 
             // -- Player initialization
             _LocalPlayer = PlayerRef.FromEncoded(0x01);

@@ -37,7 +37,7 @@ namespace Vermines.Gameplay.Phases {
 
             ExecuteCardEffect();
 
-            ICommand earnCommand = new EarnCommand(_CurrentPlayer, GameManager.Instance.Config.NumberOfEloquencesToStartTheTurnWith.Value, DataType.Eloquence);
+            ICommand earnCommand = new EarnCommand(_CurrentPlayer, GameManager.Instance.SettingsData.NumberOfEloquencesEarnInGainPhase, DataType.Eloquence);
 
             CommandInvoker.ExecuteCommand(earnCommand);
 
