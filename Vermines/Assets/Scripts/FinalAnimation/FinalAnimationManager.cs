@@ -45,6 +45,7 @@ public class FinalAnimationManager : MonoBehaviour
     #endregion 
 
     #region Public Methods
+
     public void OnPlayerWin(PlayerRef winnerRef, PlayerRef localPlayerRef)
     {
         if (GameManager.Instance == null)
@@ -76,12 +77,9 @@ public class FinalAnimationManager : MonoBehaviour
             _winText.text = "You lose!";
     }
 
-    public void ReturnToMenu()
+    public async void ReturnToMenu()
     {
-        if (GameManager.Instance == null)
-            return;
-
-        GameManager.Instance.ReturnToMenu();
+        await GameManager.Instance.ReturnToMenu();
     }
 
     public void SkipCinematic()
@@ -96,8 +94,7 @@ public class FinalAnimationManager : MonoBehaviour
         if (GameManager.Instance == null)
             return;
 
-        List<string> sceneToUnload = new List<string>
-        {
+        List<string> sceneToUnload = new() {
             "UIv3",
             "GameplayCameraTravelling"
         };
@@ -117,5 +114,6 @@ public class FinalAnimationManager : MonoBehaviour
         _playableDirector.Resume();
         _skipButton.interactable = false;
     }
+
     #endregion
 }
