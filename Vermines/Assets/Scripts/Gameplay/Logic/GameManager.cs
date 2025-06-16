@@ -15,6 +15,7 @@ namespace Vermines {
     using Vermines.Menu.Screen;
     using Vermines.Service;
     using Vermines.Menu.Connection.Element;
+    using System.Threading.Tasks;
 
     public class GameManager : NetworkBehaviour {
 
@@ -132,7 +133,7 @@ namespace Vermines {
                 Runner.UnloadScene(scene);
         }
 
-        public async void ReturnToMenu()
+        public async Task ReturnToMenu()
         {
             // Get the Vermines Services
             VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
@@ -146,16 +147,16 @@ namespace Vermines {
 
                     RPC_ForceReturnToLobbyEveryone();
                 } else
-                    ReturnToCustomTavern();
+                    await ReturnToCustomTavern();
             } else { // Matchmaking game
                 if (HasStateAuthority) // When you are the host and you leave for disconnect everyone because you close the server.
                     RPC_ForceReturnToTavernEveryone();
                 else // Local leave.
-                    ReturnToTavern();
+                    await ReturnToTavern();
             }
         }
 
-        private async void ReturnToTavern()
+        private async Task ReturnToTavern()
         {
             // Put everyone on the loading screen
             VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
@@ -173,7 +174,7 @@ namespace Vermines {
             loading.Controller.Show<VMUI_Tavern>(loading);
         }
 
-        private async void ReturnToCustomTavern()
+        private async Task ReturnToCustomTavern()
         {
             // Put everyone on the loading screen
             VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
