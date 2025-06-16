@@ -29,6 +29,11 @@ public class FinalAnimationManager : MonoBehaviour
         GameEvents.OnPlayerWin.AddListener(OnPlayerWin);
     }
 
+    private void OnDestroy()
+    {
+        GameEvents.OnPlayerWin.RemoveListener(OnPlayerWin);
+    }
+
     #region Private Methods
     private void StartFinalAnimation(bool isWinner, CardFamily family)
     {

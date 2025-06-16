@@ -8,7 +8,6 @@ using Vermines.Player;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Screen;
 using Fusion;
-using Vermines.CardSystem.Enumerations;
 
 public static class GameEvents
 {
@@ -19,6 +18,7 @@ public static class GameEvents
     public static TrackedEvent<int> OnTurnChanged = new("OnTurnChanged");
     public static TrackedEvent OnPlayerInitialized = new("OnPlayerInitialized");
     public static TrackedEvent<PlayerData> OnPlayerUpdated = new("OnPlayerUpdated");
+    public static TrackedEvent<NetworkDictionary<PlayerRef, PlayerData>> OnPlayersUpdated = new("OnPlayersUpdated");
     public static TrackedEvent<PlayerRef, PlayerRef> OnPlayerWin = new("OnPlayerWin");
 
     // --- CARD PLAYING ---
