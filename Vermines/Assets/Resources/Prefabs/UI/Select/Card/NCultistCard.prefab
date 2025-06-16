@@ -99,6 +99,7 @@ MonoBehaviour:
   _CultistImage: {fileID: 5734766317172536430}
   _CultistNameText: {fileID: 3345855972281955184}
   _DisabledOverlay: {fileID: 0}
+  _SelectedOverlay: {fileID: 4745163012348274030}
   _Button: {fileID: 5880726315976728513}
 --- !u!114 &5880726315976728513
 MonoBehaviour:
@@ -414,7 +415,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5410890161994142046
 RectTransform:
   m_ObjectHideFlags: 0

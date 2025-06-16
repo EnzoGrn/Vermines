@@ -3,7 +3,8 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
-
+    using ExitGames.Client.Photon.StructWrapping;
+    using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
