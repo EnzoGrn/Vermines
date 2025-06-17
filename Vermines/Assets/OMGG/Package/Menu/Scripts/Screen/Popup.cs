@@ -128,6 +128,11 @@ namespace OMGG.Menu.Screen {
             return _TaskCompletionSource.Task;
         }
 
+        public virtual void OnOkayButtonPressed()
+        {
+            Controller.HideModal(this);
+        }
+
         #endregion
     }
 }

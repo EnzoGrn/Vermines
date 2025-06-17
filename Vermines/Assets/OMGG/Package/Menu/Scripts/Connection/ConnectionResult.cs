@@ -91,5 +91,10 @@ namespace OMGG.Menu.Connection {
         /// Argument error.
         /// </summary>
         public const int ArgumentError = 4;
+
+        /// <summary>
+        /// Game ended or was stopped by the server.
+        /// </summary>
+        public const int GameEnded = 5;
     }
 }

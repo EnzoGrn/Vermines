@@ -279,7 +279,7 @@ namespace Vermines.Player {
                 int soulToEarn = card.Data.Souls;
 
                 if (card.Data.Type == CardType.Partisan && card.Data.Family == GameDataStorage.Instance.PlayerData[player].Family)
-                    soulToEarn += GameManager.Instance.Config.SoulsBonusForSacrifice.Value;
+                    soulToEarn += GameManager.Instance.SettingsData.BonusSoulInFamilySacrifice;
                 ICommand earnCommand = new EarnCommand(player, soulToEarn, DataType.Soul);
 
                 response = CommandInvoker.ExecuteCommand(earnCommand);
@@ -377,14 +377,8 @@ namespace Vermines.Player {
 
             card.Data.CopyEffect(cardToCopied.Data.Effects);
 
-            // TODO: Maybe update the card UI, of the card (effect)
-            // If the effect is an active effect, we can also call the Play method
             foreach (AEffect effect in card.Data.Effects)
-            {
-                if (effect.Type == EffectType.Activate)
-                    effect.Play(PlayerRef.FromEncoded(playerId));
-            }
-            // There is other effect to be played?
+                effect.Play(PlayerRef.FromEncoded(playerId));
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

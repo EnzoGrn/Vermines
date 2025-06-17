@@ -52,11 +52,9 @@ namespace Vermines.Gameplay.Phases {
 
             if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
             {
-                GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
-                if (gameplayUIController != null)
+                if (CamManager.Instance)
                 {
-                    gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
-                    gameplayUIController.Show<GameplayUITable>(lastScreen);
+                    CamManager.Instance.GoOnSacrificeLocation();
                 }
             }
             else if (playedCards.Count == 0)
@@ -72,6 +70,12 @@ namespace Vermines.Gameplay.Phases {
 
         public override void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
+            // Return to sky location
+            if (_CurrentPlayer == PlayerController.Local.PlayerRef && CamManager.Instance)
+            {
+                CamManager.Instance.GoOnNoneLocation();
+            }
+
             base.OnPhaseEnding(player, logic);
             GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
         }
@@ -98,7 +102,7 @@ namespace Vermines.Gameplay.Phases {
 
                 _NumberOfCardSacrified++;
 
-                if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value
+                if (_NumberOfCardSacrified >= GameManager.Instance.SettingsData.MaxSacrificesPerTurn
                     || GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Count == 0)
                 {
                     // Pop up context
