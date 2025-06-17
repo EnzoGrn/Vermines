@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: RulePages Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: RulePages
+  m_TableCollectionNameGuidString: 269be9bd5c2e0f247b620e04681dce32
+  m_Entries:
+  - m_Id: 3164312133632
+    m_Key: rule_page_1_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3190958546944
+    m_Key: rule_page_1_content
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14892601139200
+    m_Key: rule_page_2_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14921399230464
+    m_Key: rule_page_2_content
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14948179861504
+    m_Key: rule_page_3_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14981172256768
+    m_Key: rule_page_3_content
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20709568110592
+    m_Key: rules_section_name
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 2572768516949409792
+  references:
+    version: 2
+    RefIds:
+    - rid: 2572768516949409792
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1750054917041

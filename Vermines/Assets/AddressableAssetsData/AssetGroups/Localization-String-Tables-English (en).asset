@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-English (en)
   m_GUID: 688a05f30d53b614da5ba0f38ab8a772
   m_SerializeEntries:
+  - m_GUID: 00e1871bc3c69244c92bc36e7ae96f5c
+    m_Address: RulePages_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 25497d18ce301ec48b40cc9f9bfb731f
     m_Address: CultistMessages_en
     m_ReadOnly: 1

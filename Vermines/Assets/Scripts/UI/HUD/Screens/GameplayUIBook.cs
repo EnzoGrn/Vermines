@@ -20,7 +20,7 @@ namespace Vermines.UI.Screen
 
         protected override bool ShouldShowPlugins => false;
 
-        public enum BookTabType { Profile, Map, Inventory, Quests, Settings, None }
+        public enum BookTabType { Profile, Rules, None }
 
         [SerializeField] private BookTabType _DefaultPage = BookTabType.Profile;
 
@@ -105,6 +105,10 @@ namespace Vermines.UI.Screen
                     bookPage.Show(this);
                     yield return bookPage.ShowPlayerTabsSequentially();
                 }
+                else if (plugin is RuleBookTabPlugin bookPagePlugin)
+                {
+                    bookPagePlugin.Show(this);
+                }
             }
 
             foreach (var plugin in Plugins)
@@ -141,7 +145,6 @@ namespace Vermines.UI.Screen
 
         public void SwitchToPage()
         {
-            Debug.Log($"Switching to default page: {_DefaultPage}");
             SwitchToPage(_DefaultPage);
         }
 
@@ -154,6 +157,19 @@ namespace Vermines.UI.Screen
                 oldPage.Hide();
 
             _CurrentPage = newPage;
+
+            if (_CurrentPage != BookTabType.Profile)
+            {
+                PlayerBookTabPlugin playerTabPlugin = Plugins
+                    .OfType<PlayerBookTabPlugin>()
+                    .FirstOrDefault();
+                if (playerTabPlugin != null)
+                {
+                    playerTabPlugin.SetPlayerTabActive(false);
+                }
+
+                return;
+            }
 
             if (_BookPages.TryGetValue(_CurrentPage, out var newPageObj))
                 newPageObj.Show(this);
@@ -178,6 +194,10 @@ namespace Vermines.UI.Screen
                 if (plugin is PlayerBookTabPlugin bookPage)
                 {
                     yield return bookPage.HidePlayerTabsSequentially();
+                }
+                else if (plugin is RuleBookTabPlugin bookPagePlugin)
+                {
+                    bookPagePlugin.Hide();
                 }
             }
 

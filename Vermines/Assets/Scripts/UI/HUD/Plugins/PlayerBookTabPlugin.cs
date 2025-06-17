@@ -3,6 +3,7 @@ using Vermines.Player;
 using Vermines.UI.Utils;
 using System.Collections;
 using System.Collections.Generic;
+using Vermines.UI.Screen;
 
 namespace Vermines.UI.Plugin
 {
@@ -26,6 +27,11 @@ namespace Vermines.UI.Plugin
 
         public System.Action<PlayerData> OnTabClicked;
 
+        private void Awake()
+        {
+            OnTabClicked += SetPlayerTabActive;
+        }
+
         /// <summary>
         /// Show the plugin.
         /// </summary>
@@ -35,7 +41,6 @@ namespace Vermines.UI.Plugin
         public override void Show(GameplayUIScreen screen)
         {
             base.Show(screen);
-            OnTabClicked += SetPlayerTabActive;
         }
 
         /// <summary>
@@ -45,7 +50,6 @@ namespace Vermines.UI.Plugin
         {
             StartCoroutine(HidePlayerTabsSequentially());
             base.Hide();
-            OnTabClicked -= SetPlayerTabActive;
         }
 
         public IEnumerator ShowPlayerTabsSequentially()
@@ -96,9 +100,26 @@ namespace Vermines.UI.Plugin
 
         public void SetPlayerTabActive(PlayerData playerData)
         {
+            GameplayUIBook bookScreen = _ParentScreen as GameplayUIBook;
+            if (bookScreen != null)
+            {
+                bookScreen.SwitchToPage(_PageType);
+            }
+            else
+            {
+                Debug.LogError("Parent screen is not a GameplayUIBook.");
+            }
             foreach (var tab in _cachedTabs)
             {
                 tab.PlayActiveAnimation(tab.PlayerRef == playerData.PlayerRef);
+            }
+        }
+
+        public void SetPlayerTabActive(bool isActive)
+        {
+            foreach (var tab in _cachedTabs)
+            {
+                tab.PlayActiveAnimation(isActive);
             }
         }
     }

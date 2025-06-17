@@ -40,6 +40,12 @@ MonoBehaviour:
     - Locale-fr
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 80300a578a5696840b449ad20519ce95
+    m_Address: RulePages_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9a1f93216c1923542b915a2f7f15a811
     m_Address: Settings_fr
     m_ReadOnly: 1

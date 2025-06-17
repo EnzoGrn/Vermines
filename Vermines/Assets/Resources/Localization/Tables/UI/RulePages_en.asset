@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: RulePages_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 269be9bd5c2e0f247b620e04681dce32, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 3164312133632
+    m_Localized: Rules
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3190958546944
+    m_Localized: "Vermines is a deck-building game where\nmale and female players
+      take turns playing in a clockwise\ndirection. Their aim is to acquire\n\u201CPartisan\u201D
+      and \u201CObject\u201D cards in order to build\na deck. To do this, they must
+      use\neloquence (the game's currency), which will be earned from the\ndifferent
+      cards acquired during the game. Each\n\u201CPartisan\u201D card has a soul
+      value and can, after\nbeing played, be sacrificed to win souls\n(victory points).
+      The first player to\nreach 100 souls wins the game."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14892601139200
+    m_Localized: 
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14921399230464
+    m_Localized: Another
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14981172256768
+    m_Localized: 
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20709568110592
+    m_Localized: Rules
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

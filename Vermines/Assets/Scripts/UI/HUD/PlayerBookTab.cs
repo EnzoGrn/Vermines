@@ -141,7 +141,7 @@ namespace Vermines.UI
         /// <summary>
         /// Plays the 'Active' animation to visually indicate the tab is selected.
         /// </summary>
-        public void PlayActiveAnimation(bool isActive = true)
+        public void PlayActiveAnimation(bool isActive)
         {
             if (_animator != null && _animator.gameObject.activeInHierarchy && _animator.HasState(0, ActiveAnimHash))
             {
