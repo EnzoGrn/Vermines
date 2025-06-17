@@ -37,7 +37,7 @@ namespace Vermines.Configuration {
         public GameSettingsData ToGameSettingsData()
         {
             return new GameSettingsData() {
-                Seed = Random.Range(int.MinValue, int.MaxValue),
+                Seed = CreateSeed(),
 
                 NumberOfCardsToStartWith       = this.NumberOfCardsToStartWith,
                 NumberOfCardsToDrawAtEndOfTurn = this.NumberOfCardsToDrawAtEndOfTurn,
@@ -68,6 +68,11 @@ namespace Vermines.Configuration {
             BonusSoulInFamilySacrifice = data.BonusSoulInFamilySacrifice;
 
             MaxSacrificesPerTurn = data.MaxSacrificesPerTurn;
+        }
+
+        static public int CreateSeed()
+        {
+            return Random.Range(int.MinValue, int.MaxValue);
         }
 
         #endregion

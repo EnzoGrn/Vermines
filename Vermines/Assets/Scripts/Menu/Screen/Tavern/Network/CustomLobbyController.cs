@@ -7,7 +7,11 @@ namespace Vermines.Menu.Screen.Tavern.Network {
     using Vermines.Menu.Connection.Element;
     using Vermines.Characters;
     using Vermines.Service;
+    using Vermines.Configuration.Network;
+    using System.Threading.Tasks;
+    using System.Collections;
 
+    [RequireComponent(typeof(SettingsManager))]
     public class CustomLobbyController : NetworkBehaviour, IPlayerLeft {
 
         #region Player Selection
@@ -25,6 +29,21 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
         [SerializeField]
         private CultistDatabase _CultistDatabase;
+
+        #endregion
+
+        #region Rules Configuration
+
+        private Coroutine _HideCoroutine;
+
+        [SerializeField]
+        private Animator _BookAnimator;
+
+        [SerializeField]
+        private GameObject _RulesPanels;
+
+        [SerializeField]
+        private GameObject _Content;
 
         #endregion
 
@@ -62,6 +81,105 @@ namespace Vermines.Menu.Screen.Tavern.Network {
             return false;
         }
 
+        private async Task StartGame()
+        {
+            // Check if everyone is locked in
+            foreach (CultistSelectState state in Players)
+                if (!state.IsLockedIn && state.ClientID != default(PlayerRef))
+                    return;
+            // -- Change to loading view
+            VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
+
+            loading.Controller.Show<VMUI_Loading>();
+
+            // -- Hide the session info
+            Runner.SessionInfo.IsVisible = false;
+
+            // -- Load the Game Scene
+            VerminesConnectionBehaviour connection = FindFirstObjectByType<VerminesConnectionBehaviour>(FindObjectsInactive.Include);
+
+            for (int i = 0; i < Players.Length; i++) {
+                CultistSelectState playerState = Players.Get(i);
+
+                if (playerState.ClientID == default(PlayerRef))
+                    continue;
+                // -- Remove player's network object
+                Runner.Despawn(Runner.GetPlayerObject(playerState.ClientID));
+            }
+
+            ConnectResult result = await connection.ChangeScene(SceneToLoad);
+
+            if (result.Success) {
+                // -- Update the player states in the VerminesPlayerService
+                VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
+
+                for (int i = 0; i < Players.Length; i++) {
+                    CultistSelectState playerState = Players.Get(i);
+
+                    if (playerState.ClientID == default(PlayerRef))
+                        continue;
+                    Cultist cultist = _CultistDatabase.GetCultistByID(playerState.CultistID);
+
+                    services.UpdatePlayerState(playerState.ClientID, playerState.Name.Value, cultist.family);
+                }
+
+                GameManager manager = FindFirstObjectByType<GameManager>(FindObjectsInactive.Include);
+
+                if (manager != null) {
+                    SettingsManager settingsManager = GetComponent<SettingsManager>();
+
+                    manager.SettingsData = settingsManager.NetworkConfig;
+                }
+
+                // -- Unload the lobby scene
+                await connection.UnloadScene(SceneToUnload);
+
+                // -- Change UI to gameplay
+                loading.Controller.Show<VMUI_Gameplay>(loading);
+            } else {
+                Debug.LogError($"[CustomLobbyController] RPC_LockIn() - Failed to change scene: {result.DebugMessage}");
+
+                loading.Controller.Show<VMUI_CustomTavern>();
+            }
+        }
+
+        private IEnumerator ShowCoroutine()
+        {
+            if (_HideCoroutine != null) {
+                if (_BookAnimator.gameObject.activeInHierarchy && _BookAnimator.HasState(0, Animator.StringToHash("Open")))
+                    _BookAnimator.Play(Animator.StringToHash("Show"), 0, 0);
+                yield return _BookAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+            }
+
+            yield break;
+        }
+
+        private IEnumerator HideAnimCoroutine()
+        {
+            _BookAnimator.Play(Animator.StringToHash("Hide"), 0, 0);
+
+            yield return null;
+
+            while (_BookAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
+                yield return null;
+            _RulesPanels.SetActive(false);
+        }
+
+        private IEnumerator HideCoroutine()
+        {
+            if (_BookAnimator && gameObject.activeSelf) {
+                if (_HideCoroutine != null)
+                    StopCoroutine(_HideCoroutine);
+                _HideCoroutine = StartCoroutine(HideAnimCoroutine());
+
+                yield return _HideCoroutine;
+
+                _HideCoroutine = null;
+            }
+
+            yield break;
+        }
+
         #endregion
 
         #region Overrides Methods
@@ -75,6 +193,9 @@ namespace Vermines.Menu.Screen.Tavern.Network {
             RPC_AddPlayer(Runner.LocalPlayer);
 
             OnPlayerStatesChanged();
+
+            _RulesPanels.SetActive(false);
+            _Content.SetActive(false);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState) {}
@@ -118,6 +239,28 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
             foreach (NetworkCultistSelectDisplay display in FindObjectsByType<NetworkCultistSelectDisplay>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 display.HandleStatesChanged();
+        }
+
+        private async void OnRulesButtonOpenedPressed()
+        {
+            StartCoroutine(ShowCoroutine());
+
+            _RulesPanels.SetActive(true);
+
+            AnimatorStateInfo stateInfo = _BookAnimator.GetCurrentAnimatorStateInfo(0);
+
+            float duration = stateInfo.length;
+
+            await Task.Delay((int)(duration * 1000));
+
+            _Content.SetActive(true);
+        }
+
+        private void OnRulesButtonClosedPressed()
+        {
+            _Content.SetActive(false);
+
+            StartCoroutine(HideCoroutine());
         }
 
         #endregion
@@ -176,60 +319,8 @@ namespace Vermines.Menu.Screen.Tavern.Network {
                 Players.Set(i, new CultistSelectState(player, state.Name.Value, state.CultistID, isLockedIn));
             }
 
-            if (isLockedIn) {
-                foreach (CultistSelectState state in Players) {
-                    if (!state.IsLockedIn && state.ClientID != default(PlayerRef))
-                        return;
-                }
-
-                // -- Change to loading view
-                VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
-
-                loading.Controller.Show<VMUI_Loading>();
-
-                // -- Hide the session info
-                Runner.SessionInfo.IsVisible = false;
-
-                // -- Load the Game Scene
-                VerminesConnectionBehaviour connection = FindFirstObjectByType<VerminesConnectionBehaviour>(FindObjectsInactive.Include);
-
-                for (int i = 0; i < Players.Length; i++) {
-                    CultistSelectState playerState = Players.Get(i);
-
-                    if (playerState.ClientID == default(PlayerRef))
-                        continue;
-
-                    // -- Remove player's network object
-                    Runner.Despawn(Runner.GetPlayerObject(playerState.ClientID));
-                }
-
-                ConnectResult result = await connection.ChangeScene(SceneToLoad);
-
-                if (result.Success) {
-                    // -- Update the player states in the VerminesPlayerService
-                    VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
-
-                    for (int i = 0; i < Players.Length; i++) {
-                        CultistSelectState playerState = Players.Get(i);
-
-                        if (playerState.ClientID == default(PlayerRef))
-                            continue;
-                        Cultist cultist = _CultistDatabase.GetCultistByID(playerState.CultistID);
-
-                        services.UpdatePlayerState(playerState.ClientID, playerState.Name.Value, cultist.family);
-                    }
-
-                    // -- Unload the lobby scene
-                    await connection.UnloadScene(SceneToUnload);
-
-                    // -- Change UI to gameplay
-                    loading.Controller.Show<VMUI_Gameplay>(loading);
-                } else {
-                    Debug.LogError($"[CustomLobbyController] RPC_LockIn() - Failed to change scene: {result.DebugMessage}");
-
-                    loading.Controller.Show<VMUI_CustomTavern>();
-                }
-            }
+            if (isLockedIn)
+                await StartGame();
         }
 
         #endregion

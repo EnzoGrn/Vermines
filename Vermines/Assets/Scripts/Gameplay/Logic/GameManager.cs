@@ -101,8 +101,8 @@ namespace Vermines {
         {
             if (HasStateAuthority == false)
                 return;
-            SettingsData = Configuration.ToGameSettingsData();
-
+            if (SettingsData.Equals(default(GameSettingsData))) // If it's a default value (not a custom game), then load the default game configuration.
+                SettingsData = Configuration.ToGameSettingsData();
             if (_Initializer.InitializePlayers(SettingsData) == -1)
                 return;
             InitializePlayerOrder();
@@ -140,6 +140,21 @@ namespace Vermines {
                     VMUI_PartyMenu                   party = FindFirstObjectByType<VMUI_PartyMenu>(FindObjectsInactive.Include);
 
                     await connection.ChangeScene(party.SceneRef);
+
+                    SettingsManager settingsManager = FindFirstObjectByType<SettingsManager>(FindObjectsInactive.Include);
+
+                    if (settingsManager) { // Copy the current settings configuration for the next game and create a new seed.
+                        GameSettingsData settings = SettingsData;
+
+                        settings.Seed = GameConfiguration.CreateSeed();
+
+                        settingsManager.SetConfiguration(settings);
+                    } else {
+                        Debug.LogError(
+                            "[GameManager]: Cannot find SettingsManager." +
+                            "We cannot save this game settings to the custom game lobby."
+                        );
+                    }
 
                     RPC_ForceReturnToLobbyEveryone();
                 } else
