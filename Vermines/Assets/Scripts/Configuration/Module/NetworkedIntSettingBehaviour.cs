@@ -1,5 +1,4 @@
 using UnityEngine;
-using Fusion;
 
 namespace Vermines.Configuration.Network {
 
@@ -22,7 +21,7 @@ namespace Vermines.Configuration.Network {
 
         public IntSetting CreateSetting()
         {
-            return new IntSetting(_FieldName, _Tooltip, _Min, _Max);
+            return new IntSetting(_FieldName, _Min, _Max);
         }
     }
 }

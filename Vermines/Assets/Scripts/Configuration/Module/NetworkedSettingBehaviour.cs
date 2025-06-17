@@ -9,14 +9,12 @@ namespace Vermines.Configuration.Network {
         #region Variables
 
         [SerializeField]
-        protected string _FieldName;
+        protected string _LabelText;
 
         [SerializeField]
-        protected string _Tooltip;
+        protected string _FieldName;
 
         public TMP_Text Label;
-
-        public TMP_Text Tooltip;
 
         public TMP_InputField InputField;
 
@@ -34,9 +32,7 @@ namespace Vermines.Configuration.Network {
             _Manager = manager;
 
             if (Label)
-                Label.text = setting.FieldName;
-            if (Tooltip)
-                Tooltip.text = setting.Tooltip;
+                Label.text = _LabelText;
             if (InputField)
                 InputField.text = setting.Value.ToString();
             InputField.interactable = HasStateAuthority;
@@ -56,8 +52,12 @@ namespace Vermines.Configuration.Network {
 
         public override void FixedUpdateNetwork()
         {
-            if (InputField != null)
-                InputField.text = _Setting.Value.ToString(); // To avoir desynchronization issues
+            if (InputField != null && _Setting != null && !HasStateAuthority) {
+                var newText = _Setting.Value.ToString();
+
+                if (InputField.text != newText)
+                    InputField.text = newText;
+            }
         }
 
         #endregion

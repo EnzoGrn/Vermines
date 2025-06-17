@@ -9,6 +9,7 @@ namespace Vermines.Menu.Screen.Tavern.Network {
     using Vermines.Service;
     using Vermines.Configuration.Network;
     using System.Threading.Tasks;
+    using System.Collections;
 
     [RequireComponent(typeof(SettingsManager))]
     public class CustomLobbyController : NetworkBehaviour, IPlayerLeft {
@@ -28,6 +29,21 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
         [SerializeField]
         private CultistDatabase _CultistDatabase;
+
+        #endregion
+
+        #region Rules Configuration
+
+        private Coroutine _HideCoroutine;
+
+        [SerializeField]
+        private Animator _BookAnimator;
+
+        [SerializeField]
+        private GameObject _RulesPanels;
+
+        [SerializeField]
+        private GameObject _Content;
 
         #endregion
 
@@ -127,6 +143,43 @@ namespace Vermines.Menu.Screen.Tavern.Network {
             }
         }
 
+        private IEnumerator ShowCoroutine()
+        {
+            if (_HideCoroutine != null) {
+                if (_BookAnimator.gameObject.activeInHierarchy && _BookAnimator.HasState(0, Animator.StringToHash("Open")))
+                    _BookAnimator.Play(Animator.StringToHash("Show"), 0, 0);
+                yield return _BookAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+            }
+
+            yield break;
+        }
+
+        private IEnumerator HideAnimCoroutine()
+        {
+            _BookAnimator.Play(Animator.StringToHash("Hide"), 0, 0);
+
+            yield return null;
+
+            while (_BookAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
+                yield return null;
+            _RulesPanels.SetActive(false);
+        }
+
+        private IEnumerator HideCoroutine()
+        {
+            if (_BookAnimator && gameObject.activeSelf) {
+                if (_HideCoroutine != null)
+                    StopCoroutine(_HideCoroutine);
+                _HideCoroutine = StartCoroutine(HideAnimCoroutine());
+
+                yield return _HideCoroutine;
+
+                _HideCoroutine = null;
+            }
+
+            yield break;
+        }
+
         #endregion
 
         #region Overrides Methods
@@ -140,6 +193,9 @@ namespace Vermines.Menu.Screen.Tavern.Network {
             RPC_AddPlayer(Runner.LocalPlayer);
 
             OnPlayerStatesChanged();
+
+            _RulesPanels.SetActive(false);
+            _Content.SetActive(false);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState) {}
@@ -183,6 +239,28 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
             foreach (NetworkCultistSelectDisplay display in FindObjectsByType<NetworkCultistSelectDisplay>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 display.HandleStatesChanged();
+        }
+
+        private async void OnRulesButtonOpenedPressed()
+        {
+            StartCoroutine(ShowCoroutine());
+
+            _RulesPanels.SetActive(true);
+
+            AnimatorStateInfo stateInfo = _BookAnimator.GetCurrentAnimatorStateInfo(0);
+
+            float duration = stateInfo.length;
+
+            await Task.Delay((int)(duration * 1000));
+
+            _Content.SetActive(true);
+        }
+
+        private void OnRulesButtonClosedPressed()
+        {
+            _Content.SetActive(false);
+
+            StartCoroutine(HideCoroutine());
         }
 
         #endregion

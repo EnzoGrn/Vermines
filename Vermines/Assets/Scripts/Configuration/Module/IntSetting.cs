@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 namespace Vermines.Configuration.Network {
 
@@ -7,24 +8,28 @@ namespace Vermines.Configuration.Network {
         public int MinValue { get; }
         public int MaxValue { get; }
 
-        public IntSetting(string fieldName, string tooltip, int minValue, int maxValue, int defaultValue = 0) : base(fieldName, tooltip, defaultValue)
+        public IntSetting(string fieldName, int minValue, int maxValue, int defaultValue = 0) : base(fieldName, defaultValue)
         {
             MinValue = minValue;
             MaxValue = maxValue;
         }
 
-        public override void ApplyTo(ref GameSettingsData config)
+        public override int ApplyTo(ref GameSettingsData config)
         {
             var field = typeof(GameSettingsData).GetField(FieldName);
 
             if (field != null && field.FieldType == typeof(int)) {
-                field.SetValue(config, Value);
+                field.SetValueDirect(__makeref(config), Value);
+
+                return Value;
             } else {
                 Debug.LogError(
                     $"[IntSetting] Field '{FieldName}' not found or is not of type int in GameSettingsData. Please check the field name and type.\n" +
                     $"Expected type: int, Actual type: {field?.FieldType}\n" +
                     $"Config Type: {config.GetType()}"
                 );
+
+                throw new InvalidOperationException($"Field '{FieldName}' not found or is not of type int in GameSettingsData. Please check the field name and type.");
             }
         }
 

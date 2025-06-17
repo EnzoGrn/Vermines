@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
+using System;
 
 namespace Vermines.Configuration.Network {
 
@@ -8,13 +9,14 @@ namespace Vermines.Configuration.Network {
 
         #region Variables
 
-        [Networked, OnChangedRender(nameof(OnConfigChanged))]
-        public GameSettingsData NetworkConfig { get; private set; }
+        [Networked]
+        public ref GameSettingsData NetworkConfig => ref MakeRef<GameSettingsData>();
 
         public void SetConfiguration(GameSettingsData config)
         {
-            if (HasStateAuthority)
-                NetworkConfig = config;
+            if (!HasStateAuthority)
+                return;
+            NetworkConfig = config;
         }
 
         [SerializeField]
@@ -28,7 +30,7 @@ namespace Vermines.Configuration.Network {
 
         private void InitializeAllSettings()
         {
-            foreach (var setting in GetComponentsInChildren<NetworkedIntSettingBehaviour>()) {
+            foreach (var setting in GetComponentsInChildren<NetworkedIntSettingBehaviour>(true)) {
                 var intSetting = setting.CreateSetting();
 
                 _IntSettings.Add(intSetting);
@@ -44,20 +46,6 @@ namespace Vermines.Configuration.Network {
                 setting.LoadFrom(NetworkConfig);
         }
 
-        public void ApplyChanges()
-        {
-            if (!HasStateAuthority)
-                return;
-            foreach (var setting in _IntSettings) {
-                // Copy to avoid CS0206 error where ref need to have a ref-returning value for store the changing data.
-                var configCopy = NetworkConfig;
-
-                setting.ApplyTo(ref configCopy);
-
-                NetworkConfig = configCopy;
-            }
-        }
-
         #endregion
 
         #region Overrides Methods
@@ -67,6 +55,7 @@ namespace Vermines.Configuration.Network {
             if (HasStateAuthority)
                 NetworkConfig = _DefaultConfiguration.ToGameSettingsData();
             InitializeAllSettings();
+            UpdateSettingsFromNetworkConfig();
         }
 
         #endregion
@@ -79,6 +68,8 @@ namespace Vermines.Configuration.Network {
         /// </summary>
         private void OnConfigChanged()
         {
+                Debug.Log("[SettingsManager] OnConfigChanged triggered by network update");
+
             UpdateSettingsFromNetworkConfig();
         }
 

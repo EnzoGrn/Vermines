@@ -52,5 +52,21 @@ namespace Vermines.Configuration.Network {
                 MaxSacrificesPerTurn              == other.MaxSacrificesPerTurn
             );
         }
+
+        public readonly string ToString()
+        {
+            return (
+                $"GameSettingsData(Seed: {Seed}, " +
+                $"NumberOfCardsToStartWith: {NumberOfCardsToStartWith}, " +
+                $"NumberOfCardsToDrawAtEndOfTurn: {NumberOfCardsToDrawAtEndOfTurn}, " +
+                $"MaxEloquence: {MaxEloquence}, " +
+                $"EloquenceToStartWith: {EloquenceToStartWith}, " +
+                $"NumberOfEloquencesEarnInGainPhase: {NumberOfEloquencesEarnInGainPhase}, " +
+                $"MaxSoul: {MaxSoul}, " +
+                $"SoulToStartWith: {SoulToStartWith}, " +
+                $"BonusSoulInFamilySacrifice: {BonusSoulInFamilySacrifice}, " +
+                $"MaxSacrificesPerTurn: {MaxSacrificesPerTurn})"
+            );
+        }
     }
 }

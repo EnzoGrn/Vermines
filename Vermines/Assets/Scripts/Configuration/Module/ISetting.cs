@@ -3,11 +3,6 @@ namespace Vermines.Configuration.Network {
     public interface ISetting<T> {
 
         /// <summary>
-        /// String value that explains the setting.
-        /// </summary>
-        string Tooltip { get; }
-
-        /// <summary>
         /// String value that represents the setting.
         /// </summary>
         string FieldName { get; }
@@ -21,7 +16,8 @@ namespace Vermines.Configuration.Network {
         /// Apply the modification to the given configuration.
         /// </summary>
         /// <param name="config">The current network configuration</param>
-        void ApplyTo(ref GameSettingsData config);
+        /// <returns>The value that was applied to the configuration.</returns>
+        T ApplyTo(ref GameSettingsData config);
 
         /// <summary>
         /// Load the setting from the given configuration.
