@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System;
 using OMGG.Menu.Connection;
 using OMGG.Menu.Screen;
@@ -114,6 +115,60 @@ namespace Vermines.Service {
                 screen.Controller.Show<T>();
             else
                 Debug.LogError($"[VerminesPlayerService] SwitchScreen() - Screen of type {typeof(T).Name} not found.");
+        }
+
+        public void Update()
+        {
+            if (HasStateAuthority)
+                UpdateMatchmaking();
+        }
+
+        #endregion
+
+        #region Matchmaking Logics
+
+        [SerializeField]
+        private float _MatchmakingCountDownDelay = 2f;
+
+        [SerializeField]
+        private float _TimeoutBeforeReturnToMenu = 30f;
+
+        private bool _MatchmakingCountdownStarted = false;
+        private bool _MatchmakingGameStarted      = false;
+
+        private float _WaitingTime = 0f;
+
+        private void UpdateMatchmaking()
+        {
+            if (_MatchmakingGameStarted || IsCustomGame() || Runner == null || !Runner.IsRunning)
+                return;
+            int playerCount = Runner.ActivePlayers.Count();
+
+            if (playerCount >= 2 && !_MatchmakingCountdownStarted) {
+                _MatchmakingCountdownStarted = true;
+
+                Invoke(nameof(StartMatchmakingGame), _MatchmakingCountDownDelay);
+            }
+        }
+
+        private void StartMatchmakingGame()
+        {
+            if (_MatchmakingGameStarted)
+                return;
+            if (Runner.ActivePlayers.Count() < 2) { // No more enough players to start the game.
+                _MatchmakingCountdownStarted = false;
+
+                return;
+            }
+
+            _MatchmakingGameStarted = true;
+
+            RPC_Gameplay();
+
+            GameManager manager = FindFirstObjectByType<GameManager>(FindObjectsInactive.Include);
+
+            if (manager)
+                manager.StartGame();
         }
 
         #endregion
