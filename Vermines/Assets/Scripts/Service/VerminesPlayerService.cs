@@ -10,8 +10,11 @@ using UnityEngine;
 namespace Vermines.Service {
 
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Configuration.Network;
+    using Vermines.Configuration;
     using Vermines.Menu.Connection.Element;
     using Vermines.Menu.Screen;
+    using UnityEngine.SceneManagement;
 
     public class VerminesPlayerService : NetworkBehaviour, IPlayerLeft, INetworkRunnerCallbacks {
 
@@ -119,8 +122,7 @@ namespace Vermines.Service {
 
         public void Update()
         {
-            if (HasStateAuthority)
-                UpdateMatchmaking();
+            UpdateMatchmaking();
         }
 
         #endregion
@@ -138,16 +140,43 @@ namespace Vermines.Service {
 
         private float _WaitingTime = 0f;
 
-        private void UpdateMatchmaking()
+        private async void UpdateMatchmaking()
         {
             if (_MatchmakingGameStarted || IsCustomGame() || Runner == null || !Runner.IsRunning)
                 return;
             int playerCount = Runner.ActivePlayers.Count();
 
-            if (playerCount >= 2 && !_MatchmakingCountdownStarted) {
-                _MatchmakingCountdownStarted = true;
+            if (playerCount >= 2) {
+                _WaitingTime = 0f;
 
-                Invoke(nameof(StartMatchmakingGame), _MatchmakingCountDownDelay);
+                if (!_MatchmakingCountdownStarted && HasStateAuthority) {
+                    _MatchmakingCountdownStarted = true;
+
+                    Invoke(nameof(StartMatchmakingGame), _MatchmakingCountDownDelay);
+                }
+            } else {
+                if (_MatchmakingCountdownStarted) {
+                    _MatchmakingCountdownStarted = false;
+
+                    CancelInvoke(nameof(StartMatchmakingGame));
+                }
+
+                _WaitingTime += Time.deltaTime;
+
+                if (_WaitingTime >= _TimeoutBeforeReturnToMenu) {
+                    _WaitingTime = 0f;
+
+                    VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
+
+                    await SceneManager.UnloadSceneAsync("FinalAnimation");
+                    await SceneManager.UnloadSceneAsync("Game");
+                    await SceneManager.UnloadSceneAsync("GameplayCameraTravelling");
+                    await SceneManager.UnloadSceneAsync("UIv3");
+
+                    await loading.Connection.DisconnectAsync(ConnectFailReason.GameEnded);
+
+                    SwitchScreen<VMUI_Tavern>();
+                }
             }
         }
 
