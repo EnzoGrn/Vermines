@@ -66,6 +66,13 @@ namespace Vermines.UI.Screen
                     bookPage.Hide();
                 }
 
+                if (plugin is RulesBookPlugin ruleBookTab)
+                {
+                    Debug.Log($"Adding RulesBookPlugin for page type: {ruleBookTab.PageType}");
+                    _BookPages[ruleBookTab.PageType] = ruleBookTab;
+                    ruleBookTab.Hide();
+                }
+
                 if (plugin is PlayerBookTabPlugin playerTabsPlugin)
                 {
                     BookPagePlugin bookPagePlugin = Plugins
@@ -100,24 +107,20 @@ namespace Vermines.UI.Screen
 
             foreach (var plugin in Plugins)
             {
-                if (plugin is PlayerBookTabPlugin bookPage)
+                if (plugin is PlayerBookTabPlugin playerBookTab)
                 {
-                    bookPage.Show(this);
-                    yield return bookPage.ShowPlayerTabsSequentially();
+                    playerBookTab.Show(this);
+                    yield return playerBookTab.ShowPlayerTabsSequentially();
                 }
                 else if (plugin is RuleBookTabPlugin bookPagePlugin)
                 {
                     bookPagePlugin.Show(this);
                 }
-            }
-
-            foreach (var plugin in Plugins)
-            {
-                if (plugin is BookPagePlugin bookPage)
+                else if (plugin is BookPagePlugin bookPage)
                 {
                     bookPage.ShowPlayerInfo(GameDataStorage.Instance.PlayerData[PlayerController.Local.PlayerRef]);
                 }
-                if (plugin is PlayerBookTabPlugin bookTab)
+                else if (plugin is PlayerBookTabPlugin bookTab)
                 {
                     bookTab.SetPlayerTabActive(GameDataStorage.Instance.PlayerData[PlayerController.Local.PlayerRef]);
                 }
@@ -153,6 +156,8 @@ namespace Vermines.UI.Screen
             if (_CurrentPage == newPage)
                 return;
 
+            Debug.Log($"Switching to page: {newPage}, Current Page: {_CurrentPage}");
+
             if (_BookPages.TryGetValue(_CurrentPage, out var oldPage))
                 oldPage.Hide();
 
@@ -167,12 +172,13 @@ namespace Vermines.UI.Screen
                 {
                     playerTabPlugin.SetPlayerTabActive(false);
                 }
-
-                return;
             }
 
             if (_BookPages.TryGetValue(_CurrentPage, out var newPageObj))
+            {
+                Debug.Log($"Showing new page: {newPageObj.name}");
                 newPageObj.Show(this);
+            }
         }
 
         #endregion

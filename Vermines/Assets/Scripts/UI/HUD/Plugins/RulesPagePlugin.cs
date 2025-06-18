@@ -7,6 +7,7 @@ namespace Vermines.UI.Plugin
     using Image = UnityEngine.UI.Image;
     using Vermines.UI.Book;
     using TMPro;
+    using static Vermines.UI.Screen.GameplayUIBook;
 
     public class RulesBookPlugin : GameplayScreenPlugin
     {
@@ -24,6 +25,9 @@ namespace Vermines.UI.Plugin
 
         [SerializeField] private Button nextButton;
         [SerializeField] private Button previousButton;
+
+        [SerializeField] private BookTabType _PageType;
+        public BookTabType PageType => _PageType;
 
         /// <summary>
         /// Initializes the plugin, preparing the canvas groups for both pages.
@@ -54,6 +58,7 @@ namespace Vermines.UI.Plugin
         /// </param>
         public override void Show(GameplayUIScreen screen)
         {
+            Debug.Log("Showing RulesBookPlugin");
             base.Show(screen);
         }
 
@@ -62,6 +67,7 @@ namespace Vermines.UI.Plugin
         /// </summary>
         public override void Hide()
         {
+            Debug.Log("Hiding RulesBookPlugin");
             if (leftPage.TryGetComponent<CanvasGroup>(out var canvasGroup))
             {
                 canvasGroup.alpha = 0f;
@@ -99,18 +105,18 @@ namespace Vermines.UI.Plugin
 
             if (leftPage.TryGetComponent<CanvasGroup>(out var canvasGroup))
             {
+                Debug.Log($"Setting left page canvas group: {leftPage.name} to active");
                 canvasGroup.alpha = 1f;
                 canvasGroup.interactable = true;
                 canvasGroup.blocksRaycasts = true;
             }
             if (rightPage.TryGetComponent<CanvasGroup>(out var canvasGroupRight))
             {
+                Debug.Log($"Setting right page canvas group: {rightPage.name} to active");
                 canvasGroupRight.alpha = right != null ? 1f : 0f;
                 canvasGroupRight.interactable = right != null;
                 canvasGroupRight.blocksRaycasts = right != null;
             }
-
-            Debug.Log($"Showing pages {currentPageIndexInSection} and {currentPageIndexInSection + 1} in section {currentSection.sectionName}");
 
             previousButton.gameObject.SetActive(currentPageIndexInSection > 0);
             nextButton.gameObject.SetActive(currentPageIndexInSection + 2 < pages.Count);
@@ -120,8 +126,9 @@ namespace Vermines.UI.Plugin
         {
             page.title.StringChanged += value =>
             {
-                Debug.Log($"Setting title to: {value}");
                 title.text = value;
+                // If the title is empty, we can hide the title text component to avoid empty space
+                title.gameObject.SetActive(!string.IsNullOrEmpty(value));
             };
             page.content.StringChanged += value => content.text = value;
             page.title.RefreshString();

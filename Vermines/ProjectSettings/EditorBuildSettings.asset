@@ -14,15 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Resources/Scenes/Game.unity
     guid: a45fb4c356ba9d241a28d641679fb411
-  - enabled: 0
-    path: Assets/Resources/Scenes/Environment/EnvironmentDay.unity
-    guid: bba21dea17538384ea72f6c4dc86059a
-  - enabled: 0
-    path: Assets/Resources/Scenes/WaitingRoom.unity
-    guid: e3c3553cd6c45c3489e1633ddeecac9b
   - enabled: 1
     path: Assets/Resources/Scenes/GameEnvironment/EnvironmentDay.unity
-    guid: db1880664d4d6b746ac0955135a940dd
+    guid: ad6b4c95f4b549940b24608c060786dc
   - enabled: 1
     path: Assets/Resources/Scenes/UI.unity
     guid: 9ac87ce6317cd5b40b16d1dabc6f5228

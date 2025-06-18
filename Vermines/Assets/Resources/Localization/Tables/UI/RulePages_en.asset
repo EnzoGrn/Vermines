@@ -19,33 +19,107 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 3164312133632
-    m_Localized: Rules
+    m_Localized: Objective
     m_Metadata:
       m_Items: []
   - m_Id: 3190958546944
-    m_Localized: "Vermines is a deck-building game where\nmale and female players
-      take turns playing in a clockwise\ndirection. Their aim is to acquire\n\u201CPartisan\u201D
-      and \u201CObject\u201D cards in order to build\na deck. To do this, they must
-      use\neloquence (the game's currency), which will be earned from the\ndifferent
-      cards acquired during the game. Each\n\u201CPartisan\u201D card has a soul
-      value and can, after\nbeing played, be sacrificed to win souls\n(victory points).
-      The first player to\nreach 100 souls wins the game."
+    m_Localized: Summon your divinity by collecting 100 souls. Build a powerful deck,
+      play your followers and items, trigger powerful effects and sacrifice at the
+      right moment.
     m_Metadata:
       m_Items: []
   - m_Id: 14892601139200
-    m_Localized: 
+    m_Localized: Game progress
     m_Metadata:
       m_Items: []
   - m_Id: 14921399230464
-    m_Localized: Another
+    m_Localized: 'Each player takes a turn playing clockwise. A turn is divided into
+      5 phases:
+
+      1. Sacrifices (optional)
+
+      - You can sacrifice up to
+      2 partisans in your play area.
+
+      - Each sacrificed follower earns you
+      a number of souls equal to its value.
+
+      - Sacrificed cards are permanently
+      removed from the game.'
     m_Metadata:
       m_Items: []
   - m_Id: 14981172256768
-    m_Localized: 
+    m_Localized: '2. Activation of effects
+
+      - All partisans already placed
+      activate their ability automatically if it is passive.
+
+      - You can choose
+      whether to activate other effects or not.
+
+
+      3. Eloquence gains
+
+      -
+      Gain the eloquence indicated on your cultist and on your active equipment.
+
+'
     m_Metadata:
       m_Items: []
   - m_Id: 20709568110592
     m_Localized: Rules
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821395142696960
+    m_Localized: '4. Purchases and actions
+
+      - You can buy as many cards as
+      you like in the market or courtyard, as long as you have enough eloquence.
+
+      -
+      Items go into the discard pile, except for equipment, which is activated on
+      your next turn.
+
+      - You can also play cards from your hand:
+
+      A)
+      A partisan joins your play area.
+
+      B) A discardable partisan applies its
+      effect immediately, then is discarded.
+
+      C) A tool applies its effect
+      and is discarded.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821850727997440
+    m_Localized: '5. End of turn
+
+      - Automatically reshuffle up to 3 cards in
+      your hand
+
+      - The courtyard and market are refilled if they have been
+      modified
+
+      - If your deck is empty, your discard pile is automatically
+      recycled.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822555593367552
+    m_Localized: Digital features
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822583594541056
+    m_Localized: '- The deck, discard pile and game zones are managed automatically.
+
+      -
+      Sacrificed cards are permanently removed without manipulation.
+
+      - Single-trigger
+      effects are automatically limited to 1 activation.
+
+      - Zone limits (max.
+      3 players unless modified) are automatically applied.'
     m_Metadata:
       m_Items: []
   references:

@@ -43,6 +43,30 @@ MonoBehaviour:
     m_Key: rules_section_name
     m_Metadata:
       m_Items: []
+  - m_Id: 821250292408320
+    m_Key: rule_page_4_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821395142696960
+    m_Key: rule_page_4_content
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821832705073152
+    m_Key: rule_page_5_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821850727997440
+    m_Key: rule_page_5_content
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822555593367552
+    m_Key: rule_page_6_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822583594541056
+    m_Key: rule_page_6_content
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
