@@ -1,9 +1,6 @@
-﻿namespace Vermines.UI.Plugin
-{
-    using Vermines.UI.Screen;
-    using Vermines.ShopSystem.Enumerations;
-    using System.Collections.Generic;
-    using System;
+﻿using UnityEngine;
+
+namespace Vermines.UI.Plugin {
 
     /// <summary>
     /// Manages the navigation button plugin.
@@ -18,12 +15,15 @@
         protected virtual void OnOpenCourtyard()
         {
             GameplayUIController gameplayUIController = _ParentScreen.Controller;
-            if (gameplayUIController != null)
-            {
-                gameplayUIController.Hide();
-            }
 
-            CamManager.Instance.GoOnCourtyardLocation();
+            if (gameplayUIController != null)
+                gameplayUIController.Hide();
+            CamManager camera = FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
+
+            if (camera != null)
+                camera.GoOnCourtyardLocation();
+            else
+                Debug.LogWarning("CamManager not found, cannot navigate to courtyard location.");
         }
 
         #endregion

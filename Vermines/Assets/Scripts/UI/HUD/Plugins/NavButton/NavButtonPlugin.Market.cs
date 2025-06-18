@@ -1,7 +1,6 @@
-﻿namespace Vermines.UI.Plugin
-{
-    using Vermines.UI.Screen;
-    using Vermines.ShopSystem.Enumerations;
+﻿using UnityEngine;
+
+namespace Vermines.UI.Plugin {
 
     /// <summary>
     /// Manages the navigation button plugin.
@@ -15,7 +14,12 @@
         /// </summary>
         protected virtual void OnOpenMarket()
         {
-            CamManager.Instance.GoOnMarketLocation();
+            CamManager camera = FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
+
+            if (camera != null)
+                camera.GoOnMarketLocation();
+            else
+                Debug.LogWarning("CamManager not found, cannot navigate to market location.");
         }
 
         #endregion

@@ -17,6 +17,7 @@ namespace Vermines {
     using Vermines.Menu.Connection.Element;
     using Vermines.Configuration.Network;
     using Vermines.Configuration;
+    using System.Collections;
 
     public class GameManager : NetworkBehaviour {
 
@@ -95,6 +96,16 @@ namespace Vermines {
         {
             get => default;
             set { }
+        }
+
+        public void WaitAndStartGame(float waitTime = 0.5f)
+        {
+            if (HasStateAuthority == false)
+                return;
+            if (Start)
+                return;
+            CancelInvoke(nameof(StartGame));
+            Invoke(nameof(StartGame), waitTime);
         }
 
         public void StartGame()
@@ -231,13 +242,9 @@ namespace Vermines {
             _routineManager = FindFirstObjectByType<RoutineManager>();
 
             if (_routineManager)
-            {
                 _routineManager.StartRoutine();
-            }
             else
-            {
-                Debug.LogError("[CamManager]: Cannot find RoutineManager in the scene, please add it to the scene.");
-            }
+                Debug.LogError("[GameManager]: Cannot find RoutineManager in the scene, please add it to the scene.");
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

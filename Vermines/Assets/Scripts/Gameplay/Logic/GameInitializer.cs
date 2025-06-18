@@ -32,8 +32,8 @@ namespace Vermines {
         {
             if (HasStateAuthority) {
                 Runner.LoadScene("GameplayCameraTravelling", LoadSceneMode.Additive); // Scene that active the camera travelling with spline on the map.
-                Runner.LoadScene("FinalAnimation"          , LoadSceneMode.Additive); // Scene that active the final animation when the game is over.
                 Runner.LoadScene("UIv3"                    , LoadSceneMode.Additive); // Scene that contains the UI elements for the game.
+                Runner.LoadScene("FinalAnimation"          , LoadSceneMode.Additive); // Scene that active the final animation when the game is over.
             }
         }
 

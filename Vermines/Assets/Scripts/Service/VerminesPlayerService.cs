@@ -188,6 +188,12 @@ namespace Vermines.Service {
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_Loading()
+        {
+            SwitchScreen<VMUI_Loading>();
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_NetworkTavern()
         {
             SwitchScreen<VMUI_CustomTavern>();
