@@ -2,14 +2,13 @@
 using UnityEngine.Splines;
 using Unity.Cinemachine;
 using System.Collections.Generic;
-using OMGG.DesignPattern;
 using UnityEngine.Events;
 using Vermines.UI;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Screen;
 
-public class CamManager : MonoBehaviourSingleton<CamManager>
-{
+public class CamManager : MonoBehaviour {
+
     #region Exposed Fields
     [Header("Camera")]
     [SerializeField] private CinemachineCamera _CineCam;

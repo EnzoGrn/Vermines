@@ -7,9 +7,6 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.CardSystem.Elements;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
-    using Vermines.UI.GameTable;
-    using Vermines.UI;
-    using Vermines.UI.Screen;
 
     public class SacrificePhase : APhase {
 
@@ -50,15 +47,12 @@ namespace Vermines.Gameplay.Phases {
 
             GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
 
-            if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
-            {
-                if (CamManager.Instance)
-                {
-                    CamManager.Instance.GoOnSacrificeLocation();
-                }
-            }
-            else if (playedCards.Count == 0)
-            {
+            if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef) {
+                CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
+
+                if (camera != null)
+                    camera.GoOnSacrificeLocation();
+            } else if (playedCards.Count == 0) {
                 OnPhaseEnding(_CurrentPlayer, true);
             }
         }
@@ -70,13 +64,13 @@ namespace Vermines.Gameplay.Phases {
 
         public override void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
-            // Return to sky location
-            if (_CurrentPlayer == PlayerController.Local.PlayerRef && CamManager.Instance)
-            {
-                CamManager.Instance.GoOnNoneLocation();
-            }
+            CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
 
+            // Return to sky location
+            if (_CurrentPlayer == PlayerController.Local.PlayerRef && camera != null)
+                camera.GoOnNoneLocation();
             base.OnPhaseEnding(player, logic);
+
             GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
         }
 
