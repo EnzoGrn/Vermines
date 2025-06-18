@@ -30,13 +30,10 @@ namespace Vermines {
 
         public override void Spawned()
         {
-            // Load UI Scene
-            if (HasStateAuthority)
-            {
-                Debug.Log("LoadYourAsyncScene.");
-                Runner.LoadScene("EnvironmentDay", LoadSceneMode.Additive);
-                Runner.LoadScene("GameplayCameraTravelling", LoadSceneMode.Additive);
-                Runner.LoadScene("UI", LoadSceneMode.Additive);
+            if (HasStateAuthority) {
+                Runner.LoadScene("GameplayCameraTravelling" , LoadSceneMode.Additive); // Scene that active the camera travelling with spline on the map.
+                Runner.LoadScene("UI"                       , LoadSceneMode.Additive); // Scene that contains the UI elements for the game.
+                Runner.LoadScene("FinalAnimation"           , LoadSceneMode.Additive); // Scene that active the final animation when the game is over.
             }
         }
 

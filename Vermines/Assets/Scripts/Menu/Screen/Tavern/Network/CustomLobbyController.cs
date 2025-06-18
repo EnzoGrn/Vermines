@@ -87,10 +87,10 @@ namespace Vermines.Menu.Screen.Tavern.Network {
             foreach (CultistSelectState state in Players)
                 if (!state.IsLockedIn && state.ClientID != default(PlayerRef))
                     return;
-            // -- Change to loading view
-            VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
+            // -- Update the player states in the VerminesPlayerService
+            VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
 
-            loading.Controller.Show<VMUI_Loading>();
+            services.RPC_Loading();
 
             // -- Hide the session info
             Runner.SessionInfo.IsVisible = false;
@@ -110,9 +110,6 @@ namespace Vermines.Menu.Screen.Tavern.Network {
             ConnectResult result = await connection.ChangeScene(SceneToLoad);
 
             if (result.Success) {
-                // -- Update the player states in the VerminesPlayerService
-                VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
-
                 for (int i = 0; i < Players.Length; i++) {
                     CultistSelectState playerState = Players.Get(i);
 
@@ -123,23 +120,28 @@ namespace Vermines.Menu.Screen.Tavern.Network {
                     services.UpdatePlayerState(playerState.ClientID, playerState.Name.Value, cultist.family);
                 }
 
+                // -- Change UI to gameplay
+                services.RPC_Gameplay();
+
+                // -- Get the manager setup the rules and start the game
                 GameManager manager = FindFirstObjectByType<GameManager>(FindObjectsInactive.Include);
 
                 if (manager != null) {
                     SettingsManager settingsManager = GetComponent<SettingsManager>();
 
                     manager.SettingsData = settingsManager.NetworkConfig;
+
+                    manager.WaitAndStartGame(2.0f);
                 }
 
                 // -- Unload the lobby scene
                 await connection.UnloadScene(SceneToUnload);
-
-                // -- Change UI to gameplay
-                loading.Controller.Show<VMUI_Gameplay>(loading);
             } else {
+                VMUI_CustomTavern screen = FindFirstObjectByType<VMUI_CustomTavern>(FindObjectsInactive.Include);
+
                 Debug.LogError($"[CustomLobbyController] RPC_LockIn() - Failed to change scene: {result.DebugMessage}");
 
-                loading.Controller.Show<VMUI_CustomTavern>();
+                screen.Controller.Show<VMUI_CustomTavern>();
             }
         }
 
