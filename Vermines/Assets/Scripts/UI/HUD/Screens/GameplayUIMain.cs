@@ -28,6 +28,13 @@ namespace Vermines.UI.Screen
         [InlineHelp, SerializeField]
         protected UnityEngine.UI.Button _TableButton;
 
+        /// <summary>
+        /// The book button.
+        /// Can't be null, but can be disabled.
+        /// </summary>
+        [InlineHelp, SerializeField]
+        protected UnityEngine.UI.Button _BookButton;
+
         #endregion
 
         partial void AwakeUser();
@@ -174,6 +181,17 @@ namespace Vermines.UI.Screen
             Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
             Debug.Log("Last screen: " + lastScreen);
             Controller.Show<GameplayUITable>(lastScreen);
+        }
+
+        /// <summary>
+        /// Is called when the <see cref="_BookButton"/> is pressed using SendMessage() from the UI object.
+        /// Intitiates the connection and expects the connection object to set further screen states.
+        /// </summary>
+        protected virtual void OnBookButtonPressed()
+        {
+            Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
+            Debug.Log("Last screen: " + lastScreen);
+            Controller.Show<GameplayUIBook>(lastScreen);
         }
 
         #endregion

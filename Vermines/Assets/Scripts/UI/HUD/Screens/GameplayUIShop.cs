@@ -284,14 +284,6 @@ namespace Vermines.UI.Screen
             plugin.Show(this);
         }
 
-        /// <summary>
-        /// Is called when the <see cref="_CloseButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
-        public virtual void OnBackButtonPressed()
-        {
-            Controller.Hide();
-            //CamManager.Instance.GoOnNoneLocation();
-        }
         #endregion
     }
 }
