@@ -16,7 +16,7 @@ namespace Test.Vermines.CardSystem {
 
         private static readonly int Seed = 123456789;
 
-        // 5 Starter Card per player.
+        // 5 starter cards per player.
         // 6 Card per family.
 
         private static readonly int NumberOfCardsForTwoPlayers   = 77; // 66 Card + 11 Player's card.
