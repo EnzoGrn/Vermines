@@ -21,9 +21,11 @@ MonoBehaviour:
   _Level: 2
   Effects:
   - {fileID: 11400000, guid: e2da36245f92dc445b5e545f2e6ba819, type: 2}
+  ReduceInSilence: 0
   _Eloquence: 8
+  IsFree: 0
   CurrentEloquence: 8
-  _Souls: 20
-  CurrentSouls: 20
+  _Souls: 15
+  CurrentSouls: 15
   _SpriteName: Apothecary
   _Sprite: {fileID: 0}

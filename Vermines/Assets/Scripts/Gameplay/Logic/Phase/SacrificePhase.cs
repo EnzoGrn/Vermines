@@ -7,9 +7,6 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.CardSystem.Elements;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
-    using Vermines.UI.GameTable;
-    using Vermines.UI;
-    using Vermines.UI.Screen;
 
     public class SacrificePhase : APhase {
 
@@ -50,17 +47,12 @@ namespace Vermines.Gameplay.Phases {
 
             GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
 
-            if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
-            {
-                GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
-                if (gameplayUIController != null)
-                {
-                    gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
-                    gameplayUIController.Show<GameplayUITable>(lastScreen);
-                }
-            }
-            else if (playedCards.Count == 0)
-            {
+            if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef) {
+                CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
+
+                if (camera != null)
+                    camera.GoOnSacrificeLocation();
+            } else if (playedCards.Count == 0) {
                 OnPhaseEnding(_CurrentPlayer, true);
             }
         }
@@ -72,7 +64,13 @@ namespace Vermines.Gameplay.Phases {
 
         public override void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
+            CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
+
+            // Return to sky location
+            if (_CurrentPlayer == PlayerController.Local.PlayerRef && camera != null)
+                camera.GoOnNoneLocation();
             base.OnPhaseEnding(player, logic);
+
             GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
         }
 
@@ -98,7 +96,7 @@ namespace Vermines.Gameplay.Phases {
 
                 _NumberOfCardSacrified++;
 
-                if (_NumberOfCardSacrified >= GameManager.Instance.Config.MaxSacrificesPerTurn.Value
+                if (_NumberOfCardSacrified >= GameManager.Instance.SettingsData.MaxSacrificesPerTurn
                     || GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Count == 0)
                 {
                     // Pop up context

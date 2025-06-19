@@ -48,13 +48,13 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             if (player != PlayerController.Local.PlayerRef)
                 return;
+            if (UIContextManager.Instance) {
+                CardCopyEffectContext cardCopyEffectContext = new(CardType.Partisan, Card);
+                CopyContext           copyContext           = new(cardCopyEffectContext);
 
-            if (UIContextManager.Instance)
-            {
-                CardCopyEffectContext cardCopyEffectContext = new CardCopyEffectContext(CardType.Partisan, Card);
-                CopyContext copyContext = new CopyContext(cardCopyEffectContext);
                 UIContextManager.Instance.PushContext(copyContext);
             }
+
             GameEvents.OnCardCopiedEffect.AddListener(CopiedEffect);
         }
 
@@ -68,8 +68,8 @@ namespace Vermines.Gameplay.Cards.Effect {
         private void CopiedEffect(ICard card)
         {
             GameEvents.OnCardCopiedEffect.RemoveListener(CopiedEffect);
-            Debug.Log($"[CopyPartisanEffect] {card.Data.Name} effect copied by {Card.Data.Name}.");
             UIContextManager.Instance.PopContext();
+
             _CardCopied = card;
 
             RoundEventDispatcher.RegisterEvent(PlayerController.Local.PlayerRef, Stop);

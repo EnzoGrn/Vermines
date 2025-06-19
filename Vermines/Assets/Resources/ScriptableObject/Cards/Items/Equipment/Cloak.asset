@@ -21,8 +21,10 @@ MonoBehaviour:
   _Level: 0
   Effects:
   - {fileID: 11400000, guid: 9551e3acdbfcd04409fa20e813879934, type: 2}
-  _Eloquence: 5
-  CurrentEloquence: 5
+  ReduceInSilence: 0
+  _Eloquence: 6
+  IsFree: 0
+  CurrentEloquence: 6
   _Souls: 0
   CurrentSouls: 0
   _SpriteName: 

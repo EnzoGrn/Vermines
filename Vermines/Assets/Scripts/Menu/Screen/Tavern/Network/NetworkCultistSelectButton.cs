@@ -1,9 +1,10 @@
 using OMGG.Menu.Screen;
 using UnityEngine.UI;
 using UnityEngine;
+using TMPro;
 
 namespace Vermines.Menu.Screen.Tavern.Network {
-    using TMPro;
+
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
     using Vermines.Characters;
@@ -27,8 +28,8 @@ namespace Vermines.Menu.Screen.Tavern.Network {
         private TMP_Text _CultistNameText;
 
         [SerializeField]
-        private GameObject _DisabledOverlay;
-        
+        private GameObject _SelectedOverlay;
+
         [SerializeField]
         private Button _Button;
 
@@ -57,15 +58,33 @@ namespace Vermines.Menu.Screen.Tavern.Network {
         public void SelectCharacter()
         {
             _CultistSelect.Select(Cultist);
+
+            if (!_CultistSelect.IsLockdIn())
+                _SelectedOverlay.SetActive(true);
         }
 
         public void SetDisabled()
         {
             IsDisabled = true;
-            
-            _DisabledOverlay.SetActive(true);
 
             _Button.interactable = false;
+        }
+
+        public void SetEnabled()
+        {
+            IsDisabled = false;
+
+            _Button.interactable = true;
+        }
+
+        public void Select()
+        {
+            _SelectedOverlay.SetActive(true);
+        }
+
+        public void UnSelect()
+        {
+            _SelectedOverlay.SetActive(false);
         }
 
         #endregion

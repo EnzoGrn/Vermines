@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Vermines.GameDesign.Initializer;
 
 public class HoverPhaseLocation : IGGD_Behaviour {
@@ -24,11 +25,10 @@ public class HoverPhaseLocation : IGGD_Behaviour {
 
     public override void Init()
     {
-        if (_CameraManager == null)
-            _CameraManager = FindAnyObjectByType<CamManager>(FindObjectsInactive.Include);
+        _CameraManager = FindAnyObjectByType<CamManager>(FindObjectsInactive.Include);
 
         // TODO: Called the Init() methods when launch a game.
-        if (_CameraManager) {
+        if (_CameraManager != null) {
             _InstanceOfMaterial = new Material(_OutlineMaterial);
             _PropBlock = new MaterialPropertyBlock();
 
@@ -51,15 +51,15 @@ public class HoverPhaseLocation : IGGD_Behaviour {
 
             ApplyOutline(false);
 
-            //CamManager.Instance.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
-            CamManager.Instance.OnCamLocationChanged.AddListener(OnCamAnimationCompleted);
-            CamManager.Instance.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
+            // _CameraManager.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
+            _CameraManager.OnCamLocationChanged.AddListener(OnCamAnimationCompleted);
+            _CameraManager.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
         }
     }
 
     private void OnMouseEnter()
     {
-        if (_CameraManager == null)
+        if (_CameraManager == null || EventSystem.current.IsPointerOverGameObject())
             return;
         if (_CanHoverLocations)
             ApplyOutline(true);
@@ -78,9 +78,10 @@ public class HoverPhaseLocation : IGGD_Behaviour {
     private void OnMouseDown()
     {
         Debug.Log("OnMouseDown Detected");
-        return; // TODO: remove this
-        if (_CameraManager == null)
+
+        if (_CameraManager == null || EventSystem.current.IsPointerOverGameObject())
             return;
+
         if (!_CanHoverLocations || !_CanClickLocations)
             return;
 
@@ -88,7 +89,7 @@ public class HoverPhaseLocation : IGGD_Behaviour {
 
         ApplyOutline(false);
 
-        CamManager.Instance.OnSplineAnimationRequest((int)_CamSplineType);
+        _CameraManager.OnSplineAnimationRequest((int)_CamSplineType);
     }
 
     // TODO: set to false to avoid over when traveling with the event is changing

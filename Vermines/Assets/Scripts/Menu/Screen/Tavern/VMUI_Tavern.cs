@@ -16,6 +16,9 @@ namespace Vermines.Menu.Screen {
     /// </summary>
     public partial class VMUI_Tavern : MenuUIScreen {
 
+        [Tooltip("The scene refence that will be load in network, when the game will be found.")]
+        public SceneRef SceneRef;
+
         #region User
 
         public Cultist SelectedCultist;
@@ -96,6 +99,11 @@ namespace Vermines.Menu.Screen {
             base.Show();
 
             ShowUser();
+
+            CultistSelectDisplay cultistSelectDisplay = FindFirstObjectByType<CultistSelectDisplay>();
+
+            if (cultistSelectDisplay)
+                SelectedCultist = cultistSelectDisplay.GetSelectedCultist();
         }
 
         /// <summary>
@@ -129,7 +137,7 @@ namespace Vermines.Menu.Screen {
 
             Controller.Show<VMUI_Loading>(this);
 
-            var result = await Connection.ConnectAsync(ConnectionArgs);
+            var result = await Connection.ConnectAsync(ConnectionArgs, SceneRef);
 
             await Controller.HandleConnectionResult(result, Controller);
         }

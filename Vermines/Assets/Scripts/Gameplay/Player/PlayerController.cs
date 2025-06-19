@@ -270,6 +270,8 @@ namespace Vermines.Player {
                 foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
                     if (playedCard.Data.Effects != null) {
                         foreach (AEffect effect in playedCard.Data.Effects) {
+                            Debug.LogError($"[SERVER]: Player {player} played card {playedCard.Data.Name} with ID {playedCard.ID} and effect type {effect.Type}.");
+
                             if (effect.Type == EffectType.OnOtherSacrifice)
                                 effect.Play(player);
                         }
@@ -279,7 +281,7 @@ namespace Vermines.Player {
                 int soulToEarn = card.Data.Souls;
 
                 if (card.Data.Type == CardType.Partisan && card.Data.Family == GameDataStorage.Instance.PlayerData[player].Family)
-                    soulToEarn += GameManager.Instance.Config.SoulsBonusForSacrifice.Value;
+                    soulToEarn += GameManager.Instance.SettingsData.BonusSoulInFamilySacrifice;
                 ICommand earnCommand = new EarnCommand(player, soulToEarn, DataType.Soul);
 
                 response = CommandInvoker.ExecuteCommand(earnCommand);
@@ -377,14 +379,11 @@ namespace Vermines.Player {
 
             card.Data.CopyEffect(cardToCopied.Data.Effects);
 
-            // TODO: Maybe update the card UI, of the card (effect)
-            // If the effect is an active effect, we can also call the Play method
-            foreach (AEffect effect in card.Data.Effects)
-            {
-                if (effect.Type == EffectType.Activate)
-                    effect.Play(PlayerRef.FromEncoded(playerId));
+            foreach (AEffect effect in card.Data.Effects) {
+                if (effect.Type == EffectType.Sacrifice || effect.Type == EffectType.OnOtherSacrifice)
+                    return;
+                effect.Play(PlayerRef.FromEncoded(playerId));
             }
-            // There is other effect to be played?
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -399,6 +398,8 @@ namespace Vermines.Player {
             }
 
             card.Data.RemoveEffectCopied();
+
+            Debug.LogError($"[SERVER]: Player {playerId} removed a copied effect of card {card.Data.Name} with ID {card.ID}.");
 
             // TODO: Maybe update the card UI, of the card (effect)
         }

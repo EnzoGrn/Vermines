@@ -97,14 +97,14 @@ namespace Vermines.CardSystem.Data {
 
         public void CopyEffect(List<AEffect> effects)
         {
-            _OriginalEffect = new List<AEffect>(effects);
+            _OriginalEffect = new List<AEffect>(Effects);
 
             Effects = effects;
         }
 
         public void RemoveEffectCopied()
         {
-            Effects = _OriginalEffect;
+            Effects = new List<AEffect>(_OriginalEffect);
         }
 
         public bool ReduceInSilence = false;

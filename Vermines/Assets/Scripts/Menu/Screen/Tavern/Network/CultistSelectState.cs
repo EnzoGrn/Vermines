@@ -9,7 +9,7 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
         public PlayerRef ClientID;
 
-        public NetworkString<_32> Name; // TODO: Set the name
+        public NetworkString<_32> Name;
 
         public int CultistID;
 
@@ -19,14 +19,12 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
         #region Constructors
 
-        public CultistSelectState(PlayerRef player, int cultistID = -1, bool isLockedIn = false)
+        public CultistSelectState(PlayerRef player, string name = "", int cultistID = -1, bool isLockedIn = false)
         {
             ClientID   = player;
             CultistID  = cultistID;
             IsLockedIn = isLockedIn;
-
-            // TODO: Ask Vermines service his player name.
-            Name = default;
+            Name       = name;
         }
 
         #endregion

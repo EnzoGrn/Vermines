@@ -76,7 +76,7 @@ namespace Vermines.Player {
                 }
 
                 Deck.Merge(Discard);
-                Deck.Shuffle(GameManager.Instance.Config.Seed);
+                Deck.Shuffle(GameManager.Instance.SettingsData.Seed);
             }
 
             ICard card = Deck.Draw();

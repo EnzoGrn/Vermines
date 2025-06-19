@@ -33,10 +33,6 @@ namespace Vermines.Menu.Connection.Element {
         [SerializeField]
         private GameObject _NetworkRunner;
 
-        [Tooltip("The scene to load when connecting.")]
-        [SerializeField]
-        private SceneRef _Scene;
-
         #endregion
 
         #region Non-Serialized Fields
@@ -48,6 +44,13 @@ namespace Vermines.Menu.Connection.Element {
         private string _SessionName;
 
         public override string SessionName => _SessionName;
+
+        [NonSerialized]
+        private string _LobbyCustomName;
+
+        public override string LobbyCustomName => _LobbyCustomName;
+
+        public bool IsCustomLobby => LobbyCustomName != null && LobbyCustomName.Length > 0;
 
         [NonSerialized]
         private int _MaxPlayerCount;
@@ -119,13 +122,13 @@ namespace Vermines.Menu.Connection.Element {
             OnBeforeDisconnect.AddListener(EnableMenuCamera);
         }
 
-        protected override async Task<ConnectResult> ConnectAsyncInternal(ConnectionArgs connectArgs)
+        protected override async Task<ConnectResult> ConnectAsyncInternal(ConnectionArgs connectArgs, SceneRef sceneRef, bool isCustom = false)
         {
             if (_ConnectingSafeCheck) {
                 return new ConnectResult {
                     CustomResultHandling = true,
-                    Success              = false,
-                    FailReason           = ConnectFailReason.None
+                    Success = false,
+                    FailReason = ConnectFailReason.None
                 };
             }
 
@@ -148,17 +151,18 @@ namespace Vermines.Menu.Connection.Element {
 
             // Solve StartGameArgs
             StartGameArgs args = new() {
-                OnGameStarted           = SpawnPlayerListService,
+                OnGameStarted = SpawnPlayerListService,
                 CustomPhotonAppSettings = appSettings,
-                GameMode                = connectArgs.GameMode ?? ResolveGameMode(connectArgs),
-                SessionName             = _SessionName = connectArgs.Session,
-                PlayerCount             = _MaxPlayerCount = connectArgs.MaxPlayerCount,
+                GameMode = connectArgs.GameMode ?? ResolveGameMode(connectArgs),
+                SessionName = _SessionName = connectArgs.Session,
+                PlayerCount = _MaxPlayerCount = connectArgs.MaxPlayerCount,
+                CustomLobbyName = _LobbyCustomName = isCustom ? "CustomLobby" : null
             };
 
             // Scene info
             NetworkSceneInfo sceneInfo = new();
 
-            sceneInfo.AddSceneRef(_Scene, LoadSceneMode.Additive);
+            sceneInfo.AddSceneRef(sceneRef, LoadSceneMode.Additive);
 
             args.Scene = sceneInfo;
 
@@ -166,7 +170,7 @@ namespace Vermines.Menu.Connection.Element {
             _CancellationTokenSource?.Dispose();
 
             _CancellationTokenSource = new CancellationTokenSource();
-            _CancellationToken       = _CancellationTokenSource.Token;
+            _CancellationToken = _CancellationTokenSource.Token;
 
             args.StartGameCancellationToken = _CancellationToken;
 
@@ -175,7 +179,7 @@ namespace Vermines.Menu.Connection.Element {
             args.SessionNameGenerator = () => _Config.CodeGenerator.EncodeRegion(_Config.CodeGenerator.Create(), regionIndex);
 
             StartGameResult startGameResult = default;
-            ConnectResult   connectResult   = new();
+            ConnectResult connectResult = new();
 
             startGameResult = await _Runner.StartGame(args);
 
@@ -184,18 +188,16 @@ namespace Vermines.Menu.Connection.Element {
 
             _ConnectingSafeCheck = false;
 
-            if (connectResult.Success) {
+            if (connectResult.Success)
                 _SessionName = _Runner.SessionInfo.Name;
-
-                DisableMenuCamera();
+            if (!isCustom) { // Only force join the host if it's a matchmaking session
+                FusionMppm.MainEditor?.Send(new VerminesMPPMCommand() {
+                    Region       = _Region,
+                    Session      = _SessionName,
+                    AppVersion   = _AppVersion,
+                    IsSharedMode = args.GameMode == GameMode.Shared,
+                });
             }
-
-            FusionMppm.MainEditor?.Send(new VerminesMPPMCommand() {
-                Region       = _Region,
-                Session      = _SessionName,
-                AppVersion   = _AppVersion,
-                IsSharedMode = args.GameMode == GameMode.Shared,
-            });
 
             return connectResult;
         }
@@ -214,9 +216,7 @@ namespace Vermines.Menu.Connection.Element {
                 result.FailReason = ConnectFailReason.Disconnect;
 
                 return result;
-            }
-
-            if (string.IsNullOrEmpty(sceneInfo.ScenePath)) {
+            } else if (string.IsNullOrEmpty(sceneInfo.ScenePath)) {
                 if (sceneInfos.Count > 1)
                     sceneInfo = sceneInfos[UnityEngine.Random.Range(1, sceneInfos.Count)];
                 else {
@@ -226,14 +226,6 @@ namespace Vermines.Menu.Connection.Element {
                 }
             }
 
-            for (int i = 0; i < SceneManager.sceneCount; i++) {
-                Scene scene = SceneManager.GetSceneAt(i);
-
-                if (scene.buildIndex == 0)
-                    continue;
-                _ = _Runner.UnloadScene(scene.path);
-            }
-
             await _Runner.LoadScene(sceneInfo.ScenePath, LoadSceneMode.Additive);
 
             result.Success = true;
@@ -241,6 +233,51 @@ namespace Vermines.Menu.Connection.Element {
 
             return result;
         }
+
+        protected override async Task<ConnectResult> ChangeSceneInternal(SceneRef sceneRef)
+        {
+            ConnectResult result = new() {
+                CustomResultHandling = true,
+                Success              = false,
+                FailReason           = ConnectFailReason.None
+            };
+
+            if (_Runner == null || !_Runner.IsRunning) {
+                Log.Error("Cannot change scene because NetworkRunner is not running.");
+
+                result.FailReason = ConnectFailReason.Disconnect;
+
+                return result;
+            } else if (sceneRef.IsValid == false) {
+                result.FailReason = ConnectFailReason.ArgumentError;
+
+                return result;
+            }
+
+            await _Runner.LoadScene(sceneRef, LoadSceneMode.Additive);
+
+            result.Success = true;
+
+            return result;
+        }
+
+        protected override async Task<bool> UnloadSceneInternal(SceneRef sceneRef)
+        {
+            if (_Runner == null || !_Runner.IsRunning) {
+                Log.Error("Cannot unload scene because NetworkRunner is not running.");
+
+                return false;
+            } else if (sceneRef.IsValid == false) {
+                Log.Error("Cannot unload scene because scene reference is invalid.");
+
+                return false;
+            }
+
+            await _Runner.UnloadScene(sceneRef);
+
+            return true;
+        }
+
 
         protected override async Task DisconnectAsyncInternal(int reason)
         {
@@ -252,8 +289,6 @@ namespace Vermines.Menu.Connection.Element {
 
             if (peerMode is NetworkProjectConfig.PeerModes.Multiple)
                 return;
-            for (int i = SceneManager.sceneCount - 1; i > 0; i--)
-                _ = SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i));
         }
 
         public override Task<List<OnlineRegion>> RequestAvailableOnlineRegionsAsync(ConnectionArgs connectArgs)
@@ -297,6 +332,10 @@ namespace Vermines.Menu.Connection.Element {
                 case ConnectFailReason.ApplicationQuit:
                     return ShutdownReason.Ok;
                 case ConnectFailReason.Disconnect:
+                    return ShutdownReason.DisconnectedByPluginLogic;
+                case ConnectFailReason.ArgumentError:
+                    return ShutdownReason.Error;
+                case ConnectFailReason.GameEnded:
                     return ShutdownReason.DisconnectedByPluginLogic;
                 default:
                     return ShutdownReason.Error;

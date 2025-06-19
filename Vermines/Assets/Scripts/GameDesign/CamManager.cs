@@ -2,14 +2,13 @@
 using UnityEngine.Splines;
 using Unity.Cinemachine;
 using System.Collections.Generic;
-using OMGG.DesignPattern;
 using UnityEngine.Events;
 using Vermines.UI;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Screen;
 
-public class CamManager : MonoBehaviourSingleton<CamManager>
-{
+public class CamManager : MonoBehaviour {
+
     #region Exposed Fields
     [Header("Camera")]
     [SerializeField] private CinemachineCamera _CineCam;
@@ -82,7 +81,11 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
     {
         // Debug.Log($"[CheckBeforeProceed]: _SplineID({_SplineID}) > ((int)CamSplineType.MainViewToCourtyard - 1)({((int)CamSplineType.MainViewToCourtyard - 1)})");
 
-        if (splineID == _SplineID) return;
+        if (splineID == _SplineID)
+        {
+            ShowUi();
+            return;
+        }
 
         // TODO: Change the (int)CamSplineType.None to futur last index of none shop location OR use different container (maybe both)
         if (splineID > ((int)CamSplineType.MainViewToCourtyard - 1) && _SplineID > ((int)CamSplineType.MainViewToCourtyard - 1))
@@ -195,6 +198,39 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
         return;
     }
 
+    private void ShowUi()
+    {
+        GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+
+        if (!gameplayUIController)
+            return;
+
+        gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
+        Debug.Log($"[CamManager]: Current spline type {(CamSplineType)_SplineID}, Show UI");
+
+        switch ((CamSplineType)_SplineID)
+        {
+            case CamSplineType.None:
+                Debug.Log("[CamManager]: Resume Npc Routine now");
+                break;
+            case CamSplineType.MainViewToCourtyard:
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Courtyard, lastScreen);
+                break;
+            case CamSplineType.MarketToCourtyard:
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Courtyard, lastScreen);
+                break;
+            case CamSplineType.MainViewToMarket:
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Market, lastScreen);
+                break;
+            case CamSplineType.CourtyardToMarket:
+                gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(ShopType.Market, lastScreen);
+                break;
+            case CamSplineType.MainViewToSacrifice:
+                gameplayUIController.Show<GameplayUITable>(lastScreen);
+                break;
+        }
+    }
+
     #endregion
 
     #region Events
@@ -246,7 +282,7 @@ public class CamManager : MonoBehaviourSingleton<CamManager>
                 _routineManager.ResumeNpcRoutine();
                 break;
             case CamSplineType.MainViewToSacrifice:
-                gameplayUIController.Show<GameplayUITable>();
+                gameplayUIController.Show<GameplayUITable>(lastScreen);
                 _routineManager.ResumeNpcRoutine();
                 break;
         }
