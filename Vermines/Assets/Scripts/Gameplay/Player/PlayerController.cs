@@ -270,8 +270,6 @@ namespace Vermines.Player {
                 foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
                     if (playedCard.Data.Effects != null) {
                         foreach (AEffect effect in playedCard.Data.Effects) {
-                            Debug.LogError($"[SERVER]: Player {player} played card {playedCard.Data.Name} with ID {playedCard.ID} and effect type {effect.Type}.");
-
                             if (effect.Type == EffectType.OnOtherSacrifice)
                                 effect.Play(player);
                         }
@@ -398,8 +396,6 @@ namespace Vermines.Player {
             }
 
             card.Data.RemoveEffectCopied();
-
-            Debug.LogError($"[SERVER]: Player {playerId} removed a copied effect of card {card.Data.Name} with ID {card.ID}.");
 
             // TODO: Maybe update the card UI, of the card (effect)
         }
