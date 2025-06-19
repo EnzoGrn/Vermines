@@ -54,12 +54,12 @@ namespace Test.Vermines.Gameplay.Deck {
                 { playerTwo   , playerTwoDeck }
             };
 
+            localDeck.Deck.Add(CardSetDatabase.Instance.GetCardByID(72));
             localDeck.Deck.Add(CardSetDatabase.Instance.GetCardByID(73));
-            localDeck.Deck.Add(CardSetDatabase.Instance.GetCardByID(74));
+            localDeck.PlayedCards.Add(CardSetDatabase.Instance.GetCardByID(74));
             localDeck.PlayedCards.Add(CardSetDatabase.Instance.GetCardByID(75));
-            localDeck.PlayedCards.Add(CardSetDatabase.Instance.GetCardByID(76));
+            localDeck.Hand.Add(CardSetDatabase.Instance.GetCardByID(76));
             localDeck.Hand.Add(CardSetDatabase.Instance.GetCardByID(77));
-            localDeck.Hand.Add(CardSetDatabase.Instance.GetCardByID(78));
 
             GameDataStorage.Instance.PlayerDeck = _Decks;
         }
@@ -136,7 +136,7 @@ namespace Test.Vermines.Gameplay.Deck {
         public void DiscardCard()
         {
             // -- Unknow player
-            ICommand UPdiscardCommand = new DiscardCommand(PlayerRef.FromEncoded(4), 78);
+            ICommand UPdiscardCommand = new DiscardCommand(PlayerRef.FromEncoded(4), 77);
 
             CommandInvoker.ExecuteCommand(UPdiscardCommand);
 
@@ -152,12 +152,12 @@ namespace Test.Vermines.Gameplay.Deck {
             Assert.AreEqual("Player [Player:0] tried to discard a card that he does not have.", CommandInvoker.State.Message);
 
             // -- Normal discard
-            ICommand discardCommand = new DiscardCommand(_LocalPlayer, 78);
+            ICommand discardCommand = new DiscardCommand(_LocalPlayer, 77);
 
             CommandInvoker.ExecuteCommand(discardCommand);
 
             Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-            Assert.AreEqual("Player [Player:0] discarded the card 78.", CommandInvoker.State.Message);
+            Assert.AreEqual("Player [Player:0] discarded the card 77.", CommandInvoker.State.Message);
 
             // -- Undo
             CommandInvoker.UndoCommand();
