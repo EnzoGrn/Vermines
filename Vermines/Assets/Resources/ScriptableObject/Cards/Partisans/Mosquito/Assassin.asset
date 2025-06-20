@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Dragoleon
+  m_Name: Assassin
   m_EditorClassIdentifier: 
-  Name: Dragoleon
-  Exemplars: 1
-  IsStartingCard: 1
+  Name: Assassin
+  Exemplars: 2
+  IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
-  _Family: 0
-  _Level: 1
+  _Family: 5
+  _Level: 2
   Effects:
-  - {fileID: 11400000, guid: 1aa37c0bfb1c66e43834a49680863771, type: 2}
+  - {fileID: 11400000, guid: d1865dd2552290e4db8f944098a60f8d, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 0
+  _Eloquence: 10
   IsFree: 0
-  CurrentEloquence: 0
-  _Souls: 20
-  CurrentSouls: 20
+  CurrentEloquence: 10
+  _Souls: 15
+  CurrentSouls: 15
   _SpriteName: 
-  _Sprite: {fileID: 21300000, guid: 722e2cb09d177014a85aa256106da5cf, type: 3}
+  _Sprite: {fileID: 21300000, guid: 133de9a187af4fd40a1a155dc4b8c603, type: 3}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Royal missive
   m_EditorClassIdentifier: 
   Name: Royal missive
-  Exemplars: 2
+  Exemplars: 1
   IsStartingCard: 1
   Type: 2
   IsFamilyCard: 0
@@ -21,6 +21,7 @@ MonoBehaviour:
   _Level: 0
   Effects:
   - {fileID: 11400000, guid: d0944170c9980c24ab2899b620b8ec40, type: 2}
+  ReduceInSilence: 0
   _Eloquence: 0
   IsFree: 0
   CurrentEloquence: 0

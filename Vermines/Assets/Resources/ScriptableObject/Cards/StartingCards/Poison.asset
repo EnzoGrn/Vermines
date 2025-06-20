@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Mirror of the damned
+  m_Name: Poison
   m_EditorClassIdentifier: 
-  Name: Mirror of the damned
-  Exemplars: 3
+  Name: Poison
+  Exemplars: 1
   IsStartingCard: 1
   Type: 2
   IsFamilyCard: 0
   _Family: -1
   _Level: 0
   Effects:
-  - {fileID: 11400000, guid: b045c2c6126819b4983bd489e6cf22c5, type: 2}
+  - {fileID: 11400000, guid: eea79008643dfbd42b0d061b3ae0dfa2, type: 2}
   ReduceInSilence: 0
   _Eloquence: 6
   IsFree: 0
@@ -28,4 +28,4 @@ MonoBehaviour:
   _Souls: 0
   CurrentSouls: 0
   _SpriteName: 
-  _Sprite: {fileID: 21300000, guid: cecf307aa9433154cb0a98cbc6706b44, type: 3}
+  _Sprite: {fileID: 21300000, guid: 25819aae299af834bb7e86b8b9ce62c7, type: 3}

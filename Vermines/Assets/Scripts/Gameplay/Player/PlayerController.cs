@@ -377,8 +377,11 @@ namespace Vermines.Player {
 
             card.Data.CopyEffect(cardToCopied.Data.Effects);
 
-            foreach (AEffect effect in card.Data.Effects)
+            foreach (AEffect effect in card.Data.Effects) {
+                if (effect.Type == EffectType.Sacrifice || effect.Type == EffectType.OnOtherSacrifice)
+                    return;
                 effect.Play(PlayerRef.FromEncoded(playerId));
+            }
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
