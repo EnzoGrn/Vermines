@@ -2,7 +2,6 @@
 using UnityEngine;
 using DG.Tweening;
 using Vermines.CardSystem.Elements;
-using UnityEditor.Graphs;
 
 namespace Vermines.UI.Card
 {
