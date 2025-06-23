@@ -1,5 +1,4 @@
-﻿using DG.Tweening;
-using Fusion;
+﻿using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.Player;
@@ -24,18 +23,6 @@ namespace Vermines.UI.Plugin
         /// </summary>
         [InlineHelp, SerializeField]
         protected Transform bannerParent;
-
-        /// <summary>
-        /// The spacing between banners.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected float spacing = 100f;
-
-        /// <summary>
-        /// The duration of the DO tween transition.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected float transitionDuration = 0.4f;
 
         private Dictionary<int, PlayerData> _players = new();
         private readonly List<PlayerBannerUI> _banners = new();
@@ -98,7 +85,23 @@ namespace Vermines.UI.Plugin
             var banner = Instantiate(playerBannerPrefab, bannerParent);
             banner.Initialize(playerData, playerId);
             _banners.Add(banner);
-            RepositionBanners();
+            banner.Show();
+            banner.SetActive(_banners.Count == 1); // Only the first banner is active initially
+            banner.onHideComplete.AddListener(() =>
+            {
+
+                // Réorganisation
+                banner.transform.SetAsLastSibling();
+
+                // Rejoue Show
+                banner.Show();
+
+                // Applique l’état actif uniquement au nouveau premier
+                for (int i = 0; i < _banners.Count; i++)
+                {
+                    _banners[i].SetActive(i == 0);
+                }
+            });
         }
 
         public void UpdateBanner(PlayerData playerData, int playerId)
@@ -144,29 +147,7 @@ namespace Vermines.UI.Plugin
 
         private void AnimateBannerExitAndReorder(PlayerBannerUI banner)
         {
-            Sequence seq = DOTween.Sequence();
-
-            // Leave on the left
-            seq.Append(banner.transform.DOLocalMoveX(-300f, transitionDuration / 2).SetEase(Ease.InBack));
-            // Disparition
-            seq.Join(banner.transform.DOScale(0.8f, transitionDuration / 2));
-            seq.AppendCallback(() =>
-            {
-                // Replace the banner at the end of the list
-                banner.transform.SetAsLastSibling();
-                RepositionBanners();
-            });
-        }
-
-        private void RepositionBanners()
-        {
-            for (int i = 0; i < _banners.Count; i++)
-            {
-                var banner = _banners[i];
-                float yPos = -i * spacing;
-                banner.transform.DOLocalMoveY(yPos, transitionDuration).SetEase(Ease.OutQuad);
-                banner.SetActive(i == 0);
-            }
+            banner.Hide();
         }
     }
 }
