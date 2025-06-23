@@ -45,6 +45,7 @@ public static class GameEvents
     public static Dictionary<ShopType, TrackedEvent<int, ICard>> OnShopsEvents = new();
     public static TrackedEvent<ShopType, int> OnCardPurchaseRequested = new("OnCardPurchaseRequested");
     public static TrackedEvent<ShopType, int> OnCardPurchased = new("OnCardPurchased");
+    public static TrackedEvent<ICard, int> OnEquipmentCardPurchased = new("OnEquipmentCardPurchased");
     public static TrackedEvent<ShopType, int> OnShopCardReplaced = new("OnShopCardReplaced");
     public static TrackedEvent<ShopType, List<ShopCardEntry>> OnShopUpdated = new("OnShopUpdated");
     public static TrackedEvent<ShopType, Dictionary<int, ICard>> OnShopRefilled = new("OnShopRefilled");

@@ -2409,6 +2409,7 @@ MonoBehaviour:
   equipmentSlotsContainer: {fileID: 555543697}
   _Pool: {fileID: 297013241}
   discardSlot: {fileID: 8579091791034656105}
+  tableText: {fileID: 7417393796871488650}
   defaultPartisanSlotCount: 3
   defaultEquipmentSlotCount: 3
 --- !u!114 &297013235

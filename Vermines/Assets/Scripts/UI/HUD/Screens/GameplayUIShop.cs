@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Enumerations;
+using Vermines.Player;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Plugin;
 using Vermines.UI.Shop;
@@ -230,6 +232,16 @@ namespace Vermines.UI.Screen
             {
                 Debug.LogWarning($"[ShopManager] Slot index {slotIndex} not found in shop {shopType}");
                 return;
+            }
+
+            // If the card bought is an equipment card, invoke the specific event
+            if (PlayerController.Local.PlayerRef == GameManager.Instance.PlayerTurnOrder[GameManager.Instance.CurrentPlayerIndex])
+            {
+                if (shopList[slotIndex].Data.Type == CardType.Equipment)
+                {
+                    ICard equipmentCard = shopList[slotIndex];
+                    GameEvents.OnEquipmentCardPurchased.Invoke(equipmentCard, slotIndex);
+                }
             }
 
             Debug.Log($"[ShopManager] Card purchased from {shopType} shop at slot {slotIndex}");
