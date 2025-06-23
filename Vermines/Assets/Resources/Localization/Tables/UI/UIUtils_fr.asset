@@ -71,6 +71,16 @@ MonoBehaviour:
       pourra \xEAtre chang\xE9e dans chacun d\u2019eux."
     m_Metadata:
       m_Items: []
+  - m_Id: 12509374248607744
+    m_Localized: "Choisissez une carte \xE0 sacrifier pour continuer."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12509439717498880
+    m_Localized: "Tirez de votre main les partisans dont vous voulez profiter des
+      effets. Les cartes d'\xE9quipement sont automatiquement gliss\xE9es ici apr\xE8s
+      leur achat."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

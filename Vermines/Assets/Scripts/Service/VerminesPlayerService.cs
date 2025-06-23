@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System;
 using OMGG.Menu.Connection;
@@ -171,7 +171,7 @@ namespace Vermines.Service {
                     await SceneManager.UnloadSceneAsync("FinalAnimation");
                     await SceneManager.UnloadSceneAsync("Game");
                     await SceneManager.UnloadSceneAsync("GameplayCameraTravelling");
-                    await SceneManager.UnloadSceneAsync("UIv3");
+                    await SceneManager.UnloadSceneAsync("UI");
 
                     await loading.Connection.DisconnectAsync(ConnectFailReason.GameEnded);
 
