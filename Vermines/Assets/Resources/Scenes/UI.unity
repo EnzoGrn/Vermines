@@ -11749,7 +11749,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1251628406
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11795,6 +11795,7 @@ MonoBehaviour:
     config: {fileID: 11400000, guid: 1359b5869bd9a264cb0b647fe2484f4b, type: 2}
   - shopType: 1
     config: {fileID: 11400000, guid: 2bc4d19232b41f04e9746b56031e9348, type: 2}
+  _CloseButton: {fileID: 1017874004}
 --- !u!114 &1251628408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31222,7 +31223,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerBannerPrefab: {fileID: 8617780805097864372, guid: 3ee61d43e4175fa49996444f5273c7f4, type: 3}
   bannerParent: {fileID: 8745013460868073715}
-  transitionDuration: 0.6
 --- !u!1 &8756128142391033291
 GameObject:
   m_ObjectHideFlags: 0
