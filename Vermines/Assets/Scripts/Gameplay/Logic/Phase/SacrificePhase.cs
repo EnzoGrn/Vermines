@@ -35,6 +35,9 @@ namespace Vermines.Gameplay.Phases {
 
         public override void Run(PlayerRef player)
         {
+            // Check if the game is currently initialized
+            if (player == PlayerRef.None || PlayerController.Local == null || GameDataStorage.Instance.PlayerDeck == null || GameDataStorage.Instance.PlayerDeck.TryGetValue(player, out PlayerDeck _) == false)
+                return;
             PlayerController.Local.ClearTracker();
 
             _CurrentPlayer = player;

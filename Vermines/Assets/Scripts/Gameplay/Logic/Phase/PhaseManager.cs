@@ -5,8 +5,10 @@ using System.Linq;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Phases {
-
+    using System.Collections;
     using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.Menu.Screen.Tavern.Network;
+    using Vermines.Player;
     using Vermines.UI.Plugin;
 
     public class PhaseManager : NetworkBehaviour {
@@ -94,8 +96,6 @@ namespace Vermines.Gameplay.Phases {
 
         public void ProcessPhase(PhaseType currentPhase, PlayerRef playerRef)
         {
-            Debug.Log($"[SERVER]: Processing the phase for {playerRef}, currently playing {currentPhase}");
-
             _Phases[currentPhase].Run(playerRef);
         }
 

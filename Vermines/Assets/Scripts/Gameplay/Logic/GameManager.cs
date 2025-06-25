@@ -114,15 +114,14 @@ namespace Vermines {
                 return;
             if (SettingsData.Equals(default(GameSettingsData))) // If it's a default value (not a custom game), then load the default game configuration.
                 SettingsData = Configuration.ToGameSettingsData();
-            if (_Initializer.InitializePlayers(SettingsData) == -1)
-                return;
             InitializePlayerOrder();
-            if (_Initializer.InitalizePhase() == -1)
-                return;
+
+            _Initializer.InitializePlayers(SettingsData);
+
             if (_Initializer.DeckDistribution(Rand) == -1)
-                return;
+                return; // TODO: Handle error.
             if (_Initializer.InitializeShop(SettingsData.Seed) == -1)
-                return;
+                return; // TODO: Handle error.
             _Initializer.StartingDraw(SettingsData.NumberOfCardsToStartWith);
 
             Start = true;
@@ -213,6 +212,8 @@ namespace Vermines {
 
         private void InitializePlayerOrder()
         {
+            // TODO: Create a random order of players at the start of the game.
+
             int orderIndex = 0;
 
             foreach (var playerData in GameDataStorage.Instance.PlayerData) {
@@ -239,6 +240,8 @@ namespace Vermines {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_StartClientSideStuff()
         {
+            PhaseManager.Instance.Initialize();
+
             _routineManager = FindFirstObjectByType<RoutineManager>();
 
             if (_routineManager)

@@ -331,6 +331,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Join a custom party
       objectReference: {fileID: 0}
+    - target: {fileID: 5042113231854255566, guid: c144c5a75b6f3394ab56904814326d1f, type: 3}
+      propertyPath: m_text
+      value: Join
+      objectReference: {fileID: 0}
     - target: {fileID: 5095847340865393364, guid: c144c5a75b6f3394ab56904814326d1f, type: 3}
       propertyPath: m_Name
       value: JoinCard
