@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using Vermines.GameDesign.Initializer;
 
 public class HoverPhaseLocation : IGGD_Behaviour {
@@ -19,6 +20,11 @@ public class HoverPhaseLocation : IGGD_Behaviour {
     private MaterialPropertyBlock _PropBlock;
 
     private Color _TransparentColor = new(0f, 1f, 0f, 0f); // Transparent color
+
+    // Mouse events detection
+    private GraphicRaycaster _raycaster;
+    private PointerEventData _pointerEventData;
+    private EventSystem _eventSystem;
     #endregion
 
     CamManager _CameraManager;
@@ -55,11 +61,30 @@ public class HoverPhaseLocation : IGGD_Behaviour {
             _CameraManager.OnCamLocationChanged.AddListener(OnCamAnimationCompleted);
             _CameraManager.OnCamLocationIsChanging.AddListener(OnCamNotOnLocation);
         }
+
+        _eventSystem = EventSystem.current;
+        _raycaster = FindFirstObjectByType<GraphicRaycaster>();
+
+    }
+
+    private bool IsPointerOverUI()
+    {
+        _pointerEventData = new PointerEventData(_eventSystem)
+        {
+            position = Input.mousePosition
+        };
+
+        List<RaycastResult> results = new();
+        _raycaster.Raycast(_pointerEventData, results);
+
+        // On ignore les raycasts si ce ne sont que des éléments transparents / non interactifs
+        return results.Count > 0;
     }
 
     private void OnMouseEnter()
     {
-        if (_CameraManager == null || EventSystem.current.IsPointerOverGameObject())
+        //if (_CameraManager == null || EventSystem.current.IsPointerOverGameObject())
+        if (_CameraManager == null || IsPointerOverUI())
             return;
         if (_CanHoverLocations)
             ApplyOutline(true);

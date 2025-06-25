@@ -114,6 +114,13 @@ public class CamManager : MonoBehaviour {
 
         _IsAnimated = true;
 
+        // Close the UI
+        GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+        if (gameplayUIController)
+        {
+            gameplayUIController.Hide();
+        }
+
         if (splineID == 0)
         {
             _CinemachineSplineDolly.SplineSettings.Spline.Spline = _SplineContainerRef.Splines[_SplineID - 1];
