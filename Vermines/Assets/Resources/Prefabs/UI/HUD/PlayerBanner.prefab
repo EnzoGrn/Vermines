@@ -669,9 +669,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2f6b2f179bda57418ed950ca495a8ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onHideComplete:
+    m_PersistentCalls:
+      m_Calls: []
   nicknameText: {fileID: 8448030125051477157}
-  eloquenceText: {fileID: 6307927075711677442}
-  soulsText: {fileID: 496529015923178744}
+  eloquenceText: {fileID: 7716798578236153950}
+  soulsText: {fileID: 9185906873650725192}
   root: {fileID: 842492557416429263}
   backgroundImage: {fileID: 5188855616828191633}
   avatarImage: {fileID: 2481510804329499511}
@@ -1273,6 +1276,7 @@ GameObject:
   - component: {fileID: 6874920875351649575}
   - component: {fileID: 3250444234607059874}
   - component: {fileID: 6307927075711677442}
+  - component: {fileID: 3418256538283616942}
   m_Layer: 5
   m_Name: Value
   m_TagString: Untagged
@@ -1398,6 +1402,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3418256538283616942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7716798578236153950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7bfd0c8b16b0764ba11512a1cd0f565, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: {fileID: 6307927075711677442}
+  totalDuration: 0.5
+  changeColor: {r: 0.73289436, g: 0.015686274, b: 1, a: 1}
+  sizeFactor: 1.2
+  returnDuration: 0.2
 --- !u!1 &8040055691385718697
 GameObject:
   m_ObjectHideFlags: 0
@@ -1521,6 +1542,7 @@ GameObject:
   - component: {fileID: 8147964336807813174}
   - component: {fileID: 2955656878418182444}
   - component: {fileID: 496529015923178744}
+  - component: {fileID: 5053178494458993849}
   m_Layer: 5
   m_Name: Value
   m_TagString: Untagged
@@ -1646,3 +1668,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5053178494458993849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9185906873650725192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7bfd0c8b16b0764ba11512a1cd0f565, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: {fileID: 496529015923178744}
+  totalDuration: 0.5
+  changeColor: {r: 0.8415094, g: 0.03359583, b: 0, a: 1}
+  sizeFactor: 1.2
+  returnDuration: 0.2

@@ -90,13 +90,10 @@ namespace Vermines.UI.Plugin
             banner.onHideComplete.AddListener(() =>
             {
 
-                // Réorganisation
                 banner.transform.SetAsLastSibling();
 
-                // Rejoue Show
                 banner.Show();
 
-                // Applique l’état actif uniquement au nouveau premier
                 for (int i = 0; i < _banners.Count; i++)
                 {
                     _banners[i].SetActive(i == 0);

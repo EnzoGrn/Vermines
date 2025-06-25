@@ -57,8 +57,8 @@ namespace Vermines.UI
         [Header("UI References")]
 
         [SerializeField] private Text nicknameText;
-        [SerializeField] private Text eloquenceText;
-        [SerializeField] private Text soulsText;
+        [SerializeField] private GameObject eloquenceText;
+        [SerializeField] private GameObject soulsText;
         [SerializeField] private RectTransform root;
         [SerializeField] private Image backgroundImage;
         [SerializeField] private Image avatarImage;
@@ -92,8 +92,17 @@ namespace Vermines.UI
 
         public void UpdateStats(PlayerData playerData)
         {
-            eloquenceText.text = playerData.Eloquence.ToString();
-            soulsText.text = playerData.Souls.ToString();
+            AnimatedCountingTextNative eloquenceScript = eloquenceText.GetComponent<AnimatedCountingTextNative>();
+            if (eloquenceScript != null)
+            {
+                eloquenceScript.SetValue(playerData.Eloquence);
+            }
+
+            AnimatedCountingTextNative soulsScript = soulsText.GetComponent<AnimatedCountingTextNative>();
+            if (soulsScript != null)
+            {
+                soulsScript.SetValue(playerData.Souls);
+            }
         }
 
         public void SetActive(bool isActive)
@@ -130,7 +139,7 @@ namespace Vermines.UI
                 return;
             }
 
-            _canvasGroup.alpha = 0f; // invisible
+            _canvasGroup.alpha = 0f;
             _canvasGroup.interactable = false;
             _canvasGroup.blocksRaycasts = false;
         }
@@ -170,7 +179,7 @@ namespace Vermines.UI
     }
 #endif
 
-            _canvasGroup.alpha = 0f; // invisible
+            _canvasGroup.alpha = 0f;
             _canvasGroup.interactable = false;
             _canvasGroup.blocksRaycasts = false;
         }
