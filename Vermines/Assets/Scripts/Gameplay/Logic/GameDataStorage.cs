@@ -127,7 +127,7 @@ namespace Vermines {
 
             PlayerData.Set(playerRef, data);
 
-            var player = Runner.Spawn(PlayerPrefabs, Vector3.zero, Quaternion.identity, playerRef);
+            var player = Runner.SpawnAsync(PlayerPrefabs, Vector3.zero, Quaternion.identity, playerRef);
 
             // Set player instance as PlayerObject so we can easily get it from other locations.
             Runner.SetPlayerObject(playerRef, player.Object);
