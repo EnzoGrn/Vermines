@@ -166,29 +166,17 @@ namespace Vermines.Player {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
             if (response.Status == CommandStatus.Success) {
-                Debug.Log($"[SERVER]: {response.Message}");
 
-                //GameEvents.OnCardDiscarded.Invoke(card);
+                GameEvents.OnCardDiscarded.Invoke(card);
 
-                if (_DiscardedCardTrackerPerTurn.HasCard(card) && card.Data.Type == CardType.Tools && !card.Data.IsStartingCard) {
-                    Debug.Log($"[SERVER]: This tool '{card.Data.Name}' card already discarded this turn");
-                    if (HasStateAuthority)
-                    {
-                        RPC_DiscardCardNoEffect(playerId, cardId);
-                    }
-                } else {
-                    Debug.Log($"[SERVER]: {response.Message}");
+                if (_DiscardedCardTrackerPerTurn.HasCard(card) && card.Data.Type == CardType.Tools && !card.Data.IsStartingCard)
+                    return;
+                _DiscardedCardTrackerPerTurn.AddCard(card);
 
-                    _DiscardedCardTrackerPerTurn.AddCard(card);
-
-                    foreach (AEffect effect in card.Data.Effects) {
-                        if (effect.Type == EffectType.Discard) {
-                            effect.Play(player);
-                        }
-                    }
-                    GameEvents.OnCardDiscarded.Invoke(card);
+                foreach (AEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Discard)
+                        effect.Play(player);
                 }
-
             } else {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
                 GameEvents.OnCardDiscardedRefused.Invoke(card);
