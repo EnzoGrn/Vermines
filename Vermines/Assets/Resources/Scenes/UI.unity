@@ -1062,7 +1062,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 140, y: -20}
-  m_SizeDelta: {x: 250, y: 30}
+  m_SizeDelta: {x: 250, y: 24.01}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &138244047
 MonoBehaviour:
@@ -7384,8 +7384,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 140, y: -204.01001}
-  m_SizeDelta: {x: 250, y: 300}
+  m_AnchoredPosition: {x: 140, y: -199.505}
+  m_SizeDelta: {x: 250, y: 290.99}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &789275360
 MonoBehaviour:
@@ -12068,8 +12068,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 140, y: -210}
-  m_SizeDelta: {x: 250, y: 300}
+  m_AnchoredPosition: {x: 140, y: -199.505}
+  m_SizeDelta: {x: 250, y: 290.99}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1282193278
 MonoBehaviour:
@@ -25334,7 +25334,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4257037016180511768}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
   m_Name: 
@@ -31222,8 +31222,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerBannerPrefab: {fileID: 8617780805097864372, guid: 3ee61d43e4175fa49996444f5273c7f4, type: 3}
   bannerParent: {fileID: 8745013460868073715}
-  spacing: 150
-  transitionDuration: 0.4
+  transitionDuration: 0.6
 --- !u!1 &8756128142391033291
 GameObject:
   m_ObjectHideFlags: 0

@@ -64,7 +64,6 @@ namespace Vermines.UI
             if (!_animator)
                 Debug.LogErrorFormat(gameObject, "[{0}] {1} {2}", nameof(PlayerBookTab), gameObject.name, "PlayerBookTab is not properly initialized. Animator component is missing.");
 
-
             _playerCultist.SetActive(false);
         }
 
