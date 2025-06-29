@@ -72,6 +72,7 @@ public class NarrationDialog : MonoBehaviour
         StopAllCoroutines();
         _subtitleText.text = "";
         _dialogLines.Clear();
+        OnDialogComplete.Invoke();
     }
 
     /// <summary>
