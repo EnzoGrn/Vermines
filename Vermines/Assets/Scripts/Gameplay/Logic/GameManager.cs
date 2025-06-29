@@ -172,8 +172,11 @@ namespace Vermines {
             } else { // Matchmaking game
                 if (HasStateAuthority) // When you are the host and you leave for disconnect everyone because you close the server.
                     RPC_ForceReturnToTavernEveryone();
-                else // Local leave.
+                else
+                {
+                    // Local leave.
                     await ReturnToTavern();
+                }
             }
         }
 
@@ -228,6 +231,7 @@ namespace Vermines {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private async void RPC_ForceReturnToTavernEveryone()
         {
+            Debug.Log("[GameManager]: Force everyone to return to the tavern.");
             await ReturnToTavern();
         }
 
