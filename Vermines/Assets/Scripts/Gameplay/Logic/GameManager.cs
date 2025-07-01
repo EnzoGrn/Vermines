@@ -110,6 +110,10 @@ namespace Vermines {
 
         public void StartGame()
         {
+            // Get the skyboxEvolution componennt to set it up and bind listeners
+            Debug.Log("[GameManager]: Initialise SkyboxEvolution...");
+            FindAnyObjectByType<SkyboxEvolution>(FindObjectsInactive.Include)?.InitSkyboxSettings();
+
             if (HasStateAuthority == false)
                 return;
             if (SettingsData.Equals(default(GameSettingsData))) // If it's a default value (not a custom game), then load the default game configuration.
