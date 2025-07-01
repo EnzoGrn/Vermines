@@ -128,6 +128,9 @@ public class SkyboxEvolution : MonoBehaviour
         DirectionalLight.color = _originalDLCOlor;
         DirectionalLight.intensity = _originalIntensity;
 
+        _currentValue = 0.01f; // Reset current value to initial state
+        _actualMaxSouls = 0; // Reset actual max souls to initial state
+
         DynamicGI.UpdateEnvironment();
     }
 
