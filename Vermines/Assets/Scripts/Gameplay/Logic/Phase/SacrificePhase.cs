@@ -7,6 +7,7 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.CardSystem.Elements;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
+    using Vermines.UI;
 
     public class SacrificePhase : APhase {
 
@@ -39,23 +40,26 @@ namespace Vermines.Gameplay.Phases {
             if (player == PlayerRef.None || PlayerController.Local == null || GameDataStorage.Instance.PlayerDeck == null || GameDataStorage.Instance.PlayerDeck.TryGetValue(player, out PlayerDeck _) == false)
                 return;
             PlayerController.Local.ClearTracker();
+            Reset();
 
             _CurrentPlayer = player;
 
             Debug.Log($"Phase {Type} is now running");
 
-            Reset();
-
             List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
 
             GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
 
-            if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef) {
+            if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
+            {
                 CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
 
                 if (camera != null)
                     camera.GoOnSacrificeLocation();
-            } else if (playedCards.Count == 0) {
+            }
+            else if (playedCards.Count == 0)
+            {
+                Debug.Log($"[Server]: ({Type}) Calling OnPhaseEnding by logic");
                 OnPhaseEnding(_CurrentPlayer, true);
             }
         }
@@ -85,25 +89,31 @@ namespace Vermines.Gameplay.Phases {
         {
             if (Type != PhaseType.Sacrifice)
                 return;
+            if (_CurrentPlayer != PlayerController.Local.PlayerRef)
+                return;
+            if (_NumberOfCardSacrified >= GameManager.Instance.Configuration.MaxSacrificesPerTurn)
+                return;
+
             Debug.Log("[Client]: Card Sacrified");
             int cardId = cardSacrified.ID;
             ICard card = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Find(card => card.ID == cardId);
 
             if (card != null)
             {
-                Debug.Log($"[Client]: Card {card.ID} is now sacrificed");
-                if (_CurrentPlayer == PlayerController.Local.PlayerRef)
-                {
-                    PlayerController.Local.OnCardSacrified(card.ID);
-                }
-
+                int cardCount = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Count;
+                PlayerController.Local.OnCardSacrified(card.ID);
+                cardCount--;
                 _NumberOfCardSacrified++;
 
-                if (_NumberOfCardSacrified >= GameManager.Instance.SettingsData.MaxSacrificesPerTurn
-                    || GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Count == 0)
+                if (_NumberOfCardSacrified >= GameManager.Instance.SettingsData.MaxSacrificesPerTurn || cardCount == 0)
                 {
                     // Pop up context
                     OnPhaseEnding(_CurrentPlayer, true);
+                    GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+                    if (gameplayUIController != null)
+                    {
+                        // TODO: Hide the tableAdd commentMore actions
+                    }
                 }
             }
             else

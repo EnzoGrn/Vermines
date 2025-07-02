@@ -96,6 +96,8 @@ namespace Vermines.Gameplay.Phases {
 
         public void ProcessPhase(PhaseType currentPhase, PlayerRef playerRef)
         {
+            Debug.Log($"[SERVER]: Processing the phase for {playerRef} (Player Index: {GameManager.Instance.CurrentPlayerIndex}), currently playing {currentPhase}");
+
             _Phases[currentPhase].Run(playerRef);
         }
 
