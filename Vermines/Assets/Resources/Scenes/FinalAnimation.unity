@@ -931,7 +931,7 @@ Transform:
   m_GameObject: {fileID: 575640206}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -145}
+  m_LocalPosition: {x: -14.09, y: -9.8, z: -25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1076,6 +1076,8 @@ PlayableDirector:
     value: {fileID: 1226692230}
   - key: {fileID: 5267922518986959956, guid: ef6da2a6bf8f4ad4fb50427db15b5dbc, type: 2}
     value: {fileID: 164449582}
+  - key: {fileID: -6762953311602307191, guid: ef6da2a6bf8f4ad4fb50427db15b5dbc, type: 2}
+    value: {fileID: 1093533759}
   m_ExposedReferences:
     m_References: []
 --- !u!4 &1016808697
@@ -1111,7 +1113,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1093533760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1794,7 +1796,7 @@ Transform:
   m_GameObject: {fileID: 1829845890}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -145}
+  m_LocalPosition: {x: -14.09, y: -9.8, z: -25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
