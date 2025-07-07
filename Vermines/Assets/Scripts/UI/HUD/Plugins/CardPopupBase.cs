@@ -119,6 +119,7 @@ namespace Vermines.UI.Plugin
             ClearUI();
         }
 
+#if UNITY_EDITOR
         /// <summary>
         /// Unity callback used to validate references when edited in the Inspector.
         /// </summary>
@@ -148,6 +149,7 @@ namespace Vermines.UI.Plugin
             if (cancelButton == null)
                 Debug.LogErrorFormat(gameObject, "[{0}] {1} {2}", nameof(CardPopupBase), gameObject.name, "Cancel button is not assigned.");
         }
+#endif
 
         #endregion
 

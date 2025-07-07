@@ -18,6 +18,6 @@ MonoBehaviour:
   EloquenceToStartWith: 0
   NumberOfEloquencesEarnInGainPhase: 2
   MaxSoul: 100
-  SoulToStartWith: 99
+  SoulToStartWith: 0
   BonusSoulInFamilySacrifice: 5
   MaxSacrificesPerTurn: 1
