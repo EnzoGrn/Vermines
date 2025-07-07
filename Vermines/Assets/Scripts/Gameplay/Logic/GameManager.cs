@@ -182,6 +182,9 @@ namespace Vermines {
 
         private async Task ReturnToTavern()
         {
+            if (_routineManager)
+                _routineManager.StopRoutine();
+
             // Put everyone on the loading screen
             VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
 
@@ -200,6 +203,9 @@ namespace Vermines {
 
         private async Task ReturnToCustomTavern()
         {
+            if (_routineManager)
+                _routineManager.StopRoutine();
+
             // Put everyone on the loading screen
             VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
 
@@ -244,6 +250,10 @@ namespace Vermines {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_StartClientSideStuff()
         {
+            // Get the skyboxEvolution componennt to set it up and bind listeners
+            Debug.Log("[GameManager]: Initialise SkyboxEvolution...");
+            FindAnyObjectByType<SkyboxEvolution>(FindObjectsInactive.Include)?.InitSkyboxSettings();
+
             PhaseManager.Instance.Initialize();
 
             _routineManager = FindFirstObjectByType<RoutineManager>();

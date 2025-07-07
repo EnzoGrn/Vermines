@@ -37,12 +37,17 @@ public class SkyboxEvolution : MonoBehaviour
 
     void Start()
     {
-        InitSkyboxSettings();
+        //InitSkyboxSettings();
     }
 
     void OnDestroy()
     {
+        StopAllCoroutines();
+
         ResetSkybox();
+
+        //RenderSettings.skybox = OriginalSkyboxMaterial;
+        //RenderSettings.skybox = new Material(OriginalSkyboxMaterial);
 
         GameEvents.OnPlayerWin.RemoveListener(OnPlayerWin);
         GameEvents.OnPlayersUpdated.RemoveListener(UpdateSkybox);
@@ -51,7 +56,7 @@ public class SkyboxEvolution : MonoBehaviour
     /// <summary>
     /// Save the default config of the skybox
     /// </summary>
-    private void InitSkyboxSettings()
+    public void InitSkyboxSettings()
     {
         if (DirectionalLight == null || OriginalSkyboxMaterial == null)
         {
@@ -59,36 +64,26 @@ public class SkyboxEvolution : MonoBehaviour
             return;
         }
 
-        // Instantiate a new material to avoid modifying the original one
-        _skyboxMaterial = new Material(OriginalSkyboxMaterial);
-        RenderSettings.skybox = _skyboxMaterial;
+        if (_skyboxMaterial == null)
+        {
+            // Instantiate a new material to avoid modifying the original one
+            Debug.Log("[InitSkyboxSettings] Creating a new skybox material from the original one.");
+            _skyboxMaterial = new Material(OriginalSkyboxMaterial);
+            RenderSettings.skybox = _skyboxMaterial;
+        }
 
-        _originalSkyboxTint = OriginalSkyboxMaterial.GetColor("_Tint");
-        _originalExposure = OriginalSkyboxMaterial.GetFloat("_Exposure");
-        Debug.Log($"[SkyboxEvolution] Original Fog Color: {RenderSettings.fogColor}");
+        _originalSkyboxTint = _skyboxMaterial.GetColor("_Tint");
+        _originalExposure = _skyboxMaterial.GetFloat("_Exposure");
         _originalDLCOlor = DirectionalLight.color;
         _originalIntensity = DirectionalLight.intensity;
 
         GameEvents.OnPlayersUpdated.AddListener(UpdateSkybox);
         GameEvents.OnPlayerWin.AddListener(OnPlayerWin);
 
-        //if (OriginalSkyboxMaterial.HasProperty("_Tint"))
-        //{
-        //    _originalSkyboxTint = OriginalSkyboxMaterial.GetColor("_Tint");
-        //}
-        //else
-        //{
-        //    Debug.LogWarning("[SkyboxEvolution] Skybox shader does not have a '_Tint' property.");
-        //}
+        DynamicGI.UpdateEnvironment();
 
-        //if (OriginalSkyboxMaterial.HasProperty("_Exposure"))
-        //{
-        //    _originalExposure = OriginalSkyboxMaterial.GetFloat("_Exposure");
-        //}
-        //else
-        //{
-        //    Debug.LogWarning("[SkyboxEvolution] Skybox shader does not have an '_Exposure' property.");
-        //}
+        Debug.Log($"[InitSkyboxSettings]: Original data, sky tint {_originalSkyboxTint}, sky sxposure {_originalExposure}\n" +
+            $"dl color {DirectionalLight.color}, dl intensity {DirectionalLight.intensity}");
     }
 
     /// <summary>
@@ -119,15 +114,24 @@ public class SkyboxEvolution : MonoBehaviour
             return;
         }
 
-        _skyboxMaterial.SetColor("_Tint", _originalSkyboxTint);
-        _skyboxMaterial.SetFloat("_Exposure", _originalExposure);
+        Debug.Log("[ResetSkybox] Resetting skybox to original settings.");
+        Debug.Log($"[ResetSkybox] Original data, sky tint {_originalSkyboxTint}, sky exposure {_originalExposure}\n" +
+            $"dl color {DirectionalLight.color}, dl intensity {DirectionalLight.intensity}");
+
+        //_skyboxMaterial.SetColor("_Tint", _originalSkyboxTint);
+        //_skyboxMaterial.SetFloat("_Exposure", _originalExposure);
         RenderSettings.fogColor = FromColorFog;
 
-        //RenderSettings.skybox.SetColor("_Tint", _originalSkyboxTint);
-        //RenderSettings.skybox.SetFloat("_Exposure", _originalExposure);
+        RenderSettings.skybox.SetColor("_Tint", _originalSkyboxTint);
+        RenderSettings.skybox.SetFloat("_Exposure", _originalExposure);
 
         DirectionalLight.color = _originalDLCOlor;
         DirectionalLight.intensity = _originalIntensity;
+
+        _currentValue = 0.01f; // Reset current value to initial state
+        _actualMaxSouls = 0; // Reset actual max souls to initial state
+
+        DynamicGI.UpdateEnvironment();
     }
 
     /// <summary>
@@ -137,6 +141,20 @@ public class SkyboxEvolution : MonoBehaviour
     /// <param name="localPlayerRef"></param>
     public void OnPlayerWin(PlayerRef winnerRef, PlayerRef localPlayerRef)
     {
+        GameEvents.OnPlayerWin.RemoveListener(OnPlayerWin);
+        GameEvents.OnPlayersUpdated.RemoveListener(UpdateSkybox);
+        
+        StopAllCoroutines();
+
+        StartCoroutine(DelayedResetSkybox());
+        //ResetSkybox();
+    }
+
+    private IEnumerator DelayedResetSkybox()
+    {
+        // Laisse un frame à Unity pour terminer toute mise à jour du rendu en cours
+        yield return null;
+
         ResetSkybox();
     }
 
