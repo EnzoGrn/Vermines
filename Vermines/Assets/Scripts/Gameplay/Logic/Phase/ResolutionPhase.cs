@@ -10,10 +10,8 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.HUD.Card;
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
-    using Vermines.UI.Shop;
 
     public class ResolutionPhase : APhase {
 
@@ -61,6 +59,12 @@ namespace Vermines.Gameplay.Phases {
                     if (effect.Type == EffectType.Passive)
                         effect.Stop(player);
                 }
+            }
+
+            // Clear the context manager
+            if (UIContextManager.Instance != null)
+            {
+                UIContextManager.Instance.ClearContext();
             }
 
             OnPhaseEnding(player, true); // Here true, because everyone know that the phase is over.

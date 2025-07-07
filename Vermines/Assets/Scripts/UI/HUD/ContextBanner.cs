@@ -1,13 +1,9 @@
-﻿using Fusion;
+﻿using UnityEngine;
 using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
-using Vermines.Player;
-using Vermines.UI.Utils;
 
 namespace Vermines.UI
 {
-    public class PlayerBookTab : MonoBehaviour
+    public class ContextBanner : MonoBehaviour
     {
         #region Attributes
 
@@ -22,16 +18,6 @@ namespace Vermines.UI
         protected static readonly int ShowAnimHash = Animator.StringToHash("Show");
 
         /// <summary>
-        /// Cached 'Active' animation hash.
-        /// </summary>
-        protected static readonly int ActiveAnimHash = Animator.StringToHash("Active");
-
-        /// <summary>
-        /// Cached 'Idle' animation hash.
-        /// </summary>
-        protected static readonly int IdleAnimHash = Animator.StringToHash("Idle");
-
-        /// <summary>
         /// The animator component.
         /// </summary>
         private Animator _animator;
@@ -41,17 +27,7 @@ namespace Vermines.UI
         /// </summary>
         private Coroutine _HideCoroutine;
 
-        [SerializeField]
-        private GameObject _playerCultist;
-
-        [SerializeField]
-        private Image _cultistImage;
-
-        [SerializeField]
-        private Image _cultistBgImage;
-
-        private PlayerRef _playerRef;
-        public PlayerRef PlayerRef => _playerRef;
+        public IUIContext AssociatedContext { get; set; }
 
         #endregion
 
@@ -62,8 +38,6 @@ namespace Vermines.UI
             TryGetComponent(out _animator);
             if (!_animator)
                 Debug.LogErrorFormat(gameObject, "[{0}] {1} {2}", nameof(PlayerBookTab), gameObject.name, "PlayerBookTab is not properly initialized. Animator component is missing.");
-
-            _playerCultist.SetActive(false);
         }
 
         /// <summary>
@@ -97,61 +71,6 @@ namespace Vermines.UI
             }
 
             gameObject.SetActive(false);
-        }
-
-        public void OnShow()
-        {
-            if (_playerCultist != null)
-            {
-                _playerCultist.SetActive(true);
-            }
-        }
-
-        public void OnHide()
-        {
-            if (_playerCultist != null)
-            {
-                _playerCultist.SetActive(false);
-            }
-        }
-
-        public void UpdateTab(PlayerData player, bool force = false)
-        {
-            if (force || player.PlayerRef != _playerRef)
-            {
-                _playerRef = player.PlayerRef;
-                UpdateVisuals(player);
-            }
-        }
-
-        private void UpdateVisuals(PlayerData player)
-        {
-            if (_cultistImage != null)
-            {
-                _cultistImage.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Family, "Cultist");
-            }
-            if (_cultistBgImage != null)
-            {
-                _cultistBgImage.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Family, "Background");
-            }
-        }
-
-        /// <summary>
-        /// Plays the 'Active' animation to visually indicate the tab is selected.
-        /// </summary>
-        public void PlayActiveAnimation(bool isActive)
-        {
-            if (_animator != null && _animator.gameObject.activeInHierarchy && _animator.HasState(0, ActiveAnimHash))
-            {
-                if (isActive)
-                {
-                    _animator.Play(ActiveAnimHash, 0, 0f);
-                }
-                else
-                {
-                    _animator.Play(IdleAnimHash, 0, 0f);
-                }
-            }
         }
 
         public IEnumerator PlayShowAnimCoroutine()

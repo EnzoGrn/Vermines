@@ -20,7 +20,7 @@ public class PlayCardEffectStrategy : IDiscardPopupStrategy
 
     public string GetMessage()
     {
-        var text = effect.Description; // ou localisation, ou autre méthode pour obtenir le message
+        var text = effect.Description; // TODO: Add localization support
         if (text.EndsWith("."))
         {
             text = text.Substring(0, text.Length - 1) + "?";
@@ -28,9 +28,9 @@ public class PlayCardEffectStrategy : IDiscardPopupStrategy
         return text;
     }
 
-    public string GetConfirmText() => "Yes"; // ou localisation
+    public string GetConfirmText() => "Yes"; // TODO: Add localization support
 
-    public string GetCancelText() => "Cancel"; // ou localisation
+    public string GetCancelText() => "Cancel"; // TODO: Add localization support
 
     public void OnConfirm()
     {

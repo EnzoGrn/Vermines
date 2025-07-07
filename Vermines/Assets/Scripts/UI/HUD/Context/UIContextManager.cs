@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Fusion;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using Vermines.UI;
 
 /// <summary>
 /// Manages UI context transitions using a stack-based system.
@@ -11,12 +15,28 @@ public class UIContextManager : MonoBehaviour
     /// </summary>
     public static UIContextManager Instance { get; private set; }
 
-    [SerializeField]
-    private TMPro.TMP_Text _currentContext;
-    [SerializeField]
-    private GameObject _contextBanner;
+    [Header("UI References")]
+
+    /// <summary>
+    /// Banner GameObject that displays the current context name.
+    /// </summary>
+    [InlineHelp, SerializeField]
+    private GameObject _bannerPrefab;
+
+    /// <summary>
+    /// Transform for the banner container where banners will be displayed.
+    /// </summary>
+    [InlineHelp, SerializeField]
+    private Transform _bannerContainer;
+
+    /// <summary>
+    /// The number of banners to display at once.
+    /// This number represents the N most recent contexts.
+    [InlineHelp, SerializeField]
+    private int _maxBanners = 3;
 
     protected Stack<IUIContext> _contextStack = new();
+    private readonly List<GameObject> _activeBanners = new();
 
     /// <summary>
     /// Initializes the singleton instance.
@@ -32,9 +52,10 @@ public class UIContextManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        if (_contextBanner != null)
+        if (_bannerContainer != null)
         {
-            _contextBanner.SetActive(false);
+            foreach (Transform child in _bannerContainer)
+                Destroy(child.gameObject);
         }
     }
 
@@ -57,6 +78,7 @@ public class UIContextManager : MonoBehaviour
         ClearContext();
         _contextStack.Push(context);
         context.Enter();
+        RefreshContextBanners();
     }
 
     /// <summary>
@@ -67,16 +89,8 @@ public class UIContextManager : MonoBehaviour
     {
         Debug.LogFormat(gameObject, "[{0}] Pushing context: {1}", nameof(UIContextManager), context);
         _contextStack.Push(context);
-        if (_contextBanner != null)
-        {
-            _contextBanner.SetActive(true);
-            _currentContext.text = GetContextName(context);
-        }
-        else
-        {
-            Debug.LogWarning("Context banner is not set.");
-        }
         context.Enter();
+        RefreshContextBanners();
     }
 
     /// <summary>
@@ -92,17 +106,8 @@ public class UIContextManager : MonoBehaviour
         var context = GetContext<T>() ?? new T();
         Debug.LogFormat(gameObject, "[{0}] Pushing context: {1}", nameof(UIContextManager), context);
         _contextStack.Push(context);
-
-        if (_contextBanner != null)
-        {
-            _contextBanner.SetActive(true);
-            _currentContext.text = GetContextName(context);
-        }
-        else
-        {
-            Debug.LogWarning("Context banner is not set.");
-        }
         context.Enter();
+        RefreshContextBanners();
     }
 
     /// <summary>
@@ -113,23 +118,8 @@ public class UIContextManager : MonoBehaviour
         if (_contextStack.Count > 0)
         {
             var context = _contextStack.Pop();
-            Debug.LogFormat(gameObject, "[{0}] Popping context: {1}, remaining: {2}", nameof(UIContextManager), context, _contextStack.Count);
             context.Exit();
-            if (_contextStack.Count == 0)
-            {
-                if (_contextBanner != null)
-                {
-                    _contextBanner.SetActive(false);
-                }
-            }
-            else
-            {
-                var newContext = _contextStack.Peek();
-                if (_contextBanner != null)
-                {
-                    _currentContext.text = GetContextName(newContext);
-                }
-            }
+            RefreshContextBanners();
         }
     }
 
@@ -143,10 +133,7 @@ public class UIContextManager : MonoBehaviour
             var context = _contextStack.Pop();
             context.Exit();
         }
-        if (_contextBanner != null)
-        {
-            _contextBanner.SetActive(false);
-        }
+        ClearBanners();
     }
 
     /// <summary>
@@ -190,15 +177,7 @@ public class UIContextManager : MonoBehaviour
             _contextStack.Push(newStack.Pop());
         }
 
-        if (_contextBanner != null)
-        {
-            _contextBanner.SetActive(_contextStack.Count > 0);
-            if (_contextStack.Count > 0)
-            {
-                var newContext = _contextStack.Peek();
-                _currentContext.text = GetContextName(newContext);
-            }
-        }
+        RefreshContextBanners();
 
         Debug.LogFormat(gameObject, "[{0}] Popped context of type {1}. Remaining contexts: {2}", nameof(UIContextManager), typeof(T).Name, _contextStack.Count);
     }
@@ -232,6 +211,86 @@ public class UIContextManager : MonoBehaviour
 
     private string GetContextName(IUIContext context)
     {
-        return "Context: " + context.GetName();
+        // TODO: Implement Localization support for context names
+        return context.GetName();
+    }
+
+    private void RefreshContextBanners()
+    {
+        StartCoroutine(RefreshBannersCoroutine());
+    }
+
+    private IEnumerator RefreshBannersCoroutine()
+    {
+        var tempStack = new Stack<IUIContext>(_contextStack);
+        var recentContexts = new List<IUIContext>();
+        while (tempStack.Count > 0 && recentContexts.Count < _maxBanners)
+        {
+            recentContexts.Insert(0, tempStack.Pop());
+        }
+
+        for (int i = _activeBanners.Count - 1; i >= 0; i--)
+        {
+            var bannerGO = _activeBanners[i];
+            var banner = bannerGO.GetComponent<ContextBanner>();
+            var context = banner?.AssociatedContext;
+
+            if (!recentContexts.Contains(context))
+            {
+                _activeBanners.RemoveAt(i);
+                if (banner != null)
+                    yield return StartCoroutine(banner.PlayHideAnimation());
+                GameObject.Destroy(bannerGO);
+            }
+        }
+
+        for (int i = 0; i < recentContexts.Count; i++)
+        {
+            var context = recentContexts[i];
+            bool found = false;
+
+            for (int j = 0; j < _activeBanners.Count; j++)
+            {
+                var banner = _activeBanners[j].GetComponent<ContextBanner>();
+                if (banner != null && banner.AssociatedContext == context)
+                {
+                    if (j != i)
+                    {
+                        _activeBanners[j].transform.SetSiblingIndex(i);
+                    }
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                var bannerGO = Instantiate(_bannerPrefab, _bannerContainer);
+                var banner = bannerGO.GetComponent<ContextBanner>();
+                var textComponent = bannerGO.GetComponentInChildren<TMP_Text>();
+                if (textComponent != null)
+                {
+                    textComponent.text = GetContextName(context);
+                }
+
+                if (banner != null)
+                {
+                    banner.AssociatedContext = context;
+                    yield return StartCoroutine(banner.PlayShowAnimCoroutine());
+                }
+
+                _activeBanners.Insert(i, bannerGO);
+                bannerGO.transform.SetSiblingIndex(i);
+            }
+        }
+    }
+
+    private void ClearBanners()
+    {
+        foreach (var banner in _activeBanners)
+        {
+            Destroy(banner);
+        }
+        _activeBanners.Clear();
     }
 }
