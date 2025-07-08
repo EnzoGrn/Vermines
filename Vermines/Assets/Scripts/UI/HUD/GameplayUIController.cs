@@ -89,6 +89,19 @@ namespace Vermines.UI
             }
         }
 
+        protected virtual void OnDestroy()
+        {
+            // Cleanup the screen lookup dictionary
+            _ScreenLookup.Clear();
+            _ScreenLookup = null;
+            // Cleanup the popup handlers
+            _PopupHandler = null;
+            _DualPopupHandler = null;
+            // Cleanup the active screen
+            _ActiveScreen = null;
+            _LastScreen = null;
+        }
+
         #endregion
 
         #region Methods

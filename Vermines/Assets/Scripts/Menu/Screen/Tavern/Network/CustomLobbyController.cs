@@ -131,7 +131,7 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
                     manager.SettingsData = settingsManager.NetworkConfig;
 
-                    manager.WaitAndStartGame(2.0f);
+                    manager.WaitAndStartGame(5.0f);
                 }
 
                 // -- Unload the lobby scene

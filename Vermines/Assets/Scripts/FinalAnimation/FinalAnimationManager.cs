@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -100,7 +100,7 @@ public class FinalAnimationManager : MonoBehaviour
             return;
 
         List<string> sceneToUnload = new() {
-            "UIv3",
+            "UI",
             "GameplayCameraTravelling"
         };
 

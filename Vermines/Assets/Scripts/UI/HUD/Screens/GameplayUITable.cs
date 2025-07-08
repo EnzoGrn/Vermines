@@ -1,5 +1,4 @@
 ﻿using Fusion;
-using OMGG.Menu.Screen;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -15,6 +14,8 @@ using Vermines.Player;
 
 namespace Vermines.UI.Screen
 {
+    using Text = TMPro.TMP_Text;
+
     public partial class GameplayUITable : GameplayUIScreen
     {
         #region Attributes
@@ -44,6 +45,10 @@ namespace Vermines.UI.Screen
         protected List<TableCardSlot> partisanSlots = new();
         protected List<TableCardSlot> equipmentSlots = new();
         [SerializeField] protected DiscardCardSlot discardSlot;
+
+        [Header("Texts")]
+        [InlineHelp, SerializeField]
+        protected Text tableText;
 
         [Header("Config")]
 
@@ -135,10 +140,11 @@ namespace Vermines.UI.Screen
             InitUser();
 
             ClearAllSlots();
-            SetupPartisanSlots(defaultPartisanSlotCount);
-            SetupEquipmentSlots(defaultEquipmentSlotCount);
+            SetupPartisanSlots(defaultPartisanSlotCount); // TODO: make this dynamic based on player count or game settings
+            SetupEquipmentSlots(defaultEquipmentSlotCount); // TODO: make this dynamic based on player count or game settings
             SetupDiscardZone();
             GameEvents.OnPhaseChanged.AddListener(UpdateUIForPhase);
+            GameEvents.OnEquipmentCardPurchased.AddListener(AddEquipment);
             SetupCloseViewPopup();
         }
 
@@ -301,16 +307,40 @@ namespace Vermines.UI.Screen
 
         public void UpdateUIForPhase(PhaseType phase)
         {
-            switch (phase)
-            {
-                case PhaseType.Sacrifice:
-                    if (GameManager.Instance.IsMyTurn() == false) return;
-                    SetDiscardZoneInteractable(false);
-                    break;
+            if (phase == PhaseType.Sacrifice && GameManager.Instance.IsMyTurn() == false)
+                return;
 
-                default:
-                    SetDiscardZoneInteractable(true);
-                    break;
+            string key = phase switch
+            {
+                PhaseType.Sacrifice => "table.sacrifice_text",
+                _ => "table.default_text"
+            };
+
+            string localizedText = LocalizePhase(key);
+            tableText.text = string.IsNullOrEmpty(localizedText) ? "Unknown" : localizedText;
+
+            SetDiscardZoneInteractable(phase != PhaseType.Sacrifice);
+        }
+
+        private string LocalizePhase(string key)
+        {
+            var localizedString = new LocalizedString("UIUtils", key);
+            return localizedString.GetLocalizedString();
+        }
+
+        /// <summary>
+        /// Add 
+        /// </summary>
+        private void AddEquipment(ICard card, int slotIndex)
+        {
+            // Get the first free slot in the equipment slots, don't use the slotIndex parameter
+            for (int i = 0; i < equipmentSlots.Count; i++)
+            {
+                if (equipmentSlots[i].CardDisplay == null)
+                {
+                    equipmentSlots[i].Init(card, true);
+                    return;
+                }
             }
         }
 

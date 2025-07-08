@@ -114,15 +114,14 @@ namespace Vermines {
                 return;
             if (SettingsData.Equals(default(GameSettingsData))) // If it's a default value (not a custom game), then load the default game configuration.
                 SettingsData = Configuration.ToGameSettingsData();
-            if (_Initializer.InitializePlayers(SettingsData) == -1)
-                return;
             InitializePlayerOrder();
-            if (_Initializer.InitalizePhase() == -1)
-                return;
+
+            _Initializer.InitializePlayers(SettingsData);
+
             if (_Initializer.DeckDistribution(Rand) == -1)
-                return;
+                return; // TODO: Handle error.
             if (_Initializer.InitializeShop(SettingsData.Seed) == -1)
-                return;
+                return; // TODO: Handle error.
             _Initializer.StartingDraw(SettingsData.NumberOfCardsToStartWith);
 
             Start = true;
@@ -173,13 +172,19 @@ namespace Vermines {
             } else { // Matchmaking game
                 if (HasStateAuthority) // When you are the host and you leave for disconnect everyone because you close the server.
                     RPC_ForceReturnToTavernEveryone();
-                else // Local leave.
+                else
+                {
+                    // Local leave.
                     await ReturnToTavern();
+                }
             }
         }
 
         private async Task ReturnToTavern()
         {
+            if (_routineManager)
+                _routineManager.StopRoutine();
+
             // Put everyone on the loading screen
             VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
 
@@ -198,6 +203,9 @@ namespace Vermines {
 
         private async Task ReturnToCustomTavern()
         {
+            if (_routineManager)
+                _routineManager.StopRoutine();
+
             // Put everyone on the loading screen
             VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
 
@@ -213,6 +221,8 @@ namespace Vermines {
 
         private void InitializePlayerOrder()
         {
+            // TODO: Create a random order of players at the start of the game.
+
             int orderIndex = 0;
 
             foreach (var playerData in GameDataStorage.Instance.PlayerData) {
@@ -227,6 +237,7 @@ namespace Vermines {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private async void RPC_ForceReturnToTavernEveryone()
         {
+            Debug.Log("[GameManager]: Force everyone to return to the tavern.");
             await ReturnToTavern();
         }
 
@@ -239,6 +250,12 @@ namespace Vermines {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_StartClientSideStuff()
         {
+            // Get the skyboxEvolution componennt to set it up and bind listeners
+            Debug.Log("[GameManager]: Initialise SkyboxEvolution...");
+            FindAnyObjectByType<SkyboxEvolution>(FindObjectsInactive.Include)?.InitSkyboxSettings();
+
+            PhaseManager.Instance.Initialize();
+
             _routineManager = FindFirstObjectByType<RoutineManager>();
 
             if (_routineManager)

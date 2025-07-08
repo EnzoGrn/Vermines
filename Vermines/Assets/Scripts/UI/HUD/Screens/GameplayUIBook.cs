@@ -70,7 +70,6 @@ namespace Vermines.UI.Screen
                 {
                     Debug.Log($"Adding RulesBookPlugin for page type: {ruleBookTab.PageType}");
                     _BookPages[ruleBookTab.PageType] = ruleBookTab;
-                    ruleBookTab.Hide();
                 }
 
                 if (plugin is PlayerBookTabPlugin playerTabsPlugin)

@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Vermines.Player;
-using Vermines.UI.Plugin;
 using Vermines.UI.Utils;
 
 namespace Vermines.UI
@@ -63,7 +62,6 @@ namespace Vermines.UI
             TryGetComponent(out _animator);
             if (!_animator)
                 Debug.LogErrorFormat(gameObject, "[{0}] {1} {2}", nameof(PlayerBookTab), gameObject.name, "PlayerBookTab is not properly initialized. Animator component is missing.");
-
 
             _playerCultist.SetActive(false);
         }

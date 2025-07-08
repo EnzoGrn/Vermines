@@ -244,14 +244,18 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
         public void OnLockInPressed()
         {
-            if (Runner == null || !Runner.IsRunning || Runner.LocalPlayer == default(PlayerRef))
+            if (Runner == null || !Runner.IsRunning || Runner.LocalPlayer == default)
                 return;
             CustomLobbyController controller = FindFirstObjectByType<CustomLobbyController>(FindObjectsInactive.Include);
 
+            if (controller == null)
+                return;
             for (int i = 0; i < controller.Players.Length; i++) {
                 CultistSelectState playerState = controller.Players.Get(i);
 
-                if (playerState.ClientID == default(PlayerRef))
+                if (Runner == null)
+                    return;
+                if (playerState.ClientID == default)
                     continue;
                 if (playerState.ClientID != Runner.LocalPlayer)
                     continue;

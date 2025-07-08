@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Fusion;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Enumerations;
+using Vermines.Player;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Plugin;
 using Vermines.UI.Shop;
@@ -47,6 +50,13 @@ namespace Vermines.UI.Screen
         protected Dictionary<ShopType, Dictionary<int, ICard>> previousShopStates = new();
 
         protected override bool ShouldHidePlugins => false;
+
+        /// <summary>
+        /// The button to close the shop UI.
+        /// Can't be null.
+        /// </summary>
+        [InlineHelp, SerializeField]
+        private GameObject _CloseButton;
 
         /// <summary>
         /// The type of shop to display (e.g., Market, Courtyard, etc.).
@@ -232,6 +242,16 @@ namespace Vermines.UI.Screen
                 return;
             }
 
+            // If the card bought is an equipment card, invoke the specific event
+            if (PlayerController.Local.PlayerRef == GameManager.Instance.PlayerTurnOrder[GameManager.Instance.CurrentPlayerIndex])
+            {
+                if (shopList[slotIndex].Data.Type == CardType.Equipment)
+                {
+                    ICard equipmentCard = shopList[slotIndex];
+                    GameEvents.OnEquipmentCardPurchased.Invoke(equipmentCard, slotIndex);
+                }
+            }
+
             Debug.Log($"[ShopManager] Card purchased from {shopType} shop at slot {slotIndex}");
 
             shopList[slotIndex] = null;
@@ -284,6 +304,14 @@ namespace Vermines.UI.Screen
             plugin.Show(this);
         }
 
-        #endregion
-    }
+        /// <summary>
+        /// Is called when the <see cref="_CloseButton"/> is pressed using SendMessage() from the UI object.
+        /// </summary>
+        public virtual void OnBackButtonPressed()
+        {
+            Controller.Hide();
+        }
+
+            #endregion
+        }
 }
