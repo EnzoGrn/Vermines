@@ -117,7 +117,7 @@ namespace Vermines.UI.Screen
             int total = baseValue + followerValue + equipmentValue;
             LocalizedString localized = new LocalizedString("CultistMessages", _raceName.ToString());
             string msg = localized.GetLocalizedString();
-            msg
+            msg = msg
                 .Replace("{baseValue}", baseValue.ToString())
                 .Replace("{followerValue}", followerValue.ToString())
                 .Replace("{equipmentValue}", equipmentValue.ToString())
