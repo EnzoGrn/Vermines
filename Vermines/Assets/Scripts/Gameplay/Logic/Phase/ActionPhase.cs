@@ -1,7 +1,8 @@
-using Fusion;
+﻿using Fusion;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Phases {
+    using Vermines.CardSystem.Elements;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.HUD;
     using Vermines.Player;
@@ -23,9 +24,10 @@ namespace Vermines.Gameplay.Phases {
 
         public ActionPhase()
         {
-            GameEvents.OnCardBought.AddListener(OnCardBought);
-            GameEvents.OnDiscard.AddListener(OnDiscard);
-            GameEvents.OnCardPlayed.AddListener(OnCardPlayed);
+            GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
+            GameEvents.OnCardDiscardedRequested.AddListener(OnDiscard);
+            GameEvents.OnCardDiscardedRequestedNoEffect.AddListener(OnDiscardNoEffect);
+            GameEvents.OnCardPlayedRequested.AddListener(OnCardPlayed);
         }
 
         #region Override Methods
@@ -34,12 +36,9 @@ namespace Vermines.Gameplay.Phases {
         {
             _CurrentPlayerRef = player;
             Debug.Log($"Phase {Type} is now running");
-
-            if (HUDManager.instance)
-                HUDManager.instance.EnablePhaseButton(false);
         }
 
-        private void OnCardBought(ShopType type, int id)
+        private void OnCardPurchaseRequested(ShopType type, int id)
         {
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
             {
@@ -51,8 +50,14 @@ namespace Vermines.Gameplay.Phases {
             }
         }
 
-        private void OnDiscard(int cardId)
+        private void OnDiscard(ICard card)
         {
+            if (card == null)
+            {
+                Debug.LogWarning("Card is null, can't discard.");
+                return;
+            }
+            int cardId = card.ID;
             // Switch the card from the hand deck to the discard deck
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
             {
@@ -61,11 +66,38 @@ namespace Vermines.Gameplay.Phases {
             else
             {
                 Debug.LogWarning("You can't discard a card if it's not your turn.");
+                GameEvents.OnCardDiscardedRefused.Invoke(card);
             }
         }
 
-        private void OnCardPlayed(int cardId)
+        private void OnDiscardNoEffect(ICard card)
         {
+            if (card == null)
+            {
+                Debug.LogWarning("Card is null, can't discard.");
+                return;
+            }
+            int cardId = card.ID;
+            // Switch the card from the hand deck to the discard deck
+            if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
+            {
+                PlayerController.Local.OnDiscardNoEffect(cardId);
+            }
+            else
+            {
+                Debug.LogWarning("You can't discard a card if it's not your turn.");
+                GameEvents.OnCardDiscardedRefused.Invoke(card);
+            }
+        }
+
+        private void OnCardPlayed(ICard card)
+        {
+            if (card == null)
+            {
+                Debug.LogWarning("Card is null, can't play.");
+                return;
+            }
+            int cardId = card.ID;
             // Switch the card from the hand deck to the played deck
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
             {
@@ -74,6 +106,7 @@ namespace Vermines.Gameplay.Phases {
             else
             {
                 Debug.LogWarning("You can't play a card if it's not your turn.");
+                GameEvents.OnCardPlayedRefused.Invoke(card);
             }
         }
         #endregion

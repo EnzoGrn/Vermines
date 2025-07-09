@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: PhaseTable Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: PhaseTable
+  m_TableCollectionNameGuidString: 9e6adfa3db7330a4d97951bbb7b1a07a
+  m_Entries:
+  - m_Id: 8903680000
+    m_Key: Phase.Sacrifice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 222255341568
+    m_Key: Phase.Gain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 225833082880
+    m_Key: Phase.Action
+    m_Metadata:
+      m_Items: []
+  - m_Id: 527688753152
+    m_Key: Phase.Resolution
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 4722690837476540490
+  references:
+    version: 2
+    RefIds:
+    - rid: 4722690837476540490
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1747219296024

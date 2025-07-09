@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Scepter
   m_EditorClassIdentifier: 
   Name: Scepter
-  Exemplars: 5
+  Exemplars: 4
   IsStartingCard: 0
   Type: 1
   IsFamilyCard: 0
@@ -21,8 +21,10 @@ MonoBehaviour:
   _Level: 0
   Effects:
   - {fileID: 11400000, guid: a7a1257fc81adb54897727cc4870201b, type: 2}
-  _Eloquence: 3
-  CurrentEloquence: 3
+  ReduceInSilence: 0
+  _Eloquence: 4
+  IsFree: 0
+  CurrentEloquence: 4
   _Souls: 0
   CurrentSouls: 0
   _SpriteName: 

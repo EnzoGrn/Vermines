@@ -25,7 +25,7 @@ MonoBehaviour:
   _Eloquence: 12
   IsFree: 0
   CurrentEloquence: 12
-  _Souls: 20
-  CurrentSouls: 20
+  _Souls: 15
+  CurrentSouls: 15
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: 722e2cb09d177014a85aa256106da5cf, type: 3}

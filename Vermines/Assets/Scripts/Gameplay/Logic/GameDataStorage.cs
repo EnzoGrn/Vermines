@@ -1,10 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using OMGG.Network.Fusion;
 using UnityEngine;
 using Fusion;
 
 namespace Vermines {
 
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
     using Vermines.ShopSystem.Data;
 
@@ -27,7 +28,7 @@ namespace Vermines {
 
         #region Player's Data
 
-        [Networked]
+        [Networked, OnChangedRender(nameof(OnPlayerDataUpdated))]
         [Capacity(32)]
         [HideInInspector]
         public NetworkDictionary<PlayerRef, PlayerData> PlayerData { get; }
@@ -35,6 +36,58 @@ namespace Vermines {
         public Dictionary<PlayerRef, PlayerDeck> PlayerDeck { get; set; } = new Dictionary<PlayerRef, PlayerDeck>();
 
         #endregion
+
+        public void OnPlayerDataUpdated()
+        {
+            GameEvents.InvokeOnPlayerUpdated(PlayerData);
+            GameEvents.OnPlayersUpdated.Invoke(PlayerData);
+
+            // Check if a player has won the game
+
+            foreach (var playerData in PlayerData)
+            {
+                if (PlayerData.TryGet(playerData.Key, out PlayerData data) == false)
+                    continue;
+
+                if (data.IsConnected == false)
+                    continue;
+
+                if (GameManager.Instance.Start && data.Souls >= GameManager.Instance.SettingsData.MaxSoul) {
+                    GameEvents.InvokeOnPlayerWin(playerData.Key, Runner.LocalPlayer);
+
+                    return; // Exit after finding the first winner
+                }
+            }
+        }
+
+        public void AddPlayer(PlayerRef player, string username, CardFamily family = CardFamily.None)
+        {
+            if (HasStateAuthority == false)
+                return;
+            if (PlayerData.TryGet(player, out PlayerData data) == false) {
+                data = new PlayerData(player);
+
+                PlayerData.Set(player, data);
+            }
+
+            data.PlayerRef = player;
+            data.Nickname  = username;
+            data.Family    = family;
+
+            PlayerData.Set(player, data);
+        }
+
+        public List<CardFamily> GetPlayersFamily()
+        {
+            List<CardFamily> families = new();
+
+            foreach (var playerData in PlayerData) {
+                if (playerData.Value.Family != CardFamily.None)
+                    families.Add(playerData.Value.Family);
+            }
+
+            return families;
+        }
 
         #region Shop's Data
 
@@ -74,7 +127,7 @@ namespace Vermines {
 
             PlayerData.Set(playerRef, data);
 
-            var player = Runner.Spawn(PlayerPrefabs, Vector3.zero, Quaternion.identity, playerRef);
+            var player = Runner.SpawnAsync(PlayerPrefabs, Vector3.zero, Quaternion.identity, playerRef);
 
             // Set player instance as PlayerObject so we can easily get it from other locations.
             Runner.SetPlayerObject(playerRef, player.Object);
@@ -104,7 +157,7 @@ namespace Vermines {
             if (HasStateAuthority == false)
                 return;
             if (PlayerData.TryGet(player, out PlayerData data) == true) {
-                int maxEloquence = GameManager.Instance.Config.MaxEloquence.Value;
+                int maxEloquence = GameManager.Instance.SettingsData.MaxEloquence;
 
                 if (maxEloquence < eloquence)
                     eloquence = maxEloquence;

@@ -6,7 +6,6 @@ using TMPro;
 namespace Vermines.HUD.Card
 {
     using Vermines.CardSystem.Elements;
-    using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Enumerations;
 
     public class CardBase : MonoBehaviour

@@ -21,9 +21,11 @@ MonoBehaviour:
   _Level: 2
   Effects:
   - {fileID: 11400000, guid: 19ea749eb0e80834f984c4196ee7f658, type: 2}
+  ReduceInSilence: 0
   _Eloquence: 8
+  IsFree: 0
   CurrentEloquence: 8
-  _Souls: 20
-  CurrentSouls: 20
+  _Souls: 15
+  CurrentSouls: 15
   _SpriteName: High Cleric
   _Sprite: {fileID: 0}

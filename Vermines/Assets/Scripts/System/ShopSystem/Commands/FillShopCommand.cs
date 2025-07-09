@@ -1,4 +1,4 @@
-using OMGG.DesignPattern;
+﻿using OMGG.DesignPattern;
 using System.Linq;
 
 namespace Vermines.ShopSystem.Commands
@@ -8,7 +8,7 @@ namespace Vermines.ShopSystem.Commands
     using Vermines.CardSystem.Elements;
     using Vermines.ShopSystem.Data;
     using Vermines.Test;
-    using Vermines.HUD.Card;
+    using Vermines.UI.Shop;
 
     public class FillShopCommand : ICommand
     {
@@ -56,8 +56,7 @@ namespace Vermines.ShopSystem.Commands
                     GameEvents.OnShopsEvents[shopSection.Key].Invoke(slot.Key, card);
                 }
 
-                if (!TestMode.IsTesting)
-                    CardSpawner.Instance.UpdateSpecificShop(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
+                GameEvents.OnShopRefilled.Invoke(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
             }
 
             return _Shop;

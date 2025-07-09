@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b274d0b381d9434f976373628007363, type: 3}
+  m_Name: Rules
+  m_EditorClassIdentifier: 
+  type: 0
+  sectionName:
+    m_TableReference:
+      m_TableCollectionName: GUID:269be9bd5c2e0f247b620e04681dce32
+    m_TableEntryReference:
+      m_KeyId: 20709568110592
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  pages:
+  - {fileID: 11400000, guid: 3f38318c0e7243c438533b019176bbf0, type: 2}
+  - {fileID: 11400000, guid: 7e8dbc7ef891c7c4da1a420bbe6b9338, type: 2}
+  - {fileID: 11400000, guid: 843ec09d21774354eb165a1e4c9f6b44, type: 2}
+  - {fileID: 11400000, guid: 2619f1c4b8f5f434492d6e7bb5cfca9d, type: 2}
+  - {fileID: 11400000, guid: 20fc0fab1b9997348bd65fc21b4275c3, type: 2}
+  - {fileID: 11400000, guid: 674376f42e334a745a15ea05cc07920d, type: 2}
+  references:
+    version: 2
+    RefIds: []

@@ -22,10 +22,11 @@ MonoBehaviour:
   Effects:
   - {fileID: 11400000, guid: f15ba1e32d2a94e4bb043640d5111058, type: 2}
   - {fileID: 11400000, guid: 45a215d0d06a9bf4284c6a597c0298dc, type: 2}
-  _Eloquence: 8
+  ReduceInSilence: 0
+  _Eloquence: 6
   IsFree: 0
-  CurrentEloquence: 8
-  _Souls: 0
-  CurrentSouls: 0
+  CurrentEloquence: 6
+  _Souls: 10
+  CurrentSouls: 10
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: dcf05c7d8c75e914b874dff93bbb6e4d, type: 3}

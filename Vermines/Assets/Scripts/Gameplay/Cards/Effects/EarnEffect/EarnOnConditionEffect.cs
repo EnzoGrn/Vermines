@@ -30,7 +30,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #region Constants
 
-        private static readonly string descriptionTemplate = "If {0} then earn {1}";
+        private static readonly string descriptionTemplate = "earn {0} if {1}";
         private static readonly string eloquenceTemplate = "<b><color=purple>{0}E</color></b>";
         private static readonly string soulTemplate = "<b><color=red>{0}A</color></b>";
         private static readonly string linkerTemplate = " then ";
@@ -107,6 +107,20 @@ namespace Vermines.Gameplay.Cards.Effect {
                 UpdateDescription();
             }
         }
+        
+        [SerializeField]
+        private AEffect _SubEffect = null;
+
+        public override AEffect SubEffect
+        {
+            get => _SubEffect;
+            set
+            {
+                _SubEffect = value;
+
+                UpdateDescription();
+            }
+        }
 
         #endregion
 
@@ -168,9 +182,9 @@ namespace Vermines.Gameplay.Cards.Effect {
             string cardName = Card != null ? Card.Data.Name : "{card_name}";
 
             if (DataToEarn == DataType.Eloquence)
-                Description = $"{string.Format(descriptionTemplate, $"{string.Format(Condition.Description, cardName)}", $"{string.Format(eloquenceTemplate, Amount)}")}";
+                Description = $"{string.Format(descriptionTemplate, $"{string.Format(eloquenceTemplate, Amount)}", $"{string.Format(Condition.Description, cardName)}")}";
             else if (DataToEarn == DataType.Soul)
-                Description = $"{string.Format(descriptionTemplate, $"{string.Format(Condition.Description, cardName)}", $"{string.Format(soulTemplate, Amount)}")}";
+                Description = $"{string.Format(descriptionTemplate, $"{string.Format(soulTemplate, Amount)}", $"{string.Format(Condition.Description, cardName)}")}";
             if (SubEffect != null) {
                 string subDescription = SubEffect.Description;
 
@@ -235,7 +249,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             int count = 0;
 
             foreach (ICard sacrificeCard in sacrificed) {
-                if (sacrificeCard.Data.Name == card.Data.Name)
+                if (sacrificeCard?.Data.Name == card?.Data.Name)
                     count++;
             }
 

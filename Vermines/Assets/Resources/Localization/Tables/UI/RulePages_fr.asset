@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: RulePages_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: 269be9bd5c2e0f247b620e04681dce32, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 3164312133632
+    m_Localized: Objectif
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3190958546944
+    m_Localized: "Invoquez votre divinit\xE9 en r\xE9coltant 100 \xE2mes. Pour cela,
+      construisez un deck performant, jouez vos partisans et objets, d\xE9clenchez
+      des effets puissants et sacrifiez au bon moment."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14892601139200
+    m_Localized: "D\xE9roulement de la partie"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14921399230464
+    m_Localized: "Chaque joueur joue \xE0 tour de r\xF4le dans le sens des aiguilles
+      d\u2019une montre. Un tour se d\xE9compose en 5 phases :\n1. Sacrifices (optionnel)\n-
+      Vous pouvez sacrifier jusqu\u2019\xE0 2 partisans pr\xE9sents dans votre zone
+      de jeu.\n- Chaque partisan sacrifi\xE9 vous rapporte un nombre d\u2019\xE2mes
+      \xE9gal \xE0 sa valeur.\n- Les cartes sacrifi\xE9es sont retir\xE9es du jeu
+      d\xE9finitivement."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20709568110592
+    m_Localized: "R\xE8gles"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14981172256768
+    m_Localized: "2. Activation des effets\n- Tous les partisans d\xE9j\xE0 pos\xE9s
+      activent leur capacit\xE9 automatiquement si elle est passive.\n- Vous pouvez
+      choisir si vous voulez activez les autres effets ou non\n\n3. Gains d\u2019\xE9loquence\n-
+      Gagnez l\u2019\xE9loquence indiqu\xE9e sur votre cultiste et sur vos \xE9quipements
+      actifs.\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821850727997440
+    m_Localized: "5. Fin du tour\n- Repiochez jusqu\u2019\xE0 3 cartes en main automatiquement\n-
+      La cour et le march\xE9 se remplissent s\u2019ils ont \xE9t\xE9 modifi\xE9s.\n-
+      Si votre pioche est vide, votre d\xE9fausse est recycl\xE9e automatiquement."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821395142696960
+    m_Localized: "4. Achats et actions\n- Vous pouvez acheter autant de cartes que
+      vous voulez dans le march\xE9 ou la cour, tant que vous avez assez d\u2019\xE9loquence.\n-
+      Les objets vont dans la d\xE9fausse, sauf les \xE9quipements, qui sont activ\xE9s
+      d\xE8s le prochain tour.\n- Vous pouvez aussi jouer des cartes de votre main
+      :\nA) Un partisan rejoint votre zone de jeu.\nB) Un partisan d\xE9faussable
+      applique son effet imm\xE9diatement, puis est mis en d\xE9fausse.\nC) Un outil
+      applique son effet puis part en d\xE9fausse.\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822555593367552
+    m_Localized: "Sp\xE9cificit\xE9s num\xE9riques"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822583594541056
+    m_Localized: "- La pioche, la d\xE9fausse et les zones de jeu sont g\xE9r\xE9es
+      automatiquement.\n- Les cartes sacrifi\xE9es sont retir\xE9es d\xE9finitivement
+      sans manipulation.\n- Les effets \xE0 d\xE9clenchement unique sont automatiquement
+      limit\xE9s \xE0 1 activation.\n- Les limites de zones (3 partisans max sauf
+      modification) sont automatiquement appliqu\xE9es."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

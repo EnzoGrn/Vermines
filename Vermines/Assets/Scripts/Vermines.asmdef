@@ -8,11 +8,12 @@
         "GUID:3c1f93b5f0ed3a14dbf26aa5c700583b",
         "GUID:0d5e0ff24c3c290499ea77ea1ea9d050",
         "GUID:f2deacab370e9a0458020f0f50fe743b",
+        "GUID:b3c7d56825d9e9842a3ea6d06f1fc48b",
+        "GUID:fb5d0e71eb91bea4fb1aaf554387e4fd",
         "GUID:1baf1ffff1031e948b3b228ab3453251",
         "GUID:26f4f5acc9abee848bd2b92149184272",
         "GUID:aae54aa4535c18a418ec6ca22e18c178",
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:6a54fb8b184c6ae408c923c02406e7fb",
         "GUID:eec0964c48f6f4e40bc3ec2257ccf8c5",
         "GUID:84651a3751eca9349aac36a66bba901b",
         "GUID:21d1eb854b91ade49bc69a263d12bee2",
@@ -25,7 +26,8 @@
         "GUID:df380645f10b7bc4b97d4f5eb6303d95",
         "GUID:36d514892e55d4340b470c29fcab8b44",
         "GUID:4307f53044263cf4b835bd812fc161a4",
-        "GUID:ba8c092d026123a418fb4bfb797a7bd8"
+        "GUID:ba8c092d026123a418fb4bfb797a7bd8",
+        "GUID:0583fe7786f3867488be26824be4d48d"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

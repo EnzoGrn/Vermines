@@ -15,6 +15,30 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-French (fr)
   m_GUID: 13aac04e11088ca43858f5126858a7aa
   m_SerializeEntries:
+  - m_GUID: 0549d1658deab4841bb8d31aae25cfe0
+    m_Address: PopupTable_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ec4e47b1d80bbe4e8242035d151ec69
+    m_Address: EffectTable_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 686695408f434fe4db69aac801bec787
+    m_Address: Final Animation Dialog_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6dec31583aa18cd4d84e95366f1b9531
+    m_Address: UIUtils_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7f4c651f5e7b137438fb0de59c11b5dd
     m_Address: WaitingRoomTable_fr
     m_ReadOnly: 1
@@ -22,12 +46,31 @@ MonoBehaviour:
     - Locale-fr
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 80300a578a5696840b449ad20519ce95
+    m_Address: RulePages_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9a1f93216c1923542b915a2f7f15a811
     m_Address: Settings_fr
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-fr
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac3f23d1e8b989a4a8391917c2fd75d8
+    m_Address: CultistMessages_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bcd7e6f5467fdc14c8cabffb5aad3f53
+    m_Address: PhaseTable_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f3d894b94caa94b448c44ca04bd78a8f
     m_Address: LanguageSettings_fr
@@ -41,7 +84,6 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-fr
-    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: f307a30676e150846956f05ddf1f8249, type: 2}

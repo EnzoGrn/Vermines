@@ -9,17 +9,26 @@ EditorBuildSettings:
     path: Assets/Resources/Scenes/Startup.unity
     guid: 6a9127adea160e646b86aaa4e0647ef7
   - enabled: 1
+    path: Assets/Resources/Scenes/Lobby/CustomLobby.unity
+    guid: 0b407a157d8fde04eab959f548075ac1
+  - enabled: 1
     path: Assets/Resources/Scenes/Game.unity
     guid: a45fb4c356ba9d241a28d641679fb411
   - enabled: 1
-    path: Assets/Resources/Scenes/WaitingRoom.unity
-    guid: e3c3553cd6c45c3489e1633ddeecac9b
+    path: Assets/Resources/Scenes/GameEnvironment/EnvironmentDay.unity
+    guid: ad6b4c95f4b549940b24608c060786dc
   - enabled: 1
     path: Assets/Resources/Scenes/UI.unity
-    guid: f63b1a445d9315048a7b988295cdc361
+    guid: 9ac87ce6317cd5b40b16d1dabc6f5228
   - enabled: 1
-    path: Assets/Resources/Scenes/Environment.unity
-    guid: d0f87b8fa27e0a644a467af06d9926b0
+    path: Assets/Resources/Scenes/GameEnvironment/MenuCameraTravelling.unity
+    guid: c439139244f1ec24285093f45703193b
+  - enabled: 1
+    path: Assets/Resources/Scenes/GameEnvironment/GameplayCameraTravelling.unity
+    guid: 2eee63e02635d6b4996cfd94191fbe1d
+  - enabled: 1
+    path: Assets/Resources/Scenes/FinalAnimation.unity
+    guid: 13e3a202421d563438522e245315b257
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: afec51d4b81b25e469e3b14e73b7ca78, type: 2}
     com.unity.localization.settings: {fileID: 11400000, guid: 28be21c4cbc6a884fb2fbf7e4de09393, type: 2}

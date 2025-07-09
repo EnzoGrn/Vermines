@@ -1,182 +1,141 @@
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Splines;
-using System.Collections.Generic;
 using DG.Tweening;
+using Vermines.CardSystem.Elements;
 
-namespace Vermines.HUD
+namespace Vermines.UI.Card
 {
-    using Vermines.CardSystem.Elements;
-    using Vermines.HUD.Card;
-
     public class HandManager : MonoBehaviour
     {
-        public static HandManager instance;
-        [SerializeField] private int maxHandSize = 50;
+        public static HandManager Instance;
+
+        [Header("References")]
         [SerializeField] private GameObject cardPrefab;
-        [SerializeField] private SplineContainer splineContainer;
         [SerializeField] private Transform spawnPoint;
-        [SerializeField] private Transform handContainer;
+        [SerializeField] private HandLayout handLayout;
 
-        private List<GameObject> handCards = new List<GameObject>();
+        [Header("Settings")]
+        [SerializeField] private int maxHandSize = 50;
 
-        [Header("Debug")]
-        [SerializeField] private bool debugMode;
+        private readonly List<GameObject> handCards = new();
+
+        public bool HasCards() => handCards.Count > 0;
 
         private void Awake()
         {
-            if (instance == null)
-            {
-                instance = this;
-            }
-            else
-            {
-                Destroy(this);
-            }
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+
+            GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
+            GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
         }
 
         private void Start()
         {
-            GameEvents.OnDrawCard.AddListener(DrawCard);
+            GameEvents.OnCardDrawn.AddListener(DrawCard);
         }
 
-        private void Update()
-        {
-            if (debugMode)
-            {
-                if (Input.GetKeyDown(KeyCode.Space)) {
-                    DrawCard();
-                }
-            }
-        }
+        #region Public Methods
 
-        /// <summary>
-        /// This method is used to draw a card from the deck.
-        /// It will instantiate a new card and add it to the hand.
-        /// </summary>
-        public void DrawCard()
-        {
-            if (handCards.Count >= maxHandSize) return;
-            GameObject card = Instantiate(cardPrefab, spawnPoint.position, spawnPoint.rotation, handContainer.transform);
-            card.name = GenerateCardName(handCards);
-            card.AddComponent<CardHover>();
-            card.AddComponent<CardDraggable>();
-            handCards.Add(card);
-            UpdateCardPosition();
-        }
-
-        public void DrawCard(ICard cardObject)
+        public void DrawCard(ICard card)
         {
             if (handCards.Count >= maxHandSize) return;
 
-            GameObject card = Instantiate(cardPrefab, spawnPoint.position, spawnPoint.rotation, handContainer.transform);
-            card.name = GenerateCardName(handCards);
-            card.AddComponent<CardHover>();
-            card.AddComponent<CardDraggable>();
+            Debug.Log($"[HandManager] Drawing card: {card.Data.Name}");
+            GameObject cardGO = CreateCard();
 
-            // Set card data
-            if (card.TryGetComponent<CardBase>(out var cardBase))
-            {
-                cardBase.Setup(cardObject);
-            }
+            if (cardGO.TryGetComponent<CardDisplay>(out var display))
+                display.Display(card, null);
             else
-            {
-                Debug.LogWarning("CardBase is null cannot load cardData!");
-            }
+                Debug.LogWarning("CardDisplay component missing on card prefab.");
 
-            handCards.Add(card);
-            UpdateCardPosition();
+            handCards.Add(cardGO);
+
+            RefreshHand();
         }
 
-        public void DrawCards(List<ICard> cards, int nbrOfCardsToDraw)
+        public void DrawCards(List<ICard> cards, int count)
         {
-            for (int i = 0; i < nbrOfCardsToDraw; i++)
-            {
+            for (int i = 0; i < count && i < cards.Count; i++)
                 DrawCard(cards[i]);
-            }
         }
 
-        /// <summary>
-        /// This method is used to remove a card from the hand.
-        /// </summary>
         public void RemoveCard(GameObject card)
         {
             handCards.Remove(card);
-            UpdateCardPosition();
+            card.transform.DOKill(true);
+            RefreshHand();
         }
 
-        /// <summary>
-        /// This method is used to add a card to the hand.
-        /// Called only if you want to add a card to the hand without drawing it.
-        /// </summary>
+        private void OnCardDiscarded(ICard card)
+        {
+            GameObject go = GetCardDisplayGO(card);
+            if (go != null)
+            {
+                RemoveCard(go);
+                go.transform.DOKill(true);
+                Destroy(go);
+            }
+        }
+
+        private void OnCardSacrified(ICard card)
+        {
+            GameObject go = GetCardDisplayGO(card);
+            if (go != null)
+            {
+                RemoveCard(go);
+                go.transform.DOKill(true);
+                Destroy(go);
+            }
+        }
+
         public void AddCard(GameObject card)
         {
-            handCards.Add(card);
-            UpdateCardPosition();
+            if (!handCards.Contains(card))
+                handCards.Add(card);
+
+            RefreshHand();
         }
 
-        public void UpdateCardPosition()
+        public void DiscardAllCards()
         {
-            if (handCards.Count == 0)
+            List<GameObject> cards = new List<GameObject>(handCards);
+            foreach (var card in cards)
             {
-                HUDManager.instance.EnablePhaseButton(true);
-                return;
-            }
-
-            LockAllCards(true);
-
-            float cardSpacing = 1f / maxHandSize;
-            float firstCardPosition = 0.5f - (handCards.Count - 1) * cardSpacing / 2;
-            Spline spline = splineContainer.Spline;
-
-            for (int i = 0; i < handCards.Count; i++)
-            {
-                float t = firstCardPosition + i * cardSpacing;
-                Vector3 handPosition = handContainer.position;
-                Vector3 splinePosition = spline.EvaluatePosition(t);
-                splinePosition += handPosition;
-                Vector3 forward = spline.EvaluateTangent(t);
-                Vector3 up = spline.EvaluateUpVector(t);
-                Quaternion rotation = Quaternion.LookRotation(up, Vector3.Cross(up, forward).normalized);
-
-                handCards[i].transform.DOMove(splinePosition, 0.25f);
-                handCards[i].transform.DORotateQuaternion(rotation, 0.25f);
-
-                int index = i;
-                DOVirtual.DelayedCall(0.25f, () => handCards[index].GetComponent<CardHover>().SetInitialPosition());
-
-            }
-            DOVirtual.DelayedCall(0.3f, () => LockAllCards(false));
-        }
-
-        public void LockAllCards(bool state)
-        {
-            foreach (var card in handCards)
-            {
-                var hover = card.GetComponent<CardHover>();
-                if (hover != null)
-                {
-                    hover.SetLocked(state);
-                }
+                Debug.Log("[HandManager] Discarding card.");
+                CardDisplay display = card.GetComponent<CardDisplay>();
+                if (display != null)
+                    GameEvents.OnCardDiscardedRequestedNoEffect.Invoke(display.Card);
             }
         }
 
-        private string GenerateCardName(List<GameObject> cards)
+        public GameObject GetCardDisplayGO(ICard card)
         {
-            return $"Card_{cards.Count + 1}";
+            foreach (var cardGO in handCards)
+            {
+                if (cardGO.TryGetComponent<CardDisplay>(out var display) && display.Card.ID == card.ID)
+                    return cardGO;
+            }
+            return null;
         }
 
-        public int GetCardSlotId(int cartId)
+        #endregion
+
+        #region Private Methods
+
+        private GameObject CreateCard()
         {
-            foreach (var card in handCards)
-            {
-                Debug.Log("Client card ID: " + card.GetComponent<CardBase>().GetCard().ID);
-                Debug.Log("Server card ID: " + cartId);
-                if (card.GetComponent<CardBase>().GetCard().ID == cartId)
-                {
-                    return handCards.IndexOf(card);
-                }
-            }
-            return -1;
+            GameObject card = Instantiate(cardPrefab, spawnPoint.position, spawnPoint.rotation, handLayout.transform);
+            card.name = $"Card_{handCards.Count + 1}";
+            card.transform.localScale = Vector3.one * 2f;
+            return card;
         }
+
+        private void RefreshHand()
+        {
+            handLayout.UpdateLayout(handCards);
+        }
+
+        #endregion
     }
 }

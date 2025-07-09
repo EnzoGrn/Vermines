@@ -1,6 +1,7 @@
-using OMGG.DesignPattern;
+﻿using OMGG.DesignPattern;
 using UnityEngine;
 using Fusion;
+using System.Collections.Generic;
 
 namespace Vermines.Gameplay.Phases {
 
@@ -9,8 +10,10 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.HUD;
     using Vermines.Player;
+    using Vermines.UI;
+    using Vermines.UI.Plugin;
+    using Vermines.UI.Screen;
 
     public class GainPhase : APhase {
 
@@ -26,38 +29,63 @@ namespace Vermines.Gameplay.Phases {
 
         public override void Run(PlayerRef player)
         {
+            // Check if the game is currently initialized
+            if (player == PlayerRef.None || PlayerController.Local == null || GameDataStorage.Instance.PlayerDeck == null || GameDataStorage.Instance.PlayerDeck.TryGetValue(player, out PlayerDeck _) == false)
+                return;
             _CurrentPlayer = player;
 
             ResetEveryEffectsThatWasActivatedDuringTheLastRound();
 
-            Debug.Log($"Phase {Type} is now running for player {_CurrentPlayer}");
+            Debug.Log($"Phase Gain is now running for player {_CurrentPlayer}");
 
-            ExecutePlayedCardsEffect(player);
+            ExecuteCardEffect();
 
-            ICommand earnCommand = new EarnCommand(player, GameManager.Instance.Config.NumberOfEloquencesToStartTheTurnWith.Value, DataType.Eloquence);
+            ICommand earnCommand = new EarnCommand(_CurrentPlayer, GameManager.Instance.SettingsData.NumberOfEloquencesEarnInGainPhase, DataType.Eloquence);
 
             CommandInvoker.ExecuteCommand(earnCommand);
 
-            GameDataStorage.Instance.PlayerData.TryGet(player, out Vermines.Player.PlayerData playerData);
+            GameDataStorage.Instance.PlayerData.TryGet(_CurrentPlayer, out PlayerData playerData);
 
-            HUDManager.instance.UpdateSpecificPlayer(playerData);
+            GameEvents.OnPlayerUpdated.Invoke(playerData);
 
-            OnPhaseEnding(player, true);
+            if (_CurrentPlayer == PlayerController.Local.PlayerRef)
+            {
+                GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+                if (gameplayUIController != null)
+                {
+                    gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
+                    gameplayUIController.Show<GameplayUIGainSummary>(lastScreen);
+                }
+            }
         }
 
-        private void ExecutePlayedCardsEffect(PlayerRef player)
+        private void ExecuteCardEffect()
         {
             // TODO: Let the player interact with the effects of played cards.
 
             // Check if the effect is a passive effect or an active effect.
-            // If it's a passive effect, the effect is already applied to the player.
 
-            foreach (ICard card in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
+            List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
+
+            Debug.Log($"[Client]: Player {_CurrentPlayer} has {playedCards.Count} played cards.");
+
+            foreach (ICard card in playedCards)
+            {
+                foreach (IEffect effect in card.Data.Effects)
+                {
+                    if (effect.Type == EffectType.Passive)
+                    {
+                        effect.Play(_CurrentPlayer);
+
+                        Debug.Log($"[Client]: Card {card.ID} is {card.Data.Name}, effect played");
+                    }
+                }
+            }
+
+            foreach (ICard card in playedCards) {
                 foreach (AEffect effect in card.Data.Effects) {
                     if (effect.Type == EffectType.Play) {
-                        effect.Play(player);
-
-                        HUDManager.instance.UpdateSpecificPlayer(GameDataStorage.Instance.PlayerData[player]);
+                        effect.Play(_CurrentPlayer);
 
                         Debug.Log($"[Client]: Card {card.ID} is {card.Data.Name}, effect played");
                     }

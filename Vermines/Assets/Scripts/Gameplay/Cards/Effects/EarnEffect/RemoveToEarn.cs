@@ -1,9 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
-
+    using ExitGames.Client.Photon.StructWrapping;
+    using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
@@ -46,6 +47,20 @@ namespace Vermines.Gameplay.Cards.Effect {
                 UpdateDescription();
             }
         }
+        
+        [SerializeField]
+        private AEffect _SubEffect = null;
+
+        public override AEffect SubEffect
+        {
+            get => _SubEffect;
+            set
+            {
+                _SubEffect = value;
+
+                UpdateDescription();
+            }
+        }
 
         #endregion
 
@@ -60,7 +75,13 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             if (player != PlayerController.Local.PlayerRef)
                 return;
-            // TODO: Subscribe to the function for removed a card.
+
+            if (UIContextManager.Instance != null)
+            {
+                UIContextManager.Instance.PushContext(new RemoveToEarnContext(_CardType));
+            }
+
+            GameEvents.OnCardSacrificedRequested.AddListener(CardToRemove);
         }
 
         private void CardToRemove(ICard card)
@@ -70,14 +91,16 @@ namespace Vermines.Gameplay.Cards.Effect {
 
                 return;
             }
-
-            // TODO: Unsubscribe the function for removed a card.
-
+            if (UIContextManager.Instance != null)
+            {
+                UIContextManager.Instance.PopContextOfType<RemoveToEarnContext>();
+            }
+            GameEvents.OnCardSacrificedRequested.RemoveListener(CardToRemove);
             PlayerController.Local.OnCardSacrified(card.ID);
             PlayerController.Local.NetworkEventCardEffect(Card.ID);
         }
 
-        public override void NetworkEventFunction(PlayerRef player)
+        public override void NetworkEventFunction(PlayerRef player, string data)
         {
             base.Play(player);
         }

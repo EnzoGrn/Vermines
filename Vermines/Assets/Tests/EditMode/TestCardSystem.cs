@@ -7,6 +7,7 @@ using UnityEngine;
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
     using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Data.Effect;
 #endregion
 
 namespace Test.Vermines.CardSystem {
@@ -15,9 +16,12 @@ namespace Test.Vermines.CardSystem {
 
         private static readonly int Seed = 123456789;
 
-        private static readonly int NumberOfCardsForTwoPlayers   =  82;
-        private static readonly int NumberOfCardsForThreePlayers =  93;
-        private static readonly int NumberOfCardsForFourPlayers  = 104;
+        // 5 starter cards per player.
+        // 6 Card per family.
+
+        private static readonly int NumberOfCardsForTwoPlayers   = 77; // 66 Card + 11 Player's card.
+        private static readonly int NumberOfCardsForThreePlayers = 88; // 66 Card + 22 Player's card.
+        private static readonly int NumberOfCardsForFourPlayers  = 99; // 66 Card + 33 Player's card.
 
         private static readonly int NumberOfStarterCardsForThreePlayers = 15;
 
@@ -114,6 +118,30 @@ namespace Test.Vermines.CardSystem {
             Assert.AreEqual(0, CardSetDatabase.Instance.GetCardByIds("     ").Count);
 
             CardSetDatabase.Instance.Clear();
+        }
+
+        [Test]
+        public void CheckEffectCardsDependencies()
+        {
+            List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 1);
+
+            CardSetDatabase.Instance.Initialize(families);
+
+            List<ICard> cards = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data != null);
+
+            Assert.IsTrue(cards.Count == CardSetDatabase.Instance.Size);
+
+            foreach (ICard card in cards) {
+                foreach (AEffect effect in card.Data.Effects) {
+                    Assert.True(effect != null);
+                    Assert.True(effect.Card != null);
+
+                    if (effect.SubEffect)
+                        Assert.True(effect.SubEffect.Card != null);
+                }
+            }
+
+            CardSetDatabase.Instance.Reset();
         }
 
         [Test]

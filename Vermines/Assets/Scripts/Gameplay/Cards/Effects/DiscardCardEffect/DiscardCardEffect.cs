@@ -32,6 +32,20 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
         }
 
+        [SerializeField]
+        private AEffect _SubEffect = null;
+
+        public override AEffect SubEffect
+        {
+            get => _SubEffect;
+            set
+            {
+                _SubEffect = value;
+
+                UpdateDescription();
+            }
+        }
+
         #endregion
 
         #region UI Elements
@@ -44,17 +58,17 @@ namespace Vermines.Gameplay.Cards.Effect {
         public override void Play(PlayerRef player)
         {
             if (player == PlayerController.Local.PlayerRef) {
-                // TODO: Force the player to be in the discard view.
-                // TODO: Implement the observer pattern here to trigger the discard event.
+                var context = new ForceDiscardContext(OnDiscarded);
+                UIContextManager.Instance.PushContext(context);
             }
         }
 
         public void OnDiscarded(ICard card)
         {
-            // TODO: Remove the event observer
-            PlayerController.Local.OnDiscard(card.ID); // TODO: Remove this line if the OnDiscard is call before the event observer.
+            PlayerController.Local.OnDiscard(card.ID);
 
             base.Play(PlayerController.Local.PlayerRef);
+            UIContextManager.Instance.PopContext();
         }
 
         public override List<(string, Sprite)> Draw()

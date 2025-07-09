@@ -15,15 +15,35 @@ MonoBehaviour:
   m_GroupName: Localization-Assets-Shared
   m_GUID: 329bf7dcbbedffd48915d541e3cd8a7f
   m_SerializeEntries:
+  - m_GUID: 06e5d1bca0c32a343a04c9b5b655878d
+    m_Address: Assets/Resources/Localization/Tables/UI/CultistMessages Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0a886984331d07247915b99f7759191d
     m_Address: Assets/Resources/Localization/Tables/Scriptable Objects/Settings/GameSettings/Game
       Settings Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 16d02b2cd5642754d91eabcf06221246
+    m_Address: Assets/Resources/Localization/Tables/UI/EffectTable Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 269be9bd5c2e0f247b620e04681dce32
+    m_Address: Assets/Resources/Localization/Tables/UI/RulePages Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 558b806d900de704c9aec117efd14098
     m_Address: Assets/Resources/Localization/Tables/Scriptable Objects/Settings/Settings
       Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e6adfa3db7330a4d97951bbb7b1a07a
+    m_Address: Assets/Resources/Localization/Tables/UI/PhaseTable Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -36,6 +56,22 @@ MonoBehaviour:
   - m_GUID: bb7330e770dcd3047b4cc464c079113a
     m_Address: Assets/Resources/Localization/Tables/Scenes/LanguageSettings/LanguageSettings
       Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d28e4db54bcae5e43ade05072f4285a4
+    m_Address: Assets/Resources/Localization/Tables/FinalAnimation/Final Animation
+      Dialog Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0d9f7c0dd3b9d44898358fad611b989
+    m_Address: Assets/Resources/Localization/Tables/UI/PopupTable Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fd60ce5b03f03914796b99917545f236
+    m_Address: Assets/Resources/Localization/Tables/UI/UIUtils Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

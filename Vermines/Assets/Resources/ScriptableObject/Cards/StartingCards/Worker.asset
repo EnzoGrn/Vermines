@@ -21,7 +21,8 @@ MonoBehaviour:
   _Level: 1
   Effects:
   - {fileID: 11400000, guid: 872a86a932ebfe04c9c2ee894b54ea23, type: 2}
-  - {fileID: 11400000, guid: 5aae4d2941941ec48bb8b1e800fb874d, type: 2}
+  - {fileID: 11400000, guid: cb6158e0bd0e11545ae67559893988be, type: 2}
+  ReduceInSilence: 0
   _Eloquence: 0
   IsFree: 0
   CurrentEloquence: 0

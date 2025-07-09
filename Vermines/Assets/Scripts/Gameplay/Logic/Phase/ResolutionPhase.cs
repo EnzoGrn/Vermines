@@ -1,4 +1,4 @@
-using OMGG.DesignPattern;
+﻿using OMGG.DesignPattern;
 using UnityEngine;
 using System.Linq;
 using Fusion;
@@ -10,7 +10,6 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.HUD.Card;
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
 
@@ -35,11 +34,12 @@ namespace Vermines.Gameplay.Phases {
 
             if (response.Status == CommandStatus.Success) {
                 foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
-                    CardSpawner.Instance.SpawnCardsFromDictionary(shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value), shopSection.Key);
+                    //ShopManager.Instance.ReceiveFullShopList(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
+                    GameEvents.OnShopRefilled.Invoke(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
             }
 
             // Refill Hand
-            for (int i = 0; i < GameManager.Instance.Config.NumberOfCardsToDrawAtEndOfTurn.Value; i++) {
+            for (int i = 0; i < GameManager.Instance.SettingsData.NumberOfCardsToDrawAtEndOfTurn; i++) {
                 ICommand drawCardCommand = new DrawCommand(player);
 
                 CommandResponse command = CommandInvoker.ExecuteCommand(drawCardCommand);
@@ -59,6 +59,12 @@ namespace Vermines.Gameplay.Phases {
                     if (effect.Type == EffectType.Passive)
                         effect.Stop(player);
                 }
+            }
+
+            // Clear the context manager
+            if (UIContextManager.Instance != null)
+            {
+                UIContextManager.Instance.ClearContext();
             }
 
             OnPhaseEnding(player, true); // Here true, because everyone know that the phase is over.

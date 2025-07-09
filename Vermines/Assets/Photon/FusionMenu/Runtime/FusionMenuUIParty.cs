@@ -123,7 +123,7 @@ namespace Fusion.Menu {
       if (_regionRequest.IsCompleted == false) {
         // Goto loading screen
         Controller.Show<FusionMenuUILoading>();
-        Controller.Get<FusionMenuUILoading>().SetStatusText("Fetching Regions");
+        Controller.Get<FusionMenuUILoading>().SetStatusText("Fetching Regions...");
 
         try {
           // TODO: Disconnect button not usable during this time

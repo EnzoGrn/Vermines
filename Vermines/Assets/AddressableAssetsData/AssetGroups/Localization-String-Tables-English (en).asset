@@ -15,12 +15,42 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-English (en)
   m_GUID: 688a05f30d53b614da5ba0f38ab8a772
   m_SerializeEntries:
+  - m_GUID: 00e1871bc3c69244c92bc36e7ae96f5c
+    m_Address: RulePages_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 25497d18ce301ec48b40cc9f9bfb731f
+    m_Address: CultistMessages_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27c94156cc0d24444b21934e10373971
+    m_Address: PhaseTable_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2b87e0134ffb00c409d1b701c4d1f420
     m_Address: Game Settings_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
-    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 433f28c505af5e64a822da93a2755136
+    m_Address: Final Animation Dialog_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9850a463dcf513542b5181e8f8f9cde3
+    m_Address: UIUtils_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9cb7b9973017e4041864837a4c134199
     m_Address: Settings_en
@@ -42,6 +72,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee386d3fd6aea0c4cbe41795ddf1d126
+    m_Address: PopupTable_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f1bdcf808a1a23741ab36b7cc7e4ede5
+    m_Address: EffectTable_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: f307a30676e150846956f05ddf1f8249, type: 2}

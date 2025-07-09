@@ -10,7 +10,7 @@ namespace Vermines.ShopSystem.Data {
 
     public class ShopData : ScriptableObject {
 
-        public void Initialize(ShopType type, int slots)
+        public void Initialize(ShopType type, int slots = 5)
         {
             Sections ??= new Dictionary<ShopType, ShopSection>();
 

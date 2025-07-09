@@ -15,6 +15,38 @@ This beta testing aims to validate the essential features of the Vermines game d
 
 ## **2. Beta Testing Scenarios**
 
+### **2.0 How the game works**
+
+**Vermines** is a deck-building card game for 2 to 4 players.
+
+In a deck-building game, each player begins with a basic deck of cards that grows and evolves throughout the game as they adopt different strategies.
+
+In Vermines, you take on the role of an insect clan—beetles, ladybugs, ants, and more—seeking to gain favor with a god. Your ultimate goal is to summon this deity and claim victory.
+
+To achieve victory, you’ll need to manage several key elements:
+
+- **Eloquence:** This is the game’s main currency. It allows you to recruit partisan—the Vermines characters—and to acquire utility cards that improve your deck and overall strategy.
+
+- **Souls:** These are victory points. You earn them by sacrificing your partisans to your god. The more souls you gather, the closer you are to summoning your deity and winning the game.
+
+You’ll also need to perform various actions during your turn:
+
+- **Play a partisan:** This places the card in front of you on the table. Later in the game, you’ll be able to activate the card’s ability, called a card effect.
+
+- **Discard a card:** This sends a card to a different pile in your deck, allowing you to temporarily set aside cards you don't want to use right away. You'll get them back later in the game.
+
+- **Sacrifice a partisan:** Doing this grants you souls for your god. It's a strategic move to gain victory points at the cost of losing a partisan.
+
+Each player's turn consists of four distinct phases:​
+
+- **Sacrifice Phase:** You may sacrifice up to two cards from your hand to gain souls point, wich represents the victory points.
+
+- **Gain Phase:** Use cards effect from your table to perform actions, such as acquiring new cards, gain eloquences, or triggering special abilities.​
+
+- **Game Phase:** Use eloquences accumulated during the Action Phase to buy new cards from the market or courtyard, adding them to your discard pile for future use.​
+
+- **Resolution Phase:** Discard any remaining cards in your hand and draw a new hand of five cards from your deck. If your deck is empty, shuffle your discard pile to form a new deck. Shops are refilled at this moment and the game continues. The game ends when one player reaches 100 souls points.
+
 ### **2.1 User Roles**
 The tests will be carried out according to the different player roles.
 

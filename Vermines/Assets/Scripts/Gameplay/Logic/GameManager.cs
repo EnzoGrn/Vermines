@@ -1,18 +1,29 @@
-using OMGG.Network.Fusion;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 using UnityEngine;
+using OMGG.Menu.Connection;
+using OMGG.Network.Fusion;
+using OMGG.DesignPattern;
 using Fusion;
 
 namespace Vermines {
-    using OMGG.DesignPattern;
-    using Vermines.CardSystem.Data.Effect;
-    using Vermines.CardSystem.Data;
-    using Vermines.CardSystem.Elements;
-    using Vermines.Config;
+
     using Vermines.Gameplay.Phases;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
+    using Vermines.Menu.Screen;
+    using Vermines.Service;
+    using Vermines.Menu.Connection.Element;
+    using Vermines.Configuration.Network;
+    using Vermines.Configuration;
+    using System.Collections;
 
     public class GameManager : NetworkBehaviour {
+
+        #region Private Properties
+        private RoutineManager _routineManager;
+        #endregion
 
         #region Editor
 
@@ -29,14 +40,16 @@ namespace Vermines {
 
         #region Game Rules
 
-        public GameConfiguration Config;
+        public GameConfiguration Configuration;
 
-        public void SetNewConfiguration(GameConfiguration newConfig)
+        [Networked, OnChangedRender(nameof(OnSettingsDataChanged))]
+        public GameSettingsData SettingsData { get; set; }
+
+        public System.Random Rand { get; set; } = new(0);
+
+        private void OnSettingsDataChanged()
         {
-            // -- Check if the game is already started
-            if (Start)
-                return;
-            Config = newConfig;
+            Rand = new System.Random(SettingsData.Seed);
         }
 
         #endregion
@@ -77,7 +90,6 @@ namespace Vermines {
 
         #endregion
 
-
         [Networked]
         [HideInInspector]
         public bool Start
@@ -86,31 +98,131 @@ namespace Vermines {
             set { }
         }
 
+        public void WaitAndStartGame(float waitTime = 0.5f)
+        {
+            if (HasStateAuthority == false)
+                return;
+            if (Start)
+                return;
+            CancelInvoke(nameof(StartGame));
+            Invoke(nameof(StartGame), waitTime);
+        }
+
         public void StartGame()
         {
             if (HasStateAuthority == false)
                 return;
-            // TODO: need to handle it with the Waiting Room (before sending the Game Configuration to clients). // WIP
-            if (Config.RandomSeed.Value == true)
-                Config.Seed = Random.Range(0, int.MaxValue);
-            if (_Initializer.InitializePlayers(Config.Seed, Config.EloquenceToStartWith.Value) == -1)
-                return;
+            if (SettingsData.Equals(default(GameSettingsData))) // If it's a default value (not a custom game), then load the default game configuration.
+                SettingsData = Configuration.ToGameSettingsData();
             InitializePlayerOrder();
-            if (_Initializer.InitalizePhase() == -1)
-                return;
-            if (_Initializer.DeckDistribution(Config.Rand) == -1)
-                return;
-            if (_Initializer.InitializeShop(Config.Seed) == -1)
-                return;
-            _Initializer.StartingDraw(Config.NumberOfCardsToStartWith.Value);
+
+            _Initializer.InitializePlayers(SettingsData);
+
+            if (_Initializer.DeckDistribution(Rand) == -1)
+                return; // TODO: Handle error.
+            if (_Initializer.InitializeShop(SettingsData.Seed) == -1)
+                return; // TODO: Handle error.
+            _Initializer.StartingDraw(SettingsData.NumberOfCardsToStartWith);
 
             Start = true;
+
+            RPC_StartClientSideStuff();
 
             PhaseManager.Instance.OnStartPhases();
         }
 
+        public void UnloadSceneForCinematic(List<string> sceneToUnload)
+        {
+            if (HasStateAuthority == false)
+                return;
+            foreach (var scene in sceneToUnload)
+                Runner.UnloadScene(scene);
+        }
+
+        public async Task ReturnToMenu()
+        {
+            // Get the Vermines Services
+            VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
+
+            if (services.IsCustomGame()) { // Custom game
+                if (HasStateAuthority) { // Load the lobby
+                    VerminesConnectionBehaviour connection = FindFirstObjectByType<VerminesConnectionBehaviour>(FindObjectsInactive.Include);
+                    VMUI_PartyMenu                   party = FindFirstObjectByType<VMUI_PartyMenu>(FindObjectsInactive.Include);
+
+                    await connection.ChangeScene(party.SceneRef);
+
+                    SettingsManager settingsManager = FindFirstObjectByType<SettingsManager>(FindObjectsInactive.Include);
+
+                    if (settingsManager) { // Copy the current settings configuration for the next game and create a new seed.
+                        GameSettingsData settings = SettingsData;
+
+                        settings.Seed = GameConfiguration.CreateSeed();
+
+                        settingsManager.SetConfiguration(settings);
+                    } else {
+                        Debug.LogError(
+                            "[GameManager]: Cannot find SettingsManager." +
+                            "We cannot save this game settings to the custom game lobby."
+                        );
+                    }
+
+                    RPC_ForceReturnToLobbyEveryone();
+                } else
+                    await ReturnToCustomTavern();
+            } else { // Matchmaking game
+                if (HasStateAuthority) // When you are the host and you leave for disconnect everyone because you close the server.
+                    RPC_ForceReturnToTavernEveryone();
+                else
+                {
+                    // Local leave.
+                    await ReturnToTavern();
+                }
+            }
+        }
+
+        private async Task ReturnToTavern()
+        {
+            if (_routineManager)
+                _routineManager.StopRoutine();
+
+            // Put everyone on the loading screen
+            VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
+
+            loading.Controller.Show<VMUI_Loading>();
+
+            // If you are the host, unload the scenes.
+            await SceneManager.UnloadSceneAsync("FinalAnimation");
+            await SceneManager.UnloadSceneAsync("Game");
+
+            // Disconnect
+            await loading.Connection.DisconnectAsync(ConnectFailReason.GameEnded);
+
+            // Switch to the tavern UI.
+            loading.Controller.Show<VMUI_Tavern>(loading);
+        }
+
+        private async Task ReturnToCustomTavern()
+        {
+            if (_routineManager)
+                _routineManager.StopRoutine();
+
+            // Put everyone on the loading screen
+            VMUI_Loading loading = FindFirstObjectByType<VMUI_Loading>(FindObjectsInactive.Include);
+
+            loading.Controller.Show<VMUI_Loading>();
+
+            // If you are the host, unload the scenes.
+            await SceneManager.UnloadSceneAsync("FinalAnimation");
+            await SceneManager.UnloadSceneAsync("Game");
+
+            // Switch to the tavern UI.
+            loading.Controller.Show<VMUI_CustomTavern>(loading);
+        }
+
         private void InitializePlayerOrder()
         {
+            // TODO: Create a random order of players at the start of the game.
+
             int orderIndex = 0;
 
             foreach (var playerData in GameDataStorage.Instance.PlayerData) {
@@ -121,6 +233,36 @@ namespace Vermines {
         }
 
         #region Rpcs
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private async void RPC_ForceReturnToTavernEveryone()
+        {
+            Debug.Log("[GameManager]: Force everyone to return to the tavern.");
+            await ReturnToTavern();
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private async void RPC_ForceReturnToLobbyEveryone()
+        {
+            await ReturnToCustomTavern();
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_StartClientSideStuff()
+        {
+            // Get the skyboxEvolution componennt to set it up and bind listeners
+            Debug.Log("[GameManager]: Initialise SkyboxEvolution...");
+            FindAnyObjectByType<SkyboxEvolution>(FindObjectsInactive.Include)?.InitSkyboxSettings();
+
+            PhaseManager.Instance.Initialize();
+
+            _routineManager = FindFirstObjectByType<RoutineManager>();
+
+            if (_routineManager)
+                _routineManager.StartRoutine();
+            else
+                Debug.LogError("[GameManager]: Cannot find RoutineManager in the scene, please add it to the scene.");
+        }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_BuyCard(ShopType shopType, int slot, int playerId)
@@ -154,6 +296,12 @@ namespace Vermines {
         public void RPC_DiscardCard(int playerId, int cardID)
         {
             Player.PlayerController.Local.RPC_DiscardCard(playerId, cardID);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_DiscardCardNoEffect(int playerId, int cardID)
+        {
+            Player.PlayerController.Local.RPC_DiscardCardNoEffect(playerId, cardID);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -199,9 +347,9 @@ namespace Vermines {
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_NetworkEventCardEffect(int playerID, int cardID)
+        public void RPC_NetworkEventCardEffect(int playerID, int cardID, string data)
         {
-            Player.PlayerController.Local.RPC_NetworkEventCardEffect(playerID, cardID);
+            Player.PlayerController.Local.RPC_NetworkEventCardEffect(playerID, cardID, data);
         }
 
         #endregion

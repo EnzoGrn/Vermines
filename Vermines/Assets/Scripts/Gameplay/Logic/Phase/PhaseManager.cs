@@ -1,14 +1,15 @@
-using Fusion ;
+﻿using Fusion ;
 using OMGG.Network.Fusion;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Vermines.HUD;
 
 namespace Vermines.Gameplay.Phases {
-
+    using System.Collections;
     using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.Menu.Screen.Tavern.Network;
     using Vermines.Player;
+    using Vermines.UI.Plugin;
 
     public class PhaseManager : NetworkBehaviour {
 
@@ -24,6 +25,7 @@ namespace Vermines.Gameplay.Phases {
         public PhaseType CurrentPhase { get; set; }
 
         private Dictionary<PhaseType, IPhase> _Phases;
+        public Dictionary<PhaseType, IPhase> Phases => _Phases;
 
         #endregion
 
@@ -54,8 +56,7 @@ namespace Vermines.Gameplay.Phases {
 
         private void SetUpUI()
         {
-            HUDManager.instance.SetPlayers(GameDataStorage.Instance.PlayerData);
-            HUDManager.instance.UpdatePhaseButton(GameManager.Instance.IsMyTurn());
+            GameEvents.OnPlayerInitialized.Invoke();
         }
 
         private void SetUpEvents()
@@ -73,17 +74,29 @@ namespace Vermines.Gameplay.Phases {
                 return;
             CurrentPhase = PhaseType.Sacrifice;
 
+            ResetCardActivations();
+
             GameManager.Instance.CurrentPlayerIndex = (GameManager.Instance.CurrentPlayerIndex + 1) % GameDataStorage.Instance.PlayerData.Count;
 
             // TODO: Add to the config a limit of turn and end the game if reach
             if (GameManager.Instance.CurrentPlayerIndex == 0)
                 GameManager.Instance.TotalTurnPlayed++;
-            RPC_UpdatePhaseUI();
+            RPC_UpdateTurnUI();
+        }
+
+        private void ResetCardActivations()
+        {
+            PlayerRef playerRef = GameManager.Instance.PlayerTurnOrder[GameManager.Instance.CurrentPlayerIndex];
+
+            foreach (var card in GameDataStorage.Instance.PlayerDeck[playerRef].PlayedCards)
+            {
+                card.HasBeenActivatedThisTurn = false;
+            }
         }
 
         public void ProcessPhase(PhaseType currentPhase, PlayerRef playerRef)
         {
-            Debug.Log($"[SERVER]: Processing the phase for {playerRef}, currently playing {currentPhase}");
+            Debug.Log($"[SERVER]: Processing the phase for {playerRef} (Player Index: {GameManager.Instance.CurrentPlayerIndex}), currently playing {currentPhase}");
 
             _Phases[currentPhase].Run(playerRef);
         }
@@ -114,8 +127,14 @@ namespace Vermines.Gameplay.Phases {
         [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
         public void RPC_UpdatePhaseUI()
         {
-            HUDManager.instance.NextPhase();
-            HUDManager.instance.UpdatePhaseButton(GameManager.Instance.IsMyTurn());
+            GameEvents.OnPhaseChanged.Invoke(CurrentPhase);
+        }
+
+        [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
+        public void RPC_UpdateTurnUI()
+        {
+            GameEvents.OnTurnChanged.Invoke(GameManager.Instance.CurrentPlayerIndex);
+            GameEvents.OnPhaseChanged.Invoke(CurrentPhase);
         }
 
         /// <summary>
@@ -140,9 +159,10 @@ namespace Vermines.Gameplay.Phases {
 
         public void OnStartPhases()
         {
-            if (!Runner.IsServer || !GameManager.Instance.Start || Runner.ActivePlayers.Count() < GameManager.Instance.Config.MinPlayers.Value)
+            if (!Runner.IsServer || !GameManager.Instance.Start)
                 return;
-            HUDManager.instance.UpdatePlayers(GameDataStorage.Instance.PlayerData);
+            foreach (var player in GameDataStorage.Instance.PlayerData)
+                GameEvents.OnPlayerUpdated.Invoke(player.Value);
             RPC_ProcessPhase(CurrentPhase, GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex));
         }
 
