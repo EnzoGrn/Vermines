@@ -1,4 +1,0 @@
-[submodule "Website"]
-	path = Website
-	url = https://github.com/EnzoGrn/OMGG-Website.git
-	branch = main
