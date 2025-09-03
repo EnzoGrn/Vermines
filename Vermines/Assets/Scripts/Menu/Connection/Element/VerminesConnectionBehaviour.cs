@@ -136,6 +136,7 @@ namespace Vermines.Menu.Connection.Element {
 
             if (_Runner && _Runner.IsRunning) {
                 await _Runner.Shutdown();
+
                 await Task.Delay(100);
             }
 

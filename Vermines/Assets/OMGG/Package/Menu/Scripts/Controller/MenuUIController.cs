@@ -206,6 +206,11 @@ namespace OMGG.Menu.Controller {
             return lastScreen != null;
         }
 
+        public virtual MenuUIScreen GetActiveScreen()
+        {
+            return _ActiveScreen;
+        }
+
         /// <summary>
         /// Show the popup/notification.
         /// </summary>
