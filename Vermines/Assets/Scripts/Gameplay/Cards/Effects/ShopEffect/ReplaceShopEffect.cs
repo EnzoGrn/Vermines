@@ -57,6 +57,20 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         private void ReplaceCard(Dictionary<ShopType, int> dictShopSlot)
         {
+            // Check if the dictionary is null or empty
+            if (dictShopSlot == null || dictShopSlot.Count == 0)
+            {
+                Debug.LogWarning("[ReplaceEffect] dictShopSlot is null or empty, nothing to replace.");
+                return;
+            }
+
+            // Check if PlayerController.Local exists
+            if (PlayerController.Local == null)
+            {
+                Debug.LogError("[ReplaceEffect] PlayerController.Local is null! Cannot replace cards.");
+                return;
+            }
+
             Debug.Log("[ReplaceEffect] Replacing cards in shops:");
             foreach (var shopSlot in dictShopSlot)
             {
