@@ -250,6 +250,11 @@ namespace Vermines.UI.Screen
                     ICard equipmentCard = shopList[slotIndex];
                     GameEvents.OnEquipmentCardPurchased.Invoke(equipmentCard, slotIndex);
                 }
+                else
+                {
+                    ICard card = shopList[slotIndex];
+                    GameEvents.OnCardDiscarded.Invoke(card);
+                }
             }
 
             Debug.Log($"[ShopManager] Card purchased from {shopType} shop at slot {slotIndex}");
