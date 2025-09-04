@@ -179,7 +179,12 @@ namespace Vermines.UI.Screen
         protected virtual void OnTableButtonPressed()
         {
             Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
-            Debug.Log("Last screen: " + lastScreen);
+            if (lastScreen != null)
+            {
+                // If we are already on the table, do nothing.
+                if (lastScreen is GameplayUITable)
+                    return;
+            }
             Controller.Show<GameplayUITable>(lastScreen);
         }
 
@@ -190,7 +195,12 @@ namespace Vermines.UI.Screen
         protected virtual void OnBookButtonPressed()
         {
             Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
-            Debug.Log("Last screen: " + lastScreen);
+            if (lastScreen != null)
+            {
+                // If we are already on the book, do nothing.
+                if (lastScreen is GameplayUIBook)
+                    return;
+            }
             Controller.Show<GameplayUIBook>(lastScreen);
         }
 
