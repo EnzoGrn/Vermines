@@ -13,6 +13,7 @@ namespace Vermines.Player {
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.Menu.Screen;
     using Vermines.Network.Utilities;
+    using Vermines.Service;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
 
@@ -56,17 +57,33 @@ namespace Vermines.Player {
 
         public void ReturnToMenu()
         {
-            RPC_ForceQuit(PlayerRef);
+            VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
+
+            if (services.IsCustomGame())
+                RPC_ForceQuitCustomGame(PlayerRef);
+            else
+                RPC_ForceQuit(PlayerRef);
         }
 
         [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+        public async void RPC_ForceQuitCustomGame(PlayerRef player)
+        {
+            GameManager manager = FindFirstObjectByType<GameManager>();
+
+            if (!manager)
+                return;
+            await manager.ForceEndCustomGame(player);
+        }
+
+
+        [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
         public async void RPC_ForceQuit(PlayerRef player)
         {
             GameManager manager = FindFirstObjectByType<GameManager>();
 
             if (!manager)
                 return;
-            await manager.ForceEndGame(player);
+            await manager.ReturnToTavern();
         }
 
         public void ClearTracker()

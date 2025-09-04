@@ -177,41 +177,31 @@ namespace Vermines {
             }
         }
 
-        public async Task ForceEndGame(PlayerRef player)
+        public async Task ForceEndCustomGame(PlayerRef player)
         {
-            // Get the Vermines Services
-            VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
+            if (HasStateAuthority) { // Load the lobby
+                VerminesConnectionBehaviour connection = FindFirstObjectByType<VerminesConnectionBehaviour>(FindObjectsInactive.Include);
+                VMUI_PartyMenu              party      = FindFirstObjectByType<VMUI_PartyMenu>(FindObjectsInactive.Include);
 
-            if (services.IsCustomGame()) { // Custom game
-                if (HasStateAuthority) { // Load the lobby
-                    VerminesConnectionBehaviour connection = FindFirstObjectByType<VerminesConnectionBehaviour>(FindObjectsInactive.Include);
-                    VMUI_PartyMenu              party      = FindFirstObjectByType<VMUI_PartyMenu>(FindObjectsInactive.Include);
+                await connection.ChangeScene(party.SceneRef);
 
-                    await connection.ChangeScene(party.SceneRef);
+                SettingsManager settingsManager = FindFirstObjectByType<SettingsManager>(FindObjectsInactive.Include);
 
-                    SettingsManager settingsManager = FindFirstObjectByType<SettingsManager>(FindObjectsInactive.Include);
+                if (settingsManager) { // Copy the current settings configuration for the next game and create a new seed.
+                    GameSettingsData settings = SettingsData;
 
-                    if (settingsManager) { // Copy the current settings configuration for the next game and create a new seed.
-                        GameSettingsData settings = SettingsData;
+                    settings.Seed = GameConfiguration.CreateSeed();
 
-                        settings.Seed = GameConfiguration.CreateSeed();
-
-                        settingsManager.SetConfiguration(settings);
-                    } else {
-                        Debug.LogError(
-                            "[GameManager]: Cannot find SettingsManager." +
-                            "We cannot save this game settings to the custom game lobby."
-                        );
-                    }
+                    settingsManager.SetConfiguration(settings);
+                } else {
+                    Debug.LogError("[GameManager]: Cannot find SettingsManager. We cannot save this game settings to the custom game lobby.");
                 }
-
-                await ReturnToCustomTavern();
-            } else {
-                await ReturnToTavern();
             }
+
+            await ReturnToCustomTavern();
         }
 
-        private async Task ReturnToTavern()
+        public async Task ReturnToTavern()
         {
             if (_routineManager)
                 _routineManager.StopRoutine();
@@ -239,7 +229,8 @@ namespace Vermines {
             loading.Controller.Show<VMUI_Loading>();
 
             // If you are the host, unload the scenes.
-            await SceneUtils.SafeUnloadAll("FinalAnimation", "Game", "UI", "GameplayCameraTravelling");
+            if (HasStateAuthority)
+                await SceneUtils.SafeUnloadAll(Runner, "FinalAnimation", "Game", "UI", "GameplayCameraTravelling");
 
             // Switch to the tavern UI.
             loading.Controller.Show<VMUI_CustomTavern>(loading);
