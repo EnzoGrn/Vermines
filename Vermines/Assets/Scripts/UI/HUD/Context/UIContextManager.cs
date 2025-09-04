@@ -128,8 +128,10 @@ public class UIContextManager : MonoBehaviour
     /// </summary>
     public void ClearContext()
     {
+        Debug.LogFormat(gameObject, "[{0}] Clearing all contexts.", nameof(UIContextManager));
         while (_contextStack.Count > 0)
         {
+            Debug.LogFormat(gameObject, "[{0}] Popping context: {1}", nameof(UIContextManager), _contextStack.Peek());
             var context = _contextStack.Pop();
             context.Exit();
         }

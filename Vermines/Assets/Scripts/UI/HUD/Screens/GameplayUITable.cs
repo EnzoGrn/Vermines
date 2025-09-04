@@ -127,6 +127,8 @@ namespace Vermines.UI.Screen
             }
 
             #endregion
+
+            GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
         }
 
         /// <summary>
@@ -187,7 +189,6 @@ namespace Vermines.UI.Screen
             ShowUser();
 
             GameEvents.OnCardClicked.AddListener(OnCardClicked);
-            GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
         }
 
         /// <summary>
@@ -200,7 +201,6 @@ namespace Vermines.UI.Screen
 
             HideUser();
 
-            GameEvents.OnCardSacrified.RemoveListener(OnCardSacrified);
             GameEvents.OnCardClicked.RemoveListener(OnCardClicked);
         }
 

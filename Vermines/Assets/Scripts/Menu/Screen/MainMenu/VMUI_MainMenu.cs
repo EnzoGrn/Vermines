@@ -74,6 +74,14 @@ namespace Vermines.Menu.Screen {
         [InlineHelp, SerializeField]
         protected ButtonSignInteraction _QuitButton;
 
+        [Header("Game Object")]
+
+        /// <summary>
+        /// The sign object that contains the buttons.
+        /// </summary>
+        [InlineHelp, SerializeField]
+        protected GameObject _SignObject;
+
         #endregion
 
         #region Partial Methods
@@ -138,6 +146,9 @@ namespace Vermines.Menu.Screen {
 
             ActiveButton();
             ShowUser();
+
+            if (_SignObject)
+                _SignObject.SetActive(true);
         }
 
         /// <summary>
@@ -150,6 +161,9 @@ namespace Vermines.Menu.Screen {
 
             DeactiveButton();
             HideUser();
+
+            if (_SignObject)
+                _SignObject.SetActive(true);
         }
 
         #endregion
