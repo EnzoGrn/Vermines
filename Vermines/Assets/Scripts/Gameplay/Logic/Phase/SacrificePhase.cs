@@ -108,7 +108,7 @@ namespace Vermines.Gameplay.Phases {
                 if (_NumberOfCardSacrified >= GameManager.Instance.SettingsData.MaxSacrificesPerTurn || cardCount == 0)
                 {
                     // Pop up context
-                    OnPhaseEnding(_CurrentPlayer, true);
+                    OnPhaseEnding(_CurrentPlayer, false);
                     GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
                     if (gameplayUIController != null)
                     {
