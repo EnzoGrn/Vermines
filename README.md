@@ -18,28 +18,6 @@ Pour plus d'informations sur le projet, veuillez consulter le fichier `Resources
 
 ---
 
-## 🎥 Lecture des fichiers vidéo (.mkv)
-
-Les fichiers vidéo fournis avec ce projet sont au format `.mkv` (Matroska), un conteneur multimédia moderne et flexible.
-
-### 🛠️ Comment les lire ?
-
-Pour garantir une lecture fluide et éviter tout problème de compatibilité audio/vidéo, nous vous recommandons d’utiliser **VLC Media Player**, disponible gratuitement sur toutes les plateformes :
-
-🔗 [Télécharger VLC](https://www.videolan.org/vlc/)
-
-### 💡 Pourquoi VLC ?
-
-VLC prend en charge tous les formats et codecs utilisés dans nos vidéos, y compris les sous-titres intégrés et les pistes audio multiples. Il fonctionne sur :
-
-- Windows
-- macOS
-- Linux
-- Android
-- iOS
-
----
-
 ## ⚠️ Informations de licence
 
 Ce dépôt **n’est pas open source**.
@@ -68,28 +46,6 @@ git submodule update --init --recursive
 ```
 
 For more details about the project, please refer to the `Resources.md` file located in the `gonogo-review` folder.
-
----
-
-## 🎥 Playing video files (.mkv)
-
-The videos included in this project are in the `.mkv` (Matroska) format, a modern and flexible multimedia container.
-
-### 🛠️ How to play them?
-
-To ensure smooth playback and avoid compatibility issues, we recommend using **VLC Media Player**, which is available for free on all platforms:
-
-🔗 [Download VLC](https://www.videolan.org/vlc/)
-
-### 💡 Why VLC?
-
-VLC supports all video and audio codecs used in our files, including embedded subtitles and multiple audio tracks. It works on:
-
-- Windows
-- macOS
-- Linux
-- Android
-- iOS
 
 ---
 
