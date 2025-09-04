@@ -17,7 +17,6 @@ namespace Vermines {
     using Vermines.Menu.Connection.Element;
     using Vermines.Configuration.Network;
     using Vermines.Configuration;
-    using System.Collections;
 
     public class GameManager : NetworkBehaviour {
 
@@ -172,15 +171,37 @@ namespace Vermines {
             } else { // Matchmaking game
                 if (HasStateAuthority) // When you are the host and you leave for disconnect everyone because you close the server.
                     RPC_ForceReturnToTavernEveryone();
-                else
-                {
-                    // Local leave.
+                else {
                     await ReturnToTavern();
                 }
             }
         }
 
-        private async Task ReturnToTavern()
+        public async Task ForceEndCustomGame(PlayerRef player)
+        {
+            if (HasStateAuthority) { // Load the lobby
+                VerminesConnectionBehaviour connection = FindFirstObjectByType<VerminesConnectionBehaviour>(FindObjectsInactive.Include);
+                VMUI_PartyMenu              party      = FindFirstObjectByType<VMUI_PartyMenu>(FindObjectsInactive.Include);
+
+                await connection.ChangeScene(party.SceneRef);
+
+                SettingsManager settingsManager = FindFirstObjectByType<SettingsManager>(FindObjectsInactive.Include);
+
+                if (settingsManager) { // Copy the current settings configuration for the next game and create a new seed.
+                    GameSettingsData settings = SettingsData;
+
+                    settings.Seed = GameConfiguration.CreateSeed();
+
+                    settingsManager.SetConfiguration(settings);
+                } else {
+                    Debug.LogError("[GameManager]: Cannot find SettingsManager. We cannot save this game settings to the custom game lobby.");
+                }
+            }
+
+            await ReturnToCustomTavern();
+        }
+
+        public async Task ReturnToTavern()
         {
             if (_routineManager)
                 _routineManager.StopRoutine();
@@ -190,15 +211,11 @@ namespace Vermines {
 
             loading.Controller.Show<VMUI_Loading>();
 
-            // If you are the host, unload the scenes.
-            await SceneManager.UnloadSceneAsync("FinalAnimation");
-            await SceneManager.UnloadSceneAsync("Game");
+            if (!HasStateAuthority)
+                await SceneUtils.SafeUnloadAll("FinalAnimation", "Game", "UI", "GameplayCameraTravelling");
 
             // Disconnect
             await loading.Connection.DisconnectAsync(ConnectFailReason.GameEnded);
-
-            // Switch to the tavern UI.
-            loading.Controller.Show<VMUI_Tavern>(loading);
         }
 
         private async Task ReturnToCustomTavern()
@@ -212,11 +229,19 @@ namespace Vermines {
             loading.Controller.Show<VMUI_Loading>();
 
             // If you are the host, unload the scenes.
-            await SceneManager.UnloadSceneAsync("FinalAnimation");
-            await SceneManager.UnloadSceneAsync("Game");
+            if (HasStateAuthority)
+                await SceneUtils.SafeUnloadAll(Runner, "FinalAnimation", "Game", "UI", "GameplayCameraTravelling");
 
             // Switch to the tavern UI.
             loading.Controller.Show<VMUI_CustomTavern>(loading);
+        }
+
+        public static async Task SafeUnload(string sceneName)
+        {
+            var scene = SceneManager.GetSceneByName(sceneName);
+
+            if (scene.isLoaded)
+                await SceneManager.UnloadSceneAsync(sceneName);
         }
 
         private void InitializePlayerOrder()
@@ -237,7 +262,6 @@ namespace Vermines {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private async void RPC_ForceReturnToTavernEveryone()
         {
-            Debug.Log("[GameManager]: Force everyone to return to the tavern.");
             await ReturnToTavern();
         }
 

@@ -1,13 +1,11 @@
-using OMGG.Menu.Connection;
 using OMGG.Menu.Screen;
-using System.Collections;
-using System.Text;
 using UnityEngine;
 using Fusion;
+using Vermines.Menu.Screen.Tavern.Network;
+using Vermines.Player;
 
 namespace Vermines.Menu.Screen {
 
-    using Text   = TMPro.TMP_Text;
     using Button = UnityEngine.UI.Button;
 
     /// <summary>
@@ -19,69 +17,34 @@ namespace Vermines.Menu.Screen {
         #region Fields
 
         /// <summary>
-        /// The session code label.
+        /// Pause panel.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected Text _CodeText;
+        protected GameObject _PausePanelGO;
 
         /// <summary>
-        /// The list of players.
+        /// Blocker.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected Text _PlayersText;
+        protected GameObject _BlockerGO;
 
         /// <summary>
-        /// The current player count.
+        /// The resume button.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected Text _PlayersCountText;
+        protected Button _ResumeButton;
 
         /// <summary>
-        /// The max player count.
+        /// The settings button.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected Text _PlayersMaxCountText;
-        
-        /// <summary>
-        /// The menu header text.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected Text _HeaderText;
-        
-        /// <summary>
-        /// The GameObject of the session part to be toggled off.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected GameObject _SessionGameObject;
-        
-        /// <summary>
-        /// The GameObject of the player part to be toggled off.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected GameObject _PlayersGameObject;
-
-        /// <summary>
-        /// The copy session button.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected Button _CopySessionButton;
+        protected Button _SettingsButton;
 
         /// <summary>
         /// The disconnect button.
         /// </summary>
         [InlineHelp, SerializeField]
         protected Button _DisconnectButton;
-
-        /// <summary>
-        /// In what frequencey are the usernames refreshed.
-        /// </summary>
-        [InlineHelp]
-        public float UpdateUsernameRateInSeconds = 2;
-
-        /// <summary>
-        /// The coroutine is started during Show() and updates the Usernames using this interval <see cref="UpdateUsernameRateInSeconds"/>.
-        /// </summary>
-        protected Coroutine _UpdateUsernamesCoroutine;
 
         #endregion
 
@@ -129,21 +92,10 @@ namespace Vermines.Menu.Screen {
 
             ShowUser();
 
-            // Only show the session UI if it is a party code
-            if (Config.CodeGenerator != null && Config.CodeGenerator.IsValid(Connection.SessionName)) {
-                _CodeText.text = Connection.SessionName;
-
-                _SessionGameObject.SetActive(true);
-            } else {
-                _CodeText.text = string.Empty;
-
-                _SessionGameObject.SetActive(false);
+            if (Controller.GetLastScreen(out MenuUIScreen screen) && screen is VMUI_Gameplay) {
+                _BlockerGO.SetActive(true);
+                _PausePanelGO.SetActive(true);
             }
-
-            UpdateUsernames();
-
-            if (UpdateUsernameRateInSeconds > 0)
-                _UpdateUsernamesCoroutine = StartCoroutine(UpdateUsernamesCoroutine());
         }
 
         /// <summary>
@@ -156,69 +108,58 @@ namespace Vermines.Menu.Screen {
 
             HideUser();
 
-            if (_UpdateUsernamesCoroutine != null) {
-                StopCoroutine(_UpdateUsernamesCoroutine);
-
-                _UpdateUsernamesCoroutine = null;
-            }
-        }
-
-        /// <summary>
-        /// Update the usernames list. Will cancel itself if UpdateUsernameRateInSeconds <= 0.
-        /// </summary>
-        /// <returns></returns>
-        protected virtual IEnumerator UpdateUsernamesCoroutine()
-        {
-            while (UpdateUsernameRateInSeconds > 0) {
-                yield return new WaitForSeconds(UpdateUsernameRateInSeconds);
-
-                UpdateUsernames();
-            }
-        }
-
-        /// <summary>
-        /// Update the usernames and toggle the UI part on/off depending on the <see cref="IFusionMenuConnection.Usernames"/>
-        /// </summary>
-        protected virtual void UpdateUsernames()
-        {
-            if (Connection.Usernames != null && Connection.Usernames.Count > 0) {
-                StringBuilder sBuilder    = new();
-                int           playerCount = 0;
-
-                _PlayersGameObject.SetActive(true);
-
-                foreach (var username in Connection.Usernames) {
-                    sBuilder.AppendLine(username);
-                    playerCount += string.IsNullOrEmpty(username) ? 0 : 1;
-                }
-
-                _PlayersText.text = sBuilder.ToString();
-                _PlayersCountText.text = $"{playerCount}";
-                _PlayersMaxCountText.text = $"/{Connection.MaxPlayerCount}";
-            } else
-                _PlayersGameObject.SetActive(false);
+            _BlockerGO.SetActive(false);
+            _PausePanelGO.SetActive(false);
         }
 
         #endregion
 
         #region Events
 
-        /// <summary>
-        /// Is called when the <see cref="_disconnectButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
-        protected virtual async void OnDisconnectPressed()
+        public void TogglePauseMenu()
         {
-            await Connection.DisconnectAsync(ConnectFailReason.UserRequest);
+            VMUI_Settings settings = Controller.Get<VMUI_Settings>();
 
-            Controller.Show<VMUI_MainMenu>();
+            if (settings != null && settings.gameObject.activeSelf)
+                return;
+            if (_PausePanelGO.activeSelf) {
+                OnResumeButtonPressed();
+            } else {
+                _BlockerGO.SetActive(true);
+                _PausePanelGO.SetActive(true);
+            }
         }
 
         /// <summary>
-        /// Is called when the <see cref="_copySessionButton"/> is pressed using SendMessage() from the UI object.
+        /// Is called when the <see cref="_ResumeButton" /> is pressed using SendMessage() from the UI object. />
         /// </summary>
-        protected virtual void OnCopySessionPressed()
+        protected virtual void OnResumeButtonPressed()
         {
-            GUIUtility.systemCopyBuffer = _CodeText.text;
+            _BlockerGO.SetActive(false);
+            _PausePanelGO.SetActive(false);
+        }
+
+        /// <summary>
+        /// Is called when the <see cref="_SettingsButton" /> is pressed using SendMessage() from the UI object.
+        /// </summary>
+        protected virtual void OnSettingsButtonPressed()
+        {
+            Controller.Show<VMUI_Settings>(this);
+        }
+
+        /// <summary>
+        /// Is called when the <see cref="_disconnectButton"/> is pressed using SendMessage() from the UI object.
+        /// </summary>
+        protected virtual async void OnDisconnectButtonPressed()
+        {
+            GameManager manager = FindFirstObjectByType<GameManager>();
+
+            if (!manager)
+                return;
+            if (manager.HasStateAuthority)
+                await manager.ReturnToMenu();
+            else
+                PlayerController.Local.ReturnToMenu();
         }
 
         #endregion

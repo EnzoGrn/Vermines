@@ -3,7 +3,7 @@ using Fusion;
 using UnityEngine;
 
 namespace Vermines.Player {
-
+    using OMGG.Menu.Screen;
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
@@ -11,15 +11,11 @@ namespace Vermines.Player {
     using Vermines.Gameplay.Cards;
     using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Gameplay.Commands.Deck;
-    using Vermines.HUD;
+    using Vermines.Menu.Screen;
     using Vermines.Network.Utilities;
+    using Vermines.Service;
     using Vermines.ShopSystem.Commands;
-    using Vermines.ShopSystem.Data;
     using Vermines.ShopSystem.Enumerations;
-    using Vermines.UI;
-    using Vermines.UI.Card;
-    using Vermines.UI.GameTable;
-    using Vermines.UI.Shop;
 
     public class PlayerController : NetworkBehaviour {
 
@@ -46,6 +42,49 @@ namespace Vermines.Player {
         #endregion
 
         #region Methods
+
+        public void Update()
+        {
+            if (!HasInputAuthority)
+                return;
+            if (Input.GetKeyDown(KeyCode.Escape)) {
+                VMUI_Gameplay gameplay = FindFirstObjectByType<VMUI_Gameplay>();
+                
+                if (gameplay)
+                    gameplay.TogglePauseMenu();
+            }
+        }
+
+        public void ReturnToMenu()
+        {
+            VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
+
+            if (services.IsCustomGame())
+                RPC_ForceQuitCustomGame(PlayerRef);
+            else
+                RPC_ForceQuit(PlayerRef);
+        }
+
+        [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+        public async void RPC_ForceQuitCustomGame(PlayerRef player)
+        {
+            GameManager manager = FindFirstObjectByType<GameManager>();
+
+            if (!manager)
+                return;
+            await manager.ForceEndCustomGame(player);
+        }
+
+
+        [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+        public async void RPC_ForceQuit(PlayerRef player)
+        {
+            GameManager manager = FindFirstObjectByType<GameManager>();
+
+            if (!manager)
+                return;
+            await manager.ReturnToTavern();
+        }
 
         public void ClearTracker()
         {

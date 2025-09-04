@@ -77,6 +77,8 @@ namespace Vermines.Menu.Connection.Element {
         [NonSerialized]
         private CancellationToken _CancellationToken;
 
+        private SceneRef? _CurrentScene;
+
         #endregion
 
         #region Getters
@@ -136,6 +138,7 @@ namespace Vermines.Menu.Connection.Element {
 
             if (_Runner && _Runner.IsRunning) {
                 await _Runner.Shutdown();
+
                 await Task.Delay(100);
             }
 
@@ -162,7 +165,11 @@ namespace Vermines.Menu.Connection.Element {
             // Scene info
             NetworkSceneInfo sceneInfo = new();
 
+            if (_CurrentScene.HasValue && _CurrentScene.Value == sceneRef)
+                await _Runner.UnloadScene(_CurrentScene.Value);
             sceneInfo.AddSceneRef(sceneRef, LoadSceneMode.Additive);
+
+            _CurrentScene = sceneRef;
 
             args.Scene = sceneInfo;
 
@@ -254,7 +261,11 @@ namespace Vermines.Menu.Connection.Element {
                 return result;
             }
 
+            if (_CurrentScene.HasValue && _CurrentScene == sceneRef)
+                await _Runner.UnloadScene(sceneRef);
             await _Runner.LoadScene(sceneRef, LoadSceneMode.Additive);
+
+            _CurrentScene = sceneRef;
 
             result.Success = true;
 
