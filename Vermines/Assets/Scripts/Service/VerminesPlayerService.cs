@@ -10,8 +10,6 @@ using UnityEngine;
 namespace Vermines.Service {
 
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Configuration.Network;
-    using Vermines.Configuration;
     using Vermines.Menu.Connection.Element;
     using Vermines.Menu.Screen;
     using UnityEngine.SceneManagement;
@@ -230,6 +228,8 @@ namespace Vermines.Service {
 
         public async void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
+            await SceneUtils.SafeUnloadAll("FinalAnimation", "Game", "UI", "GameplayCameraTravelling");
+
             // Host / Server left
             if (shutdownReason == ShutdownReason.DisconnectedByPluginLogic) {
                 await _Connection.DisconnectAsync(ConnectFailReason.Disconnect);
