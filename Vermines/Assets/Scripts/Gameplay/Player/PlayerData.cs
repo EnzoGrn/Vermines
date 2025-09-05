@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Fusion;
@@ -77,6 +77,8 @@ namespace Vermines.Player {
 
                 Deck.Merge(Discard);
                 Deck.Shuffle(GameManager.Instance.SettingsData.Seed);
+                // TODO: Clear the discard pile visual
+                GameEvents.OnDiscardShuffled.Invoke();
             }
 
             ICard card = Deck.Draw();
