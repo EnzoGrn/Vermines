@@ -9,8 +9,12 @@ public static class SceneUtils {
     {
         var scene = SceneManager.GetSceneByName(sceneName);
 
-        if (scene.isLoaded)
-            await SceneManager.UnloadSceneAsync(sceneName);
+        if (scene.isLoaded) {
+            var op = SceneManager.UnloadSceneAsync(sceneName);
+
+            if (op != null)
+                await op;
+        }
     }
 
     public static async Task SafeUnload(NetworkRunner runner, string sceneName)
