@@ -113,6 +113,7 @@ namespace Vermines {
                 return;
             if (SettingsData.Equals(default(GameSettingsData))) // If it's a default value (not a custom game), then load the default game configuration.
                 SettingsData = Configuration.ToGameSettingsData();
+            OnSettingsDataChanged();
             InitializePlayerOrder();
 
             _Initializer.InitializePlayers(SettingsData);
