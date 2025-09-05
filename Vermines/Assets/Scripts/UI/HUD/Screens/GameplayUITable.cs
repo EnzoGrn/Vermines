@@ -147,6 +147,7 @@ namespace Vermines.UI.Screen
             SetupDiscardZone();
             GameEvents.OnPhaseChanged.AddListener(UpdateUIForPhase);
             GameEvents.OnEquipmentCardPurchased.AddListener(AddEquipment);
+            GameEvents.OnDiscardShuffled.AddListener(ClearDiscard);
             SetupCloseViewPopup();
         }
 
@@ -254,16 +255,15 @@ namespace Vermines.UI.Screen
             discardSlot.ResetSlot();
         }
 
+        public void ClearDiscard()
+        {
+            discardSlot.ResetSlot();
+        }
+
         public void SetDiscardZoneInteractable(bool value)
         {
             Debug.Log($"[TableUI] Setting discard zone interactable to {value}.");
             discardSlot.SetInteractable(value);
-        }
-
-        private void SetSlotsInteractable(List<TableCardSlot> slots, bool value)
-        {
-            foreach (var slot in slots)
-                slot.SetInteractable(value);
         }
 
         public void AddCardToDiscardZone(ICard card)
