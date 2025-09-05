@@ -165,7 +165,7 @@ namespace Vermines.Menu.Connection.Element {
             // Scene info
             NetworkSceneInfo sceneInfo = new();
 
-            if (_CurrentScene.HasValue && _CurrentScene.Value == sceneRef)
+            if (_CurrentScene.HasValue && _CurrentScene.Value != sceneRef)
                 await _Runner.UnloadScene(_CurrentScene.Value);
             sceneInfo.AddSceneRef(sceneRef, LoadSceneMode.Additive);
 
