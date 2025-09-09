@@ -7,9 +7,8 @@ namespace Vermines.UI.Plugin
     using Vermines.UI.Book;
     using static Vermines.UI.Screen.GameplayUIBook;
 
-    public class RulesBookPlugin : GameplayScreenPlugin
+    public class CardsPagePlugin : GameplayScreenPlugin
     {
-        public RuleBook ruleBook;
         public Text leftTitleText;
         public Text leftContentText;
         public Text rightTitleText;
@@ -149,13 +148,6 @@ namespace Vermines.UI.Plugin
 
         public void GoToSection(RuleBookSectionType sectionType)
         {
-            var section = ruleBook.GetSectionByType(sectionType);
-            if (section != null)
-            {
-                currentSection = section;
-                currentPageIndexInSection = 0;
-                ShowPages();
-            }
         }
     }
 }
