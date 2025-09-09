@@ -9,7 +9,6 @@ public class HandClickHandler : ICardClickHandler
 
     public void OnCardClicked(ICard card)
     {
-        Debug.Log("YAAAAAAAAAAAAAAAAAa");
         GameEvents.OnCardClicked.Invoke(card, -1);
     }
 }

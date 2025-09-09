@@ -21,7 +21,7 @@ namespace Vermines.UI.Card
         [SerializeField] private Image _backgroundImage;
         [SerializeField] private Image _descriptionImage;
 
-        private ICardClickHandler _clickHandler;
+        private ICardClickHandler _clickHandler = null;
 
         // TODO: add the card type (partisan, object, etc.)
 
@@ -57,7 +57,7 @@ namespace Vermines.UI.Card
 
             foreach (AEffect effect in data.Effects)
             {
-                _effectDescription.text += "-" + effect.Description + "\n";
+                _effectDescription.text += "- " + effect.Description + "\n";
             }
 
             // --- Load visuals
