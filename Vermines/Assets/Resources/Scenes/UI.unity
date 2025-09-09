@@ -20862,11 +20862,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5098197779626184342, guid: be997712c43c15a4bb1129a79c2222a8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -158.09998
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5098197779626184342, guid: be997712c43c15a4bb1129a79c2222a8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -75.4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5098197779626184342, guid: be997712c43c15a4bb1129a79c2222a8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -21518,7 +21518,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 328, y: -137}
-  m_SizeDelta: {x: 284.86, y: 42.01}
+  m_SizeDelta: {x: 278.94, y: 42.01}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &981309009607620352
 RectTransform:
@@ -24210,7 +24210,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6064076840785642931, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -12.804993
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6064076840785642931, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -24254,11 +24254,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7938492311049755303, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -649
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7938492311049755303, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 128
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7938492311049755303, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -28995,7 +28995,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Play Zone
+  m_text: Play Area
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5cf5085483edcdf4592c6fb0c477eb20, type: 2}
   m_sharedMaterial: {fileID: -506840285428784428, guid: 5cf5085483edcdf4592c6fb0c477eb20, type: 2}
