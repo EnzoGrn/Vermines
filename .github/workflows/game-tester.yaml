@@ -1,0 +1,109 @@
+name: Unity Game Tester
+
+# OMGG Github Action for automatically testing an OMGG Game.
+# It's a workflow that check the Unity license validity and execute unit test.
+# The result of the workflow will be artefacts of `Code Coverage` and `Test Results`.
+
+on:
+  # Work only when we push on the main branch
+  push:
+    branches:
+      - main
+      - experimental/*
+
+env:
+
+  # -- Secrets --
+
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }} # The license of Unity, care the expiration date.
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+
+  # -- Variables --
+
+  # ! The expiration date is 2025-09-23 so when it's expired, the build will fail, and it will need an update of license.
+  # NOTE: When the UNITY_LICENSE will be update, please add the new expiration date here.
+  stopDate: '2025-09-23T16:18:03'
+
+  # Path of the project in the repository.
+  projectPath: 'Vermines'
+
+  # The version of Unity to use.
+  # NOTE: Update this version if the company update his environment.
+  unityVersion: '6000.0.25f1'
+
+  # ! If the version of Unity change, know that the docker image may need an update.
+  # You can found other version: https://hub.docker.com/r/unityci/editor/tags
+  dockerImage: 'unityci/editor:windows-6000.0.25f1-windows-il2cpp-3.1.0'
+
+jobs:
+
+  checkLicense:
+    name: Check Unity License
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check license availability
+        run: |
+          if [ -z "${{ env.UNITY_LICENSE }}" ]; then
+            echo "Unity license is missing."
+            exit 1
+          fi
+      - name: Check license expiration
+        run: |
+          currentDate=$(date -u +"%Y-%m-%dT%H:%M:%S")
+
+          if [[ "$currentDate" > "${{ env.stopDate }}" ]]; then
+            echo "Unity license has expired."
+            exit 1
+          else
+            echo "Unity license is valid."
+          fi
+
+  testRunner:
+    name: Run Unity Tests
+    runs-on: windows-latest
+    needs: checkLicense
+    strategy:
+      matrix:
+        targetPlatform:
+          # The target platform to build the project for.
+          # Need to add more platform if the project need to be built for more platform.
+          # Example : StandaloneOSX, StandaloneLinux64, WebGL, iOS, Android, etc...
+          - StandaloneWindows64
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Unity
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.projectPath }}/Library
+          key: Library-${{ env.projectPath }}-${{ matrix.targetPlatform }}
+
+      - name: Run Tests
+        id: tests
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ env.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
+        with:
+          projectPath: ${{ env.projectPath }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          customImage: ${{ env.dockerImage }}
+          checkName: ${{ matrix.targetPlatform }} Test Results
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport'
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: TestResults-${{ matrix.targetPlatform }}
+          path: ${{ steps.tests.outputs.artifactsPath }}
+
+      - name: Code Coverage Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Coverage results for ${{ matrix.targetPlatform }}
+          path: ${{ steps.tests.outputs.coveragePath }}

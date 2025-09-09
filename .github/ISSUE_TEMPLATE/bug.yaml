@@ -1,0 +1,76 @@
+name: 🐛 Bug Report
+description: Report a reproducible issue with the game or platform
+title: "[BUG] Component - What happens - When it happens"
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug! Please fill out the details below as clearly as possible.
+
+  - type: input
+    id: environment
+    attributes:
+      label: 📋 Environment
+      description: OS, browser, Unity version, etc.
+      placeholder: "Windows 10, Unity 2022.3.5f1, Chrome 115..."
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Description
+      description: Clearly describe the issue or requested feature.
+      placeholder: |
+        If it's a bug, explain what is not working.
+        If it's a feature request, describe what you would like to see implemented.
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 📸 Screenshots (if applicable)
+      description: Add screenshots to help illustrate the issue or feature request. Use annotations if needed.
+      placeholder: |
+        You can drag and drop images into this field.
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 📌 Steps to Reproduce (if bug)
+      description: Provide detailed steps to reproduce the issue. Be as precise as possible.
+      placeholder: |
+        1. Step 1: ...
+        2. Step 2: ...
+        3. Step 3: ...
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Behaviour
+      description: Describe what you expected to happen.
+      placeholder: Explain the intended/normal behaviour.
+
+  - type: textarea
+    id: observed
+    attributes:
+      label: ❌ Observed Behaviour
+      description: Describe what is actually happening and how it differs from the expected result.
+      placeholder: What's going wrong?
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 💡 Possible Solution (optional)
+      description: If you have any suggestions for the cause or fix, include them here.
+      placeholder: Any idea what could be causing this? Suggest a fix if you have one.
+
+  - type: input
+    id: projectVersion
+    attributes:
+      label: 📦 Project Version
+      placeholder: "v1.2.3"
+
+  - type: input
+    id: unityVersion
+    attributes:
+      label: 🎮 Unity Version
+      placeholder: "2022.3.5f1"
