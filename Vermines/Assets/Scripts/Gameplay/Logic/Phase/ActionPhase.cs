@@ -57,6 +57,7 @@ namespace Vermines.Gameplay.Phases {
                 return;
             }
             int cardId = card.ID;
+
             // Switch the card from the hand deck to the discard deck
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
             {
@@ -97,6 +98,7 @@ namespace Vermines.Gameplay.Phases {
                 return;
             }
             int cardId = card.ID;
+
             // Switch the card from the hand deck to the played deck
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
             {
