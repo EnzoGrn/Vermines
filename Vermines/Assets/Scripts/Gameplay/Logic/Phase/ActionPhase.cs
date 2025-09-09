@@ -4,7 +4,6 @@ using UnityEngine;
 namespace Vermines.Gameplay.Phases {
     using Vermines.CardSystem.Elements;
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.HUD;
     using Vermines.Player;
     using Vermines.ShopSystem.Enumerations;
 
