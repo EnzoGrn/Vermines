@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Fullscreen
+  m_text: VSync
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5cf5085483edcdf4592c6fb0c477eb20, type: 2}
   m_sharedMaterial: {fileID: -506840285428784428, guid: 5cf5085483edcdf4592c6fb0c477eb20, type: 2}
@@ -216,7 +216,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 999010880984648635, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 80
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 999010880984648635, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -348,7 +348,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2168271338119182063, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 80
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 2168271338119182063, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -365,22 +365,22 @@ PrefabInstance:
     - target: {fileID: 2356915819162237829, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: e2a82bfe8a0a24c4c963548723b2962b, type: 3}
+      objectReference: {fileID: 21300000, guid: c1ff8509ea40df34bb177d23c8e4dbeb, type: 3}
     - target: {fileID: 2356915819162237829, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_Color.a
-      value: 0.5019608
+      value: 0.84313726
       objectReference: {fileID: 0}
     - target: {fileID: 2356915819162237829, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_Color.b
-      value: 0
+      value: 0.5354664
       objectReference: {fileID: 0}
     - target: {fileID: 2356915819162237829, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_Color.g
-      value: 0
+      value: 0.5354664
       objectReference: {fileID: 0}
     - target: {fileID: 2356915819162237829, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_Color.r
-      value: 0
+      value: 0.5943396
       objectReference: {fileID: 0}
     - target: {fileID: 3594228402535271652, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_Color.b
@@ -412,11 +412,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3630511653876584728, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 400
+      value: 390
       objectReference: {fileID: 0}
     - target: {fileID: 3630511653876584728, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 3779311989106976286, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_SizeDelta.x
@@ -564,7 +564,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9104887343164774184, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 400
+      value: 360
       objectReference: {fileID: 0}
     - target: {fileID: 9104887343164774184, guid: c377bdf38ee9e064ca0744266f8ab161, type: 3}
       propertyPath: m_SizeDelta.y
