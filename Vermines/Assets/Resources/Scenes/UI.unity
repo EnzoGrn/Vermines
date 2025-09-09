@@ -2850,7 +2850,7 @@ RectTransform:
   - {fileID: 6466637232120790891}
   - {fileID: 761664717}
   - {fileID: 786632125}
-  - {fileID: 738160321}
+  - {fileID: 7437297455283974810}
   m_Father: {fileID: 202515938}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -13015,7 +13015,7 @@ MonoBehaviour:
     config: {fileID: 11400000, guid: 1359b5869bd9a264cb0b647fe2484f4b, type: 2}
   - shopType: 1
     config: {fileID: 11400000, guid: 2bc4d19232b41f04e9746b56031e9348, type: 2}
-  _CloseButton: {fileID: 0}
+  _CloseButton: {fileID: 199066484}
 --- !u!114 &1251628408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26431,7 +26431,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6064076840785642931, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -12.804993
       objectReference: {fileID: 0}
     - target: {fileID: 6064076840785642931, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -26475,11 +26475,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7938492311049755303, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -649
       objectReference: {fileID: 0}
     - target: {fileID: 7938492311049755303, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 7938492311049755303, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -31520,6 +31520,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e67d10ed6309455468a3279d1eb60fb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &7437297455283974810 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6763471643699895921, guid: 0a5ed3437dda14547aa578364e948d6c, type: 3}
+  m_PrefabInstance: {fileID: 7437297455283974808}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &7437574830624117228
 GameObject:
   m_ObjectHideFlags: 0
