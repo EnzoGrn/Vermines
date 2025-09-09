@@ -1,0 +1,209 @@
+name: Unity Game Builder
+
+# OMGG Github Action for automatically building an OMGG Game.
+# It's a workflow that clean the repository, build the project.
+# The result of the workflow will be artefacts that contains the build of the game.
+
+on:
+  # Work only when the Unity Game Tester workflow succeed on the main branch
+  workflow_run:
+    workflows: ["Unity Game Tester"]
+    types:
+      - completed
+
+env:
+
+  # -- Secrets --
+
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+
+  # -- Variables --
+
+  # Path of the project in the repository.
+  projectPath: 'template-game'
+
+  # The version of Unity to use.
+  # NOTE: Update this version if the company update his environment.
+  unityVersion: '6000.0.25f1'
+
+jobs:
+
+  cleanup-artifacts:
+    name: Cleanup old artifacts # Only keep the most recent artifact and delete the others.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            })
+
+            if (artifacts.data.artifacts.length === 0)
+              return
+
+            const sorted = artifacts.data.artifacts.sort(
+              (a, b) => new Date(b.created_at) - new Date(a.created_at)
+            )
+
+            const toDelete = sorted.slice(1) // Keep the most recent artifact, delete the others.
+
+            for (const artifact of toDelete) {
+              console.log(`Deleting artifact: ${artifact.name} (${artifact.id})`)
+
+              await github.rest.actions.deleteArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: artifact.id
+              })
+            }
+
+  cleanup-cache:
+    name: Cleanup old Unity caches # Only keep the most recent cache and delete the others.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old Unity caches
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const caches = await github.rest.actions.getActionsCacheList({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            })
+
+            // Only keep Unity caches (Library-...)
+            const unityCaches = caches.data.actions_caches.filter(c => c.key.startsWith("Library-"))
+
+            if (unityCaches.length === 0)
+              return
+            unityCaches.sort((a, b) => new Date(b.last_accessed_at) - new Date(a.last_accessed_at))
+
+            for (const cache of unityCaches.slice(1)) {
+              await github.rest.actions.deleteActionsCacheById({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                cache_id: cache.id,
+              })
+            }
+
+  buildGame:
+    name: Build Unity Game
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+          # The target platform to build the project for.
+          # Need to add more platform if the project need to be built for more platform.
+          # Example : StandaloneOSX, StandaloneLinux64, WebGL, iOS, Android, etc...
+          - StandaloneWindows64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Unity
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.projectPath }}/Library
+          key: Library-${{ env.projectPath }}-${{ matrix.targetPlatform }}
+
+      - name: Build Project
+        uses: game-ci/unity-builder@v4.2.3
+        env:
+          UNITY_LICENSE: ${{ env.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
+        with:
+          projectPath: ${{ env.projectPath }}
+          unityVersion: ${{ env.unityVersion }}
+          targetPlatform: ${{ matrix.targetPlatform }}
+          buildName: ${{ env.projectPath }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
+
+  createInstaller:
+    name: Create Windows Installer
+    needs: buildGame
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Build-StandaloneWindows64
+          path: build/StandaloneWindows64
+
+      - name: Install Inno Setup
+        run: choco install innosetup --yes
+        shell: pwsh
+
+      - name: Compile Installer
+        run: iscc template-game.iss
+        shell: pwsh
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: template-gameInstaller
+          path: build/Installer/template-game.exe
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: createInstaller
+    strategy:
+      matrix:
+        targetPlatform:
+          # The target platform to build the project for.
+          # Need to add more platform if the project need to be built for more platform.
+          # Example : StandaloneOSX, StandaloneLinux64, WebGL, iOS, Android, etc...
+          - StandaloneWindows64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get release version
+        id: get_version
+        run: | # Extract version number from the commit message, it must be in the format release-x.y.z, otherwise it will fail.
+          version=$(echo '${{ github.event.workflow_run.head_commit.message }}' | grep -oE 'release-[0-9]+\.[0-9]+\.[0-9]+' | sed 's/release-//')
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Download installer artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: template-gameInstaller
+          path: build/Installer
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Build-${{ matrix.targetPlatform }}
+          path: build/Build-${{ matrix.targetPlatform }}
+
+      - name: Create a ZIP of the build folder
+        run: |
+          zip -r build/Release.zip build/Build-${{ matrix.targetPlatform }}/*
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: v${{ steps.get_version.outputs.version }}
+          body: 'Auto-generated release from CI'
+          files: |
+            build/Release.zip
+            build/Installer/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
