@@ -76,8 +76,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 12509439717498880
-    m_Localized: Drag from your hand the partisans whose effects you want to take
-      advantage of. Equipment cards are automatically dragged here after purchase.
+    m_Localized: Play Area
     m_Metadata:
       m_Items: []
   references:
