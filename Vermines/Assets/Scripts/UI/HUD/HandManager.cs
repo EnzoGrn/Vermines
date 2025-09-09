@@ -13,6 +13,7 @@ namespace Vermines.UI.Card
         [SerializeField] private GameObject cardPrefab;
         [SerializeField] private Transform spawnPoint;
         [SerializeField] private HandLayout handLayout;
+        [SerializeField] private DraggableUI bigCardDisplay;
 
         [Header("Settings")]
         [SerializeField] private int maxHandSize = 50;
@@ -45,7 +46,10 @@ namespace Vermines.UI.Card
             GameObject cardGO = CreateCard();
 
             if (cardGO.TryGetComponent<CardDisplay>(out var display))
-                display.Display(card, null);
+            {
+                var clickHandler = new HandClickHandler();
+                display.Display(card, clickHandler);
+            }
             else
                 Debug.LogWarning("CardDisplay component missing on card prefab.");
 
