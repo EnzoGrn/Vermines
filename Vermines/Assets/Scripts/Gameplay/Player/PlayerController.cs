@@ -39,6 +39,12 @@ namespace Vermines.Player {
                 Local = this;
         }
 
+        public override void Despawned(NetworkRunner runner, bool hasState)
+        {
+            if (HasInputAuthority && Local == this)
+                Local = null;
+        }
+
         #endregion
 
         #region Methods
