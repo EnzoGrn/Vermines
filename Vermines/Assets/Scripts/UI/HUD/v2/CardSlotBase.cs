@@ -77,7 +77,7 @@ namespace Vermines.UI.Card
         {
             if (CanAcceptCard(card))
             {
-                Init(card, false);
+                Init(card, false, new HandClickHandler());
             }
             else
             {
