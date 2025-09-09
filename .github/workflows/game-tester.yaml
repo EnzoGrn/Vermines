@@ -27,7 +27,7 @@ env:
   stopDate: '2025-09-23T16:18:03'
 
   # Path of the project in the repository.
-  projectPath: 'template-game'
+  projectPath: 'Vermines'
 
   # The version of Unity to use.
   # NOTE: Update this version if the company update his environment.

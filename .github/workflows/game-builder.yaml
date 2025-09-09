@@ -22,7 +22,7 @@ env:
   # -- Variables --
 
   # Path of the project in the repository.
-  projectPath: 'template-game'
+  projectPath: 'Vermines'
 
   # The version of Unity to use.
   # NOTE: Update this version if the company update his environment.
@@ -150,14 +150,14 @@ jobs:
         shell: pwsh
 
       - name: Compile Installer
-        run: iscc template-game.iss
+        run: iscc Vermines.iss
         shell: pwsh
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
-          name: template-gameInstaller
-          path: build/Installer/template-game.exe
+          name: VerminesInstaller
+          path: build/Installer/Vermines.exe
 
   release:
     name: Create GitHub Release
@@ -183,7 +183,7 @@ jobs:
       - name: Download installer artifacts
         uses: actions/download-artifact@v4
         with:
-          name: template-gameInstaller
+          name: VerminesInstaller
           path: build/Installer
 
       - name: Download build artifact
