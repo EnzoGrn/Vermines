@@ -28,9 +28,7 @@ namespace Vermines.Gameplay.Phases {
 
         #endregion
 
-        public SacrificePhase()
-        {
-        }
+        public SacrificePhase() {}
 
         #region Override Methods
 
@@ -40,6 +38,7 @@ namespace Vermines.Gameplay.Phases {
             if (player == PlayerRef.None || PlayerController.Local == null || GameDataStorage.Instance.PlayerDeck == null || GameDataStorage.Instance.PlayerDeck.TryGetValue(player, out PlayerDeck _) == false)
                 return;
             PlayerController.Local.ClearTracker();
+
             Reset();
 
             _CurrentPlayer = player;
@@ -67,6 +66,7 @@ namespace Vermines.Gameplay.Phases {
         public override void Reset()
         {
             _NumberOfCardSacrified = 0;
+            _CurrentPlayer         = PlayerRef.None;
         }
 
         public override void OnPhaseEnding(PlayerRef player, bool logic = false)

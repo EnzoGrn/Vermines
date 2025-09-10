@@ -12,7 +12,6 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
     using Vermines.UI;
-    using Vermines.UI.Plugin;
     using Vermines.UI.Screen;
 
     public class GainPhase : APhase {
@@ -36,8 +35,6 @@ namespace Vermines.Gameplay.Phases {
 
             ResetEveryEffectsThatWasActivatedDuringTheLastRound();
 
-            Debug.Log($"Phase Gain is now running for player {_CurrentPlayer}");
-
             ExecuteCardEffect();
 
             ICommand earnCommand = new EarnCommand(_CurrentPlayer, GameManager.Instance.SettingsData.NumberOfEloquencesEarnInGainPhase, DataType.Eloquence);
@@ -48,50 +45,49 @@ namespace Vermines.Gameplay.Phases {
 
             GameEvents.OnPlayerUpdated.Invoke(playerData);
 
-            if (_CurrentPlayer == PlayerController.Local.PlayerRef)
-            {
+            if (_CurrentPlayer == PlayerController.Local.PlayerRef) {
                 GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
-                if (gameplayUIController != null)
-                {
+
+                if (gameplayUIController != null) {
                     gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
                     gameplayUIController.Show<GameplayUIGainSummary>(lastScreen);
                 }
             }
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+
+            _CurrentPlayer = PlayerRef.None;
+        }
+
         private void ExecuteCardEffect()
         {
-            // TODO: Let the player interact with the effects of played cards.
+            List<ICard> equipmentCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].Equipments;
+            List<ICard> playedCards    = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
 
-            // Check if the effect is a passive effect or an active effect.
-
-            List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
-
-            Debug.Log($"[Client]: Player {_CurrentPlayer} has {playedCards.Count} played cards.");
-
-            foreach (ICard card in playedCards)
-            {
-                foreach (IEffect effect in card.Data.Effects)
-                {
-                    if (effect.Type == EffectType.Passive)
-                    {
+            foreach (ICard card in equipmentCards) {
+                foreach (IEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Play) {
                         effect.Play(_CurrentPlayer);
-
-                        Debug.Log($"[Client]: Card {card.ID} is {card.Data.Name}, effect played");
                     }
                 }
             }
 
             foreach (ICard card in playedCards) {
-                foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Play) {
+                foreach (IEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Passive)
                         effect.Play(_CurrentPlayer);
-
-                        Debug.Log($"[Client]: Card {card.ID} is {card.Data.Name}, effect played");
-                    }
                 }
             }
-            return;
+
+            foreach (ICard card in playedCards) {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Play)
+                        effect.Play(_CurrentPlayer);
+                }
+            }
         }
 
         public void OnEffectActivated(int cardID)

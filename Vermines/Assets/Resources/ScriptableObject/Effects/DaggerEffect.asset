@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c266d1a9b5b782e41bb2f387658168af, type: 3}
   m_Name: DaggerEffect
   m_EditorClassIdentifier: 
-  _Type: 4
-  _Description: Earn <b><color=purple>1E</color></b> each time you play a <b>Partisan</b>
-    card.
-  _SubEffect: {fileID: 11400000, guid: 49b16af25acb7154d92dedeb27b64621, type: 2}
+  _Type: 0
+  _Description: Earn <b><color=purple>1E</color></b> for each <b>Partisan</b> card
+    played.
+  _SubEffect: {fileID: 11400000, guid: 8cac042ef1966bd4a8735b24c26c98ac, type: 2}
