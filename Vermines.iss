@@ -32,8 +32,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 ; Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-; Copy all Unity build files
-Source: "*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
+; Copie uniquement les fichiers du build Unity
+Source: "build\StandaloneWindows64\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 [Icons]
 ; Shortcut in the starting menu
