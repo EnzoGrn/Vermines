@@ -10,13 +10,13 @@ AppVersion=2.3.0
 ; Company (facultatif)
 AppPublisher=OMGG
 ; Website (facultatif)
-AppPublisherURL=http://91.134.33.129/
+AppPublisherURL=https://omgg.fr/
 
 ; Default folder of the installation
 DefaultDirName={pf}\Vermines
 
 ; Name of the output file (in OutputDir)
-OutputDir=.\Installer
+OutputDir=build\Installer
 OutputBaseFilename=Vermines
 
 ; Installer icon (optionnal)
@@ -32,7 +32,6 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 ; Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-; Copie uniquement les fichiers du build Unity
 Source: "build\StandaloneWindows64\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 [Icons]
