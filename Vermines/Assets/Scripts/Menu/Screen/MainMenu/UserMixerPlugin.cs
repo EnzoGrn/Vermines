@@ -90,13 +90,23 @@ namespace Vermines.Plugin.Sounds {
         public bool MusicEnabled
         {
             get => PlayerPrefs.GetInt("Vermines.Sound.MusicEnabled", 1) == 1;
-            set => PlayerPrefs.SetInt("Vermines.Sound.MusicEnabled", value ? 1 : 0);
+            set
+            {
+                PlayerPrefs.SetInt("Vermines.Sound.MusicEnabled", value ? 1 : 0);
+
+                SetMusicVolume();
+            }
         }
 
         public float MusicVolume
         {
             get => PlayerPrefs.GetFloat("Vermines.Sound.MusicVolume", 0.5f);
-            set => PlayerPrefs.SetFloat("Vermines.Sound.MusicVolume", value);
+            set
+            {
+                PlayerPrefs.SetFloat("Vermines.Sound.MusicVolume", value);
+
+                SetMusicVolume();
+            }
         }
 
         #endregion
@@ -173,6 +183,8 @@ namespace Vermines.Plugin.Sounds {
         {
             const string label = "MusicVolume";
 
+            Debug.Log($"Setting Music Volume label: {label} SoundEnable {SoundEnabled} && MusicEnable {MusicEnabled}");
+
             if (SoundEnabled && MusicEnabled)
                 SetValue(label, MusicVolume);
             else
@@ -181,6 +193,7 @@ namespace Vermines.Plugin.Sounds {
 
         private void SetValue(string label, float value)
         {
+            Debug.Log($"[UserMixerPlugin]: Set '{label}' to {value}");
             if (value <= 0f)
                 value = 0.0001f; // Avoid Mathf.Log10(0) error
             _AudioMixer.SetFloat(label, Mathf.Log10(value) * 20f);

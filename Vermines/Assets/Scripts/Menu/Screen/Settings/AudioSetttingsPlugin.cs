@@ -107,6 +107,8 @@ namespace Vermines.Menu.Pluggin {
             _FXSlider.Interactable           = isEnabled;
             _MusicEnabledToggle.interactable = isEnabled;
             _MusicSlider.Interactable        = isEnabled;
+
+            Debug.Log("Sound Enabled: " + isEnabled);
         }
 
         public void OnFXEnabled(bool isEnabled)
@@ -114,6 +116,7 @@ namespace Vermines.Menu.Pluggin {
             _MixerManager.FXEnabled = isEnabled;
 
             _FXSlider.Interactable = isEnabled;
+            Debug.Log("FX Enabled: " + isEnabled);
         }
 
         public void OnMusicEnabled(bool isEnabled)
@@ -121,6 +124,7 @@ namespace Vermines.Menu.Pluggin {
             _MixerManager.MusicEnabled = isEnabled;
 
             _MusicSlider.Interactable = isEnabled;
+            Debug.Log("Music Enabled: " + isEnabled);
         }
 
         #endregion
@@ -129,16 +133,19 @@ namespace Vermines.Menu.Pluggin {
 
         public void OnSoundVolumeChanged(float value)
         {
+            Debug.Log("Sound Volume Changed: " + value);
             _MixerManager.MainVolume = value;
         }
 
         public void OnFXVolumeChanged(float value)
         {
+            Debug.Log("FX Volume Changed: " + value);
             _MixerManager.FXVolume = value;
         }
 
         public void OnMusicVolumeChanged(float value)
         {
+            Debug.Log("Music Volume Changed: " + value);
             _MixerManager.MusicVolume = value;
         }
 
