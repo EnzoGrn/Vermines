@@ -10,8 +10,8 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
     public class NetworkCultistSelectDisplay : NetworkBehaviour {
 
-        const string Ready   = "Ready";
-        const string UnReady = "Unready";
+        const string Ready   = "Unready";
+        const string UnReady = "Ready";
 
         #region Attributes
 

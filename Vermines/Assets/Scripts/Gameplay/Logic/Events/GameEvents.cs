@@ -53,6 +53,9 @@ public static class GameEvents
     // --- CARD EFFECTS ---
     public static TrackedEvent<ICard> OnCardCopiedEffect = new("OnCardCopiedEffect");
 
+    // --- DISCARD PILE ---
+    public static TrackedEvent OnDiscardShuffled = new("OnDiscardShuffled");
+
     static GameEvents()
     {
         foreach (ShopType shopType in Enum.GetValues(typeof(ShopType)))

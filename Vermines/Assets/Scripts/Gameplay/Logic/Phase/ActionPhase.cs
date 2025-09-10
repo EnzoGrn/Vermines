@@ -4,7 +4,6 @@ using UnityEngine;
 namespace Vermines.Gameplay.Phases {
     using Vermines.CardSystem.Elements;
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.HUD;
     using Vermines.Player;
     using Vermines.ShopSystem.Enumerations;
 
@@ -38,6 +37,18 @@ namespace Vermines.Gameplay.Phases {
             Debug.Log($"Phase {Type} is now running");
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+
+            GameEvents.OnCardPurchaseRequested.RemoveListener(OnCardPurchaseRequested);
+            GameEvents.OnCardDiscardedRequested.RemoveListener(OnDiscard);
+            GameEvents.OnCardDiscardedRequestedNoEffect.RemoveListener(OnDiscardNoEffect);
+            GameEvents.OnCardPlayedRequested.RemoveListener(OnCardPlayed);
+
+            _CurrentPlayerRef = PlayerRef.None;
+        }
+
         private void OnCardPurchaseRequested(ShopType type, int id)
         {
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
@@ -58,6 +69,7 @@ namespace Vermines.Gameplay.Phases {
                 return;
             }
             int cardId = card.ID;
+
             // Switch the card from the hand deck to the discard deck
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
             {
@@ -98,6 +110,7 @@ namespace Vermines.Gameplay.Phases {
                 return;
             }
             int cardId = card.ID;
+
             // Switch the card from the hand deck to the played deck
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
             {

@@ -5,6 +5,7 @@ using Vermines.Gameplay.Phases;
 using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.UI.Card;
 using Vermines.Player;
+using Vermines.CardSystem.Elements;
 
 namespace Vermines.UI.Screen
 {
@@ -88,6 +89,7 @@ namespace Vermines.UI.Screen
             ShowUser();
 
             GameEvents.OnPhaseChanged.AddListener(UpdateTurnButton);
+            GameEvents.OnCardClicked.AddListener(OnCardButtonPressed);
         }
 
         /// <summary>
@@ -101,6 +103,7 @@ namespace Vermines.UI.Screen
             HideUser();
 
             GameEvents.OnPhaseChanged.RemoveListener(UpdateTurnButton);
+            GameEvents.OnCardClicked.RemoveListener(OnCardButtonPressed);
         }
 
         #endregion
@@ -179,7 +182,12 @@ namespace Vermines.UI.Screen
         protected virtual void OnTableButtonPressed()
         {
             Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
-            Debug.Log("Last screen: " + lastScreen);
+            if (lastScreen != null)
+            {
+                // If we are already on the table, do nothing.
+                if (lastScreen is GameplayUITable)
+                    return;
+            }
             Controller.Show<GameplayUITable>(lastScreen);
         }
 
@@ -190,8 +198,29 @@ namespace Vermines.UI.Screen
         protected virtual void OnBookButtonPressed()
         {
             Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
-            Debug.Log("Last screen: " + lastScreen);
+            if (lastScreen != null)
+            {
+                // If we are already on the book, do nothing.
+                if (lastScreen is GameplayUIBook)
+                    return;
+            }
             Controller.Show<GameplayUIBook>(lastScreen);
+        }
+
+        protected virtual void OnCardButtonPressed(ICard card, int slotId)
+        {
+            if (card == null || slotId > -1)
+                return;
+
+            Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
+
+            if (lastScreen != null)
+            {
+                // If we are already on the card, do nothing.
+                if (lastScreen is GameplayUICardInfo)
+                    return;
+            }
+            Controller.ShowWithParams<GameplayUICardInfo, ICard>(card, this);
         }
 
         #endregion

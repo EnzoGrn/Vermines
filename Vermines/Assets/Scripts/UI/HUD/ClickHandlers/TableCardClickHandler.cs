@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using Vermines.CardSystem.Elements;
-using Vermines.Gameplay.Phases;
-using Vermines.UI;
-using Vermines.UI.Popup;
+﻿using Vermines.CardSystem.Elements;
 
 public class TableCardClickHandler : ICardClickHandler
 {

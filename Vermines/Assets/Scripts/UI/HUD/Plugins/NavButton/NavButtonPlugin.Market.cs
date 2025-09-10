@@ -14,6 +14,17 @@ namespace Vermines.UI.Plugin {
         /// </summary>
         protected virtual void OnOpenMarket()
         {
+            // if player is in a replace context, ignore the click
+            if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
+            {
+                Debug.Log("[NavButtonPlugin] Ignoring courtyard button click while in ReplaceEffectContext.");
+                return;
+            }
+            GameplayUIController gameplayUIController = _ParentScreen.Controller;
+
+            if (gameplayUIController != null)
+                gameplayUIController.Hide();
+
             CamManager camera = FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
 
             if (camera != null)

@@ -12,6 +12,7 @@ namespace Vermines.UI.Card
         {
             // Initialize any necessary components or variables here
             GameEvents.OnCardDiscardedRefused.AddListener(OnDiscardRefused);
+            GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
             slot = GetComponent<CardSlotBase>();
         }
 
@@ -45,7 +46,6 @@ namespace Vermines.UI.Card
 
             if (slot.CanAcceptCard(card))
             {
-                GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
                 GameEvents.OnCardDiscardedRequested.Invoke(card);
                 //drag.gameObject.SetActive(false);
             }
@@ -62,7 +62,6 @@ namespace Vermines.UI.Card
             Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} has been discarded.");
             slot.ResetSlot();
             slot.SetCard(card);
-            GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
         }
 
         private void OnDiscardRefused(ICard card)
@@ -78,7 +77,6 @@ namespace Vermines.UI.Card
                     drag.gameObject.SetActive(true);
                 }
             }
-            GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
         }
     }
 }

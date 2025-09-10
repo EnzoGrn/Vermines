@@ -94,6 +94,20 @@ namespace Vermines.Gameplay.Phases {
             }
         }
 
+        public void Dispose()
+        {
+            foreach (var phase in _Phases)
+                phase.Value.Reset();
+        }
+
+        public override void Despawned(NetworkRunner runner, bool hasState)
+        {
+            base.Despawned(runner, hasState);
+
+            if (Instance != null)
+                Instance.Dispose();
+        }
+
         public void ProcessPhase(PhaseType currentPhase, PlayerRef playerRef)
         {
             Debug.Log($"[SERVER]: Processing the phase for {playerRef} (Player Index: {GameManager.Instance.CurrentPlayerIndex}), currently playing {currentPhase}");
