@@ -177,7 +177,7 @@ jobs:
       - name: Get release version
         id: get_version
         run: | # Extract version number from the commit message, it must be in the format release-x.y.z, otherwise it will fail.
-          version=$(echo '${{ github.event.workflow_run.head_commit.message }}' | grep -oE 'release-[0-9]+\.[0-9]+\.[0-9]+' | sed 's/release-//')
+          version=$(echo '${{ github.event.workflow_run.head_commit.message }}' | grep -oE '(release|hotfix)-[0-9]+\.[0-9]+\.[0-9]+' | sed -E 's/^(release|hotfix)-//')
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Download installer artifacts
