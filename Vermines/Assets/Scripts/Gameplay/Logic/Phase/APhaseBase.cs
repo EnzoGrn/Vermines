@@ -35,6 +35,7 @@ namespace Vermines.Gameplay.Phases {
         public virtual void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
             Debug.Log($"[Server]: ({Type}) OnPhaseEnding by logic {logic} processing");
+
             if (logic == true) {
                 PhaseManager.Instance.PhaseCompleted();
             } else {

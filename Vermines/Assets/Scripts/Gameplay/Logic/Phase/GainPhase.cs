@@ -55,6 +55,13 @@ namespace Vermines.Gameplay.Phases {
             }
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+
+            _CurrentPlayer = PlayerRef.None;
+        }
+
         private void ExecuteCardEffect()
         {
             List<ICard> equipmentCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].Equipments;

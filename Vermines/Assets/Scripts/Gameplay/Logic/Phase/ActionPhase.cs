@@ -37,6 +37,18 @@ namespace Vermines.Gameplay.Phases {
             Debug.Log($"Phase {Type} is now running");
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+
+            GameEvents.OnCardPurchaseRequested.RemoveListener(OnCardPurchaseRequested);
+            GameEvents.OnCardDiscardedRequested.RemoveListener(OnDiscard);
+            GameEvents.OnCardDiscardedRequestedNoEffect.RemoveListener(OnDiscardNoEffect);
+            GameEvents.OnCardPlayedRequested.RemoveListener(OnCardPlayed);
+
+            _CurrentPlayerRef = PlayerRef.None;
+        }
+
         private void OnCardPurchaseRequested(ShopType type, int id)
         {
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
