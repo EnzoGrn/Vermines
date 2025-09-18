@@ -3,7 +3,7 @@ using Fusion;
 using UnityEngine;
 
 namespace Vermines.Player {
-    using OMGG.Menu.Screen;
+
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
@@ -17,7 +17,7 @@ namespace Vermines.Player {
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
 
-    public class PlayerController : NetworkBehaviour {
+    public partial class PlayerController : NetworkBehaviour {
 
         public static PlayerController Local { get; private set; }
 
