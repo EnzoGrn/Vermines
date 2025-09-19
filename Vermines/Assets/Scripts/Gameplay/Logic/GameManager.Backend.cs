@@ -4,8 +4,11 @@ using Fusion;
 
 namespace Vermines {
 
-    using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
+    using Vermines.ShopSystem.Commands;
+
+    using Vermines.Gameplay.Errors;
+    using Vermines.Player;
 
     /// <summary>
     /// Back-end part of <see cref="GameManager" /> containing all RPC methods responsible for validating players actions on the server side.
@@ -41,7 +44,7 @@ namespace Vermines {
     ///       <list type="number">
     ///         <item>
     ///           <description>
-    ///           The severity of the error (Warning, Error, Critical, etc.)
+    ///           The severity of the error (Minor, Major, Critical)
     ///           </description>
     ///         </item>
     ///         <item>
@@ -66,12 +69,20 @@ namespace Vermines {
     /// </para>
     /// 
     /// <para>
-    /// Errors can be returned either locally to the player via:
-    /// <c>PlayerController.Local.RPC_LocalError(...)</c>,
-    /// <c>PlayerController.Local.RPC_GlobalError(...)</c>
+    /// Errors can be returned to players using the following method:
+    /// <c>PlayerController.Local.RPC_ReceiveError(GameActionError)</c>,
     /// </para>
     /// </remarks>
     public partial class GameManager : NetworkBehaviour {
+
+        #region Notifiers
+
+        private void SendError(GameActionError error)
+        {
+            PlayerController.Local.RPC_ReceiveError(error);
+        }
+
+        #endregion
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_BuyCard(ShopType shopType, int slot, int playerId)

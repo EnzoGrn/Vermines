@@ -1,46 +1,35 @@
+/// <summary>
+/// 'Error Handling' section of <see cref="PlayerController"/>.
+/// </summary>
+/// <remarks>
+/// 
+/// <para>
+/// This file (<c>PlayerController.ErrorHandling.cs</c>) contains the RPCs triggered from the server (<c>GameManager.Backend.cs</c>)
+/// when it detects an error in a game action (e.g. prohibited action, insufficient resources, invalid target).
+/// </para>
+/// </remarks>
 using Fusion;
+using UnityEngine;
 
 namespace Vermines.Player {
 
-    /// <summary>
-    /// 'Error Handling' section of <see cref="PlayerController"/>.
-    /// </summary>
-    /// <remarks>
-    /// 
-    /// <para>
-    /// This file (<c>PlayerController.ErrorHandling.cs</c>) contains the RPCs triggered from the server (<c>GameManager.Backend.cs</c>)
-    /// when it detects an error in a game action (e.g. prohibited action, insufficient resources, invalid target).
-    /// </para>
-    /// 
-    /// <para>
-    /// Two types of errors are distinguished:
-    /// <list type="bullet">
-    ///   <item>
-    ///     <description>
-    ///     <b>Local errors:</b> only transmitted to the player concerned.
-    ///     </description>
-    ///   </item>
-    ///   <item>
-    ///     <description>
-    ///     <b>Global errors:</b> transmitted to all players in the game.
-    ///     </description>
-    ///   </item>
-    /// </list>
-    /// </para>
-    /// </remarks>
+    using Vermines.Gameplay.Errors;
+
     public partial class PlayerController : NetworkBehaviour {
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_LocalError(PlayerRef target)
+        public void RPC_ReceiveError(GameActionError error)
         {
-            if (Object.InputAuthority != target)
+            if (error.Scope == ErrorScope.Local && Object.InputAuthority != error.Target)
                 return;
+            HandleError(error);
         }
 
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_GlobalError()
+        private void HandleError(GameActionError error)
         {
+            Debug.LogWarning($"[Error-{error.Scope}] {error.Message} (Loc: {error.Location}, Sev: {error.Severity})");
 
+            // TODO: Link to UI notification system
         }
     }
 }
