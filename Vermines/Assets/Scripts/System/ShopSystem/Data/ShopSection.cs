@@ -136,6 +136,14 @@ namespace Vermines.ShopSystem.Data {
             return AvailableCards[slot] != null;
         }
 
+        public ICard GetCardAtSlot(int slotIndex)
+        {
+            foreach (var slot in AvailableCards)
+                if (slot.Key == slotIndex)
+                    return slot.Value;
+            return null;
+        }
+
         /// <summary>
         /// Call this methods only if the card can be buy, because it's remove it from the shop
         /// </summary>

@@ -9,6 +9,7 @@ namespace Vermines {
 
     using Vermines.Gameplay.Errors;
     using Vermines.Player;
+    using Vermines.CardSystem.Data;
 
     /// <summary>
     /// Back-end part of <see cref="GameManager" /> containing all RPC methods responsible for validating players actions on the server side.
@@ -84,45 +85,126 @@ namespace Vermines {
 
         #endregion
 
+        #region Shop
+
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_BuyCard(ShopType shopType, int slot, int playerId)
         {
-            BuyParameters parameters = new()
-            {
-                Decks = GameDataStorage.Instance.PlayerDeck,
-                Player = PlayerRef.FromEncoded(playerId),
-                Shop = GameDataStorage.Instance.Shop,
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError {
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Shop,
+                    MessageKey = "Shop_Buy_NotYourTurn"
+                });
+
+                return;
+            }
+
+            BuyParameters parameters = new() {
+                Player   = PlayerRef.FromEncoded(playerId),
+                Shop     = GameDataStorage.Instance.Shop,
                 ShopType = shopType,
-                Slot = slot
+                Slot     = slot
             };
 
-            ICommand buyCommand = new CheckBuyCommand(parameters);
+            ICommand                checker = new ADMIN_CheckBuyCommand(GetCurrentPhase(), parameters);
+            CommandResponse checkerResponse = CommandInvoker.ExecuteCommand(checker);
 
-            CommandResponse response = CommandInvoker.ExecuteCommand(buyCommand);
+            if (checkerResponse.Status != CommandStatus.Success) {
+                SendError(new GameActionError {
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
 
-            if (response.Status == CommandStatus.Success)
-                Player.PlayerController.Local.RPC_BuyCard(playerId, shopType, slot);
-            else
-                Debug.LogWarning($"[SERVER]: {response.Message}");
+                    Severity = checkerResponse.Status == CommandStatus.Invalid ? ErrorSeverity.Minor :
+                               checkerResponse.Status == CommandStatus.Failure ? ErrorSeverity.Minor :
+                               ErrorSeverity.Critical,
+
+                    Location = ErrorLocation.Shop,
+                    MessageKey = checkerResponse.Message,
+                    MessageArgs = new GameActionErrorArgs(checkerResponse.Args)
+                });
+
+                return;
+            }
+
+            ICommand buyCommand = new ADMIN_BuyCommand(parameters);
+
+            CommandInvoker.ExecuteCommand(buyCommand);
+
+            Debug.Log($"[SERVER]: {CommandInvoker.State.Message}");
+
+            Player.PlayerController.Local.RPC_BuyCard(playerId, shopType, slot);
         }
+
+        #endregion
+
+        #region Table
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_CardPlayed(int playerId, int cardId)
         {
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError {
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Table,
+                    MessageKey = $"You cannot played a card when it's not your turn." // TODO: Localize the message. (fr, en...).
+                });
+
+                return;
+            }
+
             Player.PlayerController.Local.RPC_CardPlayed(playerId, cardId);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_DiscardCard(int playerId, int cardID)
         {
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError {
+                    Scope    = ErrorScope.Local,
+                    Target   = playerSource,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Table,
+                    MessageKey  = $"You cannot discarded a card when it's not your turn." // TODO: Localize the message. (fr, en...).
+                });
+
+                return;
+            }
+
             Player.PlayerController.Local.RPC_DiscardCard(playerId, cardID);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_DiscardCardNoEffect(int playerId, int cardID)
         {
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError {
+                    Scope    = ErrorScope.Local,
+                    Target   = playerSource,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Table,
+                    MessageKey  = $"You cannot discarded a card when it's not your turn." // TODO: Localize the message. (fr, en...).
+                });
+
+                return;
+            }
+
             Player.PlayerController.Local.RPC_DiscardCardNoEffect(playerId, cardID);
         }
+
+        #endregion
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_CardSacrified(int playerId, int cardId)

@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Back-end Error_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: cd28d771d5b12ba4180efd2bed0aef56, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 208522960896
+    m_Localized: You cannot buy a card when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18102967328768
+    m_Localized: You cannot buy a card outside of the action phase.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19083562049536
+    m_Localized: Shop section {0} does not exist.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20911913689088
+    m_Localized: The shop {0} has no card in this slot.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21240851980288
+    m_Localized: You doesn't have enough eloquence to buy {0}. Missing {1} eloquence.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21937446182912
+    m_Localized: You already has the {0}.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

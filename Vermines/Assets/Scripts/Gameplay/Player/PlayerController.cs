@@ -174,28 +174,25 @@ namespace Vermines.Player {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_BuyCard(int playerRef, ShopType shopType, int slot)
         {
-            BuyParameters parameters = new() {
-                Decks = GameDataStorage.Instance.PlayerDeck,
-                Player = PlayerRef.FromEncoded(playerRef),
-                Shop = GameDataStorage.Instance.Shop,
-                ShopType = shopType,
-                Slot = slot
-            };
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerRef);
 
-            if (parameters.Shop == null)
-            {
-                Debug.LogError("Shop is null");
+            // The state authority already process the command on his side. So ignore it.
+            if (!HasStateAuthority) {
+                BuyParameters parameters = new() {
+                    Player   = playerSource,
+                    Shop     = GameDataStorage.Instance.Shop,
+                    ShopType = shopType,
+                    Slot     = slot
+                };
+
+                ICommand buyCommand = new CLIENT_BuyCommand(parameters);
+
+                CommandInvoker.ExecuteCommand(buyCommand);
+
+                Debug.Log($"[SERVER]: {CommandInvoker.State.Message}");
             }
 
-            ICommand buyCommand = new BuyCommand(parameters);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(buyCommand);
-
-            if (response.Status == CommandStatus.Success) {
-                GameEvents.OnCardPurchased.Invoke(shopType, slot);
-
-                Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[parameters.Player].Serialize()}");
-            }
+            GameEvents.OnCardPurchased.Invoke(shopType, slot);
         }
 
         #endregion

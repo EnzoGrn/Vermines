@@ -26,6 +26,7 @@ using Vermines.Test;
 
 using Vermines.Configuration;
 using Vermines.Player;
+using Vermines;
 
 namespace Test.Vermines.ShopSystem {
 
@@ -300,11 +301,12 @@ namespace Test.Vermines.ShopSystem {
             Assert.AreEqual("Card in slot 0 in section Courtyard has been changed.", CommandInvoker.State.Message);
         }
 
-        /// <summary>
-        /// Local is because it's not the networking buy command, but the command execute locally in each client.
-        /// </summary>
+        #region Buy Command
+
+        // TODO: Try to test admin side buy command.
+
         [Test]
-        public void BuyCardLocalInShop()
+        public void ClientBuyPartisanInShop()
         {
             // -- Shop initialization with default settings.
             ShopData shop = InitializeAndFillShop(_Config);
@@ -314,14 +316,13 @@ namespace Test.Vermines.ShopSystem {
 
             // -- Buy a card in the 'Courtyard' at the place '0'
             BuyParameters parameters = new() {
-                Decks = _Decks,
-                Player = _LocalPlayer,
-                Shop = shop,
+                Player   = _LocalPlayer,
+                Shop     = shop,
                 ShopType = ShopType.Courtyard,
-                Slot = 0 // Buy the first card available in the shop
+                Slot     = 0 // Buy the first card available in the shop
             };
 
-            ICommand buyCommand = new BuyCommand(parameters);
+            ICommand buyCommand = new CLIENT_BuyCommand(parameters);
 
             CommandInvoker.ExecuteCommand(buyCommand);
 
@@ -332,54 +333,58 @@ namespace Test.Vermines.ShopSystem {
             Assert.IsNull(cardAfterTheBuy);
 
             // -- Check that the player have now a new card in his discard deck
-            Assert.AreEqual(1, _Decks[_LocalPlayer].Discard.Count);
+            Assert.AreEqual(1, GameDataStorage.Instance.PlayerDeck[_LocalPlayer].Discard.Count);
+
+            // -- Check that the card store before buy is in the discard deck
+            Assert.AreEqual(cardBeforeTheBuy.ID, GameDataStorage.Instance.PlayerDeck[_LocalPlayer].Discard[0].ID);
 
             // -- Undo the command
             CommandInvoker.UndoCommand();
 
-            // -- Check if the card is correctly bought
-            cardAfterTheBuy = shop.Sections[ShopType.Courtyard].AvailableCards[0];
-
-            // -- Check that the card before and after the buy are equals
-            Assert.IsNotNull(cardAfterTheBuy);
-            Assert.AreEqual(cardBeforeTheBuy.ID, cardAfterTheBuy.ID);
-
-            // -- Check that the player have no more card in his discard deck
-            Assert.AreEqual(0, _Decks[_LocalPlayer].Discard.Count);
-
-            // Buy a card with an unknow player
-            parameters.Player = PlayerRef.FromEncoded(0x03);
-
-            ICommand buyUnknowPlayerCommand = new BuyCommand(parameters);
-
-            CommandInvoker.ExecuteCommand(buyUnknowPlayerCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Player [Player:2] does not have a deck.", CommandInvoker.State.Message);
-
-            // Buy a card with an unknow shop type and slot
-            parameters.Player = _LocalPlayer;
-            parameters.ShopType = (ShopType)3;
-            parameters.Slot = 10;
-
-            ICommand buyUnknowShopCommand = new BuyCommand(parameters);
-
-            CommandInvoker.ExecuteCommand(buyUnknowShopCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop 3 and slot 10 does not exist.", CommandInvoker.State.Message);
-
-            // Buy a empty slot in the shop
-            parameters.Shop.Sections[ShopType.Courtyard].AvailableCards[0] = null;
-            parameters.ShopType = ShopType.Courtyard;
-            parameters.Slot = 0;
-
-            ICommand buyEmptySlotCommand = new BuyCommand(parameters);
-
-            CommandInvoker.ExecuteCommand(buyEmptySlotCommand);
-
-            Assert.AreEqual(CommandStatus.Failure, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop Courtyard have slot 0 empty.", CommandInvoker.State.Message);
+            // TODO: Test the undo command, when it will be implemented in the buy command.
         }
+
+        [Test]
+        public void ClientBuyEquipmentInShop()
+        {
+            // -- Shop initialization with default settings.
+            ShopData shop = InitializeAndFillShop(_Config);
+
+            // -- Force put a equipment card in the first slot of the market
+            ICard equipment = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.Type == CardType.Equipment).FirstOrDefault();
+
+            shop.Sections[ShopType.Market].AvailableCards[0] = equipment;
+
+            // -- Buy a card in the 'Market' at the place '0'
+            BuyParameters parameters = new() {
+                Player   = _LocalPlayer,
+                Shop     = shop,
+                ShopType = ShopType.Market,
+                Slot     = 0 // Buy the first card available in the shop
+            };
+
+            ICommand buyCommand = new CLIENT_BuyCommand(parameters);
+
+            CommandInvoker.ExecuteCommand(buyCommand);
+
+            // -- Check if the card is correctly bought
+            ICard cardAfterTheBuy = shop.Sections[ShopType.Market].AvailableCards[0];
+
+            // -- Check that the card after is a null card (because the shop didn't be refilled)
+            Assert.IsNull(cardAfterTheBuy);
+
+            // -- Check that the player have now a new card in his equipment area
+            Assert.AreEqual(1, GameDataStorage.Instance.PlayerDeck[_LocalPlayer].Equipments.Count);
+
+            // -- Check that the card store before buy is in the discard deck
+            Assert.AreEqual(equipment.ID, GameDataStorage.Instance.PlayerDeck[_LocalPlayer].Equipments[0].ID);
+
+            // -- Undo the command
+            CommandInvoker.UndoCommand();
+
+            // TODO: Test the undo command, when it will be implemented in the buy command.
+        }
+
+        #endregion
     }
 }

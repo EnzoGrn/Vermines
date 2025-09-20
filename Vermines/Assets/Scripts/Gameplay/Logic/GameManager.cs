@@ -14,6 +14,7 @@ namespace Vermines {
     using Vermines.Menu.Connection.Element;
     using Vermines.Configuration.Network;
     using Vermines.Configuration;
+    using Vermines.Gameplay.Phases.Enumerations;
 
     public partial class GameManager : NetworkBehaviour {
 
@@ -84,6 +85,11 @@ namespace Vermines {
             return (PlayerTurnOrder.Get(CurrentPlayerIndex) == Runner.LocalPlayer);
         }
 
+        public PlayerRef GetCurrentPlayer()
+        {
+            return PlayerTurnOrder.Get(CurrentPlayerIndex);
+        }
+
         #endregion
 
         [Networked]
@@ -126,6 +132,11 @@ namespace Vermines {
             RPC_StartClientSideStuff();
 
             PhaseManager.Instance.OnStartPhases();
+        }
+
+        public PhaseType GetCurrentPhase()
+        {
+            return PhaseManager.Instance.CurrentPhase;
         }
 
         public void UnloadSceneForCinematic(List<string> sceneToUnload)

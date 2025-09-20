@@ -59,6 +59,12 @@ MonoBehaviour:
     - Locale-fr
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b13cc5e313003e4dbb6b01103685ea5
+    m_Address: Back-end Error_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ac3f23d1e8b989a4a8391917c2fd75d8
     m_Address: CultistMessages_fr
     m_ReadOnly: 1
