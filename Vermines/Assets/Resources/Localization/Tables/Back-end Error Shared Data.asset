@@ -24,11 +24,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 19083562049536
-    m_Key: Shop_Buy_ShopNotExist
+    m_Key: Shop_ShopNotExist
     m_Metadata:
       m_Items: []
   - m_Id: 20911913689088
-    m_Key: Shop_Buy_SlotEmpty
+    m_Key: Shop_SlotEmpty
     m_Metadata:
       m_Items: []
   - m_Id: 21240851980288
@@ -37,6 +37,18 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 21937446182912
     m_Key: Shop_Buy_AlreadyHasThisEquipment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 215561349881856
+    m_Key: Shop_Replace_NotYourTurn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 224938655997952
+    m_Key: Shop_Replace_NewCard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 225365833277440
+    m_Key: Shop_Empty
     m_Metadata:
       m_Items: []
   m_Metadata:

@@ -6,10 +6,10 @@ namespace Vermines {
 
     using Vermines.ShopSystem.Enumerations;
     using Vermines.ShopSystem.Commands;
+    using Vermines.ShopSystem;
 
     using Vermines.Gameplay.Errors;
     using Vermines.Player;
-    using Vermines.CardSystem.Data;
 
     /// <summary>
     /// Back-end part of <see cref="GameManager" /> containing all RPC methods responsible for validating players actions on the server side.
@@ -94,50 +94,81 @@ namespace Vermines {
 
             if (playerSource != GetCurrentPlayer()) {
                 SendError(new GameActionError {
-                    Scope = ErrorScope.Local,
-                    Target = playerSource,
-                    Severity = ErrorSeverity.Minor,
-                    Location = ErrorLocation.Shop,
+                    Scope      = ErrorScope.Local,
+                    Target     = playerSource,
+                    Severity   = ErrorSeverity.Minor,
+                    Location   = ErrorLocation.Shop,
                     MessageKey = "Shop_Buy_NotYourTurn"
                 });
 
                 return;
             }
 
-            BuyParameters parameters = new() {
-                Player   = PlayerRef.FromEncoded(playerId),
-                Shop     = GameDataStorage.Instance.Shop,
-                ShopType = shopType,
-                Slot     = slot
-            };
+            ShopArgs parameters = new(GameDataStorage.Instance.Shop, shopType, slot);
 
-            ICommand                checker = new ADMIN_CheckBuyCommand(GetCurrentPhase(), parameters);
+            ICommand                checker = new ADMIN_CheckBuyCommand(playerSource, GetCurrentPhase(), parameters);
             CommandResponse checkerResponse = CommandInvoker.ExecuteCommand(checker);
 
             if (checkerResponse.Status != CommandStatus.Success) {
                 SendError(new GameActionError {
-                    Scope = ErrorScope.Local,
+                    Scope  = ErrorScope.Local,
                     Target = playerSource,
 
                     Severity = checkerResponse.Status == CommandStatus.Invalid ? ErrorSeverity.Minor :
                                checkerResponse.Status == CommandStatus.Failure ? ErrorSeverity.Minor :
                                ErrorSeverity.Critical,
 
-                    Location = ErrorLocation.Shop,
-                    MessageKey = checkerResponse.Message,
+                    Location    = ErrorLocation.Shop,
+                    MessageKey  = checkerResponse.Message,
                     MessageArgs = new GameActionErrorArgs(checkerResponse.Args)
                 });
 
                 return;
             }
 
-            ICommand buyCommand = new ADMIN_BuyCommand(parameters);
+            ICommand buyCommand = new ADMIN_BuyCommand(playerSource, parameters);
 
             CommandInvoker.ExecuteCommand(buyCommand);
 
             Debug.Log($"[SERVER]: {CommandInvoker.State.Message}");
 
-            Player.PlayerController.Local.RPC_BuyCard(playerId, shopType, slot);
+            PlayerController.Local.RPC_BuyCard(playerId, shopType, slot);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_ReplaceCardInShop(int playerId, ShopType shopType, int slot)
+        {
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                    Scope      = ErrorScope.Local,
+                    Target     = playerSource,
+                    Severity   = ErrorSeverity.Major,
+                    Location   = ErrorLocation.Shop,
+                    MessageKey = "Shop_Replace_NotYourTurn"
+                });
+
+                return;
+            }
+
+            ICommand        checker  = new ADMIN_CheckChangeCardCommand(new ShopArgs(GameDataStorage.Instance.Shop, shopType, slot));
+            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
+
+            if (response.Status != CommandStatus.Success) { // Can only failed if the shop or the slot selected is empty. So if it's a cheat, bug or a desync.
+                SendError(new GameActionError {
+                    Scope       = ErrorScope.Local,
+                    Target      = playerSource,
+                    Severity    = ErrorSeverity.Critical,
+                    Location    = ErrorLocation.Shop,
+                    MessageKey  = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
+                });
+
+                return;
+            }
+
+            PlayerController.Local.RPC_ReplaceCardInShop(playerId, shopType, slot);
         }
 
         #endregion
@@ -216,12 +247,6 @@ namespace Vermines {
         public void RPC_ActivateEffect(int playerID, int cardID)
         {
             Player.PlayerController.Local.RPC_ActivateEffect(playerID, cardID);
-        }
-
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_ReplaceCardInShop(int playerId, ShopType shopType, int slot)
-        {
-            Player.PlayerController.Local.RPC_ReplaceCardInShop(playerId, shopType, slot);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

@@ -8,33 +8,7 @@ namespace Vermines.ShopSystem.Commands {
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Elements;
 
-    using Vermines.ShopSystem.Enumerations;
-    using Vermines.ShopSystem.Data;
-
     using Vermines.Player;
-
-    public struct BuyParameters {
-
-        /// <summary>
-        /// The player reference of the buyer.
-        /// </summary>
-        public PlayerRef Player;
-
-        /// <summary>
-        /// The shop.
-        /// </summary>
-        public ShopData Shop;
-
-        /// <summary>
-        /// The shop section where he bought the card.
-        /// </summary>
-        public ShopType ShopType;
-
-        /// <summary>
-        /// The slot of the shop he bought.
-        /// </summary>
-        public int Slot;
-    }
 
     /// <summary>
     /// This buy command is simulate on all clients but not on the authority object client.
@@ -42,25 +16,27 @@ namespace Vermines.ShopSystem.Commands {
     /// </summary>
     public class CLIENT_BuyCommand : ACommand {
 
-        private BuyParameters _Parameters;
+        private readonly PlayerRef _Player;
+        private ShopArgs _Args;
 
-        public CLIENT_BuyCommand(BuyParameters parameters)
+        public CLIENT_BuyCommand(PlayerRef player, ShopArgs shopInfo)
         {
-            _Parameters   = parameters;
+            _Player = player;
+            _Args   = shopInfo;
         }
 
         public override CommandResponse Execute()
         {
-            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Parameters.Player];
-            ICard      card       = _Parameters.Shop.BuyCardAtSlot(_Parameters.ShopType, _Parameters.Slot);
+            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
+            ICard      card       = _Args.Shop.BuyCardAtSlot(_Args.ShopType, _Args.SlotIndex);
 
             if (card.Data.Type == CardType.Equipment)
                 playerDeck.Equipments.Add(card);
             else
                 playerDeck.Discard.Add(card);
-            card.Owner = _Parameters.Player;
+            card.Owner = _Player;
 
-            return new CommandResponse(CommandStatus.Success, $"Player {_Parameters.Player} bought the card {card.Data.Name}.");
+            return new CommandResponse(CommandStatus.Success, $"Player {_Player} bought the card {card.Data.Name}.");
         }
 
         public override void Undo() {}
@@ -72,27 +48,29 @@ namespace Vermines.ShopSystem.Commands {
     /// </summary>
     public class ADMIN_CheckBuyCommand : ACommand {
 
+        private readonly PlayerRef _Player;
         private readonly PhaseType _CurrentPhase;
 
-        private BuyParameters _Parameters;
+        private ShopArgs _Parameters;
 
-        public ADMIN_CheckBuyCommand(PhaseType phase, BuyParameters parameters)
+        public ADMIN_CheckBuyCommand(PlayerRef player, PhaseType phase, ShopArgs parameters)
         {
+            _Player       = player;
             _CurrentPhase = phase;
             _Parameters   = parameters;
         }
 
         public override CommandResponse Execute()
         {
-            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Parameters.Player];
+            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
 
             // 0. Check if the shop exist
             if (_Parameters.Shop == null)
-                return new CommandResponse(CommandStatus.CriticalError, "Shop_Buy_ShopNotExist", _Parameters.ShopType.ToString());
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", _Parameters.ShopType.ToString());
 
             // 1. Check phase
-            if (_CurrentPhase == PhaseType.Gain && _Parameters.Shop.HasCardAtSlot(_Parameters.ShopType, _Parameters.Slot)) {
-                ICard freeCard = _Parameters.Shop.Sections[_Parameters.ShopType].GetCardAtSlot(_Parameters.Slot);
+            if (_CurrentPhase == PhaseType.Gain && _Parameters.Shop.HasCardAtSlot(_Parameters.ShopType, _Parameters.SlotIndex)) {
+                ICard freeCard = _Parameters.Shop.Sections[_Parameters.ShopType].GetCardAtSlot(_Parameters.SlotIndex);
 
                 if (freeCard.Data.IsFree)
                     return new CommandResponse(CommandStatus.Success, string.Empty);
@@ -102,15 +80,15 @@ namespace Vermines.ShopSystem.Commands {
 
             // 2. Check if the shop and slot exist
             if (!_Parameters.Shop.Sections.ContainsKey(_Parameters.ShopType))
-                return new CommandResponse(CommandStatus.CriticalError, "Shop_Buy_ShopNotExist", _Parameters.ShopType.ToString());
-            if (!_Parameters.Shop.HasCardAtSlot(_Parameters.ShopType, _Parameters.Slot))
-                return new CommandResponse(CommandStatus.CriticalError, "Shop_Buy_SlotEmpty", _Parameters.ShopType.ToString());
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", _Parameters.ShopType.ToString());
+            if (!_Parameters.Shop.HasCardAtSlot(_Parameters.ShopType, _Parameters.SlotIndex))
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_SlotEmpty", _Parameters.ShopType.ToString());
 
             // 3. Get the wanted card
-            ICard card = _Parameters.Shop.Sections[_Parameters.ShopType].GetCardAtSlot(_Parameters.Slot);
+            ICard card = _Parameters.Shop.Sections[_Parameters.ShopType].GetCardAtSlot(_Parameters.SlotIndex);
 
             // 4. Check if player has enough eloquence
-            int canPay = CanPurchase(GameDataStorage.Instance.PlayerData[_Parameters.Player], card);
+            int canPay = CanPurchase(GameDataStorage.Instance.PlayerData[_Player], card);
 
             if (canPay < 0)
                 return new CommandResponse(CommandStatus.Failure, "Shop_Buy_NotEnoughEloquence", card.Data.Name, (-canPay).ToString());
@@ -147,21 +125,23 @@ namespace Vermines.ShopSystem.Commands {
     /// </summary>
     public class ADMIN_BuyCommand : ACommand {
 
-        private BuyParameters _Parameters;
+        private readonly PlayerRef _Player;
+        private ShopArgs _Parameters;
 
-        public ADMIN_BuyCommand(BuyParameters parameters)
+        public ADMIN_BuyCommand(PlayerRef player, ShopArgs parameters)
         {
-            _Parameters   = parameters;
+            _Player     = player;
+            _Parameters = parameters;
         }
 
         public override CommandResponse Execute()
         {
-            PlayerData playerData = GameDataStorage.Instance.PlayerData[_Parameters.Player];
-            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Parameters.Player];
-            ICard      card       = _Parameters.Shop.Sections[_Parameters.ShopType].GetCardAtSlot(_Parameters.Slot);
+            PlayerData playerData = GameDataStorage.Instance.PlayerData[_Player];
+            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
+            ICard      card       = _Parameters.Shop.Sections[_Parameters.ShopType].GetCardAtSlot(_Parameters.SlotIndex);
 
             // 1. Process the purchase
-            int remainingE = Purchase(_Parameters.Player, playerData, card);
+            int remainingE = Purchase(_Player, playerData, card);
 
             // 2. Move the card to the player's deck
             if (card.Data.Type == CardType.Equipment)
@@ -170,9 +150,9 @@ namespace Vermines.ShopSystem.Commands {
                 playerDeck.Discard.Add(card);
 
             // 3. Attribute the owner of the card
-            card.Owner = _Parameters.Player;
+            card.Owner = _Player;
 
-            return new CommandResponse(CommandStatus.Success, $"Player {_Parameters.Player} bought the card {card.Data.Name}.", remainingE.ToString());
+            return new CommandResponse(CommandStatus.Success, $"Player {_Player} bought the card {card.Data.Name}.", remainingE.ToString());
         }
 
         public override void Undo() {}

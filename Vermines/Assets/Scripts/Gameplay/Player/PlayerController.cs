@@ -14,6 +14,7 @@ namespace Vermines.Player {
     using Vermines.Menu.Screen;
     using Vermines.Network.Utilities;
     using Vermines.Service;
+    using Vermines.ShopSystem;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
 
@@ -174,18 +175,12 @@ namespace Vermines.Player {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_BuyCard(int playerRef, ShopType shopType, int slot)
         {
-            PlayerRef playerSource = PlayerRef.FromEncoded(playerRef);
-
             // The state authority already process the command on his side. So ignore it.
             if (!HasStateAuthority) {
-                BuyParameters parameters = new() {
-                    Player   = playerSource,
-                    Shop     = GameDataStorage.Instance.Shop,
-                    ShopType = shopType,
-                    Slot     = slot
-                };
+                PlayerRef playerSource = PlayerRef.FromEncoded(playerRef);
 
-                ICommand buyCommand = new CLIENT_BuyCommand(parameters);
+                ShopArgs parameters = new(GameDataStorage.Instance.Shop, shopType, slot);
+                ICommand buyCommand = new CLIENT_BuyCommand(playerSource, parameters);
 
                 CommandInvoker.ExecuteCommand(buyCommand);
 
@@ -344,19 +339,11 @@ namespace Vermines.Player {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_ReplaceCardInShop(int playerID, ShopType shopType, int slot)
         {
-            ICommand replaceCommand = new ChangeCardCommand(GameDataStorage.Instance.Shop, shopType, slot);
+            ICommand replaceCommand = new CLIENT_ChangeCardCommand(new ShopArgs(GameDataStorage.Instance.Shop, shopType, slot));
 
-            CommandResponse response = CommandInvoker.ExecuteCommand(replaceCommand);
+            CommandInvoker.ExecuteCommand(replaceCommand);
 
-            if (response.Status == CommandStatus.Success)
-            {
-                //ShopManager.Instance.ReceiveFullShopList(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
-                GameEvents.OnShopRefilled.Invoke(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
-            }
-            else
-            {
-                Debug.LogWarning($"[SERVER]: {response.Message}");
-            }
+            GameEvents.OnShopRefilled.Invoke(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

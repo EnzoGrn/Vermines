@@ -43,6 +43,18 @@ MonoBehaviour:
     m_Localized: "Vous poss\xE8dez d\xE9j\xE0 {0}."
     m_Metadata:
       m_Items: []
+  - m_Id: 215561349881856
+    m_Localized: Vous ne pouvez pas remplacer une carte si ce n'est pas votre tour.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 224938655997952
+    m_Localized: "La boutique {0} \xE0 changer {1} en {2}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 225365833277440
+    m_Localized: La boutique {0} n'as plus de carte.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

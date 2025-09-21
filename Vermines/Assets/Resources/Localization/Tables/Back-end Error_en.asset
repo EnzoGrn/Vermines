@@ -31,7 +31,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 20911913689088
-    m_Localized: The shop {0} has no card in this slot.
+    m_Localized: The {0} has no card in this slot.
     m_Metadata:
       m_Items: []
   - m_Id: 21240851980288
@@ -40,6 +40,18 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 21937446182912
     m_Localized: You already has the {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 215561349881856
+    m_Localized: You cannot replace a card when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 224938655997952
+    m_Localized: The {0} replace the {1} to {2}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 225365833277440
+    m_Localized: The {0} is now empty.
     m_Metadata:
       m_Items: []
   references:
