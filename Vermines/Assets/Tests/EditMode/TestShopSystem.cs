@@ -265,7 +265,30 @@ namespace Test.Vermines.ShopSystem {
             // TODO: Test the undo command, when it will be implemented in the change command.
         }
 
-        // TODO: Change a card with an empty deck & discard deck.
+        /// <summary>
+        /// If there is no more card in the shop, the card that is change will return into his same slot.
+        /// Because we first put it in discard, if deck is empty, we merge discard and we put the card into the shop.
+        /// </summary>
+        [Test]
+        public void ChangeCardInEmptyShop()
+        {
+            // -- Initialize an empty shop
+            ShopData shop = ShopBuilder(_Config, new List<ICard>(), new List<ICard>());
+
+            // -- Add a card to the slot 0 of the courtyard
+            ICard card = CardSetDatabase.Instance.GetEveryCardWith(c => c.Data.Type == CardType.Partisan).FirstOrDefault();
+
+            shop.Sections[ShopType.Courtyard].AvailableCards[0] = card;
+
+            // -- Change a card in the 'Courtyard' at the place '0'
+            ICommand changeCardCommand = new CLIENT_ChangeCardCommand(new ShopArgs(shop, ShopType.Courtyard, 0));
+
+            CommandInvoker.ExecuteCommand(changeCardCommand);
+
+            // -- Check if the card is correctly changed
+            Assert.IsTrue(CommandInvoker.State.Status == CommandStatus.Success);
+            Assert.IsTrue(card.ID == shop.Sections[ShopType.Courtyard].AvailableCards[0].ID);
+        }
 
         #endregion
 

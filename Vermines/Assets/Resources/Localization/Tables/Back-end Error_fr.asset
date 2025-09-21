@@ -47,12 +47,25 @@ MonoBehaviour:
     m_Localized: Vous ne pouvez pas remplacer une carte si ce n'est pas votre tour.
     m_Metadata:
       m_Items: []
-  - m_Id: 224938655997952
-    m_Localized: "La boutique {0} \xE0 changer {1} en {2}."
-    m_Metadata:
-      m_Items: []
   - m_Id: 225365833277440
     m_Localized: La boutique {0} n'as plus de carte.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 276526279942144
+    m_Localized: Vous ne pouvez pas jouer une carte si ce n'est pas votre tour.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 278631019438080
+    m_Localized: Vous ne pouvez pas jouer de carte hors de la phase d'action.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 279314103787520
+    m_Localized: La carte {0} n'existe pas.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 279751842324480
+    m_Localized: Vous ne pouvez pas jouer la carte {0}, vous devez l'avoir dans la
+      main.
     m_Metadata:
       m_Items: []
   references:

@@ -43,12 +43,24 @@ MonoBehaviour:
     m_Key: Shop_Replace_NotYourTurn
     m_Metadata:
       m_Items: []
-  - m_Id: 224938655997952
-    m_Key: Shop_Replace_NewCard
-    m_Metadata:
-      m_Items: []
   - m_Id: 225365833277440
     m_Key: Shop_Empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 276526279942144
+    m_Key: "Table_Play_NotYourTurn\t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 278631019438080
+    m_Key: Table_Play_WrongPhase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 279314103787520
+    m_Key: CardNotExist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 279751842324480
+    m_Key: Table_Play_CardNotInHand
     m_Metadata:
       m_Items: []
   m_Metadata:

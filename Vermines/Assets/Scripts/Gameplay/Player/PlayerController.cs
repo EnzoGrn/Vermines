@@ -9,6 +9,7 @@ namespace Vermines.Player {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Cards;
+    using Vermines.Gameplay.Commands;
     using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.Menu.Screen;
@@ -248,7 +249,7 @@ namespace Vermines.Player {
         {
             PlayerRef player = PlayerRef.FromEncoded(playerId);
 
-            ICommand cardPlayedCommand = new CardPlayedCommand(player, cardId);
+            ICommand cardPlayedCommand = new CLIENT_PlayCommand(player, cardId);
 
             CommandResponse response = CommandInvoker.ExecuteCommand(cardPlayedCommand);
 
@@ -256,11 +257,9 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Invalid)
             {
-
                 Debug.LogWarning($"[SERVER]: {response.Message}");
                 GameEvents.OnCardPlayedRefused.Invoke(card);
-            }
-            if (response.Status == CommandStatus.Success) {
+            } if (response.Status == CommandStatus.Success) {
                 GameEvents.OnCardPlayed.Invoke(card);
 
                 foreach (AEffect effect in card.Data.Effects)

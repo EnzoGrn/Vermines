@@ -26,9 +26,7 @@ namespace Vermines.ShopSystem.Commands {
 
             ICard newCard = shop.AvailableCards[_Parameters.SlotIndex];
 
-            if (newCard == null)
-                return new CommandResponse(CommandStatus.Success, "Shop_Empty", _Parameters.ShopType.ToString());
-            return new CommandResponse(CommandStatus.Success, "Shop_Replace_NewCard", _Parameters.ShopType.ToString(), card.Data.Name, newCard.Data.Name);
+            return new CommandResponse(CommandStatus.Success, "", _Parameters.ShopType.ToString(), card.Data.Name, newCard.Data.Name);
         }
 
         public override void Undo() {}

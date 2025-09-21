@@ -63,17 +63,19 @@ namespace Vermines.Gameplay.Phases {
 
         private void OnDiscard(ICard card)
         {
+            GameManager manager = Object.FindFirstObjectByType<GameManager>();
+
+            if (manager == null)
+                return;
             if (card == null)
             {
                 Debug.LogWarning("Card is null, can't discard.");
                 return;
             }
-            int cardId = card.ID;
 
-            // Switch the card from the hand deck to the discard deck
-            if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
+            if (PlayerController.Local.PlayerRef == manager.GetCurrentPlayer())
             {
-                PlayerController.Local.OnDiscard(cardId);
+                PlayerController.Local.OnDiscard(card.ID);
             }
             else
             {
@@ -84,16 +86,18 @@ namespace Vermines.Gameplay.Phases {
 
         private void OnDiscardNoEffect(ICard card)
         {
+            GameManager manager = Object.FindFirstObjectByType<GameManager>();
+
+            if (manager == null)
+                return;
             if (card == null)
             {
                 Debug.LogWarning("Card is null, can't discard.");
                 return;
             }
-            int cardId = card.ID;
-            // Switch the card from the hand deck to the discard deck
-            if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
+            if (PlayerController.Local.PlayerRef == manager.GetCurrentPlayer())
             {
-                PlayerController.Local.OnDiscardNoEffect(cardId);
+                PlayerController.Local.OnDiscardNoEffect(card.ID);
             }
             else
             {
@@ -104,17 +108,18 @@ namespace Vermines.Gameplay.Phases {
 
         private void OnCardPlayed(ICard card)
         {
+            GameManager manager = Object.FindFirstObjectByType<GameManager>();
+
+            if (manager == null)
+                return;
             if (card == null)
             {
                 Debug.LogWarning("Card is null, can't play.");
                 return;
             }
-            int cardId = card.ID;
-
-            // Switch the card from the hand deck to the played deck
-            if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
+            if (PlayerController.Local.PlayerRef == manager.GetCurrentPlayer())
             {
-                PlayerController.Local.OnPlay(cardId);
+                PlayerController.Local.OnPlay(card.ID);
             }
             else
             {

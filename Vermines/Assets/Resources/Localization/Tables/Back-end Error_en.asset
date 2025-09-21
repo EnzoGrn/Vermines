@@ -46,12 +46,24 @@ MonoBehaviour:
     m_Localized: You cannot replace a card when it's not your turn.
     m_Metadata:
       m_Items: []
-  - m_Id: 224938655997952
-    m_Localized: The {0} replace the {1} to {2}.
-    m_Metadata:
-      m_Items: []
   - m_Id: 225365833277440
     m_Localized: The {0} is now empty.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 276526279942144
+    m_Localized: You cannot play a card when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 278631019438080
+    m_Localized: You cannot play a card outside of the action phase.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 279314103787520
+    m_Localized: The {0} card doesn't exist.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 279751842324480
+    m_Localized: You cannot play the {0}, you must have it in your hand.
     m_Metadata:
       m_Items: []
   references:

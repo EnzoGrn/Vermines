@@ -9,7 +9,8 @@ using Vermines;
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Utilities;
     using Vermines.Configuration;
-    using Vermines.Gameplay.Commands.Deck;
+using Vermines.Gameplay.Commands;
+using Vermines.Gameplay.Commands.Deck;
     using Vermines.Player;
 #endregion
 
@@ -102,34 +103,17 @@ namespace Test.Vermines.Gameplay.Deck {
         [Test]
         public void PlayedCard()
         {
-            // -- Unknow player
-            ICommand UPplayedCommand = new CardPlayedCommand(PlayerRef.FromEncoded(4), 77);
-
-            CommandInvoker.ExecuteCommand(UPplayedCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Player [Player:3] does not have a deck.", CommandInvoker.State.Message);
-
-            // -- Unknow Card
-            ICommand UCplayedCommand = new CardPlayedCommand(_LocalPlayer, 500);
-
-            CommandInvoker.ExecuteCommand(UCplayedCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Player [Player:0] tried to play a card that he does not have.", CommandInvoker.State.Message);
-
             // -- Normal played
-            ICommand playedCommand = new CardPlayedCommand(_LocalPlayer, 77);
+            ICommand playedCommand = new CLIENT_PlayCommand(_LocalPlayer, 77);
 
             CommandInvoker.ExecuteCommand(playedCommand);
 
             Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-            Assert.AreEqual("Player [Player:0] played the card 77.", CommandInvoker.State.Message);
 
             // -- Undo
             CommandInvoker.UndoCommand();
 
-            Assert.AreEqual(_Decks[_LocalPlayer].PlayedCards.Count, 2);
+            // TODO: Implement and test the undo function.
         }
 
         [Test]

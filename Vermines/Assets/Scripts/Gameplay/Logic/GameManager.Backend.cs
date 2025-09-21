@@ -10,6 +10,7 @@ namespace Vermines {
 
     using Vermines.Gameplay.Errors;
     using Vermines.Player;
+    using Vermines.Gameplay.Commands;
 
     /// <summary>
     /// Back-end part of <see cref="GameManager" /> containing all RPC methods responsible for validating players actions on the server side.
@@ -173,7 +174,7 @@ namespace Vermines {
 
         #endregion
 
-        #region Table
+        #region Table (Play, Discard)
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_CardPlayed(int playerId, int cardId)
@@ -181,18 +182,37 @@ namespace Vermines {
             PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
 
             if (playerSource != GetCurrentPlayer()) {
-                SendError(new GameActionError {
-                    Scope = ErrorScope.Local,
-                    Target = playerSource,
-                    Severity = ErrorSeverity.Minor,
-                    Location = ErrorLocation.Table,
-                    MessageKey = $"You cannot played a card when it's not your turn." // TODO: Localize the message. (fr, en...).
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                    Scope      = ErrorScope.Local,
+                    Target     = playerSource,
+                    Severity   = ErrorSeverity.Major,
+                    Location   = ErrorLocation.Table,
+                    MessageKey = "Table_Play_NotYourTurn"
                 });
 
                 return;
             }
 
-            Player.PlayerController.Local.RPC_CardPlayed(playerId, cardId);
+            ICommand        checker         = new ADMIN_CheckPlayCommand(playerSource, GetCurrentPhase(), cardId);
+            CommandResponse checkerResponse = CommandInvoker.ExecuteCommand(checker);
+
+            if (checkerResponse.Status != CommandStatus.Success) {
+                SendError(new GameActionError {
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+
+                    Severity = checkerResponse.Status == CommandStatus.Invalid ? ErrorSeverity.Minor :
+                               checkerResponse.Status == CommandStatus.Failure ? ErrorSeverity.Minor :
+                               ErrorSeverity.Critical,
+
+                    Location = ErrorLocation.Table,
+                    MessageKey = checkerResponse.Message,
+                    MessageArgs = new GameActionErrorArgs(checkerResponse.Args)
+                });
+
+                return;
+            }
+            PlayerController.Local.RPC_CardPlayed(playerId, cardId);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
