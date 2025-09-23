@@ -1,14 +1,18 @@
 ﻿using Fusion;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Localization;
-using Vermines.Player;
 using Vermines.CardSystem.Enumerations;
+using Vermines.Gameplay.Phases;
+using Vermines.Player;
+using Vermines.ShopSystem.Enumerations;
 
 namespace Vermines.UI.Screen
 {
     using Text = TMPro.TMP_Text;
 
-    public partial class GameplayUIGainSummary : GameplayUIScreen
+    public partial class GameplayUIGainSummary : GameplayUIScreen, IParamReceiver<GainSummaryData>
     {
         #region Attributes
 
@@ -35,6 +39,8 @@ namespace Vermines.UI.Screen
         /// </summary>
         [InlineHelp, SerializeField]
         protected Text _MessageText;
+
+        private GainSummaryData _summary;
 
         #endregion
 
@@ -96,6 +102,11 @@ namespace Vermines.UI.Screen
 
         #region Methods
 
+        public void SetParam(GainSummaryData param)
+        {
+            _summary = param;
+        }
+
         public void LoadAndAnnounce()
         {
             if (_raceName == CardFamily.None)
@@ -111,17 +122,14 @@ namespace Vermines.UI.Screen
                 }
             }
 
-            int baseValue = 2;
-            int followerValue = 0;
-            int equipmentValue = 0;
-            int total = baseValue + followerValue + equipmentValue;
             LocalizedString localized = new LocalizedString("CultistMessages", _raceName.ToString());
+
             string msg = localized.GetLocalizedString();
+
             msg = msg
-                .Replace("{baseValue}", baseValue.ToString())
-                .Replace("{followerValue}", followerValue.ToString())
-                .Replace("{equipmentValue}", equipmentValue.ToString())
-                .Replace("{total}", total.ToString());
+                .Replace("{baseValue}", _summary.BaseValue.ToString())
+                .Replace("{followerValue}", _summary.FollowerValue.ToString())
+                .Replace("{total}", _summary.Total.ToString());
 
             _MessageText.text = msg;
         }
