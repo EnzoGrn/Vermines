@@ -5,7 +5,6 @@ namespace Vermines.ShopSystem.Commands {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Utilities;
     using Vermines.ShopSystem.Data;
-    using Vermines.ShopSystem.Enumerations;
 
     public class CLIENT_ChangeCardCommand : ACommand {
 

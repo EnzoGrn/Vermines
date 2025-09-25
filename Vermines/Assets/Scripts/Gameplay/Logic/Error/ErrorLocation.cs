@@ -16,8 +16,8 @@ namespace Vermines.Gameplay.Errors {
     public enum ErrorLocation {
         None,
         Shop,
-        Hand,
-        Table
+        Table,
+        Sacrifice
         // ...
     }
 }

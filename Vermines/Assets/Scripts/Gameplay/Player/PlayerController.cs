@@ -237,7 +237,7 @@ namespace Vermines.Player {
                 return;
             }
 
-            ICommand cardSacrifiedCommand = new CardSacrifiedCommand(player, cardId);
+            ICommand cardSacrifiedCommand = new CLIENT_CardSacrifiedCommand(player, cardId);
 
             CommandResponse response = CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
 

@@ -11,6 +11,7 @@ namespace Vermines {
     using Vermines.Gameplay.Errors;
     using Vermines.Player;
     using Vermines.Gameplay.Commands;
+    using Vermines.CardSystem.Elements;
 
     /// <summary>
     /// Back-end part of <see cref="GameManager" /> containing all RPC methods responsible for validating players actions on the server side.
@@ -257,11 +258,48 @@ namespace Vermines {
 
         #endregion
 
+        #region Sacrifice
+
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_CardSacrified(int playerId, int cardId)
         {
-            Player.PlayerController.Local.RPC_CardSacrified(playerId, cardId);
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+                    Severity = ErrorSeverity.Major,
+                    Location = ErrorLocation.Sacrifice,
+                    MessageKey = "Sacrifice_NotYourTurn"
+                });
+                return;
+            }
+
+            ICommand        checker  = new ADMIN_SacrificeCommand(playerSource, cardId);
+            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
+
+            if (response.Status != CommandStatus.Success) {
+                SendError(new GameActionError {
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+
+                    Severity = response.Status == CommandStatus.Invalid ? ErrorSeverity.Minor :
+                               response.Status == CommandStatus.Failure ? ErrorSeverity.Minor :
+                               ErrorSeverity.Critical,
+
+                    Location = ErrorLocation.Sacrifice,
+                    MessageKey = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
+                });
+
+                return;
+            }
+
+            PlayerController.Local.RPC_CardSacrified(playerId, cardId);
         }
+
+        #endregion
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_ActivateEffect(int playerID, int cardID)

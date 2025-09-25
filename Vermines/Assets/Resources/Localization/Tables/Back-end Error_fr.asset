@@ -82,6 +82,19 @@ MonoBehaviour:
       dans la main."
     m_Metadata:
       m_Items: []
+  - m_Id: 1667934047952896
+    m_Localized: Vous ne pouvez pas sacrificer une carte si ce n'est pas votre tour.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1671701384388608
+    m_Localized: Vous ne pouvez pas sacrifier une carte non partisan.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1672017521664000
+    m_Localized: Vous ne pouvez pas sacrifier la carte {0}, vous devez l'avoir sur
+      votre table.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

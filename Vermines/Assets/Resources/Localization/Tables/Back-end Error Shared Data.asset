@@ -75,6 +75,18 @@ MonoBehaviour:
     m_Key: Table_Discard_CardNotInHand
     m_Metadata:
       m_Items: []
+  - m_Id: 1667934047952896
+    m_Key: Sacrifice_NotYourTurn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1671701384388608
+    m_Key: Sacrifice_WrongCardType
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1672017521664000
+    m_Key: Sacrifice_CardNotInTable
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

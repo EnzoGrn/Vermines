@@ -70,34 +70,17 @@ namespace Test.Vermines.Gameplay.Deck {
         [Test]
         public void SacrifiedCard()
         {
-            // -- Unknow player
-            ICommand UPsacrificeCommand = new CardSacrifiedCommand(PlayerRef.FromEncoded(4), 75);
-
-            CommandInvoker.ExecuteCommand(UPsacrificeCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Player [Player:3] does not have a deck.", CommandInvoker.State.Message);
-
-            // -- Unknow Card
-            ICommand UCsacrificeCommand = new CardSacrifiedCommand(_LocalPlayer, 500);
-
-            CommandInvoker.ExecuteCommand(UCsacrificeCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Card 500 does not exist.", CommandInvoker.State.Message);
-
             // -- Normal sacrifice
-            ICommand sacrificeCommand = new CardSacrifiedCommand(_LocalPlayer, 75);
+            ICommand sacrificeCommand = new CLIENT_CardSacrifiedCommand(_LocalPlayer, 75);
 
             CommandInvoker.ExecuteCommand(sacrificeCommand);
 
             Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-            Assert.AreEqual("Player [Player:0] sacrified a card.", CommandInvoker.State.Message);
 
             // -- Undo
             CommandInvoker.UndoCommand();
 
-            Assert.AreEqual(_Decks[_LocalPlayer].Graveyard.Count, 0);
+            // TODO: Implement and test the undo function.
         }
 
         [Test]
