@@ -380,12 +380,6 @@ namespace Vermines.Player {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
             PlayerRef player = PlayerRef.FromEncoded(playerID);
 
-            if (card == null) {
-                Debug.LogError($"[SERVER]: Player {playerID} tried to called an network event for a card that doesn't exist.");
-
-                return;
-            }
-
             foreach (AEffect effect in card.Data.Effects)
                 effect.NetworkEventFunction(player, data);
         }

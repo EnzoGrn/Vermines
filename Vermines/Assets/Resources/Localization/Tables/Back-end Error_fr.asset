@@ -95,6 +95,15 @@ MonoBehaviour:
       votre table.
     m_Metadata:
       m_Items: []
+  - m_Id: 1675471052857344
+    m_Localized: Vous ne pouvez pas jouer un effet de carte si ce n'est pas votre
+      tour.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1700752530595840
+    m_Localized: "Vous n'\xEAtes pas le propri\xE9taire de la carte {0}."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

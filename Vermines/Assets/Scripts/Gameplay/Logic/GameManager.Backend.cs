@@ -301,40 +301,193 @@ namespace Vermines {
 
         #endregion
 
+        #region Effects
+
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_ActivateEffect(int playerID, int cardID)
+        public void RPC_ActivateEffect(int playerId, int cardID)
         {
-            Player.PlayerController.Local.RPC_ActivateEffect(playerID, cardID);
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+                    Severity = ErrorSeverity.Major,
+                    Location = ErrorLocation.Effect,
+                    MessageKey = "Effect_NotYourTurn"
+                });
+
+                return;
+            }
+
+            ICommand        checker  = new ADMIN_CheckEffectCommand(playerSource, cardID);
+            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
+
+            if (response.Status != CommandStatus.Success) {
+                SendError(new GameActionError {
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+                    Severity = ErrorSeverity.Major,
+                    Location = ErrorLocation.Effect,
+                    MessageKey = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
+                });
+
+                return;
+            }
+
+            PlayerController.Local.RPC_ActivateEffect(playerId, cardID);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_ReducedInSilenced(int playerId, int cardToBeSilenced)
         {
-            Player.PlayerController.Local.RPC_ReducedInSilenced(playerId, cardToBeSilenced);
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+                    Severity = ErrorSeverity.Major,
+                    Location = ErrorLocation.Effect,
+                    MessageKey = "Effect_NotYourTurn"
+                });
+
+                return;
+            }
+
+            PlayerController.Local.RPC_ReducedInSilenced(playerId, cardToBeSilenced);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_RemoveReducedInSilenced(int playerId, int cardID, int originalSouls)
         {
-            Player.PlayerController.Local.RPC_RemoveReducedInSilenced(playerId, cardID, originalSouls);
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                    Scope      = ErrorScope.Local,
+                    Target     = playerSource,
+                    Severity   = ErrorSeverity.Major,
+                    Location   = ErrorLocation.Effect,
+                    MessageKey = "Effect_NotYourTurn"
+                });
+
+                return;
+            }
+
+            PlayerController.Local.RPC_RemoveReducedInSilenced(playerId, cardID, originalSouls);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_CopiedEffect(int playerId, int cardID, int cardToCopiedID)
         {
-            Player.PlayerController.Local.RPC_CopiedEffect(playerId, cardID, cardToCopiedID);
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                    Scope      = ErrorScope.Local,
+                    Target     = playerSource,
+                    Severity   = ErrorSeverity.Major,
+                    Location   = ErrorLocation.Effect,
+                    MessageKey = "Effect_NotYourTurn"
+                });
+
+                return;
+            }
+
+            ICommand        checker  = new ADMIN_CheckEffectCommand(playerSource, cardID);
+            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
+
+            if (response.Status != CommandStatus.Success) {
+                SendError(new GameActionError {
+                    Scope       = ErrorScope.Local,
+                    Target      = playerSource,
+                    Severity    = ErrorSeverity.Major,
+                    Location    = ErrorLocation.Effect,
+                    MessageKey  = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
+                });
+
+                return;
+            }
+
+            PlayerController.Local.RPC_CopiedEffect(playerId, cardID, cardToCopiedID);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_RemoveCopiedEffect(int playerId, int cardID)
         {
-            Player.PlayerController.Local.RPC_RemoveCopiedEffect(playerId, cardID);
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                    Scope      = ErrorScope.Local,
+                    Target     = playerSource,
+                    Severity   = ErrorSeverity.Major,
+                    Location   = ErrorLocation.Effect,
+                    MessageKey = "Effect_NotYourTurn"
+                });
+
+                return;
+            }
+
+            ICommand        checker  = new ADMIN_CheckEffectCommand(playerSource, cardID);
+            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
+
+            if (response.Status != CommandStatus.Success) {
+                SendError(new GameActionError {
+                    Scope       = ErrorScope.Local,
+                    Target      = playerSource,
+                    Severity    = ErrorSeverity.Major,
+                    Location    = ErrorLocation.Effect,
+                    MessageKey  = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
+                });
+
+                return;
+            }
+
+            PlayerController.Local.RPC_RemoveCopiedEffect(playerId, cardID);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_NetworkEventCardEffect(int playerID, int cardID, string data)
+        public void RPC_NetworkEventCardEffect(int playerId, int cardID, string data)
         {
-            Player.PlayerController.Local.RPC_NetworkEventCardEffect(playerID, cardID, data);
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+                    Severity = ErrorSeverity.Major,
+                    Location = ErrorLocation.Effect,
+                    MessageKey = "Effect_NotYourTurn"
+                });
+
+                return;
+            }
+
+            ICommand        checker  = new ADMIN_CheckEffectCommand(playerSource, cardID);
+            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
+
+            if (response.Status != CommandStatus.Success) {
+                SendError(new GameActionError {
+                    Scope       = ErrorScope.Local,
+                    Target      = playerSource,
+                    Severity    = ErrorSeverity.Major,
+                    Location    = ErrorLocation.Effect,
+                    MessageKey  = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
+                });
+
+
+                return;
+            }
+
+            PlayerController.Local.RPC_NetworkEventCardEffect(playerId, cardID, data);
         }
+
+        #endregion
     }
 }

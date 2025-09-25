@@ -90,6 +90,14 @@ MonoBehaviour:
     m_Localized: You cannot sacrifice the {0}, you must have it on your table.
     m_Metadata:
       m_Items: []
+  - m_Id: 1675471052857344
+    m_Localized: You cannot play a card effct when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1700752530595840
+    m_Localized: You are not the owner of {0} card.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

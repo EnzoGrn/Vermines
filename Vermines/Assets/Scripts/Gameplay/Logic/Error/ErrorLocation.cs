@@ -17,7 +17,8 @@ namespace Vermines.Gameplay.Errors {
         None,
         Shop,
         Table,
-        Sacrifice
+        Sacrifice,
+        Effect
         // ...
     }
 }
