@@ -28,7 +28,6 @@ using Vermines.Configuration;
 using Vermines.Player;
 using Vermines;
 using Vermines.ShopSystem;
-using UnityEngine.Android;
 
 namespace Test.Vermines.ShopSystem {
 
