@@ -27,7 +27,7 @@ namespace Vermines.Gameplay.Commands {
                 return new CommandResponse(CommandStatus.CriticalError, "CardNotExist", _CardId.ToString());
 
             // 1. Check if the card is own by the player.
-            if (_Card.Owner != _Player)
+            if (_Card.Owner != PlayerRef.None && _Card.Owner != _Player)
                 return new CommandResponse(CommandStatus.CriticalError, "CardWrongOwner", _Card.Data.Name);
             return new CommandResponse(CommandStatus.Success, "");
         }

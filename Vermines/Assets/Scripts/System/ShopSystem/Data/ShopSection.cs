@@ -6,6 +6,7 @@ namespace Vermines.ShopSystem.Data {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
     using System.Linq;
+    using System.Diagnostics;
 
     [System.Serializable]
     public class ShopSection {

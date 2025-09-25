@@ -9,6 +9,7 @@ namespace Vermines.ShopSystem.Commands {
     using Vermines.CardSystem.Elements;
 
     using Vermines.Player;
+    using System.Diagnostics;
 
     /// <summary>
     /// This buy command is simulate on all clients but not on the authority object client.
@@ -138,7 +139,7 @@ namespace Vermines.ShopSystem.Commands {
         {
             PlayerData playerData = GameDataStorage.Instance.PlayerData[_Player];
             PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
-            ICard      card       = _Parameters.Shop.Sections[_Parameters.ShopType].GetCardAtSlot(_Parameters.SlotIndex);
+            ICard      card       = _Parameters.Shop.Sections[_Parameters.ShopType].BuyCardAtSlot(_Parameters.SlotIndex);
 
             // 1. Process the purchase
             int remainingE = Purchase(_Player, playerData, card);

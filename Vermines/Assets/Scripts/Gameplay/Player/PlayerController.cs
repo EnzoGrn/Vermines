@@ -165,8 +165,6 @@ namespace Vermines.Player {
                 ICommand buyCommand = new CLIENT_BuyCommand(playerSource, parameters);
 
                 CommandInvoker.ExecuteCommand(buyCommand);
-
-                Debug.Log($"[SERVER]: {CommandInvoker.State.Message}");
             }
 
             GameEvents.OnCardPurchased.Invoke(shopType, slot);
@@ -280,12 +278,6 @@ namespace Vermines.Player {
         {
             PlayerRef player = PlayerRef.FromEncoded(playerID);
             ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
-
-            if (card == null) {
-                Debug.LogError($"[SERVER]: Player {player} tried to activate an effect that doesn't exist.");
-
-                return;
-            }
 
             foreach (AEffect effect in card.Data.Effects) {
                 if (effect.Type == EffectType.Activate)

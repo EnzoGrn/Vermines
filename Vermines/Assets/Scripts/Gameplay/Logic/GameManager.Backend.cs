@@ -8,10 +8,9 @@ namespace Vermines {
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem;
 
+    using Vermines.Gameplay.Commands;
     using Vermines.Gameplay.Errors;
     using Vermines.Player;
-    using Vermines.Gameplay.Commands;
-    using Vermines.CardSystem.Elements;
 
     /// <summary>
     /// Back-end part of <see cref="GameManager" /> containing all RPC methods responsible for validating players actions on the server side.
@@ -131,8 +130,6 @@ namespace Vermines {
             ICommand buyCommand = new ADMIN_BuyCommand(playerSource, parameters);
 
             CommandInvoker.ExecuteCommand(buyCommand);
-
-            Debug.Log($"[SERVER]: {CommandInvoker.State.Message}");
 
             PlayerController.Local.RPC_BuyCard(playerId, shopType, slot);
         }

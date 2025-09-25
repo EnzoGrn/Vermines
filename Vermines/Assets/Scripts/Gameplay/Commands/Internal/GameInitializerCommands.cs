@@ -80,8 +80,15 @@ namespace Vermines.Gameplay.Commands.Internal {
 
         private void InitializeDeck(string playerData, string deckData)
         {
-            PlayerRef playerRef = PlayerRef.FromEncoded(int.Parse(playerData));
-            PlayerDeck     deck = PlayerDeck.Deserialize(deckData);
+            PlayerRef  playerRef = PlayerRef.FromEncoded(int.Parse(playerData));
+            PlayerDeck deck      = PlayerDeck.Deserialize(deckData);
+
+            deck.Deck.ForEach(card        => card.Owner = playerRef);
+            deck.Hand.ForEach(card        => card.Owner = playerRef);
+            deck.Discard.ForEach(card     => card.Owner = playerRef);
+            deck.Graveyard.ForEach(card   => card.Owner = playerRef);
+            deck.PlayedCards.ForEach(card => card.Owner = playerRef);
+            deck.Equipments.ForEach(card  => card.Owner = playerRef);
 
             GameDataStorage.Instance.PlayerDeck[playerRef] = deck;
         }
