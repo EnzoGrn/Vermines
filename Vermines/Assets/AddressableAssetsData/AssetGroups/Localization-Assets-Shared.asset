@@ -59,6 +59,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cd28d771d5b12ba4180efd2bed0aef56
+    m_Address: Assets/Resources/Localization/Tables/Back-end Error Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d28e4db54bcae5e43ade05072f4285a4
     m_Address: Assets/Resources/Localization/Tables/FinalAnimation/Final Animation
       Dialog Shared Data.asset

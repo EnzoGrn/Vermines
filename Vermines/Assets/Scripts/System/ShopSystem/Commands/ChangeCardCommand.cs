@@ -5,54 +5,30 @@ namespace Vermines.ShopSystem.Commands {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Utilities;
     using Vermines.ShopSystem.Data;
-    using Vermines.ShopSystem.Enumerations;
 
-    public class ChangeCardCommand : ICommand {
+    public class CLIENT_ChangeCardCommand : ACommand {
 
-        private ShopData _Shop;
-        private ShopData _OldShop;
+        private ShopArgs _Parameters;
 
-        private readonly ShopType _ShopType;
-
-        private readonly int _SlotIndex;
-
-        public ChangeCardCommand(ShopData shop, ShopType shopType, int slotIndex)
+        public CLIENT_ChangeCardCommand(ShopArgs parameters)
         {
-            _Shop      = shop;
-            _OldShop   = shop?.DeepCopy() ?? null;
-            _ShopType  = shopType;
-            _SlotIndex = slotIndex;
+            _Parameters = parameters;
         }
 
-        public CommandResponse Execute()
+        public override CommandResponse Execute()
         {
-            _OldShop = _Shop?.DeepCopy() ?? null;
+            ShopSection shop = _Parameters.Shop.Sections[_Parameters.ShopType];
+            ICard       card = shop.AvailableCards[_Parameters.SlotIndex];
 
-            CommandResponse response = ChangeCard(_ShopType, _SlotIndex);
+            shop.DiscardDeck.Add(card);
+            shop.AvailableCards[_Parameters.SlotIndex] = DrawCard(shop);
 
-            return response;
+            ICard newCard = shop.AvailableCards[_Parameters.SlotIndex];
+
+            return new CommandResponse(CommandStatus.Success, "", _Parameters.ShopType.ToString(), card.Data.Name, newCard.Data.Name);
         }
 
-        public void Undo()
-        {
-            _Shop.Sections = _OldShop.Sections;
-        }
-
-        private CommandResponse ChangeCard(ShopType type, int slotIndex)
-        {
-            if (!_Shop.Sections.ContainsKey(type))
-                return new CommandResponse(CommandStatus.Invalid, $"Shop does not have a section of type {type}.");
-            if (!_Shop.Sections[type].AvailableCards.ContainsKey(slotIndex))
-                return new CommandResponse(CommandStatus.Invalid, $"Shop does not have a slot {slotIndex} in section {type}.");
-            ICard card = _Shop.Sections[type].AvailableCards[slotIndex];
-
-            if (card == null)
-                return new CommandResponse(CommandStatus.Invalid, $"Shop does not have a card in slot {slotIndex} in section {type}.");
-            _Shop.Sections[type].DiscardDeck.Add(card);
-            _Shop.Sections[type].AvailableCards[slotIndex] = DrawCard(_Shop.Sections[type]);
-
-            return new CommandResponse(CommandStatus.Success, $"Card in slot {slotIndex} in section {type} has been changed.");
-        }
+        public override void Undo() {}
 
         private ICard DrawCard(ShopSection shopSection)
         {
@@ -60,13 +36,38 @@ namespace Vermines.ShopSystem.Commands {
                 shopSection.DiscardDeck.Reverse();
                 shopSection.Deck.Merge(shopSection.DiscardDeck);
 
-                if (shopSection.Deck.Count == 0) {
-                    // TODO: Notify UI, there is no more card available in this sections
-
+                if (shopSection.Deck.Count == 0)
                     return null;
-                }
             }
+
             return shopSection.Deck.Draw();
+        }
+    }
+
+    /// <summary>
+    /// Execute only on state authority (server or host).
+    /// </summary>
+    public class ADMIN_CheckChangeCardCommand : ACommand {
+
+        public ShopArgs Args;
+
+        public ADMIN_CheckChangeCardCommand(ShopArgs shopArgs)
+        {
+            Args = shopArgs;
+        }
+
+        public override CommandResponse Execute()
+        {
+            // 0. Check if the shop exist
+            if (Args.Shop == null)
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", Args.ShopType.ToString());
+
+            // 1. Check if the shop and slot exist
+            if (!Args.Shop.Sections.ContainsKey(Args.ShopType))
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", Args.ShopType.ToString());
+            if (!Args.Shop.HasCardAtSlot(Args.ShopType, Args.SlotIndex))
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_SlotEmpty", Args.ShopType.ToString());
+            return new CommandResponse(CommandStatus.Success, string.Empty);
         }
     }
 }

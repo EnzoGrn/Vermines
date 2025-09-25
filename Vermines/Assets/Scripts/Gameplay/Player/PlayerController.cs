@@ -3,31 +3,27 @@ using Fusion;
 using UnityEngine;
 
 namespace Vermines.Player {
-    using OMGG.Menu.Screen;
+
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Cards;
+    using Vermines.Gameplay.Commands;
     using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Gameplay.Commands.Deck;
     using Vermines.Menu.Screen;
     using Vermines.Network.Utilities;
     using Vermines.Service;
+    using Vermines.ShopSystem;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
 
-    public class PlayerController : NetworkBehaviour {
+    public partial class PlayerController : NetworkBehaviour {
 
         public static PlayerController Local { get; private set; }
 
         public PlayerRef PlayerRef => Object.InputAuthority;
-
-        #region Cards Tracker
-
-        private CardTracker _DiscardedCardTrackerPerTurn = new();
-
-        #endregion
 
         #region Override Methods
 
@@ -92,19 +88,6 @@ namespace Vermines.Player {
             await manager.ReturnToTavern();
         }
 
-        public void ClearTracker()
-        {
-            _DiscardedCardTrackerPerTurn.Reset();
-        }
-
-        public void AddCardInTracker(int cardId)
-        {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
-            if (card != null)
-                _DiscardedCardTrackerPerTurn.AddCard(card);
-        }
-
         public void OnCardSacrified(int cardId)
         {
             GameManager.Instance.RPC_CardSacrified(Object.InputAuthority.RawEncoded, cardId);
@@ -117,12 +100,12 @@ namespace Vermines.Player {
 
         public void OnDiscard(int cardId)
         {
-            GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId);
+            GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, true);
         }
 
         public void OnDiscardNoEffect(int cardId)
         {
-            GameManager.Instance.RPC_DiscardCardNoEffect(Object.InputAuthority.RawEncoded, cardId);
+            GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, false);
         }
 
         public void OnBuy(ShopType shopType, int slot)
@@ -174,79 +157,45 @@ namespace Vermines.Player {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_BuyCard(int playerRef, ShopType shopType, int slot)
         {
-            BuyParameters parameters = new() {
-                Decks = GameDataStorage.Instance.PlayerDeck,
-                Player = PlayerRef.FromEncoded(playerRef),
-                Shop = GameDataStorage.Instance.Shop,
-                ShopType = shopType,
-                Slot = slot
-            };
+            // The state authority already process the command on his side. So ignore it.
+            if (!HasStateAuthority) {
+                PlayerRef playerSource = PlayerRef.FromEncoded(playerRef);
 
-            if (parameters.Shop == null)
-            {
-                Debug.LogError("Shop is null");
+                ShopArgs parameters = new(GameDataStorage.Instance.Shop, shopType, slot);
+                ICommand buyCommand = new CLIENT_BuyCommand(playerSource, parameters);
+
+                CommandInvoker.ExecuteCommand(buyCommand);
             }
 
-            ICommand buyCommand = new BuyCommand(parameters);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(buyCommand);
-
-            if (response.Status == CommandStatus.Success) {
-                GameEvents.OnCardPurchased.Invoke(shopType, slot);
-
-                Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[parameters.Player].Serialize()}");
-            }
+            GameEvents.OnCardPurchased.Invoke(shopType, slot);
         }
 
         #endregion
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_DiscardCard(int playerId, int cardId)
+        public void RPC_DiscardCard(int playerId, int cardId, bool hasEffect = true)
         {
             PlayerRef player = PlayerRef.FromEncoded(playerId);
-            ICommand discardCommand = new DiscardCommand(player, cardId);
+
+            ICommand discardCommand = new CLIENT_DiscardCommand(player, cardId);
 
             CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
 
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
             if (response.Status == CommandStatus.Success) {
-
-                GameEvents.OnCardDiscarded.Invoke(card);
-
-                if (_DiscardedCardTrackerPerTurn.HasCard(card) && card.Data.Type == CardType.Tools && !card.Data.IsStartingCard)
-                    return;
-                _DiscardedCardTrackerPerTurn.AddCard(card);
-
-                foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Discard)
-                        effect.Play(player);
-                }
-            } else {
-                Debug.LogWarning($"[SERVER]: {response.Message}");
-                GameEvents.OnCardDiscardedRefused.Invoke(card);
-            }
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_DiscardCardNoEffect(int playerId, int cardId)
-        {
-            PlayerRef player = PlayerRef.FromEncoded(playerId);
-            ICommand discardCommand = new DiscardCommand(player, cardId);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
-
-            if (response.Status == CommandStatus.Success)
-            {
-                Debug.Log($"[SERVER]: {response.Message}");
-
-                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
                 GameEvents.OnCardDiscarded.Invoke(card);
                 GameEvents.OnPlayerUpdated.Invoke(GameDataStorage.Instance.PlayerData[player]);
-            }
-            else
-            {
+
+                if (hasEffect) {
+                    foreach (AEffect effect in card.Data.Effects) {
+                        if (effect.Type == EffectType.Discard)
+                            effect.Play(player);
+                    }
+                }
+            } else {
+                if (hasEffect) // If he has an effect, it means that the player played the action by himself, so we need to inform him that the action failed.
+                    GameEvents.OnCardDiscardedRefused.Invoke(card);
                 Debug.LogWarning($"[SERVER]: {response.Message}");
             }
         }
@@ -256,7 +205,7 @@ namespace Vermines.Player {
         {
             PlayerRef player = PlayerRef.FromEncoded(playerId);
 
-            ICommand cardPlayedCommand = new CardPlayedCommand(player, cardId);
+            ICommand cardPlayedCommand = new CLIENT_PlayCommand(player, cardId);
 
             CommandResponse response = CommandInvoker.ExecuteCommand(cardPlayedCommand);
 
@@ -264,11 +213,9 @@ namespace Vermines.Player {
 
             if (response.Status == CommandStatus.Invalid)
             {
-
                 Debug.LogWarning($"[SERVER]: {response.Message}");
                 GameEvents.OnCardPlayedRefused.Invoke(card);
-            }
-            if (response.Status == CommandStatus.Success) {
+            } if (response.Status == CommandStatus.Success) {
                 GameEvents.OnCardPlayed.Invoke(card);
 
                 foreach (AEffect effect in card.Data.Effects)
@@ -288,7 +235,7 @@ namespace Vermines.Player {
                 return;
             }
 
-            ICommand cardSacrifiedCommand = new CardSacrifiedCommand(player, cardId);
+            ICommand cardSacrifiedCommand = new CLIENT_CardSacrifiedCommand(player, cardId);
 
             CommandResponse response = CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
 
@@ -332,12 +279,6 @@ namespace Vermines.Player {
             PlayerRef player = PlayerRef.FromEncoded(playerID);
             ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
 
-            if (card == null) {
-                Debug.LogError($"[SERVER]: Player {player} tried to activate an effect that doesn't exist.");
-
-                return;
-            }
-
             foreach (AEffect effect in card.Data.Effects) {
                 if (effect.Type == EffectType.Activate)
                     effect.Play(player);
@@ -347,19 +288,11 @@ namespace Vermines.Player {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_ReplaceCardInShop(int playerID, ShopType shopType, int slot)
         {
-            ICommand replaceCommand = new ChangeCardCommand(GameDataStorage.Instance.Shop, shopType, slot);
+            ICommand replaceCommand = new CLIENT_ChangeCardCommand(new ShopArgs(GameDataStorage.Instance.Shop, shopType, slot));
 
-            CommandResponse response = CommandInvoker.ExecuteCommand(replaceCommand);
+            CommandInvoker.ExecuteCommand(replaceCommand);
 
-            if (response.Status == CommandStatus.Success)
-            {
-                //ShopManager.Instance.ReceiveFullShopList(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
-                GameEvents.OnShopRefilled.Invoke(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
-            }
-            else
-            {
-                Debug.LogWarning($"[SERVER]: {response.Message}");
-            }
+            GameEvents.OnShopRefilled.Invoke(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -438,12 +371,6 @@ namespace Vermines.Player {
         {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
             PlayerRef player = PlayerRef.FromEncoded(playerID);
-
-            if (card == null) {
-                Debug.LogError($"[SERVER]: Player {playerID} tried to called an network event for a card that doesn't exist.");
-
-                return;
-            }
 
             foreach (AEffect effect in card.Data.Effects)
                 effect.NetworkEventFunction(player, data);

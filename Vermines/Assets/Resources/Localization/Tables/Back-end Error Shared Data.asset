@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Back-end Error Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Back-end Error
+  m_TableCollectionNameGuidString: cd28d771d5b12ba4180efd2bed0aef56
+  m_Entries:
+  - m_Id: 208522960896
+    m_Key: Shop_Buy_NotYourTurn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18102967328768
+    m_Key: Shop_Buy_WrongPhase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19083562049536
+    m_Key: Shop_ShopNotExist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20911913689088
+    m_Key: Shop_SlotEmpty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21240851980288
+    m_Key: Shop_Buy_NotEnoughEloquence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21937446182912
+    m_Key: Shop_Buy_AlreadyHasThisEquipment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 215561349881856
+    m_Key: Shop_Replace_NotYourTurn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 225365833277440
+    m_Key: Shop_Empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 276526279942144
+    m_Key: Table_Play_NotYourTurn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 278631019438080
+    m_Key: Table_Play_WrongPhase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 279314103787520
+    m_Key: CardNotExist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 279751842324480
+    m_Key: Table_Play_CardNotInHand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1659401487245312
+    m_Key: Table_Play_NotYourTurn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1661783445069824
+    m_Key: Table_Discard_WrongPhase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1662226560704512
+    m_Key: Table_Discard_CardNotInHand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1667934047952896
+    m_Key: Sacrifice_NotYourTurn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1671701384388608
+    m_Key: Sacrifice_WrongCardType
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1672017521664000
+    m_Key: Sacrifice_CardNotInTable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1675471052857344
+    m_Key: Effect_NotYourTurn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1700752530595840
+    m_Key: CardWrongOwner
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3237601519059337324
+  references:
+    version: 2
+    RefIds:
+    - rid: 3237601519059337324
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1758396730549

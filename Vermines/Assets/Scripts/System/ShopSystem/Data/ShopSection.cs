@@ -6,6 +6,7 @@ namespace Vermines.ShopSystem.Data {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
     using System.Linq;
+    using System.Diagnostics;
 
     [System.Serializable]
     public class ShopSection {
@@ -134,6 +135,14 @@ namespace Vermines.ShopSystem.Data {
         public bool HasCardAtSlot(int slot)
         {
             return AvailableCards[slot] != null;
+        }
+
+        public ICard GetCardAtSlot(int slotIndex)
+        {
+            foreach (var slot in AvailableCards)
+                if (slot.Key == slotIndex)
+                    return slot.Value;
+            return null;
         }
 
         /// <summary>

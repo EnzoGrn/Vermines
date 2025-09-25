@@ -1,168 +1,175 @@
-using System.Collections.Generic;
 using OMGG.DesignPattern;
 using Fusion;
-using UnityEngine;
 
 namespace Vermines.ShopSystem.Commands {
 
-    using Vermines.ShopSystem.Enumerations;
-    using Vermines.ShopSystem.Data;
-    using Vermines.CardSystem.Elements;
-    using Vermines.Player;
+    using Vermines.Gameplay.Phases.Enumerations;
+
     using Vermines.CardSystem.Enumerations;
+    using Vermines.CardSystem.Elements;
 
-    public struct BuyParameters {
-
-        /// <summary>
-        /// The deck data of every player in the game.
-        /// </summary>
-        public Dictionary<PlayerRef, PlayerDeck> Decks;
-
-        /// <summary>
-        /// The player reference of the buyer.
-        /// </summary>
-        public PlayerRef Player;
-
-        /// <summary>
-        /// The shop.
-        /// </summary>
-        public ShopData Shop;
-
-        /// <summary>
-        /// The shop section where he bought the card.
-        /// </summary>
-        public ShopType ShopType;
-
-        /// <summary>
-        /// The slot of the shop he bought.
-        /// </summary>
-        public int Slot;
-    }
+    using Vermines.Player;
+    using System.Diagnostics;
 
     /// <summary>
-    /// This buy command simulate in other client the buy command.
-    /// So it's not a network command but only a logic simulation.
-    /// The real network command is on the player that did the action.
+    /// This buy command is simulate on all clients but not on the authority object client.
+    /// It simulate the result of the purchase that was already checked and processed by the authority object client.
     /// </summary>
-    public class BuyCommand : ICommand {
+    public class CLIENT_BuyCommand : ACommand {
 
-        private BuyParameters _Parameters;
+        private readonly PlayerRef _Player;
+        private ShopArgs _Args;
 
-        private ShopData _OriginalShop;
-
-        private ShopData    _OldShop;
-        private PlayerDeck? _OldPlayerDeck = null;
-
-        public BuyCommand(BuyParameters parameters)
+        public CLIENT_BuyCommand(PlayerRef player, ShopArgs shopInfo)
         {
-            _Parameters   = parameters;
-            _OriginalShop = parameters.Shop;
-            _OldShop      = parameters.Shop?.DeepCopy() ?? null;
-
-            if (parameters.Decks.TryGetValue(parameters.Player, out PlayerDeck playerDeck))
-                _OldPlayerDeck = playerDeck.DeepCopy();
+            _Player = player;
+            _Args   = shopInfo;
         }
 
-        public CommandResponse Execute()
+        public override CommandResponse Execute()
         {
-            _OldShop = _OriginalShop?.DeepCopy() ?? null;
-
-            if (!_Parameters.Decks.TryGetValue(_Parameters.Player, out PlayerDeck playerDeck))
-                return new CommandResponse(CommandStatus.Invalid, $"Player {_Parameters.Player} does not have a deck.");
-            _OldPlayerDeck = playerDeck.DeepCopy();
-
-            if (!_Parameters.Shop.Sections.ContainsKey(_Parameters.ShopType) || !_Parameters.Shop.Sections[_Parameters.ShopType].AvailableCards.ContainsKey(_Parameters.Slot))
-                return new CommandResponse(CommandStatus.Invalid, $"Shop {_Parameters.ShopType} and slot {_Parameters.Slot} does not exist.");
-            ICard card = _Parameters.Shop.BuyCardAtSlot(_Parameters.ShopType, _Parameters.Slot);
-
-            if (card == null)
-                return new CommandResponse(CommandStatus.Failure, $"Shop {_Parameters.ShopType} have slot {_Parameters.Slot} empty.");
+            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
+            ICard      card       = _Args.Shop.BuyCardAtSlot(_Args.ShopType, _Args.SlotIndex);
 
             if (card.Data.Type == CardType.Equipment)
                 playerDeck.Equipments.Add(card);
             else
                 playerDeck.Discard.Add(card);
+            card.Owner = _Player;
 
-            card.Owner = _Parameters.Player;
-
-            return new CommandResponse(CommandStatus.Success, $"Player {_Parameters.Player} bought the card.");
+            return new CommandResponse(CommandStatus.Success, $"Player {_Player} bought the card {card.Data.Name}.");
         }
 
-        public void Undo()
-        {
-            if (_OriginalShop != null)
-                _OriginalShop.Sections = _OldShop.Sections;
-            if (_OldPlayerDeck != null) {
-                PlayerDeck old = (PlayerDeck)_OldPlayerDeck;
-
-                if (_Parameters.Decks.TryGetValue(_Parameters.Player, out PlayerDeck playerDeck)) {
-                    playerDeck = old;
-
-                    _Parameters.Decks[_Parameters.Player] = playerDeck;
-                }
-            }
-        }
+        public override void Undo() {}
     }
 
     /// <summary>
     /// This check command simulate only on authority object client.
     /// Check if we can execute a buy command, and simulate the network operation.
     /// </summary>
-    /// <warning>
-    /// Don't use it has a checker only, because it does operation like money management.
-    /// </warning>
-    public class CheckBuyCommand : ICommand {
+    public class ADMIN_CheckBuyCommand : ACommand {
 
-        private BuyParameters _Parameters;
+        private readonly PlayerRef _Player;
+        private readonly PhaseType _CurrentPhase;
 
-        public CheckBuyCommand(BuyParameters parameters)
+        private ShopArgs _Parameters;
+
+        public ADMIN_CheckBuyCommand(PlayerRef player, PhaseType phase, ShopArgs parameters)
         {
-            _Parameters = parameters;
+            _Player       = player;
+            _CurrentPhase = phase;
+            _Parameters   = parameters;
         }
 
-        public CommandResponse Execute()
+        public override CommandResponse Execute()
         {
-            if (!_Parameters.Decks.TryGetValue(_Parameters.Player, out PlayerDeck playerDeck))
-                return new CommandResponse(CommandStatus.Invalid, $"Player {_Parameters.Player} does not have a deck.");
-            if (!_Parameters.Shop.Sections.ContainsKey(_Parameters.ShopType) || !_Parameters.Shop.Sections[_Parameters.ShopType].AvailableCards.ContainsKey(_Parameters.Slot))
-                return new CommandResponse(CommandStatus.Invalid, $"Shop {_Parameters.ShopType} and slot {_Parameters.Slot} does not exist.");
-            if (!_Parameters.Shop.HasCardAtSlot(_Parameters.ShopType, _Parameters.Slot))
-                return new CommandResponse(CommandStatus.Invalid, $"Shop {_Parameters.ShopType} have slot {_Parameters.Slot} empty.");
-            ICard card = _Parameters.Shop.Sections[_Parameters.ShopType].AvailableCards[_Parameters.Slot];
+            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
 
+            // 0. Check if the shop exist
+            if (_Parameters.Shop == null)
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", _Parameters.ShopType.ToString());
+
+            // 1. Check phase
+            if (_CurrentPhase == PhaseType.Gain && _Parameters.Shop.HasCardAtSlot(_Parameters.ShopType, _Parameters.SlotIndex)) {
+                ICard freeCard = _Parameters.Shop.Sections[_Parameters.ShopType].GetCardAtSlot(_Parameters.SlotIndex);
+
+                if (freeCard.Data.IsFree)
+                    return new CommandResponse(CommandStatus.Success, string.Empty);
+            } else if (_CurrentPhase != PhaseType.Action) {
+                return new CommandResponse(CommandStatus.Invalid, "Shop_Buy_WrongPhase");
+            }
+
+            // 2. Check if the shop and slot exist
+            if (!_Parameters.Shop.Sections.ContainsKey(_Parameters.ShopType))
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", _Parameters.ShopType.ToString());
+            if (!_Parameters.Shop.HasCardAtSlot(_Parameters.ShopType, _Parameters.SlotIndex))
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_SlotEmpty", _Parameters.ShopType.ToString());
+
+            // 3. Get the wanted card
+            ICard card = _Parameters.Shop.Sections[_Parameters.ShopType].GetCardAtSlot(_Parameters.SlotIndex);
+
+            // 4. Check if player has enough eloquence
+            int canPay = CanPurchase(GameDataStorage.Instance.PlayerData[_Player], card);
+
+            if (canPay < 0)
+                return new CommandResponse(CommandStatus.Failure, "Shop_Buy_NotEnoughEloquence", card.Data.Name, (-canPay).ToString());
+
+            // 5. Check if it's an equipment and if he already have it.
             if (playerDeck.Equipments.Count > 0 && card.Data.Type == CardType.Equipment) {
                 ICard found = playerDeck.Equipments.Find(c => c.Data.Name == card.Data.Name);
 
                 if (found != null)
-                    return new CommandResponse(CommandStatus.Invalid, $"Player {_Parameters.Player} already have the card {card.Data.Name} in his equipment.");
+                    return new CommandResponse(CommandStatus.Failure, "Shop_Buy_AlreadyHasThisEquipment", card.Data.Name);
             }
 
-            bool res = CanPurchase(GameDataStorage.Instance.PlayerData[_Parameters.Player], card);
-
-            if (!res)
-                return new CommandResponse(CommandStatus.Failure, $"Player {_Parameters.Player} does not have enough eloquence to buy the card.");
-            Purchase(GameDataStorage.Instance.PlayerData[_Parameters.Player], card);
-
-            return new CommandResponse(CommandStatus.Success, $"Player {_Parameters.Player} can buy the card.");
+            return new CommandResponse(CommandStatus.Success, string.Empty);
         }
 
-        public void Undo() {}
-
-        private bool CanPurchase(PlayerData playerData, ICard card)
+        /// <summary>
+        /// Return the difference between player eloquence and card cost.
+        /// </summary>
+        private int CanPurchase(PlayerData playerData, ICard card)
         {
-            int playerEloquence = GameDataStorage.Instance.PlayerData[_Parameters.Player].Eloquence;
-            int cardCost        = card.Data.Eloquence;
+            int playerEloquence = playerData.Eloquence;
+            int cardCost        = card.Data.CurrentEloquence;
 
-            return (card.Data.IsFree || playerEloquence >= cardCost);
+            if (card.Data.IsFree)
+                return playerData.Eloquence;
+            return playerEloquence - cardCost;
+        }
+    }
+
+    /// <summary>
+    /// This buy command simulate only on authority object client.
+    /// Process it only after doing the check command.
+    /// It process the purchase of a card from the shop to the player's deck.
+    /// </summary>
+    public class ADMIN_BuyCommand : ACommand {
+
+        private readonly PlayerRef _Player;
+        private ShopArgs _Parameters;
+
+        public ADMIN_BuyCommand(PlayerRef player, ShopArgs parameters)
+        {
+            _Player     = player;
+            _Parameters = parameters;
         }
 
-        private void Purchase(PlayerData playerData, ICard card)
+        public override CommandResponse Execute()
+        {
+            PlayerData playerData = GameDataStorage.Instance.PlayerData[_Player];
+            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
+            ICard      card       = _Parameters.Shop.Sections[_Parameters.ShopType].BuyCardAtSlot(_Parameters.SlotIndex);
+
+            // 1. Process the purchase
+            int remainingE = Purchase(_Player, playerData, card);
+
+            // 2. Move the card to the player's deck
+            if (card.Data.Type == CardType.Equipment)
+                playerDeck.Equipments.Add(card);
+            else
+                playerDeck.Discard.Add(card);
+
+            // 3. Attribute the owner of the card
+            card.Owner = _Player;
+
+            return new CommandResponse(CommandStatus.Success, $"Player {_Player} bought the card {card.Data.Name}.", remainingE.ToString());
+        }
+
+        public override void Undo() {}
+
+        /// <summary>
+        /// Process the purchase and return the new eloquence of the player.
+        /// </summary>
+        private int Purchase(PlayerRef player, PlayerData playerData, ICard card)
         {
             if (card.Data.IsFree)
-                return;
+                return playerData.Eloquence;
             int newEloquence = playerData.Eloquence - card.Data.CurrentEloquence;
 
-            GameDataStorage.Instance.SetEloquence(playerData.PlayerRef, newEloquence);
+            GameDataStorage.Instance.SetEloquence(player, newEloquence);
+
+            return newEloquence;
         }
     }
 }
