@@ -21,7 +21,7 @@ env:
 
   # -- Variables --
 
-  # ! The expiration date is 2025-09-23 so when it's expired, the build will fail, and it will need an update of license.
+  # ! The expiration date is 2026-09-21 so when it's expired, the build will fail, and it will need an update of license.
   # NOTE: When the UNITY_LICENSE will be update, please add the new expiration date here.
   stopDate: '2026-09-21T09:42:02'
 

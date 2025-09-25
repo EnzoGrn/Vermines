@@ -194,20 +194,20 @@ namespace Vermines {
             }
 
             ICommand        checker         = new ADMIN_CheckPlayCommand(playerSource, GetCurrentPhase(), cardId);
-            CommandResponse checkerResponse = CommandInvoker.ExecuteCommand(checker);
+            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
 
-            if (checkerResponse.Status != CommandStatus.Success) {
+            if (response.Status != CommandStatus.Success) {
                 SendError(new GameActionError {
                     Scope = ErrorScope.Local,
                     Target = playerSource,
 
-                    Severity = checkerResponse.Status == CommandStatus.Invalid ? ErrorSeverity.Minor :
-                               checkerResponse.Status == CommandStatus.Failure ? ErrorSeverity.Minor :
+                    Severity = response.Status == CommandStatus.Invalid ? ErrorSeverity.Minor :
+                               response.Status == CommandStatus.Failure ? ErrorSeverity.Minor :
                                ErrorSeverity.Critical,
 
                     Location = ErrorLocation.Table,
-                    MessageKey = checkerResponse.Message,
-                    MessageArgs = new GameActionErrorArgs(checkerResponse.Args)
+                    MessageKey = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
                 });
 
                 return;
@@ -216,43 +216,43 @@ namespace Vermines {
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_DiscardCard(int playerId, int cardID)
+        public void RPC_DiscardCard(int playerId, int cardID, bool hasEffect = true)
         {
             PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
 
             if (playerSource != GetCurrentPlayer()) {
-                SendError(new GameActionError {
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
                     Scope    = ErrorScope.Local,
                     Target   = playerSource,
-                    Severity = ErrorSeverity.Minor,
+                    Severity = ErrorSeverity.Major,
                     Location = ErrorLocation.Table,
-                    MessageKey  = $"You cannot discarded a card when it's not your turn." // TODO: Localize the message. (fr, en...).
+                    MessageKey  = "Table_Discard_NotYourTurn"
                 });
 
                 return;
             }
 
-            Player.PlayerController.Local.RPC_DiscardCard(playerId, cardID);
-        }
+            ICommand        checker  = new ADMIN_CheckDiscardCommand(playerSource, GetCurrentPhase(), cardID);
+            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
 
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_DiscardCardNoEffect(int playerId, int cardID)
-        {
-            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
-
-            if (playerSource != GetCurrentPlayer()) {
+            if (response.Status != CommandStatus.Success) {
                 SendError(new GameActionError {
-                    Scope    = ErrorScope.Local,
-                    Target   = playerSource,
-                    Severity = ErrorSeverity.Minor,
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+
+                    Severity = response.Status == CommandStatus.Invalid ? ErrorSeverity.Minor :
+                               response.Status == CommandStatus.Failure ? ErrorSeverity.Minor :
+                               ErrorSeverity.Critical,
+
                     Location = ErrorLocation.Table,
-                    MessageKey  = $"You cannot discarded a card when it's not your turn." // TODO: Localize the message. (fr, en...).
+                    MessageKey = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
                 });
 
                 return;
             }
 
-            Player.PlayerController.Local.RPC_DiscardCardNoEffect(playerId, cardID);
+            PlayerController.Local.RPC_DiscardCard(playerId, cardID, hasEffect);
         }
 
         #endregion

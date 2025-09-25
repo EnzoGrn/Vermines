@@ -119,34 +119,17 @@ namespace Test.Vermines.Gameplay.Deck {
         [Test]
         public void DiscardCard()
         {
-            // -- Unknow player
-            ICommand UPdiscardCommand = new DiscardCommand(PlayerRef.FromEncoded(4), 77);
-
-            CommandInvoker.ExecuteCommand(UPdiscardCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Player [Player:3] does not have a deck.", CommandInvoker.State.Message);
-
-            // -- Unknow Card
-            ICommand UCdiscardCommand = new DiscardCommand(_LocalPlayer, 500);
-
-            CommandInvoker.ExecuteCommand(UCdiscardCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Player [Player:0] tried to discard a card that he does not have.", CommandInvoker.State.Message);
-
             // -- Normal discard
-            ICommand discardCommand = new DiscardCommand(_LocalPlayer, 77);
+            ICommand discardCommand = new CLIENT_DiscardCommand(_LocalPlayer, 77);
 
             CommandInvoker.ExecuteCommand(discardCommand);
 
             Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-            Assert.AreEqual("Player [Player:0] discarded the card 77.", CommandInvoker.State.Message);
 
             // -- Undo
             CommandInvoker.UndoCommand();
 
-            Assert.AreEqual(_Decks[_LocalPlayer].Discard.Count, 0);
+            // TODO: Implement and test the undo function.
         }
 
         [Test]

@@ -63,6 +63,18 @@ MonoBehaviour:
     m_Key: Table_Play_CardNotInHand
     m_Metadata:
       m_Items: []
+  - m_Id: 1659401487245312
+    m_Key: Table_Play_NotYourTurn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1661783445069824
+    m_Key: Table_Discard_WrongPhase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1662226560704512
+    m_Key: Table_Discard_CardNotInHand
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

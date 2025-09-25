@@ -25,12 +25,6 @@ namespace Vermines.Player {
 
         public PlayerRef PlayerRef => Object.InputAuthority;
 
-        #region Cards Tracker
-
-        private CardTracker _DiscardedCardTrackerPerTurn = new();
-
-        #endregion
-
         #region Override Methods
 
         public override void Spawned()
@@ -94,19 +88,6 @@ namespace Vermines.Player {
             await manager.ReturnToTavern();
         }
 
-        public void ClearTracker()
-        {
-            _DiscardedCardTrackerPerTurn.Reset();
-        }
-
-        public void AddCardInTracker(int cardId)
-        {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
-            if (card != null)
-                _DiscardedCardTrackerPerTurn.AddCard(card);
-        }
-
         public void OnCardSacrified(int cardId)
         {
             GameManager.Instance.RPC_CardSacrified(Object.InputAuthority.RawEncoded, cardId);
@@ -119,12 +100,12 @@ namespace Vermines.Player {
 
         public void OnDiscard(int cardId)
         {
-            GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId);
+            GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, true);
         }
 
         public void OnDiscardNoEffect(int cardId)
         {
-            GameManager.Instance.RPC_DiscardCardNoEffect(Object.InputAuthority.RawEncoded, cardId);
+            GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, false);
         }
 
         public void OnBuy(ShopType shopType, int slot)
@@ -194,52 +175,29 @@ namespace Vermines.Player {
         #endregion
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_DiscardCard(int playerId, int cardId)
+        public void RPC_DiscardCard(int playerId, int cardId, bool hasEffect = true)
         {
             PlayerRef player = PlayerRef.FromEncoded(playerId);
-            ICommand discardCommand = new DiscardCommand(player, cardId);
+
+            ICommand discardCommand = new CLIENT_DiscardCommand(player, cardId);
 
             CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
 
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
             if (response.Status == CommandStatus.Success) {
-
-                GameEvents.OnCardDiscarded.Invoke(card);
-
-                if (_DiscardedCardTrackerPerTurn.HasCard(card) && card.Data.Type == CardType.Tools && !card.Data.IsStartingCard)
-                    return;
-                _DiscardedCardTrackerPerTurn.AddCard(card);
-
-                foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Discard)
-                        effect.Play(player);
-                }
-            } else {
-                Debug.LogWarning($"[SERVER]: {response.Message}");
-                GameEvents.OnCardDiscardedRefused.Invoke(card);
-            }
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_DiscardCardNoEffect(int playerId, int cardId)
-        {
-            PlayerRef player = PlayerRef.FromEncoded(playerId);
-            ICommand discardCommand = new DiscardCommand(player, cardId);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
-
-            if (response.Status == CommandStatus.Success)
-            {
-                Debug.Log($"[SERVER]: {response.Message}");
-
-                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
                 GameEvents.OnCardDiscarded.Invoke(card);
                 GameEvents.OnPlayerUpdated.Invoke(GameDataStorage.Instance.PlayerData[player]);
-            }
-            else
-            {
+
+                if (hasEffect) {
+                    foreach (AEffect effect in card.Data.Effects) {
+                        if (effect.Type == EffectType.Discard)
+                            effect.Play(player);
+                    }
+                }
+            } else {
+                if (hasEffect) // If he has an effect, it means that the player played the action by himself, so we need to inform him that the action failed.
+                    GameEvents.OnCardDiscardedRefused.Invoke(card);
                 Debug.LogWarning($"[SERVER]: {response.Message}");
             }
         }

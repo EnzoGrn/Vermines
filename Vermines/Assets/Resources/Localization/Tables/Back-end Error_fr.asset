@@ -68,6 +68,20 @@ MonoBehaviour:
       main.
     m_Metadata:
       m_Items: []
+  - m_Id: 1659401487245312
+    m_Localized: "Vous ne pouvez pas d\xE9fausser une carte si ce n'est pas votre
+      tour."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1661783445069824
+    m_Localized: "Vous ne pouvez pas d\xE9fausser de carte hors de la phase d'action."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1662226560704512
+    m_Localized: "Vous ne pouvez pas d\xE9fausser la carte {0}, vous devez l'avoir
+      dans la main."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

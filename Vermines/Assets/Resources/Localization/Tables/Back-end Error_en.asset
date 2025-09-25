@@ -66,6 +66,18 @@ MonoBehaviour:
     m_Localized: You cannot play the {0}, you must have it in your hand.
     m_Metadata:
       m_Items: []
+  - m_Id: 1659401487245312
+    m_Localized: You cannot discard a card when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1661783445069824
+    m_Localized: You cannot discard a card outside of the action phase.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1662226560704512
+    m_Localized: You cannot discard the {0}, you must have it in your hand.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
