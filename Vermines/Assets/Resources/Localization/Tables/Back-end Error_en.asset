@@ -91,7 +91,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1675471052857344
-    m_Localized: You cannot play a card effct when it's not your turn.
+    m_Localized: You cannot play a card effect when it's not your turn.
     m_Metadata:
       m_Items: []
   - m_Id: 1700752530595840
