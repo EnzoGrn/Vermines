@@ -139,10 +139,7 @@ namespace Vermines.ShopSystem.Data {
 
         public ICard GetCardAtSlot(int slotIndex)
         {
-            foreach (var slot in AvailableCards)
-                if (slot.Key == slotIndex)
-                    return slot.Value;
-            return null;
+            return AvailableCards.TryGetValue(slotIndex, out ICard card) ? card : null;
         }
 
         /// <summary>
