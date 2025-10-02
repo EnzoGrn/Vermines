@@ -15,6 +15,7 @@ namespace Vermines {
     using Vermines.Configuration.Network;
     using Vermines.Configuration;
     using Vermines.Gameplay.Phases.Enumerations;
+    using OMGG.Chronicle;
 
     public partial class GameManager : NetworkBehaviour {
 
@@ -50,6 +51,8 @@ namespace Vermines {
         }
 
         #endregion
+
+        public ChronicleManager ChronicleManager = new();
 
         #region Override Methods
 

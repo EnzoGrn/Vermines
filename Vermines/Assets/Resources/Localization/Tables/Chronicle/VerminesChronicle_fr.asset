@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: VerminesChronicle_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: 5fa2ddfd24e455443893d9318ea464a5, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7133454336
+    m_Localized: "Un nouvel achat au march\xE9 !"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10576977920
+    m_Localized: "Un nouvel achat \xE0 la cour !"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 833121935360
+    m_Localized: "{0} a achet\xE9 la carte {1} dans le march\xE9."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 860133253120
+    m_Localized: "{0} a achet\xE9 la carte {1} dans la cour."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

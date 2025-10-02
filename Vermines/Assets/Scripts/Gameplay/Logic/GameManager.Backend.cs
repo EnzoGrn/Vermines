@@ -1,5 +1,8 @@
 using OMGG.DesignPattern;
+using OMGG.Chronicle;
+using Newtonsoft.Json;
 using UnityEngine;
+using System;
 using Fusion;
 
 namespace Vermines {
@@ -11,6 +14,8 @@ namespace Vermines {
     using Vermines.Gameplay.Commands;
     using Vermines.Gameplay.Errors;
     using Vermines.Player;
+    using Vermines.Gameplay.Chronicle;
+    using Vermines.CardSystem.Elements;
 
     /// <summary>
     /// Back-end part of <see cref="GameManager" /> containing all RPC methods responsible for validating players actions on the server side.
@@ -77,11 +82,34 @@ namespace Vermines {
     /// </remarks>
     public partial class GameManager : NetworkBehaviour {
 
+        #region UUID
+
+        /// <summary>
+        /// Generate a 16-character unique identifier.
+        /// </summary>
+        static string GenerateUUID()
+        {
+            return Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Replace("/", "_").Replace("+", "-").Substring(0, 16);
+        }
+
+        #endregion
+
         #region Notifiers
 
         private void SendError(GameActionError error)
         {
             PlayerController.Local.RPC_ReceiveError(error);
+        }
+
+        #endregion
+
+        #region Payload
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_AskPayload(string id)
+        {
+            if (ChroniclePayloadStorage.TryGet(id, out string payloadJson))
+                PlayerController.Local.RPC_ReceivePayload(id, payloadJson);
         }
 
         #endregion
@@ -127,11 +155,36 @@ namespace Vermines {
                 return;
             }
 
+            ICard cardBought = parameters.Shop.Sections[shopType].GetCardAtSlot(slot);
+
             ICommand buyCommand = new ADMIN_BuyCommand(playerSource, parameters);
 
             CommandInvoker.ExecuteCommand(buyCommand);
 
-            PlayerController.Local.RPC_BuyCard(playerId, shopType, slot);
+            PlayerData player = GameDataStorage.Instance.PlayerData[playerSource];
+
+            ChronicleEntry entry = new() {
+                Id           = GenerateUUID(),
+                TimestampUtc = DateTime.UtcNow.Ticks,
+                EventType    = new VerminesLogEventType(VerminesLogsType.BuyCard),
+                TitleKey     = $"T_{shopType}_CardPurchase",
+                MessageKey   = $"D_{shopType}_CardPurchase",
+                IconKey      = $"Sprites/UI/Effects/{shopType}"
+            };
+
+            var payloadObject = new {
+                DescriptionArgs = new string[] {
+                    player.Nickname,
+                    cardBought.Data.Name
+                },
+                // ...
+            };
+
+            string payloadJson = JsonConvert.SerializeObject(payloadObject);
+
+            ChroniclePayloadStorage.Add(entry.Id, payloadJson);
+
+            PlayerController.Local.RPC_BuyCard(playerId, NetworkChronicleEntry.FromChronicleEntry(entry), shopType, slot);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
