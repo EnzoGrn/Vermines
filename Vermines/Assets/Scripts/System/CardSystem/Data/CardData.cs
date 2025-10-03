@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.CardSystem.Data {
@@ -108,6 +108,15 @@ namespace Vermines.CardSystem.Data {
         }
 
         public bool ReduceInSilence = false;
+
+        public bool HasEffectOfType(EffectType type)
+        {
+            foreach (AEffect effect in Effects) {
+                if (effect.Type == type)
+                    return true;
+            }
+            return false;
+        }
 
         #endregion
 

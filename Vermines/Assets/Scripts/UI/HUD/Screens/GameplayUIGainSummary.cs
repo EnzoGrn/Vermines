@@ -6,7 +6,7 @@ using UnityEngine.Localization;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Gameplay.Phases;
 using Vermines.Player;
-using Vermines.ShopSystem.Enumerations;
+using Vermines.CardSystem.Elements;
 
 namespace Vermines.UI.Screen
 {
@@ -144,6 +144,16 @@ namespace Vermines.UI.Screen
         protected virtual void OnCloseButtonPressed()
         {
             Controller.Hide();
+
+            List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].PlayedCards;
+            if (playedCards.Find(c => c.Data.HasEffectOfType(EffectType.Activate)) == null)
+            {
+                GameEvents.OnAttemptNextPhase.Invoke();
+            }
+            else
+            {
+                Controller.Show<GameplayUITable>();
+            }
         }
 
         #endregion
