@@ -9,6 +9,8 @@ namespace Vermines.UI.Card
     {
         [SerializeField] private GameObject _CardDisplayPrefab;
         protected int _SlotIndex;
+
+        [SerializeField]
         protected CardType _acceptedType = CardType.None;
 
         public CardDisplay CardDisplay { get; private set; }
@@ -43,8 +45,6 @@ namespace Vermines.UI.Card
             {
                 Debug.Log($"[{GetType().Name}] Card {card.Data.Name} is new.");
             }
-
-            //Debug.Log($"[{GetType().Name}] Initializing slot {_SlotIndex} with card {card.Data.Name} of type {card.Data.Type}.");
 
             CardDisplay.gameObject.SetActive(true);
         }
