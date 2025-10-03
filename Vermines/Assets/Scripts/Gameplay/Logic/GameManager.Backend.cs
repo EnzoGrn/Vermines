@@ -401,6 +401,8 @@ namespace Vermines {
                 totalSouls += SettingsData.BonusSoulInFamilySacrifice;
             ICommand earnCommand = new EarnCommand(playerSource, totalSouls, DataType.Soul);
 
+            CommandInvoker.ExecuteCommand(earnCommand);
+
             GameDataStorage.Instance.OnSoulsChanged = (p, oldValue, newValue) => {
                 if (p == playerSource)
                     totalSouls += newValue - oldValue;
@@ -426,8 +428,6 @@ namespace Vermines {
                 if (p == playerSource)
                     totalSouls += newValue - oldValue;
             };
-
-            Debug.Log($"[Chronicle]: Player {player.Nickname} sacrificed {cardToSacrifice.Data.Name} and earned {totalSouls} souls. - Now you have {GameDataStorage.Instance.PlayerData[playerSource].Souls}");
 
             ChronicleEntry entry = new() {
                 Id           = GenerateUUID(),
