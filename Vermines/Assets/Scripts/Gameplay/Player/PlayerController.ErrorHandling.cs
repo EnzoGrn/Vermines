@@ -43,8 +43,7 @@ namespace Vermines.Player {
             switch (error.Location)
             {
                 case ErrorLocation.Discard:
-                    int cardId = int.Parse(error.MessageArgs.Arg0.ToString());
-                    ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+                    ICard card = CardSetDatabase.Instance.GetCardByID(error.MessageArgs.Arg0.ToString());
                     GameEvents.OnCardDiscardedRefused.Invoke(card);
                     break;
                 default:
