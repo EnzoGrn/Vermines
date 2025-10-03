@@ -37,6 +37,55 @@ namespace Vermines.Player {
             AddChronicle(nEntry.ToChronicleEntry());
         }
 
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_ReplaceCardInShop(int playerSRef, NetworkChronicleEntry nEntry, ShopType shopType, int slot)
+        {
+            ICommand replaceCommand = new CLIENT_ChangeCardCommand(new ShopArgs(GameDataStorage.Instance.Shop, shopType, slot));
+
+            CommandInvoker.ExecuteCommand(replaceCommand);
+
+            GameEvents.OnShopRefilled.Invoke(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
+
+            AddChronicle(nEntry.ToChronicleEntry());
+        }
+
+        #endregion
+
+        #region Sacrifice
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_CardSacrified(int playerSRef, NetworkChronicleEntry nEntry, int cardId)
+        {
+            PlayerRef player = PlayerRef.FromEncoded(playerSRef);
+            ICard       card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            if (!HasStateAuthority) {
+                ICommand cardSacrifiedCommand = new CLIENT_CardSacrifiedCommand(player, cardId);
+
+                CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
+
+                foreach (AEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Sacrifice)
+                        effect.Play(player);
+                    else if (effect.Type == EffectType.Passive)
+                        effect.Stop(player);
+                }
+
+                foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
+                    if (playedCard.Data.Effects != null) {
+                        foreach (AEffect effect in playedCard.Data.Effects) {
+                            if (effect.Type == EffectType.OnOtherSacrifice)
+                                effect.Play(player);
+                        }
+                    }
+                }
+            }
+
+            GameEvents.OnCardSacrified.Invoke(card);
+
+            AddChronicle(nEntry.ToChronicleEntry());
+        }
+
         #endregion
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -98,65 +147,6 @@ namespace Vermines.Player {
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_CardSacrified(int playerId, int cardId)
-        {
-            PlayerRef player = PlayerRef.FromEncoded(playerId);
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
-            if (card == null)
-            {
-                Debug.LogError($"[SERVER]: Player {player} tried to sacrify a card that doesn't exist.");
-                GameEvents.OnCardSacrifiedRefused.Invoke(card);
-                return;
-            }
-
-            ICommand cardSacrifiedCommand = new CLIENT_CardSacrifiedCommand(player, cardId);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
-
-            if (response.Status == CommandStatus.Success)
-            {
-                foreach (AEffect effect in card.Data.Effects)
-                {
-                    if (effect.Type == EffectType.Sacrifice)
-                        effect.Play(player);
-                    else if (effect.Type == EffectType.Passive)
-                        effect.Stop(player);
-                }
-
-                foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards)
-                {
-                    if (playedCard.Data.Effects != null)
-                    {
-                        foreach (AEffect effect in playedCard.Data.Effects)
-                        {
-                            if (effect.Type == EffectType.OnOtherSacrifice)
-                                effect.Play(player);
-                        }
-                    }
-                }
-
-                int soulToEarn = card.Data.Souls;
-
-                if (card.Data.Type == CardType.Partisan && card.Data.Family == GameDataStorage.Instance.PlayerData[player].Family)
-                    soulToEarn += GameManager.Instance.SettingsData.BonusSoulInFamilySacrifice;
-                ICommand earnCommand = new EarnCommand(player, soulToEarn, DataType.Soul);
-
-                response = CommandInvoker.ExecuteCommand(earnCommand);
-
-                if (response.Status == CommandStatus.Success)
-                {
-                    GameEvents.OnCardSacrified.Invoke(card);
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"[SERVER]: {response.Message}");
-                GameEvents.OnCardSacrifiedRefused.Invoke(card);
-            }
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_ActivateEffect(int playerID, int cardID)
         {
             PlayerRef player = PlayerRef.FromEncoded(playerID);
@@ -167,16 +157,6 @@ namespace Vermines.Player {
                 if (effect.Type == EffectType.Activate)
                     effect.Play(player);
             }
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_ReplaceCardInShop(int playerID, ShopType shopType, int slot)
-        {
-            ICommand replaceCommand = new CLIENT_ChangeCardCommand(new ShopArgs(GameDataStorage.Instance.Shop, shopType, slot));
-
-            CommandInvoker.ExecuteCommand(replaceCommand);
-
-            GameEvents.OnShopRefilled.Invoke(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

@@ -16,11 +16,7 @@ MonoBehaviour:
   m_TableCollectionNameGuidString: 5fa2ddfd24e455443893d9318ea464a5
   m_Entries:
   - m_Id: 7133454336
-    m_Key: T_Market_CardPurchase
-    m_Metadata:
-      m_Items: []
-  - m_Id: 10576977920
-    m_Key: T_Courtyard_CardPurchase
+    m_Key: T_CardPurchase
     m_Metadata:
       m_Items: []
   - m_Id: 833121935360
@@ -29,6 +25,38 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 860133253120
     m_Key: D_Courtyard_CardPurchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 246168138276864
+    m_Key: ST_Market_CardPurchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 246725653553152
+    m_Key: ST_Courtyard_CardPurchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 248552730124288
+    m_Key: T_CardReplaced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 248612964524032
+    m_Key: D_CardReplaced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 249107259056128
+    m_Key: ST_CardReplaced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 320342512885760
+    m_Key: T_CardSacrified
+    m_Metadata:
+      m_Items: []
+  - m_Id: 320348905005056
+    m_Key: D_CardSacrified
+    m_Metadata:
+      m_Items: []
+  - m_Id: 321894778658816
+    m_Key: ST_CardSacrified
     m_Metadata:
       m_Items: []
   m_Metadata:

@@ -22,6 +22,11 @@ namespace Vermines.Gameplay.Chronicle {
         }
 
         private class PayloadShape {
+
+            /// <summary>
+            /// [0] -> Description Key (Localization)
+            /// [1...] -> Description Args (Localization)
+            /// </summary>
             public string[] DescriptionArgs { get; set; }
         }
     }

@@ -60,6 +60,8 @@ namespace Vermines {
         {
             if (Runner.Mode == SimulationModes.Server)
                 Application.targetFrameRate = TickRate.Resolve(Runner.Config.Simulation.TickRateSelection).Server;
+            ChronicleManager.OnChronicleAdded += (entry) => Debug.Log($"[Chronicle]: {entry.Id} - {entry.TitleKey}: {entry.MessageKey}");
+            ChronicleManager.OnChronicleUpdated += (entry) => Debug.Log($"[Chronicle]: {entry.Id} - {entry.PayloadJson}");
         }
 
         #endregion

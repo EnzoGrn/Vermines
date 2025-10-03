@@ -10,6 +10,8 @@ namespace Vermines.ShopSystem.Commands {
 
         private ShopArgs _Parameters;
 
+        private ShopSection _Backup;
+
         public CLIENT_ChangeCardCommand(ShopArgs parameters)
         {
             _Parameters = parameters;
@@ -18,17 +20,24 @@ namespace Vermines.ShopSystem.Commands {
         public override CommandResponse Execute()
         {
             ShopSection shop = _Parameters.Shop.Sections[_Parameters.ShopType];
-            ICard       card = shop.AvailableCards[_Parameters.SlotIndex];
 
-            shop.DiscardDeck.Add(card);
-            shop.AvailableCards[_Parameters.SlotIndex] = DrawCard(shop);
+            _Backup = shop.DeepCopy();
 
-            ICard newCard = shop.AvailableCards[_Parameters.SlotIndex];
+            ICard oldCard = shop.AvailableCards[_Parameters.SlotIndex];
 
-            return new CommandResponse(CommandStatus.Success, "", _Parameters.ShopType.ToString(), card.Data.Name, newCard.Data.Name);
+            shop.DiscardDeck.Add(oldCard);
+
+            ICard newCard = DrawCard(shop);
+
+            shop.AvailableCards[_Parameters.SlotIndex] = newCard;
+
+            return new CommandResponse(CommandStatus.Success, "", _Parameters.ShopType.ToString(), oldCard.Data.Name, newCard.Data.Name);
         }
 
-        public override void Undo() {}
+        public override void Undo()
+        {
+            _Parameters.Shop.Sections[_Parameters.ShopType] = _Backup;
+        }
 
         private ICard DrawCard(ShopSection shopSection)
         {

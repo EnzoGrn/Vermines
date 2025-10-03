@@ -4,7 +4,7 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines {
-
+    using System;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
     using Vermines.ShopSystem.Data;
@@ -34,6 +34,10 @@ namespace Vermines {
         public NetworkDictionary<PlayerRef, PlayerData> PlayerData { get; }
 
         public Dictionary<PlayerRef, PlayerDeck> PlayerDeck { get; set; } = new Dictionary<PlayerRef, PlayerDeck>();
+
+        // Player, oldValue, newValue
+        public Action<PlayerRef, int, int> OnSoulsChanged;
+        public Action<PlayerRef, int, int> OnEloquenceChanged;
 
         #endregion
 
@@ -161,6 +165,8 @@ namespace Vermines {
 
                 if (maxEloquence < eloquence)
                     eloquence = maxEloquence;
+                OnEloquenceChanged?.Invoke(player, data.Eloquence, eloquence);
+
                 data.Eloquence = eloquence;
 
                 PlayerData.Set(player, data);
@@ -172,6 +178,8 @@ namespace Vermines {
             if (HasStateAuthority == false)
                 return;
             if (PlayerData.TryGet(player, out PlayerData data) == true) {
+                OnSoulsChanged?.Invoke(player, data.Souls, souls);
+
                 data.Souls = souls;
 
                 PlayerData.Set(player, data);

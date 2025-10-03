@@ -5,6 +5,8 @@ namespace Vermines.Gameplay.Chronicle {
     public enum VerminesLogsType {
         Unknown = 0,
         BuyCard,
+        ChangeCard,
+        SacrificeCard,
     }
 
     public readonly struct VerminesLogEventType : IEventType {
