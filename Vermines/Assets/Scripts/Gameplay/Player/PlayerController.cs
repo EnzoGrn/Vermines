@@ -17,6 +17,7 @@ namespace Vermines.Player {
     using Vermines.ShopSystem;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
+    using Vermines.UI.Card;
 
     public partial class PlayerController : NetworkBehaviour {
 

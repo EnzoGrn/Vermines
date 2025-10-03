@@ -1,4 +1,4 @@
-namespace Vermines.Gameplay.Errors {
+﻿namespace Vermines.Gameplay.Errors {
 
     /// <summary>
     /// Locate the error, to help UI to display it properly.
@@ -18,6 +18,7 @@ namespace Vermines.Gameplay.Errors {
         Shop,
         Table,
         Sacrifice,
+        Discard,
         Effect
         // ...
     }

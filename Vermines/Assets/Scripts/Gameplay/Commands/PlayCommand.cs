@@ -1,4 +1,4 @@
-using OMGG.DesignPattern;
+﻿using OMGG.DesignPattern;
 using Fusion;
 
 namespace Vermines.Gameplay.Commands {
@@ -28,7 +28,7 @@ namespace Vermines.Gameplay.Commands {
         {
             // 0. Check if we are in the action phase.
             if (_CurrentPhase != PhaseType.Action)
-                return new CommandResponse(CommandStatus.Invalid, "Table_Play_WrongPhase");
+                return new CommandResponse(CommandStatus.Invalid, "Table_Play_WrongPhase", _CardId.ToString());
 
             // 1. Check if the card exist.
             if (_Card == null)
@@ -38,7 +38,7 @@ namespace Vermines.Gameplay.Commands {
             PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
 
             if (!playerDeck.Hand.Contains(_Card))
-                return new CommandResponse(CommandStatus.CriticalError, "Table_Play_CardNotInHand", _Card.Data.Name);
+                return new CommandResponse(CommandStatus.CriticalError, "Table_Play_CardNotInHand", _CardId.ToString(), _Card.Data.Name);
             return new CommandResponse(CommandStatus.Success, "", _Card.Data.Name);
         }
     }

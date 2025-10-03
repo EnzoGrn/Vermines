@@ -26345,7 +26345,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6064076840785642931, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -12.804993
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6064076840785642931, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -26389,11 +26389,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7938492311049755303, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -649
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7938492311049755303, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 128
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7938492311049755303, guid: 37c28d6203fcea0429c437da2b96324c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -33025,6 +33025,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _CardDisplayPrefab: {fileID: 548401717956231047, guid: aa93eda88b9cdc749a3fdbb5706da2d4, type: 3}
+  _acceptedType: -1
 --- !u!224 &8624266981184361430
 RectTransform:
   m_ObjectHideFlags: 0

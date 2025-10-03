@@ -63,7 +63,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 279751842324480
-    m_Localized: You cannot play the {0}, you must have it in your hand.
+    m_Localized: You cannot play the {1}, you must have it in your hand.
     m_Metadata:
       m_Items: []
   - m_Id: 1659401487245312
@@ -75,7 +75,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1662226560704512
-    m_Localized: You cannot discard the {0}, you must have it in your hand.
+    m_Localized: You cannot discard the {1}, you must have it in your hand.
     m_Metadata:
       m_Items: []
   - m_Id: 1667934047952896

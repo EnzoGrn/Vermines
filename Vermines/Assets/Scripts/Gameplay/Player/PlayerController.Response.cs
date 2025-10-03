@@ -14,6 +14,7 @@ namespace Vermines.Player {
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
     using Vermines.ShopSystem;
+    using Vermines.UI.Card;
 
     public partial class PlayerController : NetworkBehaviour {
 
@@ -95,29 +96,23 @@ namespace Vermines.Player {
 
             ICommand discardCommand = new CLIENT_DiscardCommand(player, cardId);
 
-            CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
+            CommandInvoker.ExecuteCommand(discardCommand);
 
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
-            if (response.Status == CommandStatus.Success)
-            {
-                GameEvents.OnCardDiscarded.Invoke(card);
-                GameEvents.OnPlayerUpdated.Invoke(GameDataStorage.Instance.PlayerData[player]);
+            GameEvents.OnPlayerUpdated.Invoke(GameDataStorage.Instance.PlayerData[player]);
+            HandManager.Instance.RemoveCard(card);
 
-                if (hasEffect)
-                {
-                    foreach (AEffect effect in card.Data.Effects)
-                    {
-                        if (effect.Type == EffectType.Discard)
-                            effect.Play(player);
-                    }
+            if (hasEffect) {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if (effect.Type == EffectType.Discard)
+                        effect.Play(player);
                 }
-            }
-            else
-            {
-                if (hasEffect) // If he has an effect, it means that the player played the action by himself, so we need to inform him that the action failed.
-                    GameEvents.OnCardDiscardedRefused.Invoke(card);
-                Debug.LogWarning($"[SERVER]: {response.Message}");
+            } else {
+                DiscardDropHandler discardDropHandler = FindFirstObjectByType<DiscardDropHandler>();
+
+                if (discardDropHandler != null)
+                    discardDropHandler.SetLatestDiscardedCard(card);
             }
         }
 

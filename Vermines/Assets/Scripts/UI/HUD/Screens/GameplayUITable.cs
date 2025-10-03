@@ -44,7 +44,7 @@ namespace Vermines.UI.Screen
         [SerializeField] protected GameTableCardSlotPool _Pool;
         protected List<TableCardSlot> partisanSlots = new();
         protected List<TableCardSlot> equipmentSlots = new();
-        [SerializeField] protected DiscardCardSlot discardSlot;
+        [SerializeField] protected CardSlotBase discardSlot;
 
         [Header("Texts")]
         [InlineHelp, SerializeField]
@@ -80,7 +80,7 @@ namespace Vermines.UI.Screen
             {
                 Debug.LogErrorFormat(
                     gameObject,
-                    "GameplayUITable Critical Error: Missing 'DiscardCardSlot' reference on GameObject '{0}'. This component is required to render the discard zone. Please assign a valid DiscardCardSlot in the Inspector.",
+                    "GameplayUITable Critical Error: Missing 'CardSlotBase' reference on GameObject '{0}'. This component is required to render the discard zone. Please assign a valid DiscardCardSlot in the Inspector.",
                     gameObject.name
                 );
                 return;

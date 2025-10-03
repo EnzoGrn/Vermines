@@ -1,14 +1,11 @@
+﻿using Fusion;
 using OMGG.DesignPattern;
 using OMGG.Chronicle;
 using Newtonsoft.Json;
 using System;
-using Fusion;
+using UnityEngine;
 
 namespace Vermines {
-
-    using Vermines.ShopSystem.Enumerations;
-    using Vermines.ShopSystem.Commands;
-    using Vermines.ShopSystem;
 
     using Vermines.Gameplay.Commands;
     using Vermines.Gameplay.Errors;
@@ -19,6 +16,9 @@ namespace Vermines {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Cards.Effects;
+    using Vermines.ShopSystem.Enumerations;
+    using Vermines.ShopSystem.Commands;
+    using Vermines.ShopSystem;
 
     /// <summary>
     /// Back-end part of <see cref="GameManager" /> containing all RPC methods responsible for validating players actions on the server side.
@@ -278,7 +278,8 @@ namespace Vermines {
                     Target     = playerSource,
                     Severity   = ErrorSeverity.Minor,
                     Location   = ErrorLocation.Table,
-                    MessageKey = "Table_Play_NotYourTurn"
+                    MessageKey = "Table_Play_NotYourTurn",
+                    MessageArgs = new GameActionErrorArgs(cardId.ToString())
                 });
 
                 return;
@@ -315,9 +316,10 @@ namespace Vermines {
                 SendError(new GameActionError {
                     Scope    = ErrorScope.Local,
                     Target   = playerSource,
-                    Severity = ErrorSeverity.Minor,
-                    Location = ErrorLocation.Table,
-                    MessageKey  = "Table_Discard_NotYourTurn"
+                    Severity = ErrorSeverity.Major,
+                    Location = ErrorLocation.Discard,
+                    MessageKey  = "Table_Discard_NotYourTurn",
+                    MessageArgs = new GameActionErrorArgs(cardID.ToString())
                 });
 
                 return;
@@ -335,7 +337,7 @@ namespace Vermines {
                                response.Status == CommandStatus.Failure ? ErrorSeverity.Minor :
                                ErrorSeverity.Critical,
 
-                    Location = ErrorLocation.Table,
+                    Location = ErrorLocation.Discard,
                     MessageKey = response.Message,
                     MessageArgs = new GameActionErrorArgs(response.Args)
                 });
@@ -424,6 +426,8 @@ namespace Vermines {
                 if (p == playerSource)
                     totalSouls += newValue - oldValue;
             };
+
+            Debug.Log($"[Chronicle]: Player {player.Nickname} sacrificed {cardToSacrifice.Data.Name} and earned {totalSouls} souls. - Now you have {GameDataStorage.Instance.PlayerData[playerSource].Souls}");
 
             ChronicleEntry entry = new() {
                 Id           = GenerateUUID(),

@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿using Fusion;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
+using Vermines.Gameplay.Phases;
+using Vermines.Player;
 using Vermines.UI.GameTable;
-using DG.Tweening;
 
 namespace Vermines.UI.Card
 {
@@ -12,7 +15,6 @@ namespace Vermines.UI.Card
         {
             // Initialize any necessary components or variables here
             GameEvents.OnCardDiscardedRefused.AddListener(OnDiscardRefused);
-            GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
             slot = GetComponent<CardSlotBase>();
         }
 
@@ -20,7 +22,6 @@ namespace Vermines.UI.Card
         {
             // Clean up event listeners to avoid memory leaks
             GameEvents.OnCardDiscardedRefused.RemoveListener(OnDiscardRefused);
-            GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
         }
 
         public override void OnDrop(PointerEventData eventData)
@@ -46,22 +47,30 @@ namespace Vermines.UI.Card
 
             if (slot.CanAcceptCard(card))
             {
-                GameEvents.OnCardDiscardedRequested.Invoke(card);
-                //drag.gameObject.SetActive(false);
+                slot.ResetSlot();
+                slot.SetCard(card);
+                GameObject go = HandManager.Instance.GetCardDisplayGO(card);
+                if (go != null)
+                {
+                    go.SetActive(false);
+                }
+
+                if (PhaseManager.Instance.Phases.TryGetValue(GameManager.Instance.GetCurrentPhase(), out var phase) && phase is ActionPhase actionPhase)
+                {
+                    actionPhase.OnDiscard(card);
+                }
+                else
+                {
+                    Debug.LogWarning("[DiscardDropHandler] Cannot discard card outside of Action Phase.");
+                    drag.ReturnToOriginalPosition();
+                    slot.ResetSlot();
+                }
             }
             else
             {
                 Debug.Log($"[CardDropHandler] Cannot accept card {card.Data.Name} in slot {slot.GetIndex()}");
                 drag.ReturnToOriginalPosition();
             }
-        }
-
-        private void OnCardDiscarded(ICard card)
-        {
-            // Handle the card discard event here if needed
-            Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} has been discarded.");
-            slot.ResetSlot();
-            slot.SetCard(card);
         }
 
         private void OnDiscardRefused(ICard card)
@@ -71,12 +80,32 @@ namespace Vermines.UI.Card
             GameObject go = HandManager.Instance.GetCardDisplayGO(card);
             if (go != null)
             {
+                go.SetActive(true);
                 if (go.TryGetComponent<DraggableCard>(out var drag))
                 {
                     drag.ReturnToOriginalPosition();
                     drag.gameObject.SetActive(true);
                 }
             }
+
+            // Reset the slot to the previous card or empty state
+            slot.ResetSlot();
+            PlayerRef player = GameManager.Instance.Runner.LocalPlayer;
+            PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
+
+            ICard previousCard = deck.Discard.LastOrDefault();
+            if (previousCard != null)
+            {
+                Debug.Log($"[DiscardDropHandler] Restoring card {previousCard.Data.Name} to discard slot.");
+                slot.SetCard(previousCard);
+            }
+        }
+
+        public void SetLatestDiscardedCard(ICard card)
+        {
+            if (slot == null) return;
+            slot.ResetSlot();
+            slot.SetCard(card);
         }
     }
 }
