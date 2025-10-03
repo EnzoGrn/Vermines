@@ -134,7 +134,7 @@ namespace Vermines.Player {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
                 GameEvents.OnCardPlayedRefused.Invoke(card);
             }
-            if (response.Status == CommandStatus.Success)
+            else if (response.Status == CommandStatus.Success)
             {
                 GameEvents.OnCardPlayed.Invoke(card);
 
