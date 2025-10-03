@@ -1,16 +1,13 @@
+﻿using Fusion;
 using OMGG.DesignPattern;
-using UnityEngine;
-using Fusion;
 
 namespace Vermines {
-
-    using Vermines.ShopSystem.Enumerations;
-    using Vermines.ShopSystem.Commands;
-    using Vermines.ShopSystem;
-
     using Vermines.Gameplay.Commands;
     using Vermines.Gameplay.Errors;
     using Vermines.Player;
+    using Vermines.ShopSystem;
+    using Vermines.ShopSystem.Commands;
+    using Vermines.ShopSystem.Enumerations;
 
     /// <summary>
     /// Back-end part of <see cref="GameManager" /> containing all RPC methods responsible for validating players actions on the server side.
@@ -185,7 +182,8 @@ namespace Vermines {
                     Target     = playerSource,
                     Severity   = ErrorSeverity.Major,
                     Location   = ErrorLocation.Table,
-                    MessageKey = "Table_Play_NotYourTurn"
+                    MessageKey = "Table_Play_NotYourTurn",
+                    MessageArgs = new GameActionErrorArgs(cardId.ToString())
                 });
 
                 return;
@@ -223,8 +221,9 @@ namespace Vermines {
                     Scope    = ErrorScope.Local,
                     Target   = playerSource,
                     Severity = ErrorSeverity.Major,
-                    Location = ErrorLocation.Table,
-                    MessageKey  = "Table_Discard_NotYourTurn"
+                    Location = ErrorLocation.Discard,
+                    MessageKey  = "Table_Discard_NotYourTurn",
+                    MessageArgs = new GameActionErrorArgs(cardID.ToString())
                 });
 
                 return;
@@ -242,7 +241,7 @@ namespace Vermines {
                                response.Status == CommandStatus.Failure ? ErrorSeverity.Minor :
                                ErrorSeverity.Critical,
 
-                    Location = ErrorLocation.Table,
+                    Location = ErrorLocation.Discard,
                     MessageKey = response.Message,
                     MessageArgs = new GameActionErrorArgs(response.Args)
                 });

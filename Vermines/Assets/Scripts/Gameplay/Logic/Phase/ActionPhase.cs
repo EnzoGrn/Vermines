@@ -24,8 +24,6 @@ namespace Vermines.Gameplay.Phases {
         public ActionPhase()
         {
             GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
-            GameEvents.OnCardDiscardedRequested.AddListener(OnDiscard);
-            GameEvents.OnCardDiscardedRequestedNoEffect.AddListener(OnDiscardNoEffect);
             GameEvents.OnCardPlayedRequested.AddListener(OnCardPlayed);
         }
 
@@ -42,8 +40,6 @@ namespace Vermines.Gameplay.Phases {
             base.Reset();
 
             GameEvents.OnCardPurchaseRequested.RemoveListener(OnCardPurchaseRequested);
-            GameEvents.OnCardDiscardedRequested.RemoveListener(OnDiscard);
-            GameEvents.OnCardDiscardedRequestedNoEffect.RemoveListener(OnDiscardNoEffect);
             GameEvents.OnCardPlayedRequested.RemoveListener(OnCardPlayed);
 
             _CurrentPlayerRef = PlayerRef.None;
@@ -61,7 +57,7 @@ namespace Vermines.Gameplay.Phases {
             }
         }
 
-        private void OnDiscard(ICard card)
+        public void OnDiscard(ICard card)
         {
             GameManager manager = Object.FindFirstObjectByType<GameManager>();
 
@@ -80,11 +76,10 @@ namespace Vermines.Gameplay.Phases {
             else
             {
                 Debug.LogWarning("You can't discard a card if it's not your turn.");
-                GameEvents.OnCardDiscardedRefused.Invoke(card);
             }
         }
 
-        private void OnDiscardNoEffect(ICard card)
+        public void OnDiscardNoEffect(ICard card)
         {
             GameManager manager = Object.FindFirstObjectByType<GameManager>();
 
@@ -102,7 +97,6 @@ namespace Vermines.Gameplay.Phases {
             else
             {
                 Debug.LogWarning("You can't discard a card if it's not your turn.");
-                GameEvents.OnCardDiscardedRefused.Invoke(card);
             }
         }
 

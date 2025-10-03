@@ -32,8 +32,6 @@ public static class GameEvents
     public static TrackedEvent<ICard> OnCardSacrified = new("OnCardSacrified");
 
     // --- CARD DISCARD ---
-    public static TrackedEvent<ICard> OnCardDiscardedRequested = new("OnCardDiscardedRequested");
-    public static TrackedEvent<ICard> OnCardDiscardedRequestedNoEffect = new("OnCardDiscardedRequestedNoEffect");
     public static TrackedEvent<ICard> OnCardDiscardedRefused = new("OnCardDiscardedRefused");
     public static TrackedEvent<ICard> OnCardDiscarded = new("OnCardDiscarded");
 

@@ -253,7 +253,6 @@ namespace Vermines.UI.Screen
                 else
                 {
                     ICard card = shopList[slotIndex];
-                    GameEvents.OnCardDiscarded.Invoke(card);
                 }
             }
 

@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// 'Error Handling' section of <see cref="PlayerController"/>.
 /// </summary>
 /// <remarks>
@@ -11,6 +11,8 @@
 using UnityEngine.Localization.Settings;
 using UnityEngine;
 using Fusion;
+using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Data;
 
 namespace Vermines.Player {
 
@@ -37,6 +39,18 @@ namespace Vermines.Player {
             Debug.LogWarning($"[Error-{error.Scope}] {localizedMessage} (Loc: {error.Location}, Sev: {error.Severity})");
 
             // TODO: Link to UI notification system
+
+            switch (error.Location)
+            {
+                case ErrorLocation.Discard:
+                    int cardId = int.Parse(error.MessageArgs.Arg0.ToString());
+                    ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+                    GameEvents.OnCardDiscardedRefused.Invoke(card);
+                    break;
+                default:
+                    break;
+            }
+
         }
     }
 }

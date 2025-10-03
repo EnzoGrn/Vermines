@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using DG.Tweening;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 using Vermines.CardSystem.Elements;
+using Vermines.Gameplay.Phases;
 
 namespace Vermines.UI.Card
 {
@@ -27,8 +29,6 @@ namespace Vermines.UI.Card
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
 
-            GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
-            GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
         }
 
         private void Start()
@@ -71,18 +71,7 @@ namespace Vermines.UI.Card
             RefreshHand();
         }
 
-        private void OnCardDiscarded(ICard card)
-        {
-            GameObject go = GetCardDisplayGO(card);
-            if (go != null)
-            {
-                RemoveCard(go);
-                go.transform.DOKill(true);
-                Destroy(go);
-            }
-        }
-
-        private void OnCardSacrified(ICard card)
+        public void RemoveCard(ICard card)
         {
             GameObject go = GetCardDisplayGO(card);
             if (go != null)
@@ -109,7 +98,12 @@ namespace Vermines.UI.Card
                 Debug.Log("[HandManager] Discarding card.");
                 CardDisplay display = card.GetComponent<CardDisplay>();
                 if (display != null)
-                    GameEvents.OnCardDiscardedRequestedNoEffect.Invoke(display.Card);
+                {
+                    if (PhaseManager.Instance.Phases.TryGetValue(GameManager.Instance.GetCurrentPhase(), out var phase) && phase is ActionPhase actionPhase)
+                    {
+                        actionPhase.OnDiscardNoEffect(display.Card);
+                    }
+                }
             }
         }
 
