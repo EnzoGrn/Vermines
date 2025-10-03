@@ -109,10 +109,12 @@ namespace Vermines.Player {
                         effect.Play(player);
                 }
             } else {
-                DiscardDropHandler discardDropHandler = FindFirstObjectByType<DiscardDropHandler>();
+                if (Local.PlayerRef == player) {
+                    DiscardDropHandler discardDropHandler = FindFirstObjectByType<DiscardDropHandler>();
 
-                if (discardDropHandler != null)
-                    discardDropHandler.SetLatestDiscardedCard(card);
+                    if (discardDropHandler != null)
+                        discardDropHandler.SetLatestDiscardedCard(card);
+                }
             }
         }
 
