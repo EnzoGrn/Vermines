@@ -256,12 +256,21 @@ namespace Test.Vermines.ShopSystem {
             // -- Check if the card is correctly changed
             ICard cardAfterTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
 
-            Assert.AreNotEqual(cardBeforeTheChange.ID, cardAfterTheChange.ID);
+            Assert.AreNotEqual(cardBeforeTheChange.ID, cardAfterTheChange.ID, "The card should have been replaced by a new one.");
 
             // -- Undo the command
             CommandInvoker.UndoCommand();
 
-            // TODO: Test the undo command, when it will be implemented in the change command.
+            // -- Check that the original card is back in the shop
+            ICard cardAfterUndo = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+
+            Assert.AreEqual(cardBeforeTheChange.ID, cardAfterUndo.ID, "The original card should be back in the shop.");
+
+            // -- Verify discard and deck integrity
+            ShopSection courtyard = shop.Sections[ShopType.Courtyard];
+
+            Assert.IsFalse(courtyard.Deck.Contains(cardAfterUndo), "The original card should not remain in the deck after undo.");
+            Assert.IsTrue(courtyard.Deck.Contains(cardAfterTheChange), "The new card should be in the deck pile after undo.");
         }
 
         /// <summary>

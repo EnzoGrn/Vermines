@@ -42,6 +42,12 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5fa2ddfd24e455443893d9318ea464a5
+    m_Address: Assets/Resources/Localization/Tables/Chronicle/VerminesChronicle Shared
+      Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9e6adfa3db7330a4d97951bbb7b1a07a
     m_Address: Assets/Resources/Localization/Tables/UI/PhaseTable Shared Data.asset
     m_ReadOnly: 1

@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 143c084fafd9c7245a9f235b9bfffefe
+    m_Address: VerminesChronicle_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 25497d18ce301ec48b40cc9f9bfb731f
     m_Address: CultistMessages_en
     m_ReadOnly: 1

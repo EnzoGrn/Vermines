@@ -2,7 +2,7 @@ using OMGG.DesignPattern;
 using Fusion;
 
 namespace Vermines.Gameplay.Commands.Cards.Effects {
-    
+    using UnityEngine;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
 

@@ -1,13 +1,24 @@
 ﻿using Fusion;
 using OMGG.DesignPattern;
+using OMGG.Chronicle;
+using Newtonsoft.Json;
+using System;
+using UnityEngine;
 
 namespace Vermines {
+
     using Vermines.Gameplay.Commands;
     using Vermines.Gameplay.Errors;
     using Vermines.Player;
-    using Vermines.ShopSystem;
-    using Vermines.ShopSystem.Commands;
+    using Vermines.Gameplay.Chronicle;
+    using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Data.Effect;
+    using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.ShopSystem.Enumerations;
+    using Vermines.ShopSystem.Commands;
+    using Vermines.ShopSystem;
 
     /// <summary>
     /// Back-end part of <see cref="GameManager" /> containing all RPC methods responsible for validating players actions on the server side.
@@ -74,11 +85,34 @@ namespace Vermines {
     /// </remarks>
     public partial class GameManager : NetworkBehaviour {
 
+        #region UUID
+
+        /// <summary>
+        /// Generate a 16-character unique identifier.
+        /// </summary>
+        static string GenerateUUID()
+        {
+            return Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Replace("/", "_").Replace("+", "-").Substring(0, 16);
+        }
+
+        #endregion
+
         #region Notifiers
 
         private void SendError(GameActionError error)
         {
             PlayerController.Local.RPC_ReceiveError(error);
+        }
+
+        #endregion
+
+        #region Payload
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_AskPayload(string id)
+        {
+            if (ChroniclePayloadStorage.TryGet(id, out string payloadJson))
+                PlayerController.Local.RPC_ReceivePayload(id, payloadJson);
         }
 
         #endregion
@@ -124,11 +158,38 @@ namespace Vermines {
                 return;
             }
 
+            ICard cardBought = parameters.Shop.Sections[shopType].GetCardAtSlot(slot);
+
             ICommand buyCommand = new ADMIN_BuyCommand(playerSource, parameters);
 
             CommandInvoker.ExecuteCommand(buyCommand);
 
-            PlayerController.Local.RPC_BuyCard(playerId, shopType, slot);
+            PlayerData player = GameDataStorage.Instance.PlayerData[playerSource];
+
+            ChronicleEntry entry = new() {
+                Id           = GenerateUUID(),
+                TimestampUtc = DateTime.UtcNow.Ticks,
+                EventType    = new VerminesLogEventType(VerminesLogsType.BuyCard),
+                TitleKey     = $"T_CardPurchase",
+                MessageKey   = $"D_{shopType}_CardPurchase",
+                IconKey      = $"{shopType}"
+            };
+
+            var payloadObject = new {
+                DescriptionArgs = new string[] {
+                    $"ST_{shopType}_CardPurchase",
+                    player.Nickname,
+                    cardBought.Data.Name
+                },
+                CardId = cardBought.ID,
+                // ...
+            };
+
+            string payloadJson = JsonConvert.SerializeObject(payloadObject);
+
+            ChroniclePayloadStorage.Add(entry.Id, payloadJson);
+
+            PlayerController.Local.RPC_BuyCard(playerId, NetworkChronicleEntry.FromChronicleEntry(entry), shopType, slot);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -148,7 +209,9 @@ namespace Vermines {
                 return;
             }
 
-            ICommand        checker  = new ADMIN_CheckChangeCardCommand(new ShopArgs(GameDataStorage.Instance.Shop, shopType, slot));
+            ShopArgs parameters = new(GameDataStorage.Instance.Shop, shopType, slot);
+
+            ICommand        checker  = new ADMIN_CheckChangeCardCommand(parameters);
             CommandResponse response = CommandInvoker.ExecuteCommand(checker);
 
             if (response.Status != CommandStatus.Success) { // Can only failed if the shop or the slot selected is empty. So if it's a cheat, bug or a desync.
@@ -163,8 +226,41 @@ namespace Vermines {
 
                 return;
             }
+            PlayerData   player = GameDataStorage.Instance.PlayerData[playerSource];
+            ICard cardToReplace = GameDataStorage.Instance.Shop.Sections[shopType].GetCardAtSlot(slot);
+            
+            CommandInvoker.ExecuteCommand(new CLIENT_ChangeCardCommand(parameters)); // Simulate the change to get the new card
 
-            PlayerController.Local.RPC_ReplaceCardInShop(playerId, shopType, slot);
+            ICard newCard = GameDataStorage.Instance.Shop.Sections[shopType].GetCardAtSlot(slot);
+
+            CommandInvoker.UndoCommand(); // Undo the change in the simulation to keep the real state intact until the RPC is sent to all clients.
+
+            ChronicleEntry entry = new() {
+                Id           = GenerateUUID(),
+                TimestampUtc = DateTime.UtcNow.Ticks,
+                EventType    = new VerminesLogEventType(VerminesLogsType.ChangeCard),
+                TitleKey     = $"T_CardReplaced",
+                MessageKey   = $"D_CardReplaced",
+                IconKey      = $"{shopType}"
+            };
+
+            var payloadObject = new {
+                DescriptionArgs = new string[] {
+                    $"ST_{shopType}_CardPurchase",
+                    player.Nickname,
+                    cardToReplace.Data.Name,
+                    newCard.Data.Name
+                },
+                oldCardId = cardToReplace.ID,
+                newCardId = newCard.ID
+                // ...
+            };
+
+            string payloadJson = JsonConvert.SerializeObject(payloadObject);
+
+            ChroniclePayloadStorage.Add(entry.Id, payloadJson);
+
+            PlayerController.Local.RPC_ReplaceCardInShop(playerId, NetworkChronicleEntry.FromChronicleEntry(entry), shopType, slot);
         }
 
         #endregion
@@ -177,10 +273,10 @@ namespace Vermines {
             PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
 
             if (playerSource != GetCurrentPlayer()) {
-                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                SendError(new GameActionError {
                     Scope      = ErrorScope.Local,
                     Target     = playerSource,
-                    Severity   = ErrorSeverity.Major,
+                    Severity   = ErrorSeverity.Minor,
                     Location   = ErrorLocation.Table,
                     MessageKey = "Table_Play_NotYourTurn",
                     MessageArgs = new GameActionErrorArgs(cardId.ToString())
@@ -217,7 +313,7 @@ namespace Vermines {
             PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
 
             if (playerSource != GetCurrentPlayer()) {
-                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                SendError(new GameActionError {
                     Scope    = ErrorScope.Local,
                     Target   = playerSource,
                     Severity = ErrorSeverity.Major,
@@ -256,6 +352,15 @@ namespace Vermines {
 
         #region Sacrifice
 
+        private int __ObservedSouls = 0;
+        private PlayerRef __ObservedPlayer = PlayerRef.None;
+
+        private void ObserveSoulChange(PlayerRef player, int oldValue, int newValue)
+        {
+            if (player == __ObservedPlayer)
+                __ObservedSouls += newValue - oldValue;
+        }
+
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_CardSacrified(int playerId, int cardId)
         {
@@ -272,7 +377,7 @@ namespace Vermines {
                 return;
             }
 
-            ICommand        checker  = new ADMIN_SacrificeCommand(playerSource, cardId);
+            ICommand         checker = new ADMIN_SacrificeCommand(playerSource, cardId);
             CommandResponse response = CommandInvoker.ExecuteCommand(checker);
 
             if (response.Status != CommandStatus.Success) {
@@ -292,7 +397,70 @@ namespace Vermines {
                 return;
             }
 
-            PlayerController.Local.RPC_CardSacrified(playerId, cardId);
+            ICommand cardSacrifiedCommand = new CLIENT_CardSacrifiedCommand(playerSource, cardId);
+
+            CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
+
+            PlayerData     player = GameDataStorage.Instance.PlayerData[playerSource];
+            ICard cardToSacrifice = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            __ObservedSouls  = cardToSacrifice.Data.CurrentSouls;
+            __ObservedPlayer = playerSource;
+
+            if (player.Family == cardToSacrifice.Data.Family)
+                __ObservedSouls += SettingsData.BonusSoulInFamilySacrifice;
+            ICommand earnCommand = new EarnCommand(playerSource, __ObservedSouls, DataType.Soul);
+
+            CommandInvoker.ExecuteCommand(earnCommand);
+
+            GameDataStorage.Instance.OnSoulsChanged += ObserveSoulChange;
+
+            foreach (AEffect effect in cardToSacrifice.Data.Effects) {
+                if (effect.Type == EffectType.Sacrifice)
+                    effect.Play(playerSource);
+                else if (effect.Type == EffectType.Passive)
+                    effect.Stop(playerSource);
+            }
+
+            foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[playerSource].PlayedCards) {
+                if (playedCard.Data.Effects != null) {
+                    foreach (AEffect effect in playedCard.Data.Effects) {
+                        if (effect.Type == EffectType.OnOtherSacrifice)
+                            effect.Play(playerSource);
+                    }
+                }
+            }
+
+            GameDataStorage.Instance.OnSoulsChanged -= ObserveSoulChange;
+
+            ChronicleEntry entry = new() {
+                Id           = GenerateUUID(),
+                TimestampUtc = DateTime.UtcNow.Ticks,
+                EventType    = new VerminesLogEventType(VerminesLogsType.SacrificeCard),
+                TitleKey     = $"T_CardSacrified",
+                MessageKey   = $"D_CardSacrified",
+                IconKey      = $"Sacrified_Other_Partisan_Card"
+            };
+
+            var payloadObject = new {
+                DescriptionArgs = new string[] {
+                    $"ST_CardSacrified",
+                    player.Nickname,
+                    cardToSacrifice.Data.Name,
+                    __ObservedSouls.ToString()
+                },
+                CardId = cardToSacrifice.ID,
+                // ...
+            };
+
+            string payloadJson = JsonConvert.SerializeObject(payloadObject);
+
+            ChroniclePayloadStorage.Add(entry.Id, payloadJson);
+
+            PlayerController.Local.RPC_CardSacrified(playerId, NetworkChronicleEntry.FromChronicleEntry(entry), cardId);
+
+            __ObservedSouls = 0;
+            __ObservedPlayer = PlayerRef.None;
         }
 
         #endregion

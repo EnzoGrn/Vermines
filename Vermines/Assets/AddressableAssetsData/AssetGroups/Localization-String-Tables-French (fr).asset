@@ -39,6 +39,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-fr
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d6d78a6ef93851449c1b1829cdbe1e1
+    m_Address: VerminesChronicle_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7f4c651f5e7b137438fb0de59c11b5dd
     m_Address: WaitingRoomTable_fr
     m_ReadOnly: 1
