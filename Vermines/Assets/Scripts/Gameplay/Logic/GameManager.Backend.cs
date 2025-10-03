@@ -169,7 +169,7 @@ namespace Vermines {
             ChronicleEntry entry = new() {
                 Id           = GenerateUUID(),
                 TimestampUtc = DateTime.UtcNow.Ticks,
-                EventType    = new VerminesLogEventType(VerminesLogsType.ChangeCard),
+                EventType    = new VerminesLogEventType(VerminesLogsType.BuyCard),
                 TitleKey     = $"T_CardPurchase",
                 MessageKey   = $"D_{shopType}_CardPurchase",
                 IconKey      = $"{shopType}"
@@ -238,7 +238,7 @@ namespace Vermines {
             ChronicleEntry entry = new() {
                 Id           = GenerateUUID(),
                 TimestampUtc = DateTime.UtcNow.Ticks,
-                EventType    = new VerminesLogEventType(VerminesLogsType.BuyCard),
+                EventType    = new VerminesLogEventType(VerminesLogsType.ChangeCard),
                 TitleKey     = $"T_CardReplaced",
                 MessageKey   = $"D_CardReplaced",
                 IconKey      = $"{shopType}"
@@ -352,6 +352,15 @@ namespace Vermines {
 
         #region Sacrifice
 
+        private int __ObservedSouls = 0;
+        private PlayerRef __ObservedPlayer = PlayerRef.None;
+
+        private void ObserveSoulChange(PlayerRef player, int oldValue, int newValue)
+        {
+            if (player == __ObservedPlayer)
+                __ObservedSouls += newValue - oldValue;
+        }
+
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_CardSacrified(int playerId, int cardId)
         {
@@ -395,18 +404,16 @@ namespace Vermines {
             PlayerData     player = GameDataStorage.Instance.PlayerData[playerSource];
             ICard cardToSacrifice = CardSetDatabase.Instance.GetCardByID(cardId);
 
-            int totalSouls = cardToSacrifice.Data.CurrentSouls;
+            __ObservedSouls  = cardToSacrifice.Data.CurrentSouls;
+            __ObservedPlayer = playerSource;
 
             if (player.Family == cardToSacrifice.Data.Family)
-                totalSouls += SettingsData.BonusSoulInFamilySacrifice;
-            ICommand earnCommand = new EarnCommand(playerSource, totalSouls, DataType.Soul);
+                __ObservedSouls += SettingsData.BonusSoulInFamilySacrifice;
+            ICommand earnCommand = new EarnCommand(playerSource, __ObservedSouls, DataType.Soul);
 
             CommandInvoker.ExecuteCommand(earnCommand);
 
-            GameDataStorage.Instance.OnSoulsChanged = (p, oldValue, newValue) => {
-                if (p == playerSource)
-                    totalSouls += newValue - oldValue;
-            };
+            GameDataStorage.Instance.OnSoulsChanged += ObserveSoulChange;
 
             foreach (AEffect effect in cardToSacrifice.Data.Effects) {
                 if (effect.Type == EffectType.Sacrifice)
@@ -424,10 +431,7 @@ namespace Vermines {
                 }
             }
 
-            GameDataStorage.Instance.OnSoulsChanged -= (p, oldValue, newValue) => {
-                if (p == playerSource)
-                    totalSouls += newValue - oldValue;
-            };
+            GameDataStorage.Instance.OnSoulsChanged -= ObserveSoulChange;
 
             ChronicleEntry entry = new() {
                 Id           = GenerateUUID(),
@@ -443,7 +447,7 @@ namespace Vermines {
                     $"ST_CardSacrified",
                     player.Nickname,
                     cardToSacrifice.Data.Name,
-                    totalSouls.ToString()
+                    __ObservedSouls.ToString()
                 },
                 CardId = cardToSacrifice.ID,
                 // ...
@@ -454,6 +458,9 @@ namespace Vermines {
             ChroniclePayloadStorage.Add(entry.Id, payloadJson);
 
             PlayerController.Local.RPC_CardSacrified(playerId, NetworkChronicleEntry.FromChronicleEntry(entry), cardId);
+
+            __ObservedSouls = 0;
+            __ObservedPlayer = PlayerRef.None;
         }
 
         #endregion
