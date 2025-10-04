@@ -3,11 +3,14 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
-
+    using Newtonsoft.Json;
+    using OMGG.Chronicle;
+    using System;
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Chronicle;
     using Vermines.Player;
     using Vermines.UI.Screen;
 
@@ -60,8 +63,8 @@ namespace Vermines.Gameplay.Cards.Effect {
         private void OnCardCopied(ICard card)
         {
             GameEvents.OnCardCopiedEffect.RemoveListener(OnCardCopied);
-            Debug.Log($"[CopyPartisanEffect] {card.Data.Name} effect copied by {Card.Data.Name}.");
             UIContextManager.Instance.PopContext();
+
             if (card.Data.Type != CardType.Tools)
                 return;
             PlayerController.Local.NetworkEventCardEffect(Card.ID, card.ID.ToString());
@@ -69,11 +72,41 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void NetworkEventFunction(PlayerRef player, string data)
         {
-            // Here the data is equal to the id of the card copied
             ICard card = CardSetDatabase.Instance.GetCardByID(data);
 
             foreach (var effect in card.Data.Effects)
                 effect.Play(player);
+            PlayerData pData = GameDataStorage.Instance.PlayerData[player];
+
+            ChronicleEntry entry = new() {
+                Id           = $"copied-{Card.ID}-{card.ID}",
+                TimestampUtc = DateTime.UtcNow.Ticks,
+                EventType    = new VerminesLogEventType(VerminesLogsType.CopiedEffect),
+                TitleKey     = $"T_CardReplaced",
+                MessageKey   = $"D_CardReplaced",
+                IconKey      = $"Tool_Card_Effect",
+                DescriptionArgs = new string[] {
+                    "ST_CardReplaced",
+                    pData.Nickname,
+                    Card.Data.Name,
+                    card.Data.Name
+                }
+            };
+
+            var payloadObject = new {
+                DescriptionArgs = entry.DescriptionArgs,
+                CardId          = Card.ID,
+                copiedCardId    = card.ID,
+                // ...
+            };
+
+            string payloadJson = JsonConvert.SerializeObject(payloadObject);
+
+            ChroniclePayloadStorage.Add(entry.Id, payloadJson);
+
+            entry.PayloadJson = payloadJson;
+
+            PlayerController.Local.AddChronicle(entry);
         }
 
         public override List<(string, Sprite)> Draw()

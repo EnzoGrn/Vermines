@@ -65,6 +65,19 @@ MonoBehaviour:
     m_Localized: '{0} sacrificed <b>{1}</b>, and obtained <b><color="red">{2} souls</color></b>.'
     m_Metadata:
       m_Items: []
+  - m_Id: 701381143945216
+    m_Localized: Metamorphosis complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701421140828160
+    m_Localized: An ancient power distorts reality, and a silhouette takes on the
+      appearance of its reflection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701437565722624
+    m_Localized: '{0} used <b>{1}</b> to copy the effect of <b>{2}</b>.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

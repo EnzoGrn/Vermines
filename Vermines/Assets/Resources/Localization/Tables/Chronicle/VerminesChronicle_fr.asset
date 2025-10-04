@@ -66,6 +66,19 @@ MonoBehaviour:
     m_Localized: "{0} a sacrifi\xE9 <b>{1}</b>, et obtenu <b><color=red>{2} \xE2mes</color></b>."
     m_Metadata:
       m_Items: []
+  - m_Id: 701381143945216
+    m_Localized: "M\xE9tamorphose accomplie"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701421140828160
+    m_Localized: "Un pouvoir ancien tord la r\xE9alit\xE9, et une silhouette prend
+      l\u2019apparence de son reflet."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701437565722624
+    m_Localized: "{0} a utilis\xE9 <b>{1}</b> pour copier l\u2019effet de <b>{2}</b>."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

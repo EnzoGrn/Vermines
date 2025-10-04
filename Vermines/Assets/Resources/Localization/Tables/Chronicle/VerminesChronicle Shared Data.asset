@@ -59,6 +59,18 @@ MonoBehaviour:
     m_Key: ST_CardSacrified
     m_Metadata:
       m_Items: []
+  - m_Id: 701381143945216
+    m_Key: T_EffectCopied
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701421140828160
+    m_Key: D_EffectCopied
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701437565722624
+    m_Key: ST_EffectCopied
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -1,23 +1,13 @@
-﻿using OMGG.DesignPattern;
-using OMGG.Chronicle;
-using UnityEngine;
+﻿using UnityEngine;
 using Fusion;
 
 namespace Vermines.Player {
 
-    using Vermines.CardSystem.Data;
-    using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
-    using Vermines.CardSystem.Enumerations;
-    using Vermines.Gameplay.Commands;
-    using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Menu.Screen;
     using Vermines.Network.Utilities;
     using Vermines.Service;
-    using Vermines.ShopSystem;
-    using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
-    using Vermines.UI.Card;
 
     public partial class PlayerController : NetworkBehaviour {
 
@@ -131,16 +121,6 @@ namespace Vermines.Player {
         public void RemoveReducedInSilenced(ICard card, int originalSouls)
         {
             GameManager.Instance.RPC_RemoveReducedInSilenced(Object.InputAuthority.RawEncoded, card.ID, originalSouls);
-        }
-
-        public void CopiedEffect(ICard card, ICard cardCopied)
-        {
-            GameManager.Instance.RPC_CopiedEffect(Object.InputAuthority.RawEncoded, card.ID, cardCopied.ID);
-        }
-
-        public void RemoveCopiedEffect(ICard card)
-        {
-            GameManager.Instance.RPC_RemoveCopiedEffect(Object.InputAuthority.RawEncoded, card.ID);
         }
 
         public void NetworkEventCardEffect(int cardID, string data = "")
