@@ -9,7 +9,7 @@ namespace Vermines.Player {
 
     public partial class PlayerController : NetworkBehaviour {
 
-        private void AddChronicle(ChronicleEntry entry)
+        public void AddChronicle(ChronicleEntry entry)
         {
             GameManager manager = FindFirstObjectByType<GameManager>();
 

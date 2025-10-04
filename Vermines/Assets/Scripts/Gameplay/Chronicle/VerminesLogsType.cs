@@ -7,6 +7,7 @@ namespace Vermines.Gameplay.Chronicle {
         BuyCard,
         ChangeCard,
         SacrificeCard,
+        CopiedEffect,
     }
 
     public readonly struct VerminesLogEventType : IEventType {

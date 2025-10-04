@@ -9,7 +9,6 @@ namespace Vermines.Player {
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Gameplay.Commands.Cards.Effects;
     using Vermines.Gameplay.Commands;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
@@ -193,7 +192,7 @@ namespace Vermines.Player {
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_CopiedEffect(int playerId, int cardID, int cardToCopiedID)
+        public void RPC_CopiedEffect(int playerId, NetworkChronicleEntry nEntry, int cardID, int cardToCopiedID)
         {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
             ICard cardToCopied = CardSetDatabase.Instance.GetCardByID(cardToCopiedID);

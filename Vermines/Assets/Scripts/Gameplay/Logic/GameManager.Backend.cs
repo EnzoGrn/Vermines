@@ -3,7 +3,6 @@ using OMGG.DesignPattern;
 using OMGG.Chronicle;
 using Newtonsoft.Json;
 using System;
-using UnityEngine;
 
 namespace Vermines {
 
@@ -541,78 +540,6 @@ namespace Vermines {
             }
 
             PlayerController.Local.RPC_RemoveReducedInSilenced(playerId, cardID, originalSouls);
-        }
-
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_CopiedEffect(int playerId, int cardID, int cardToCopiedID)
-        {
-            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
-
-            if (playerSource != GetCurrentPlayer()) {
-                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
-                    Scope      = ErrorScope.Local,
-                    Target     = playerSource,
-                    Severity   = ErrorSeverity.Major,
-                    Location   = ErrorLocation.Effect,
-                    MessageKey = "Effect_NotYourTurn"
-                });
-
-                return;
-            }
-
-            ICommand        checker  = new ADMIN_CheckEffectCommand(playerSource, cardID);
-            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
-
-            if (response.Status != CommandStatus.Success) {
-                SendError(new GameActionError {
-                    Scope       = ErrorScope.Local,
-                    Target      = playerSource,
-                    Severity    = ErrorSeverity.Major,
-                    Location    = ErrorLocation.Effect,
-                    MessageKey  = response.Message,
-                    MessageArgs = new GameActionErrorArgs(response.Args)
-                });
-
-                return;
-            }
-
-            PlayerController.Local.RPC_CopiedEffect(playerId, cardID, cardToCopiedID);
-        }
-
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_RemoveCopiedEffect(int playerId, int cardID)
-        {
-            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
-
-            if (playerSource != GetCurrentPlayer()) {
-                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
-                    Scope      = ErrorScope.Local,
-                    Target     = playerSource,
-                    Severity   = ErrorSeverity.Major,
-                    Location   = ErrorLocation.Effect,
-                    MessageKey = "Effect_NotYourTurn"
-                });
-
-                return;
-            }
-
-            ICommand        checker  = new ADMIN_CheckEffectCommand(playerSource, cardID);
-            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
-
-            if (response.Status != CommandStatus.Success) {
-                SendError(new GameActionError {
-                    Scope       = ErrorScope.Local,
-                    Target      = playerSource,
-                    Severity    = ErrorSeverity.Major,
-                    Location    = ErrorLocation.Effect,
-                    MessageKey  = response.Message,
-                    MessageArgs = new GameActionErrorArgs(response.Args)
-                });
-
-                return;
-            }
-
-            PlayerController.Local.RPC_RemoveCopiedEffect(playerId, cardID);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
