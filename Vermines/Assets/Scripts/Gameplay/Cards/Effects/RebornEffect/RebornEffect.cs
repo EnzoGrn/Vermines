@@ -56,7 +56,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerData playerData = GameDataStorage.Instance.PlayerData[player];
             PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[player];
 
-            if (playerDeck.PlayedCards.Count >= playerData.NumberOfSlotInTable)
+            if (playerDeck.PlayedCards.Count >= playerData.NumberOfSlotInTable || playerDeck.Graveyard.Count == 0)
                 return;
             if (UIContextManager.Instance) {
                 CardSelectedEffectContext args = new(CardType.Partisan, Card);
