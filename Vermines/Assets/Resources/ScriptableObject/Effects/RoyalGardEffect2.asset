@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RoyalGardEffect2
   m_EditorClassIdentifier: 
   _Type: 4
-  _Description: Sacrifice the <b>{card_name}</b> to earn <b><color=red>5A</color></b>
+  _Description: Sacrifice the <b>{card_name}</b> to earn <b><color=red>3A</color></b>
     for each additional bee sacrificed.
-  _SubEffect: {fileID: 11400000, guid: 2fae8d1e1711c8e48a38b4175145bf64, type: 2}
+  _SubEffect: {fileID: 11400000, guid: 9d9036f25b0a22e4ead83126b8eb6c10, type: 2}
   SacrificeIcon: {fileID: 21300000, guid: 329e614908730e64abb78148f0b0c090, type: 3}

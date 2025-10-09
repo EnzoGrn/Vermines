@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b0b11f1afa4a814696ce24c6476ccab, type: 3}
+  m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
   m_Name: RoyalMessengerEffect
   m_EditorClassIdentifier: 
-  _Type: 32
-  _Description: Sacrifice an other Partisan to earn <b><color=red>5A</color></b>.
-  _SubEffect: {fileID: 11400000, guid: 38f64e1ff1a84e646be1db2ff96c7bdd, type: 2}
-  OtherSacrificeThisCardIcon: {fileID: 21300000, guid: 156c42c3701633942bcfe423ce840169, type: 3}
+  _Type: 1
+  _Description: Earn <b><color=red>4A</color></b>.
+  _SubEffect: {fileID: 11400000, guid: 422b2a80103935f4e9ae9857657cb8fe, type: 2}

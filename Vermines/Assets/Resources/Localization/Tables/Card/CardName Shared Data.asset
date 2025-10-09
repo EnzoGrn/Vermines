@@ -23,6 +23,34 @@ MonoBehaviour:
     m_Key: necromancer
     m_Metadata:
       m_Items: []
+  - m_Id: 87402021380096
+    m_Key: blacksmith
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87447034650624
+    m_Key: dragoleon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 93165766828032
+    m_Key: courtesan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94958437523456
+    m_Key: knight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 95094249086976
+    m_Key: bard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97120605429760
+    m_Key: royal_guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 98251557560320
+    m_Key: royal_messenger
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

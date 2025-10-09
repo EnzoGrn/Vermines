@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: RoyalGardEffect1
   m_EditorClassIdentifier: 
   _Type: 1
-  _Description: Draw 1 card then earn <b><color=purple>1E</color></b>.
-  _SubEffect: {fileID: 11400000, guid: 95f806f4c2156174ba6e9fc65ce53a19, type: 2}
+  _Description: Earn <b><color=purple>2E</color></b> then draw 1 card.
+  _SubEffect: {fileID: 11400000, guid: d8ad3ee64227e1a42b35e741ff904701, type: 2}

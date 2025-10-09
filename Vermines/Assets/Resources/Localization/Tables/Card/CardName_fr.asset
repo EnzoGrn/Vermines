@@ -26,6 +26,34 @@ MonoBehaviour:
     m_Localized: "N\xE9cromancien"
     m_Metadata:
       m_Items: []
+  - m_Id: 87402021380096
+    m_Localized: Forgeron
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87447034650624
+    m_Localized: "Dragol\xE9on"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 93165766828032
+    m_Localized: Courtisane
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94958437523456
+    m_Localized: Chevalier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 95094249086976
+    m_Localized: Barde
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97120605429760
+    m_Localized: "Garde Royal\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 98251557560320
+    m_Localized: "Messager Royal\r"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -12,20 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Royal Messenger
   m_EditorClassIdentifier: 
-  Name: Royal Messenger
-  Exemplars: 4
+  Name: royal_messenger
+  Exemplars: 3
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 0
-  _Level: 2
+  _Level: 1
   Effects:
-  - {fileID: 11400000, guid: 4499016188ea66849a777b6669a29f52, type: 2}
+  - {fileID: 11400000, guid: d35f4f3e5ffd9fe489230bfc6ed17873, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 8
+  _Eloquence: 6
   IsFree: 0
-  CurrentEloquence: 8
-  _Souls: 15
-  CurrentSouls: 15
+  CurrentEloquence: 6
+  _Souls: 10
+  CurrentSouls: 10
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: 9bb401e926698b6449f4c5f814f68c28, type: 3}

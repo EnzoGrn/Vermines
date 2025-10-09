@@ -26,6 +26,34 @@ MonoBehaviour:
     m_Localized: Necromancer
     m_Metadata:
       m_Items: []
+  - m_Id: 87402021380096
+    m_Localized: Blacksmith
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87447034650624
+    m_Localized: Dragoleon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 93165766828032
+    m_Localized: Courtesan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94958437523456
+    m_Localized: Knight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 95094249086976
+    m_Localized: Bard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97120605429760
+    m_Localized: Royal Guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 98251557560320
+    m_Localized: Royal Messenger
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
