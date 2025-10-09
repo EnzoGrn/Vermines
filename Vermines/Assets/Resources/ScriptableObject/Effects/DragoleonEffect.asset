@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecdf1e4e12545ba4a8005b7ed64d7646, type: 3}
   m_Name: DragoleonEffect
   m_EditorClassIdentifier: 
-  _Type: 3
+  _Type: 8
   _Description: Play the effect of a different partisan..
   _SubEffect: {fileID: 11400000, guid: 8c9c2d4de9b5a394a9fc8a2ed2f93ea9, type: 2}

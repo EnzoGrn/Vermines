@@ -31,6 +31,12 @@ namespace Vermines.Configuration.Network {
 
         #endregion
 
+        #region Table Configuration
+
+        public int NumberOfSlotInTable;
+
+        #endregion
+
         #region Sacrifice Configuration
 
         public int MaxSacrificesPerTurn;
@@ -49,6 +55,7 @@ namespace Vermines.Configuration.Network {
                 MaxSoul                           == other.MaxSoul &&
                 SoulToStartWith                   == other.SoulToStartWith &&
                 BonusSoulInFamilySacrifice        == other.BonusSoulInFamilySacrifice &&
+                NumberOfSlotInTable               == other.NumberOfSlotInTable &&
                 MaxSacrificesPerTurn              == other.MaxSacrificesPerTurn
             );
         }
@@ -65,6 +72,7 @@ namespace Vermines.Configuration.Network {
                 $"MaxSoul: {MaxSoul}, " +
                 $"SoulToStartWith: {SoulToStartWith}, " +
                 $"BonusSoulInFamilySacrifice: {BonusSoulInFamilySacrifice}, " +
+                $"NumberOfSlotInTable: {NumberOfSlotInTable}, " +
                 $"MaxSacrificesPerTurn: {MaxSacrificesPerTurn})"
             );
         }

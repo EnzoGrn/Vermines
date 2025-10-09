@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
   m_Name: CloakEffect
   m_EditorClassIdentifier: 
-  _Type: 0
+  _Type: 1
   _Description: Earn <b><color=purple>2E</color></b>.
   _SubEffect: {fileID: 11400000, guid: 99decfc020a17de469edd14b8530020a, type: 2}

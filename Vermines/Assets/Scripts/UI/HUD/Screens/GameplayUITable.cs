@@ -370,7 +370,7 @@ namespace Vermines.UI.Screen
             {
                 foreach (AEffect effect in card.Data.Effects)
                 {
-                    if (effect.Type != EffectType.Activate) return;
+                    if ((effect.Type & EffectType.Activate) == 0) return;
                     if (card.HasBeenActivatedThisTurn) return;
                     Controller.ShowDualPopup(new PlayCardEffectStrategy(effect, card));
                 }

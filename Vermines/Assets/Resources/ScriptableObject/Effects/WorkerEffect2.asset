@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46d14e123f0512b498926e3fe5af25e0, type: 3}
   m_Name: WorkerEffect2
   m_EditorClassIdentifier: 
-  _Type: 2
+  _Type: 4
   _Description: Sacrifice the <b>{card_name}</b> to earn <b><color=red>10A</color></b>
-    if <b><color=red>10A</color></b>.
+    if you have sacrificed 3 <b>{card_name}</b>.
   _SubEffect: {fileID: 11400000, guid: 25be1a3a76ccb5b42a9dd61460112ec2, type: 2}
   SacrificeIcon: {fileID: 21300000, guid: 329e614908730e64abb78148f0b0c090, type: 3}

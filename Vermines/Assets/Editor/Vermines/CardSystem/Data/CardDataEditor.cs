@@ -1,15 +1,11 @@
+using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
-using System.IO;
 
 namespace Vermines.CardSystem.Data {
-    using NUnit.Framework;
-    using System.Collections.Generic;
-    using System.Xml.Linq;
-    using UnityEngine.TextCore.Text;
-    using Vermines.CardSystem.Data.Effect;
+
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Gameplay.Cards.Effect;
 
     [CustomEditor(typeof(CardData))]
     public class CardDataEditor : UnityEditor.Editor {
@@ -32,7 +28,7 @@ namespace Vermines.CardSystem.Data {
             EditorGUILayout.LabelField("Card Information", EditorStyles.boldLabel);
 
             // [Tooltip("The name of the card.")]
-            cardData.Name = EditorGUILayout.TextField(new GUIContent("Card Name", "The name of the card."), cardData.Name);
+            cardData.Name = EditorGUILayout.TextField(new GUIContent("Card Name", "The localization key of the name of the card."), cardData.Name);
 
             // [Tooltip("The description of every action that the card can perform.")]
             string description = string.Empty;

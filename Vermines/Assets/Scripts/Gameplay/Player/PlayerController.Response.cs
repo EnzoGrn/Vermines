@@ -65,16 +65,16 @@ namespace Vermines.Player {
                 CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
 
                 foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Sacrifice)
+                    if ((effect.Type & EffectType.Sacrifice) != 0)
                         effect.Play(player);
-                    else if (effect.Type == EffectType.Passive)
+                    else if ((effect.Type & EffectType.Passive) != 0)
                         effect.Stop(player);
                 }
 
                 foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
                     if (playedCard.Data.Effects != null) {
                         foreach (AEffect effect in playedCard.Data.Effects) {
-                            if (effect.Type == EffectType.OnOtherSacrifice)
+                            if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
                                 effect.Play(player);
                         }
                     }
@@ -104,7 +104,7 @@ namespace Vermines.Player {
 
             if (hasEffect) {
                 foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Discard)
+                    if ((effect.Type & EffectType.Discard) != 0)
                         effect.Play(player);
                 }
             } else {
@@ -150,7 +150,7 @@ namespace Vermines.Player {
 
             foreach (AEffect effect in card.Data.Effects)
             {
-                if (effect.Type == EffectType.Activate)
+                if ((effect.Type & EffectType.Activate) != 0)
                     effect.Play(player);
             }
         }
@@ -170,6 +170,7 @@ namespace Vermines.Player {
 
             CommandResponse response = CommandInvoker.ExecuteCommand(command);
 
+            // TODO: Maybe update the card UI ?
             // TODO: Maybe update the card UI ?
         }
 
@@ -208,7 +209,7 @@ namespace Vermines.Player {
 
             foreach (AEffect effect in card.Data.Effects)
             {
-                if (effect.Type == EffectType.Sacrifice || effect.Type == EffectType.OnOtherSacrifice)
+                if ((effect.Type & EffectType.Sacrifice) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0)
                     return;
                 effect.Play(PlayerRef.FromEncoded(playerId));
             }

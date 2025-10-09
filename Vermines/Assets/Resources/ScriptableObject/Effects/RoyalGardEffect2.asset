@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46d14e123f0512b498926e3fe5af25e0, type: 3}
   m_Name: RoyalGardEffect2
   m_EditorClassIdentifier: 
-  _Type: 2
+  _Type: 4
   _Description: Sacrifice the <b>{card_name}</b> to earn <b><color=red>5A</color></b>
     for each additional bee sacrificed.
   _SubEffect: {fileID: 11400000, guid: 2fae8d1e1711c8e48a38b4175145bf64, type: 2}

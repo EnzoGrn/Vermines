@@ -78,6 +78,19 @@ MonoBehaviour:
     m_Localized: '{0} used <b>{1}</b> to copy the effect of <b>{2}</b>.'
     m_Metadata:
       m_Items: []
+  - m_Id: 2508114417934336
+    m_Localized: Rite of Resurrection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508155731828736
+    m_Localized: Amidst the murmurs of lost souls, a body rises, torn from oblivion
+      by the will of a master of the dead.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508168344100864
+    m_Localized: '{0} brought <b>{1}</b> back from limbo thanks to the power of <br>{2}</br>.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -71,6 +71,18 @@ MonoBehaviour:
     m_Key: ST_EffectCopied
     m_Metadata:
       m_Items: []
+  - m_Id: 2508114417934336
+    m_Key: T_CardReborned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508155731828736
+    m_Key: D_CardReborned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508168344100864
+    m_Key: ST_CardReborned
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

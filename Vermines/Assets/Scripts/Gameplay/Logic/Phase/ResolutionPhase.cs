@@ -56,7 +56,7 @@ namespace Vermines.Gameplay.Phases {
 
             foreach (ICard card in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
                 foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Passive)
+                    if ((effect.Type & EffectType.Passive) != 0)
                         effect.Stop(player);
                 }
             }

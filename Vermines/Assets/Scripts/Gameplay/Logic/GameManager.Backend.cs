@@ -415,16 +415,16 @@ namespace Vermines {
             GameDataStorage.Instance.OnSoulsChanged += ObserveSoulChange;
 
             foreach (AEffect effect in cardToSacrifice.Data.Effects) {
-                if (effect.Type == EffectType.Sacrifice)
+                if ((effect.Type & EffectType.Sacrifice) != 0)
                     effect.Play(playerSource);
-                else if (effect.Type == EffectType.Passive)
+                else if ((effect.Type & EffectType.Passive) != 0)
                     effect.Stop(playerSource);
             }
 
             foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[playerSource].PlayedCards) {
                 if (playedCard.Data.Effects != null) {
                     foreach (AEffect effect in playedCard.Data.Effects) {
-                        if (effect.Type == EffectType.OnOtherSacrifice)
+                        if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
                             effect.Play(playerSource);
                     }
                 }

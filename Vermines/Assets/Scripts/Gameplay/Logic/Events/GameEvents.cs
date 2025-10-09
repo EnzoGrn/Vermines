@@ -49,7 +49,7 @@ public static class GameEvents
     public static TrackedEvent<ShopType, Dictionary<int, ICard>> OnShopRefilled = new("OnShopRefilled");
 
     // --- CARD EFFECTS ---
-    public static TrackedEvent<ICard> OnCardCopiedEffect = new("OnCardCopiedEffect");
+    public static TrackedEvent<ICard> OnEffectSelectCard = new("OnEffectSelectCard");
 
     // --- DISCARD PILE ---
     public static TrackedEvent OnDiscardShuffled = new("OnDiscardShuffled");

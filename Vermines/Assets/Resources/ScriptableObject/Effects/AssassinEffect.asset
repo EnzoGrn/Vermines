@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecdf1e4e12545ba4a8005b7ed64d7646, type: 3}
   m_Name: AssassinEffect
   m_EditorClassIdentifier: 
-  _Type: 3
-  _Description: Spend <b><color=purple>3E</color></b> to earn <b><color=red>5A</color></b>.
+  _Type: 8
+  _Description: Spend <b><color=purple>3E</color></b> to earn <b><color=red>10A</color></b>.
   _SubEffect: {fileID: 11400000, guid: 136cb26906a57a64998c960a6b8f02d5, type: 2}

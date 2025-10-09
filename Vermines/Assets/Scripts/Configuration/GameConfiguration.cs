@@ -26,6 +26,12 @@ namespace Vermines.Configuration {
 
         #endregion
 
+        #region Table
+
+        public int NumberOfSlotInTable = 3;
+
+        #endregion
+
         #region Sacrifice configuration
 
         public int MaxSacrificesPerTurn = 1;
@@ -46,6 +52,8 @@ namespace Vermines.Configuration {
                 EloquenceToStartWith              = this.EloquenceToStartWith,
                 NumberOfEloquencesEarnInGainPhase = this.NumberOfEloquencesEarnInGainPhase,
 
+                NumberOfSlotInTable = this.NumberOfSlotInTable,
+
                 MaxSoul                    = this.MaxSoul,
                 SoulToStartWith            = this.SoulToStartWith,
                 BonusSoulInFamilySacrifice = this.BonusSoulInFamilySacrifice,
@@ -62,6 +70,8 @@ namespace Vermines.Configuration {
             MaxEloquence                      = data.MaxEloquence;
             EloquenceToStartWith              = data.EloquenceToStartWith;
             NumberOfEloquencesEarnInGainPhase = data.NumberOfEloquencesEarnInGainPhase;
+
+            NumberOfSlotInTable = data.NumberOfSlotInTable;
 
             MaxSoul                    = data.MaxSoul;
             SoulToStartWith            = data.SoulToStartWith;

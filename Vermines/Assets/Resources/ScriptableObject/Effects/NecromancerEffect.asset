@@ -10,9 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ecdf1e4e12545ba4a8005b7ed64d7646, type: 3}
-  m_Name: MagicianEffect
+  m_Name: NecromancerEffect
   m_EditorClassIdentifier: 
-  _Type: 3
-  _Description: Cancel the next activation of another partisan's effects, that partisan
-    returns to <b><color=red>0A</color></b> until the next turn..
-  _SubEffect: {fileID: 11400000, guid: 57338b8c06e14b94f9e108eaea1eeb90, type: 2}
+  _Type: 8
+  _Description: Reborn a sacrificed partisan..
+  _SubEffect: {fileID: 11400000, guid: a6f2e75498ee08744923b1774cf39321, type: 2}

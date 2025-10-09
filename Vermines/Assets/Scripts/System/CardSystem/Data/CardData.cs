@@ -112,7 +112,7 @@ namespace Vermines.CardSystem.Data {
         public bool HasEffectOfType(EffectType type)
         {
             foreach (AEffect effect in Effects) {
-                if (effect.Type == type)
+                if ((effect.Type & type) != 0)
                     return true;
             }
             return false;

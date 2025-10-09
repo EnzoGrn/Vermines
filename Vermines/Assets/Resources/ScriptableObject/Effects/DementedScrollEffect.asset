@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e048bfe3d262d64598cb222f1601034, type: 3}
   m_Name: DementedScrollEffect
   m_EditorClassIdentifier: 
-  _Type: 1
+  _Type: 2
   _Description: Discard the <b>{card_name}</b> to earn <b><color=purple>3E</color></b>.
   _SubEffect: {fileID: 11400000, guid: aeca7a45553d29f4080299710fb91a8a, type: 2}
   DiscardThisCardIcon: {fileID: 21300000, guid: e2c1b4b34178c27429f3f4c6a74ece94, type: 3}

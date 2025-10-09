@@ -54,13 +54,13 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (player != PlayerController.Local.PlayerRef)
                 return;
             if (UIContextManager.Instance) {
-                CardCopyEffectContext cardCopyEffectContext = new(CardType.Partisan, Card);
-                CopyContext           copyContext           = new(cardCopyEffectContext);
+                CardSelectedEffectContext cardCopyEffectContext = new(CardType.Partisan, Card);
+                CopyContext               copyContext           = new(cardCopyEffectContext);
 
                 UIContextManager.Instance.PushContext(copyContext);
             }
 
-            GameEvents.OnCardCopiedEffect.AddListener(CopiedEffect);
+            GameEvents.OnEffectSelectCard.AddListener(CopiedEffect);
         }
 
         public override void Stop(PlayerRef player)
@@ -72,7 +72,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         private void CopiedEffect(ICard card)
         {
-            GameEvents.OnCardCopiedEffect.RemoveListener(CopiedEffect);
+            GameEvents.OnEffectSelectCard.RemoveListener(CopiedEffect);
             UIContextManager.Instance.PopContext();
 
             if (card.Data.Type != CardType.Partisan)
@@ -90,7 +90,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             Card.Data.CopyEffect(card.Data.Effects);
 
             foreach (var effect in card.Data.Effects) {
-                if (effect.Type == EffectType.Sacrifice || effect.Type == EffectType.OnOtherSacrifice)
+                if ((effect.Type & EffectType.Sacrifice) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0)
                     continue;
                 effect.Play(player);
             }

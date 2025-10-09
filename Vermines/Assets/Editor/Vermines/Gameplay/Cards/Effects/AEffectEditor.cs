@@ -32,7 +32,7 @@ namespace Vermines.Editor.Gameplay.Cards.Effect {
             Vermines.Editor.Utils.DescriptionUtils.DrawDescriptionPreview(effect.Description);
             GUILayout.Space(5);
 
-            effect.Type      = (EffectType)EditorGUILayout.EnumPopup(new GUIContent("Type", "The type of the card."), effect.Type);
+            effect.Type      = (EffectType)EditorGUILayout.EnumFlagsField(new GUIContent("Type", "The type(s) of the card."), effect.Type);
             effect.SubEffect = (AEffect)EditorGUILayout.ObjectField(new GUIContent("Sub Effect", "The sub effect of the card."), effect.SubEffect, typeof(AEffect), false);
 
             GUILayout.EndVertical();

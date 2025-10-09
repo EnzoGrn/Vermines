@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: CardName Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: CardName
+  m_TableCollectionNameGuidString: 8dc13a3a49b1d5645ac9b152670ef3c9
+  m_Entries:
+  - m_Id: 6705635328
+    m_Key: queen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9214788362240
+    m_Key: necromancer
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1807215795915456619
+  references:
+    version: 2
+    RefIds:
+    - rid: 1807215795915456619
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1760000258831
