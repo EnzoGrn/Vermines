@@ -74,6 +74,10 @@ MonoBehaviour:
     m_Localized: Apothicaire
     m_Metadata:
       m_Items: []
+  - m_Id: 437658017849344
+    m_Localized: "\xC9cuyer"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

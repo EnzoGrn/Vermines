@@ -71,6 +71,10 @@ MonoBehaviour:
     m_Key: apothecary
     m_Metadata:
       m_Items: []
+  - m_Id: 437658017849344
+    m_Key: squire
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
