@@ -93,7 +93,7 @@ namespace Vermines.CardSystem.Data {
 
         public List<AEffect> Effects;
 
-        private List<AEffect> _OriginalEffect = null;
+        private List<AEffect> _OriginalEffect;
 
         public void CopyEffect(List<AEffect> effects)
         {
@@ -104,6 +104,8 @@ namespace Vermines.CardSystem.Data {
 
         public void RemoveEffectCopied()
         {
+            _OriginalEffect ??= new List<AEffect>(Effects); // If the _Original effect not exists.
+
             Effects = new List<AEffect>(_OriginalEffect);
         }
 

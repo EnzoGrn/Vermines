@@ -6,14 +6,13 @@ using System;
 using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
-    using UnityEditor.SceneManagement;
+
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Chronicle;
     using Vermines.Player;
-    using Vermines.UI.Screen;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Copy/Copy a partisan effect.")]
     public class CopyPartisanEffect : AEffect {
@@ -65,9 +64,16 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Stop(PlayerRef player)
         {
-            if (player != PlayerController.Local.PlayerRef)
-                return;
-            Card.Data.RemoveEffectCopied();
+            if (_CardCopied != null) {
+                foreach (var effect in _CardCopied.Data.Effects) {
+                    if ((effect.Type & EffectType.Passive) != 0)
+                        effect.Stop(player);
+                }
+
+                Card.Data.RemoveEffectCopied();
+
+                _CardCopied = null;
+            }
         }
 
         private void CopiedEffect(ICard card)
@@ -94,6 +100,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                     continue;
                 effect.Play(player);
             }
+
             PlayerData pData = GameDataStorage.Instance.PlayerData[player];
 
             ChronicleEntry entry = new() {
