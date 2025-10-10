@@ -165,12 +165,14 @@ namespace Vermines.CardSystem.Data {
         public void EloquenceReduction(int amount)
         {
             if (CurrentEloquence - amount < 1) {
-                _ExcessiveEloquence = Mathf.Abs(CurrentEloquence - 1);
+                _ExcessiveEloquence += (1 - (CurrentEloquence - amount));
 
                 CurrentEloquence = 1;
             } else {
                 CurrentEloquence -= amount;
             }
+
+            CurrentEloquence = Mathf.Clamp(CurrentEloquence, 1, _Eloquence);
         }
 
         /// <summary>
@@ -183,11 +185,14 @@ namespace Vermines.CardSystem.Data {
             } else if (_ExcessiveEloquence > 0) {
                 amount -= _ExcessiveEloquence;
 
-                CurrentEloquence   += amount;
                 _ExcessiveEloquence = 0;
+
+                CurrentEloquence += amount;
             } else {
                 CurrentEloquence += amount;
             }
+
+            CurrentEloquence = Mathf.Clamp(CurrentEloquence, 1, _Eloquence);
         }
 
         /// <summary>

@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3bb757b4499f6c1429a162d44d6a92ad, type: 3}
-  m_Name: Earn2EReplaceShop
+  m_Name: Earn3EReplaceShop
   m_EditorClassIdentifier: 
-  _Description: Earn <b><color=purple>2E</color></b> then you can replace a card
-    in the courtyard and/or in the market.
-  _Amount: 2
+  _Description: Earn <b><color=purple>3E</color></b> then you can replace a card
+    in the courtyard.
+  _Amount: 3
   _DataToEarn: 0
   _SubEffect: {fileID: 11400000, guid: ea111403d00c04f49a1947cdfa6ee6dc, type: 2}
   EloquenceIcon: {fileID: 21300000, guid: 4bfc719361e4f1f49a3001672b1d6bca, type: 3}

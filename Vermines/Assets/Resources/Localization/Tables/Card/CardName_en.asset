@@ -74,6 +74,10 @@ MonoBehaviour:
     m_Localized: Apothecary
     m_Metadata:
       m_Items: []
+  - m_Id: 437658017849344
+    m_Localized: Squire
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
