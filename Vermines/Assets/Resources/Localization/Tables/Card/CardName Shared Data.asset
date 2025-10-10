@@ -51,6 +51,26 @@ MonoBehaviour:
     m_Key: royal_messenger
     m_Metadata:
       m_Items: []
+  - m_Id: 101321318326272
+    m_Key: villager
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101487714754560
+    m_Key: priest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101812664262656
+    m_Key: merchant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101912690024448
+    m_Key: high_cleric
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102065287192576
+    m_Key: apothecary
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

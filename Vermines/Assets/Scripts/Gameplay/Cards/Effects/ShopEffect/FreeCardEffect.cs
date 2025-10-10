@@ -74,12 +74,9 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            Debug.Log($"FreeCardEffect.Play() - Player: {player} - Amount: {_Amount} - ShopTarget: {_ShopTarget}");
             GameDataStorage.Instance.Shop.Sections[_ShopTarget].SetFree(true);
 
-            // TODO: Link this to a shop event OnBuy that is link to a specific shop!!!
-            if (player == PlayerController.Local.PlayerRef)
-            {
+            if (player == PlayerController.Local.PlayerRef) {
                 if (UIContextManager.Instance != null)
                     UIContextManager.Instance.PushContext(new FreeCardContext(_ShopTarget));
             }

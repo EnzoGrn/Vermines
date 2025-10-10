@@ -54,6 +54,26 @@ MonoBehaviour:
     m_Localized: "Messager Royal\r"
     m_Metadata:
       m_Items: []
+  - m_Id: 101321318326272
+    m_Localized: Villageois
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101487714754560
+    m_Localized: "Pr\xEAtre"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101812664262656
+    m_Localized: Marchand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101912690024448
+    m_Localized: "Haut-Clerc\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102065287192576
+    m_Localized: Apothicaire
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

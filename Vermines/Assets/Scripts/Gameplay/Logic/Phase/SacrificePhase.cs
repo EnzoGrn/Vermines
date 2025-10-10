@@ -41,23 +41,19 @@ namespace Vermines.Gameplay.Phases {
 
             _CurrentPlayer = player;
 
-            Debug.Log($"Phase {Type} is now running");
-
             List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
 
             GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
 
-            if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
-            {
+            if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef) {
                 CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
 
                 if (camera != null)
                     camera.GoOnSacrificeLocation();
-            }
-            else if (playedCards.Count == 0)
-            {
-                Debug.Log($"[Server]: ({Type}) Calling OnPhaseEnding by logic");
+            } else if (playedCards.Count == 0) {
                 OnPhaseEnding(_CurrentPlayer, true);
+
+                GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
             }
         }
 

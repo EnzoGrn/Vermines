@@ -93,7 +93,7 @@ namespace Vermines.UI.Screen {
 
             foreach (var plugin in Plugins)
             {
-                if (plugin is not CopyPopupPlugin)
+                if (plugin is not RebornPopupPlugin)
                 {
                     plugin.Show(this);
                 }

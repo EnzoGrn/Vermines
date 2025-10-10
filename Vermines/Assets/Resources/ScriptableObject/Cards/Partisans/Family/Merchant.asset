@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Merchant
   m_EditorClassIdentifier: 
-  Name: Merchant
+  Name: merchant
   Exemplars: 1
   IsStartingCard: 0
   Type: 0
@@ -25,7 +25,7 @@ MonoBehaviour:
   _Eloquence: 5
   IsFree: 0
   CurrentEloquence: 5
-  _Souls: 10
-  CurrentSouls: 10
+  _Souls: 8
+  CurrentSouls: 8
   _SpriteName: Merchant
   _Sprite: {fileID: 0}

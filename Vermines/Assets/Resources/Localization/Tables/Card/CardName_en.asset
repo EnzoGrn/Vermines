@@ -54,6 +54,26 @@ MonoBehaviour:
     m_Localized: Royal Messenger
     m_Metadata:
       m_Items: []
+  - m_Id: 101321318326272
+    m_Localized: Villager
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101487714754560
+    m_Localized: Priest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101812664262656
+    m_Localized: Merchant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101912690024448
+    m_Localized: High Cleric
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102065287192576
+    m_Localized: Apothecary
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
