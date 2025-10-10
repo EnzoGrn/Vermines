@@ -1467,7 +1467,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 835, y: -665}
+  m_AnchoredPosition: {x: 835, y: -559}
   m_SizeDelta: {x: 272, y: 112}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &161945378
@@ -5994,8 +5994,6 @@ MonoBehaviour:
   _Plugins: []
   doneButton: {fileID: 1497567598}
   shopButtons:
-  - shopType: 0
-    button: {fileID: 1033689832}
   - shopType: 1
     button: {fileID: 161945378}
 --- !u!224 &518696959 stripped
@@ -9805,7 +9803,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 250
-    m_Top: 250
+    m_Top: 150
     m_Bottom: 0
   m_ChildAlignment: 4
   m_Spacing: 0
@@ -11830,7 +11828,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1033689831
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17552,7 +17550,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 835, y: -777}
+  m_AnchoredPosition: {x: 835, y: -671}
   m_SizeDelta: {x: 272, y: 112}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1497567598

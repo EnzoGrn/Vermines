@@ -129,6 +129,7 @@ namespace Vermines.UI.Screen
             #endregion
 
             GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
+            GameEvents.OnCardReborned.AddListener(OnCardReborned);
         }
 
         /// <summary>
@@ -393,6 +394,24 @@ namespace Vermines.UI.Screen
             }
 
             Debug.LogWarning($"[TableUI] Could not find slot containing card {card.Data.Name}.");
+        }
+
+        private void OnCardReborned(ICard card)
+        {
+            if (GameManager.Instance.IsMyTurn() == false) return;
+            Debug.Log($"[TableUI] Card {card.Data.Name} has been reborned.");
+
+            // Find the first empty partisan slot and add the card there
+            for (int i = 0; i < partisanSlots.Count; i++)
+            {
+                var slot = partisanSlots[i];
+                if (slot.CardDisplay == null)
+                {
+                    slot.Init(card, true);
+                    return;
+                }
+            }
+            Debug.LogWarning($"[TableUI] No empty partisan slot available for card {card.Data.Name}.");
         }
 
         #endregion
