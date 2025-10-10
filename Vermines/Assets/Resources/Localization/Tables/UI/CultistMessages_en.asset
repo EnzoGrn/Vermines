@@ -23,8 +23,7 @@ MonoBehaviour:
       presence felt. Here's the weight of your eloquence this round:\n\r\n\u25AA
       <b><color=purple>+{baseValue}</color></b> \u2014 Granted to thy persistence
       alone.\r\n\u25AA <b><color=purple>+{followerValue}</color></b> \u2014 For the
-      whispers of those you influence.\r\n\u25AA <b><color=purple>+{equipmentValue}</color></b>
-      \u2014 For the strange objects that surround you.\r\n\r\nTotal : <b><color=purple>{total}</color></b>
+      whispers of those you influence.\r\n\nTotal : <b><color=purple>{total}</color></b>
       Eloquence.\r\nLet your voice seep into the interstices of the mind."
     m_Metadata:
       m_Items: []
@@ -32,8 +31,7 @@ MonoBehaviour:
     m_Localized: "Sister with adorned wings, your voice danced among thoughts. Here
       is the weight of your eloquence this round:\n\n\u25AA <b><color=purple>+{baseValue}</color></b>
       \u2014 Tuned for your elegant constancy.\r\n\u25AA <b><color=purple>+{followerValue}</color></b>
-      \u2014 Inspired by the refined zeal of your followers.\r\n\u25AA <b><color=purple>+{equipmentValue}</color></b>
-      \u2014 For the grace of the relics you wear.\n\r\n\rTotal : <b><color=purple>{total}</color></b>
+      \u2014 Inspired by the refined zeal of your followers.\r\n\n\rTotal : <b><color=purple>{total}</color></b>
       Eloquence.\nLet your voice charm hearts as it confuses minds."
     m_Metadata:
       m_Items: []
@@ -41,17 +39,15 @@ MonoBehaviour:
     m_Localized: "Brother of the hidden songs, your voice has risen. Here is the
       weight of your eloquence this round:\n\n\u25AA <b><color=purple>+{baseValue}</color></b>
       \u2014 For humming your commitment.\r\n\u25AA <b><color=purple>+{followerValue}</color></b>
-      \u2014 For the echo that your followers pick up.\r\n\u25AA <b><color=purple>+{equipmentValue}</color></b>
-      \u2014 Amplified by the discreet harmonies of your equipment.\r\n\r\nTotal
-      : <b><color=purple>{total}</color></b> Eloquence.\nLet your song become prophecy."
+      \u2014 For the echo that your followers pick up.\r\n\nTotal : <b><color=purple>{total}</color></b>
+      Eloquence.\nLet your song become prophecy."
     m_Metadata:
       m_Items: []
   - m_Id: 68936753152
     m_Localized: "Strong-shelled brother, you've spoken forcefully. Here's the weight
       of your eloquence this round:\n\n\u25AA <b><color=purple>+{baseValue}</color></b>
       \u2014 For your unwavering presence.\r\n\u25AA <b><color=purple>+{followerValue}</color></b>
-      \u2014 For the ardor of those who follow you.\r\n\u25AA <b><color=purple>+{equipmentValue}</color></b>
-      \u2014 For the power contained in your weapons.\r\n\r\nTotal : <b><color=purple>{total}</color></b>
+      \u2014 For the ardor of those who follow you.\r\n\nTotal : <b><color=purple>{total}</color></b>
       Eloquence.\r\nKeep your voice sharp."
     m_Metadata:
       m_Items: []
