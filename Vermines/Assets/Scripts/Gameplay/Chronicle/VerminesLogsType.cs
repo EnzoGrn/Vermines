@@ -8,7 +8,8 @@ namespace Vermines.Gameplay.Chronicle {
         ChangeCard,
         SacrificeCard,
         CopiedEffect,
-        RebornEffect
+        RebornEffect,
+        BountyHunterEffect,
     }
 
     public readonly struct VerminesLogEventType : IEventType {

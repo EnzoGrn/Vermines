@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Assassin
   m_EditorClassIdentifier: 
-  Name: Assassin
-  Exemplars: 2
+  Name: assassin
+  Exemplars: 1
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
@@ -22,9 +22,9 @@ MonoBehaviour:
   Effects:
   - {fileID: 11400000, guid: d1865dd2552290e4db8f944098a60f8d, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 10
+  _Eloquence: 8
   IsFree: 0
-  CurrentEloquence: 10
+  CurrentEloquence: 8
   _Souls: 15
   CurrentSouls: 15
   _SpriteName: 

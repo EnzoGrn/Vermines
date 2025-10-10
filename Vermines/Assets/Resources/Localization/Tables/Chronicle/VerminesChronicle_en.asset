@@ -91,6 +91,27 @@ MonoBehaviour:
     m_Localized: '{0} brought <b>{1}</b> back from limbo thanks to the power of <br>{2}</br>.'
     m_Metadata:
       m_Items: []
+  - m_Id: 2899636791533568
+    m_Localized: <color="purple">{0}E</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899638519586816
+    m_Localized: <color="red">{0}S</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899135601565696
+    m_Localized: 'A sealed deal: {0} invests <b>{1}</b> and gets <b>{2}</b>.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899134087421952
+    m_Localized: "In the dark alleys, a discreet deal was struck \u2014 life for
+      gold, souls for silence."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899131646337024
+    m_Localized: Black market
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

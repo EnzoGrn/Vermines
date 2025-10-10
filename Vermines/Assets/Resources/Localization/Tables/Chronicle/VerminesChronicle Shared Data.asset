@@ -83,6 +83,26 @@ MonoBehaviour:
     m_Key: ST_CardReborned
     m_Metadata:
       m_Items: []
+  - m_Id: 2899131646337024
+    m_Key: T_ContractSigned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899134087421952
+    m_Key: D_ContractSigned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899135601565696
+    m_Key: ST_ContractSigned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899636791533568
+    m_Key: ST_Eloquence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899638519586816
+    m_Key: ST_Soul
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

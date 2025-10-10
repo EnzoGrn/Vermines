@@ -78,6 +78,22 @@ MonoBehaviour:
     m_Localized: Squire
     m_Metadata:
       m_Items: []
+  - m_Id: 439726791188480
+    m_Localized: Soldier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 440434764537856
+    m_Localized: Bandit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 441067496267776
+    m_Localized: Rogue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 441278243266560
+    m_Localized: Assassin
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

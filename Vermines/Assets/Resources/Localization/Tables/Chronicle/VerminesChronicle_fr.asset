@@ -92,6 +92,28 @@ MonoBehaviour:
     m_Localized: "{0} a ramen\xE9 <b>{1}</b> des limbes gr\xE2ce au pouvoir du <br>{2}</br>."
     m_Metadata:
       m_Items: []
+  - m_Id: 2899131646337024
+    m_Localized: "March\xE9 des ombres"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899134087421952
+    m_Localized: "Dans les ruelles obscures, un contrat discret s\u2019est conclu
+      \u2014 la vie contre l\u2019or, les \xE2mes contre le silence."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899636791533568
+    m_Localized: <color="purple">{0}E</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899638519586816
+    m_Localized: <color="red">{0}A</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899135601565696
+    m_Localized: "Une transaction scell\xE9e : {0} investit <b>{1}</b> et obtient
+      <b>{2}</b>."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BanditEffect
   m_EditorClassIdentifier: 
   _Type: 2
-  _Description: Discard the <b>{card_name}</b> to earn <b><color=purple>1E</color></b>
-    then draw 1 card.
-  _SubEffect: {fileID: 11400000, guid: df6e0e2342c01a748a80eddd5151ee37, type: 2}
+  _Description: Discard the <b>{card_name}</b> to earn <b><color=purple>2E</color></b>
+    then earn <b><color=red>2A</color></b>.
+  _SubEffect: {fileID: 11400000, guid: cf749a4dd8b7fba4d925f77d43219803, type: 2}
   DiscardThisCardIcon: {fileID: 21300000, guid: e2c1b4b34178c27429f3f4c6a74ece94, type: 3}

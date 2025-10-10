@@ -74,7 +74,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             GameEvents.OnEffectSelectCard.RemoveListener(Reborn);
 
             if (UIContextManager.Instance)
-                UIContextManager.Instance.PopContext();
+                UIContextManager.Instance.PopContextOfType<CardRebornContext>();
             if (card.Data.Type != CardType.Partisan)
                 return;
             PlayerController.Local.NetworkEventCardEffect(Card.ID, card.ID.ToString());
