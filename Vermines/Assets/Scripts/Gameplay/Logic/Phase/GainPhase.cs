@@ -43,8 +43,6 @@ namespace Vermines.Gameplay.Phases {
                 return;
             _CurrentPlayer = player;
 
-            ResetEveryEffectsThatWasActivatedDuringTheLastRound();
-
             ExecuteCardEffect();
 
             _gainSummary.BaseValue = GameManager.Instance.SettingsData.NumberOfEloquencesEarnInGainPhase;
@@ -120,15 +118,6 @@ namespace Vermines.Gameplay.Phases {
         public void OnEffectActivated(int cardID)
         {
             PlayerController.Local.OnActiveEffectActivated(cardID);
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void ResetEveryEffectsThatWasActivatedDuringTheLastRound()
-        {
-            RoundEventDispatcher.ExecutePlayerEvents(_CurrentPlayer);
         }
 
         #endregion
