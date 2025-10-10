@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using OMGG.DesignPattern;
-using OMGG.Chronicle;
+﻿using Fusion;
 using Newtonsoft.Json;
-using UnityEngine;
+using OMGG.Chronicle;
+using OMGG.DesignPattern;
 using System;
-using Fusion;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Vermines.Gameplay.Cards.Effect {
 
@@ -15,7 +15,9 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.Gameplay.Chronicle;
     using Vermines.Gameplay.Commands;
     using Vermines.Player;
+    using Vermines.UI;
     using Vermines.UI.Card;
+    using Vermines.UI.Screen;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Reborn/Reborn a partisan effect.")]
     public class RebornEffect : AEffect {
@@ -90,7 +92,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             CommandInvoker.ExecuteCommand(rebornCommand);
 
             if (player == PlayerController.Local.PlayerRef) {
-                // TODO: Update the UI of the table by adding the reborned card to it and removing it from the graveyard.
+                GameEvents.OnCardReborned.Invoke(card);
             }
 
             ChronicleEntry entry = new() {

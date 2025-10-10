@@ -50,6 +50,7 @@ public static class GameEvents
 
     // --- CARD EFFECTS ---
     public static TrackedEvent<ICard> OnEffectSelectCard = new("OnEffectSelectCard");
+    public static TrackedEvent<ICard> OnCardReborned = new("OnCardReborned");
 
     // --- DISCARD PILE ---
     public static TrackedEvent OnDiscardShuffled = new("OnDiscardShuffled");
