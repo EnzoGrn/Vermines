@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Crusader
   m_EditorClassIdentifier: 
-  Name: Crusader
-  Exemplars: 2
+  Name: crusader
+  Exemplars: 1
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0
@@ -22,9 +22,9 @@ MonoBehaviour:
   Effects:
   - {fileID: 11400000, guid: 3bf17b65b3f444c429d407822ca4348d, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 10
+  _Eloquence: 8
   IsFree: 0
-  CurrentEloquence: 10
+  CurrentEloquence: 8
   _Souls: 15
   CurrentSouls: 15
   _SpriteName: 

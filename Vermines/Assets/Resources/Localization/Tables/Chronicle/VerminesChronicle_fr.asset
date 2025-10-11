@@ -114,6 +114,19 @@ MonoBehaviour:
       <b>{2}</b>."
     m_Metadata:
       m_Items: []
+  - m_Id: 3270582543048704
+    m_Localized: "Retour \xE0 l'\xE9tal"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270584900247552
+    m_Localized: "Les marchands se r\xE9jouissent : un ancien outil revient sur leurs
+      \xE9tals, pr\xEAt \xE0 s\xE9duire un nouveau client."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270586733158400
+    m_Localized: "{0} a remis <b>{1}</b> au march\xE9 et r\xE9cup\xE9r\xE9 <b><color=\"purple\">{2}E</color></b>."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

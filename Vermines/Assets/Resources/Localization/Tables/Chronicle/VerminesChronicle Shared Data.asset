@@ -103,6 +103,18 @@ MonoBehaviour:
     m_Key: ST_Soul
     m_Metadata:
       m_Items: []
+  - m_Id: 3270582543048704
+    m_Key: T_CardRecycled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270584900247552
+    m_Key: D_CardRecycled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270586733158400
+    m_Key: ST_CardRecycled
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

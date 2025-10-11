@@ -14,6 +14,7 @@ namespace Vermines.Player {
     using Vermines.ShopSystem.Enumerations;
     using Vermines.ShopSystem;
     using Vermines.UI.Card;
+    using Vermines.Menu.Screen.Tavern.Network;
 
     public partial class PlayerController : NetworkBehaviour {
 
@@ -82,6 +83,41 @@ namespace Vermines.Player {
             }
 
             GameEvents.OnCardSacrified.Invoke(card);
+
+            AddChronicle(nEntry.ToChronicleEntry());
+        }
+
+        #endregion
+
+        #region Recycle
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_CardRecycled(int playerSRef, NetworkChronicleEntry nEntry, int cardId)
+        {
+            PlayerRef player = PlayerRef.FromEncoded(playerSRef);
+            ICard       card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            if (!HasInputAuthority) {
+                ICommand cardSacrifiedCommand = new CLIENT_CardRecycleCommand(player, cardId, GameDataStorage.Instance.Shop.Sections[ShopType.Market]);
+
+                CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
+            }
+
+            foreach (AEffect effect in card.Data.Effects) {
+                if ((effect.Type & EffectType.Recycle) != 0)
+                    effect.Play(player);
+            }
+
+            foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
+                if (playedCard.Data.Effects != null) {
+                    foreach (AEffect effect in playedCard.Data.Effects) {
+                        if ((effect.Type & EffectType.OnOtherRecycle) != 0)
+                            effect.Play(player);
+                    }
+                }
+            }
+
+            GameEvents.OnCardRecycled.Invoke(card);
 
             AddChronicle(nEntry.ToChronicleEntry());
         }

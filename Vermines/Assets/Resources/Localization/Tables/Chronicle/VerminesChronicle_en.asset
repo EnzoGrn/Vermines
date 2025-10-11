@@ -112,6 +112,19 @@ MonoBehaviour:
     m_Localized: Black market
     m_Metadata:
       m_Items: []
+  - m_Id: 3270582543048704
+    m_Localized: Back to the stall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270584900247552
+    m_Localized: 'The merchants rejoice: an old tool returns to their stalls, ready
+      to attract new customers.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270586733158400
+    m_Localized: '{0} has returned <b>{1}</b> to the market and recovered <b><color="purple">{2}</color></b>.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

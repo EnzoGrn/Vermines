@@ -142,6 +142,14 @@ namespace Vermines.CardSystem.Data {
                     GUILayout.EndVertical();
                 }
             }
+
+            if (cardData.Type == CardType.Tools) {
+                // [Tooltip("The amount of eloquence gained when the card is recycled.")]
+                cardData.RecycleEloquence = EditorGUILayout.IntField(new GUIContent("Recycle Eloquence", "The amount of eloquence gained when the card is recycled."), cardData.RecycleEloquence);
+            } else {
+                cardData.RecycleEloquence = 0;
+            }
+
             // -- EOF --
 
             // -- [Header("UI Elements")]

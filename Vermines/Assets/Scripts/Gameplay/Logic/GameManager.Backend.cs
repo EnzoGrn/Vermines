@@ -464,6 +464,81 @@ namespace Vermines {
 
         #endregion
 
+        #region Recycle
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_CardRecycled(int playerId, int cardId)
+        {
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Recycled,
+                    MessageKey = "Recycle_NotYourTurn"
+                });
+
+                return;
+            }
+
+            ICommand         checker = new ADMIN_CheckRecycleCommand(playerSource, GetCurrentPhase(), cardId);
+            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
+
+            if (response.Status != CommandStatus.Success) {
+                SendError(new GameActionError {
+                    Scope  = ErrorScope.Local,
+                    Target = playerSource,
+
+                    Severity = response.Status == CommandStatus.Invalid ? ErrorSeverity.Minor :
+                               response.Status == CommandStatus.Failure ? ErrorSeverity.Minor :
+                               ErrorSeverity.Critical,
+
+                    Location    = ErrorLocation.Recycled,
+                    MessageKey  = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
+                });
+
+                return;
+            }
+
+            ICommand cardSacrifiedCommand = new CLIENT_CardRecycleCommand(playerSource, cardId, GameDataStorage.Instance.Shop.Sections[ShopType.Market]);
+
+            CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
+
+            PlayerData   player = GameDataStorage.Instance.PlayerData[playerSource];
+            ICard cardToRecycle = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            ChronicleEntry entry = new() {
+                Id           = GenerateUUID(),
+                TimestampUtc = DateTime.UtcNow.Ticks,
+                EventType    = new VerminesLogEventType(VerminesLogsType.SacrificeCard),
+                TitleKey     = $"T_CardRecycled",
+                MessageKey   = $"D_CardRecycled",
+                IconKey      = $"Replace"
+            };
+
+            var payloadObject = new {
+                DescriptionArgs = new string[] {
+                    $"ST_CardRecycled",
+                    player.Nickname,
+                    cardToRecycle.Data.Name,
+                    cardToRecycle.Data.RecycleEloquence.ToString()
+                },
+                CardId = cardToRecycle.ID,
+                // ...
+            };
+
+            string payloadJson = JsonConvert.SerializeObject(payloadObject);
+
+            ChroniclePayloadStorage.Add(entry.Id, payloadJson);
+
+            PlayerController.Local.RPC_CardRecycled(playerId, NetworkChronicleEntry.FromChronicleEntry(entry), cardId);
+        }
+
+        #endregion
+
         #region Effects
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

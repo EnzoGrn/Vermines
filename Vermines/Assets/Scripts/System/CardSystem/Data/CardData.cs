@@ -124,6 +124,21 @@ namespace Vermines.CardSystem.Data {
 
         #region Stats
 
+        [SerializeField]
+        private int _RecycleEloquence = 0;
+
+        public int RecycleEloquence
+        {
+            get => Type == CardType.Tools ? _RecycleEloquence : 0;
+            set
+            {
+                if (Type == CardType.Tools)
+                    _RecycleEloquence = value;
+                else
+                    _RecycleEloquence = 0;
+            }
+        }
+
         /// <summary>
         /// The cost of the card (with Eloquence as the currency).
         /// </summary>
