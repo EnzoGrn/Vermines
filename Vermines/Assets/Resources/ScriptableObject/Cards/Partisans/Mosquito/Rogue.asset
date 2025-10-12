@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Rogue
   m_EditorClassIdentifier: 
-  Name: Rogue
-  Exemplars: 2
+  Name: rogue
+  Exemplars: 1
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 0

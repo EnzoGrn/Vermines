@@ -77,19 +77,19 @@ namespace Vermines.UI.Card
                 _ => "Unknown"
             };
 
-            LoadVisuals(data.Name, family, type);
+            LoadVisuals(data.Sprite, data.SpriteName, family, type);
 
             // --- Effects
             //RefreshEffects(data.Draw());
         }
 
-        private void LoadVisuals(string characterName, string family, string cardType)
+        private void LoadVisuals(Sprite sprite, string characterName, string family, string cardType)
         {
             string basePath = $"Sprites/Card/{family}";
             string characterPath = $"{basePath}/{characterName}";
             string backgroundPath = $"{basePath}/Background";
 
-            _characterImage.sprite = Resources.Load<Sprite>(characterPath);
+            _characterImage.sprite  = sprite == null ? Resources.Load<Sprite>(characterPath) : sprite;
             _backgroundImage.sprite = Resources.Load<Sprite>(backgroundPath);
 
             if (!_characterImage.sprite)

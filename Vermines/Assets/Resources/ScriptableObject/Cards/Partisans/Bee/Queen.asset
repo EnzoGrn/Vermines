@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Queen
   m_EditorClassIdentifier: 
-  Name: Queen
+  Name: queen
   Exemplars: 1
   IsStartingCard: 0
   Type: 0
@@ -20,12 +20,12 @@ MonoBehaviour:
   _Family: 0
   _Level: 2
   Effects:
-  - {fileID: 11400000, guid: 17074a86e40956c40b00a21966b23ad9, type: 2}
+  - {fileID: 11400000, guid: b81856393deaa95478065f8518a88c9f, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 18
+  _Eloquence: 17
   IsFree: 0
-  CurrentEloquence: 18
-  _Souls: 40
-  CurrentSouls: 40
+  CurrentEloquence: 17
+  _Souls: 33
+  CurrentSouls: 33
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: 27243b931a767484c9096b2add764f0c, type: 3}

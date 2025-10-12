@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e048bfe3d262d64598cb222f1601034, type: 3}
+  m_Script: {fileID: 11500000, guid: 6de2085df10993a42bd8fce90409b01a, type: 3}
   m_Name: QueenEffect
   m_EditorClassIdentifier: 
-  _Type: 1
-  _Description: Discard the <b>{card_name}</b> to earn <b><color=red>10A</color></b>.
-  _SubEffect: {fileID: 11400000, guid: cd56aae8de0764c45a8c0dcafe49bf62, type: 2}
+  _Type: 3
+  _Description: Play or discard the <b>{card_name}</b> to earn <b><color=red>5A</color></b>.
+  _SubEffect: {fileID: 11400000, guid: 38f64e1ff1a84e646be1db2ff96c7bdd, type: 2}
+  PlayThisCardIcon: {fileID: 21300000, guid: 1f82901efd596d44daa5763f25078608, type: 3}
   DiscardThisCardIcon: {fileID: 21300000, guid: e2c1b4b34178c27429f3f4c6a74ece94, type: 3}

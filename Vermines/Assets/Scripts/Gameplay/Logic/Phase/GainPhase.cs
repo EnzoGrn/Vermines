@@ -43,8 +43,6 @@ namespace Vermines.Gameplay.Phases {
                 return;
             _CurrentPlayer = player;
 
-            ResetEveryEffectsThatWasActivatedDuringTheLastRound();
-
             ExecuteCardEffect();
 
             _gainSummary.BaseValue = GameManager.Instance.SettingsData.NumberOfEloquencesEarnInGainPhase;
@@ -72,18 +70,11 @@ namespace Vermines.Gameplay.Phases {
         {
             int total = 0;
             var deck = GameDataStorage.Instance.PlayerDeck[player];
-            foreach (ICard card in deck.PlayedCards)
-            {
-                foreach (IEffect effect in card.Data.Effects)
-                {
-                    if (effect.Type == EffectType.Play && 
-                        effect.SubEffect != null &&
-                        effect.SubEffect is EarnEffect eloquenceBonus &&
-                        eloquenceBonus.DataToEarn == DataType.Eloquence)
-                    {
-                        Debug.LogFormat("AAAAa");
+
+            foreach (ICard card in deck.PlayedCards) {
+                foreach (IEffect effect in card.Data.Effects) {
+                    if ((effect.Type & EffectType.Play) != 0 && effect.SubEffect != null && effect.SubEffect is EarnEffect eloquenceBonus && eloquenceBonus.DataToEarn == DataType.Eloquence)
                         total += eloquenceBonus.Amount;
-                    }
                 }
             }
             return total;
@@ -103,7 +94,7 @@ namespace Vermines.Gameplay.Phases {
 
             foreach (ICard card in equipmentCards) {
                 foreach (IEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Play) {
+                    if ((effect.Type & EffectType.Play) != 0) {
                         effect.Play(_CurrentPlayer);
                     }
                 }
@@ -111,14 +102,14 @@ namespace Vermines.Gameplay.Phases {
 
             foreach (ICard card in playedCards) {
                 foreach (IEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Passive)
+                    if ((effect.Type & EffectType.Passive) != 0)
                         effect.Play(_CurrentPlayer);
                 }
             }
 
             foreach (ICard card in playedCards) {
                 foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Play)
+                    if ((effect.Type & EffectType.Play) != 0)
                         effect.Play(_CurrentPlayer);
                 }
             }
@@ -127,15 +118,6 @@ namespace Vermines.Gameplay.Phases {
         public void OnEffectActivated(int cardID)
         {
             PlayerController.Local.OnActiveEffectActivated(cardID);
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void ResetEveryEffectsThatWasActivatedDuringTheLastRound()
-        {
-            RoundEventDispatcher.ExecutePlayerEvents(_CurrentPlayer);
         }
 
         #endregion

@@ -94,7 +94,7 @@ namespace Vermines.UI.Plugin
 
             Hide();
 
-            if (UIContextManager.Instance.IsInContext<FreeCardContext>())
+            if (!_isReplace && UIContextManager.Instance.IsInContext<FreeCardContext>())
             {
                 UIContextManager.Instance.PopContextOfType<FreeCardContext>();
             }

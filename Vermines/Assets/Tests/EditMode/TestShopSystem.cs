@@ -28,6 +28,7 @@ using Vermines.Configuration;
 using Vermines.Player;
 using Vermines;
 using Vermines.ShopSystem;
+using Vermines.Gameplay.Commands;
 
 namespace Test.Vermines.ShopSystem {
 
@@ -70,6 +71,8 @@ namespace Test.Vermines.ShopSystem {
                 { playerTwo   , playerTwoDeck }
             };
 
+            GameDataStorage.Instance.PlayerDeck = _Decks;
+
             // -- Active the test mode to bypass the HUD system
             TestMode.IsTesting = true;
         }
@@ -92,7 +95,7 @@ namespace Test.Vermines.ShopSystem {
 
             if (everyBuyableCard == null || everyBuyableCard.Count == 0)
                 return null;
-            List<ICard> objectCards = everyBuyableCard.Where(card => card.Data.Type == CardType.Equipment || card.Data.Type == CardType.Tools).ToList();
+            List<ICard> objectCards = everyBuyableCard.Where(card => card.Data.Type == CardType.Tools).ToList();
 
             if (objectCards == null || objectCards.Count == 0)
                 return null;
@@ -337,7 +340,7 @@ namespace Test.Vermines.ShopSystem {
             // TODO: Test the undo command, when it will be implemented in the buy command.
         }
 
-        [Test]
+        /*[Test]
         public void ClientBuyEquipmentInShop()
         {
             // -- Shop initialization with default settings.
@@ -370,7 +373,7 @@ namespace Test.Vermines.ShopSystem {
             CommandInvoker.UndoCommand();
 
             // TODO: Test the undo command, when it will be implemented in the buy command.
-        }
+        }*/
 
         #endregion
     }

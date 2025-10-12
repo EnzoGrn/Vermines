@@ -19,6 +19,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             EditorGUILayout.LabelField("Effect Properties", EditorStyles.boldLabel);
 
             effect.Amount = EditorGUILayout.IntField(new GUIContent("Amount", "The amount of card to draw."), effect.Amount);
+            effect.Everyone = EditorGUILayout.Toggle(new GUIContent("Everyone", "If true, everyone will draw the cards."), effect.Everyone);
 
             GUILayout.EndVertical();
             GUILayout.Space(10);

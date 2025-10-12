@@ -79,6 +79,54 @@ MonoBehaviour:
     m_Localized: "{0} a utilis\xE9 <b>{1}</b> pour copier l\u2019effet de <b>{2}</b>."
     m_Metadata:
       m_Items: []
+  - m_Id: 2508114417934336
+    m_Localized: "Rite de R\xE9animation"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508155731828736
+    m_Localized: "Sous les murmures des \xE2mes perdues, un corps se rel\xE8ve, arrach\xE9
+      \xE0 l\u2019oubli par la volont\xE9 d\u2019un ma\xEEtre des morts."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508168344100864
+    m_Localized: "{0} a ramen\xE9 <b>{1}</b> des limbes gr\xE2ce au pouvoir du <br>{2}</br>."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899131646337024
+    m_Localized: "March\xE9 des ombres"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899134087421952
+    m_Localized: "Dans les ruelles obscures, un contrat discret s\u2019est conclu
+      \u2014 la vie contre l\u2019or, les \xE2mes contre le silence."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899636791533568
+    m_Localized: <color="purple">{0}E</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899638519586816
+    m_Localized: <color="red">{0}A</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899135601565696
+    m_Localized: "Une transaction scell\xE9e : {0} investit <b>{1}</b> et obtient
+      <b>{2}</b>."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270582543048704
+    m_Localized: "Retour \xE0 l'\xE9tal"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270584900247552
+    m_Localized: "Les marchands se r\xE9jouissent : un ancien outil revient sur leurs
+      \xE9tals, pr\xEAt \xE0 s\xE9duire un nouveau client."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270586733158400
+    m_Localized: "{0} a remis <b>{1}</b> au march\xE9 et r\xE9cup\xE9r\xE9 <b><color=\"purple\">{2}E</color></b>."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

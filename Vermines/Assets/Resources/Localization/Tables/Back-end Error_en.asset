@@ -98,6 +98,22 @@ MonoBehaviour:
     m_Localized: You are not the owner of {0} card.
     m_Metadata:
       m_Items: []
+  - m_Id: 7507090221293568
+    m_Localized: You cannot recycle a card when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7507868038193152
+    m_Localized: You cannot recycle a card outside of the action phase.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7508156933464064
+    m_Localized: You cannot recycle the {1}, you must have it in your hand.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7546112767418368
+    m_Localized: You cannot recycle a card that is not a tool.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

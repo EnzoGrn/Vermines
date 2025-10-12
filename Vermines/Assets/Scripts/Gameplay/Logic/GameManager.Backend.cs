@@ -415,16 +415,16 @@ namespace Vermines {
             GameDataStorage.Instance.OnSoulsChanged += ObserveSoulChange;
 
             foreach (AEffect effect in cardToSacrifice.Data.Effects) {
-                if (effect.Type == EffectType.Sacrifice)
+                if ((effect.Type & EffectType.Sacrifice) != 0)
                     effect.Play(playerSource);
-                else if (effect.Type == EffectType.Passive)
+                else if ((effect.Type & EffectType.Passive) != 0)
                     effect.Stop(playerSource);
             }
 
             foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[playerSource].PlayedCards) {
                 if (playedCard.Data.Effects != null) {
                     foreach (AEffect effect in playedCard.Data.Effects) {
-                        if (effect.Type == EffectType.OnOtherSacrifice)
+                        if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
                             effect.Play(playerSource);
                     }
                 }
@@ -460,6 +460,81 @@ namespace Vermines {
 
             __ObservedSouls = 0;
             __ObservedPlayer = PlayerRef.None;
+        }
+
+        #endregion
+
+        #region Recycle
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_CardRecycled(int playerId, int cardId)
+        {
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError { // This is a major error because it should never happen unless someone tries to cheat.
+                    Scope = ErrorScope.Local,
+                    Target = playerSource,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Recycled,
+                    MessageKey = "Recycle_NotYourTurn"
+                });
+
+                return;
+            }
+
+            ICommand         checker = new ADMIN_CheckRecycleCommand(playerSource, GetCurrentPhase(), cardId);
+            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
+
+            if (response.Status != CommandStatus.Success) {
+                SendError(new GameActionError {
+                    Scope  = ErrorScope.Local,
+                    Target = playerSource,
+
+                    Severity = response.Status == CommandStatus.Invalid ? ErrorSeverity.Minor :
+                               response.Status == CommandStatus.Failure ? ErrorSeverity.Minor :
+                               ErrorSeverity.Critical,
+
+                    Location    = ErrorLocation.Recycled,
+                    MessageKey  = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
+                });
+
+                return;
+            }
+
+            ICommand cardSacrifiedCommand = new CLIENT_CardRecycleCommand(playerSource, cardId, GameDataStorage.Instance.Shop.Sections[ShopType.Market]);
+
+            CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
+
+            PlayerData   player = GameDataStorage.Instance.PlayerData[playerSource];
+            ICard cardToRecycle = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            ChronicleEntry entry = new() {
+                Id           = GenerateUUID(),
+                TimestampUtc = DateTime.UtcNow.Ticks,
+                EventType    = new VerminesLogEventType(VerminesLogsType.SacrificeCard),
+                TitleKey     = $"T_CardRecycled",
+                MessageKey   = $"D_CardRecycled",
+                IconKey      = $"Replace"
+            };
+
+            var payloadObject = new {
+                DescriptionArgs = new string[] {
+                    $"ST_CardRecycled",
+                    player.Nickname,
+                    cardToRecycle.Data.Name,
+                    cardToRecycle.Data.RecycleEloquence.ToString()
+                },
+                CardId = cardToRecycle.ID,
+                // ...
+            };
+
+            string payloadJson = JsonConvert.SerializeObject(payloadObject);
+
+            ChroniclePayloadStorage.Add(entry.Id, payloadJson);
+
+            PlayerController.Local.RPC_CardRecycled(playerId, NetworkChronicleEntry.FromChronicleEntry(entry), cardId);
         }
 
         #endregion

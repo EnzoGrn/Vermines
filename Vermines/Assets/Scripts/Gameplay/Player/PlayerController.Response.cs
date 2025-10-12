@@ -14,6 +14,7 @@ namespace Vermines.Player {
     using Vermines.ShopSystem.Enumerations;
     using Vermines.ShopSystem;
     using Vermines.UI.Card;
+    using Vermines.Menu.Screen.Tavern.Network;
 
     public partial class PlayerController : NetworkBehaviour {
 
@@ -65,16 +66,16 @@ namespace Vermines.Player {
                 CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
 
                 foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Sacrifice)
+                    if ((effect.Type & EffectType.Sacrifice) != 0)
                         effect.Play(player);
-                    else if (effect.Type == EffectType.Passive)
+                    else if ((effect.Type & EffectType.Passive) != 0)
                         effect.Stop(player);
                 }
 
                 foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
                     if (playedCard.Data.Effects != null) {
                         foreach (AEffect effect in playedCard.Data.Effects) {
-                            if (effect.Type == EffectType.OnOtherSacrifice)
+                            if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
                                 effect.Play(player);
                         }
                     }
@@ -82,6 +83,41 @@ namespace Vermines.Player {
             }
 
             GameEvents.OnCardSacrified.Invoke(card);
+
+            AddChronicle(nEntry.ToChronicleEntry());
+        }
+
+        #endregion
+
+        #region Recycle
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_CardRecycled(int playerSRef, NetworkChronicleEntry nEntry, int cardId)
+        {
+            PlayerRef player = PlayerRef.FromEncoded(playerSRef);
+            ICard       card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            if (!HasInputAuthority) {
+                ICommand cardSacrifiedCommand = new CLIENT_CardRecycleCommand(player, cardId, GameDataStorage.Instance.Shop.Sections[ShopType.Market]);
+
+                CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
+            }
+
+            foreach (AEffect effect in card.Data.Effects) {
+                if ((effect.Type & EffectType.Recycle) != 0)
+                    effect.Play(player);
+            }
+
+            foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
+                if (playedCard.Data.Effects != null) {
+                    foreach (AEffect effect in playedCard.Data.Effects) {
+                        if ((effect.Type & EffectType.OnOtherRecycle) != 0)
+                            effect.Play(player);
+                    }
+                }
+            }
+
+            GameEvents.OnCardRecycled.Invoke(card);
 
             AddChronicle(nEntry.ToChronicleEntry());
         }
@@ -102,17 +138,26 @@ namespace Vermines.Player {
             GameEvents.OnPlayerUpdated.Invoke(GameDataStorage.Instance.PlayerData[player]);
             HandManager.Instance.RemoveCard(card);
 
-            if (hasEffect) {
-                foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Discard)
-                        effect.Play(player);
-                }
-            } else {
+            if (!hasEffect) {
                 if (Local.PlayerRef == player) {
                     DiscardDropHandler discardDropHandler = FindFirstObjectByType<DiscardDropHandler>();
 
                     if (discardDropHandler != null)
                         discardDropHandler.SetLatestDiscardedCard(card);
+                }
+
+                return;
+            }
+
+            if (card.Data.HasChoiceEffect(EffectType.Discard)) {
+                if (player == PlayerController.Local.PlayerRef) {
+                    // TODO: Open the choice UI.
+                    // TODO: Create a method to call the effect in network. Link it to the choice UI.
+                }
+            } else {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if ((effect.Type & EffectType.Discard) != 0)
+                        effect.Play(player);
                 }
             }
         }
@@ -150,7 +195,7 @@ namespace Vermines.Player {
 
             foreach (AEffect effect in card.Data.Effects)
             {
-                if (effect.Type == EffectType.Activate)
+                if ((effect.Type & EffectType.Activate) != 0)
                     effect.Play(player);
             }
         }
@@ -170,6 +215,7 @@ namespace Vermines.Player {
 
             CommandResponse response = CommandInvoker.ExecuteCommand(command);
 
+            // TODO: Maybe update the card UI ?
             // TODO: Maybe update the card UI ?
         }
 
@@ -208,7 +254,7 @@ namespace Vermines.Player {
 
             foreach (AEffect effect in card.Data.Effects)
             {
-                if (effect.Type == EffectType.Sacrifice || effect.Type == EffectType.OnOtherSacrifice)
+                if ((effect.Type & EffectType.Sacrifice) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0)
                     return;
                 effect.Play(PlayerRef.FromEncoded(playerId));
             }

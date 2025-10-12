@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e048bfe3d262d64598cb222f1601034, type: 3}
   m_Name: MirrorOfTheDamnedEffect
   m_EditorClassIdentifier: 
-  _Type: 1
+  _Type: 2
   _Description: Discard the <b>{card_name}</b> to plays the effect of a tool in the
     market..
   _SubEffect: {fileID: 11400000, guid: a694a365bb9835b43951123418dee7b1, type: 2}

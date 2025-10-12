@@ -10,7 +10,7 @@ namespace Vermines.UI.Screen
 {
     using Button = UnityEngine.UI.Button;
 
-    public partial class GameplayUICopyEffect : GameplayUIScreen, IParamReceiver<CardCopyEffectContext>, ICardClickReceiver
+    public partial class GameplayUICopyEffect : GameplayUIScreen, IParamReceiver<CardSelectedEffectContext>, ICardClickReceiver
     {
         #region Attributes
 
@@ -132,7 +132,7 @@ namespace Vermines.UI.Screen
         /// Set the callback to be called when the effect is done.
         /// </summary>
         /// <param name="onDone">The callback to be called when the effect is done.</param>
-        public void SetParam(CardCopyEffectContext cardContext)
+        public void SetParam(CardSelectedEffectContext cardContext)
         {
             _deckType = cardContext.Type;
             activeCard = cardContext.Card;

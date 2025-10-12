@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 548162937252cfc47965b7e6921ffa85, type: 3}
+  m_Name: Draw3EveryoneDraw1
+  m_EditorClassIdentifier: 
+  _Description: Draw 3 cards then everyone draws 1 card
+  _Amount: 3
+  _Everyone: 0
+  _SubEffect: {fileID: 11400000, guid: 7faad311bbdb1184391d24e2930cf3a0, type: 2}
+  DrawIcon: {fileID: 21300000, guid: cd20fdaab15ebf14489155e5f0ed5409, type: 3}
+  EveryoneIcon: {fileID: 21300000, guid: 8742c3f464831354f8480d90dbea50d3, type: 3}
+  Then: {fileID: 21300000, guid: 24a76bff2862f8a4fbc25bf2c54630fa, type: 3}

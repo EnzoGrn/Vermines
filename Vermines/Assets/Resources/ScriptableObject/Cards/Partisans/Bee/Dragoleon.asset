@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Dragoleon
   m_EditorClassIdentifier: 
-  Name: Dragoleon
+  Name: dragoleon
   Exemplars: 1
   IsStartingCard: 0
   Type: 0
@@ -22,10 +22,10 @@ MonoBehaviour:
   Effects:
   - {fileID: 11400000, guid: 1aa37c0bfb1c66e43834a49680863771, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 12
+  _Eloquence: 14
   IsFree: 0
-  CurrentEloquence: 12
-  _Souls: 15
-  CurrentSouls: 15
+  CurrentEloquence: 14
+  _Souls: 20
+  CurrentSouls: 20
   _SpriteName: 
   _Sprite: {fileID: 21300000, guid: 722e2cb09d177014a85aa256106da5cf, type: 3}

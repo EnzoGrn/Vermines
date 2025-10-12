@@ -93,6 +93,11 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, true);
         }
 
+        public void OnRecycle(int cardId)
+        {
+            GameManager.Instance.RPC_CardRecycled(Object.InputAuthority.RawEncoded, cardId);
+        }
+
         public void OnDiscardNoEffect(int cardId)
         {
             GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, false);
