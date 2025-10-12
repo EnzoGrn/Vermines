@@ -98,6 +98,30 @@ MonoBehaviour:
     m_Localized: "Crois\xE9"
     m_Metadata:
       m_Items: []
+  - m_Id: 835652668088320
+    m_Localized: Dague sacrificielle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1153649811120128
+    m_Localized: Missive royale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1154694318645248
+    m_Localized: "Parchemin d\xE9ment\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1164176885014528
+    m_Localized: "Ouvri\xE8re"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1164264067817472
+    m_Localized: Insectonomicon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1164366673076224
+    m_Localized: Idole
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

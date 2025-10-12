@@ -138,17 +138,26 @@ namespace Vermines.Player {
             GameEvents.OnPlayerUpdated.Invoke(GameDataStorage.Instance.PlayerData[player]);
             HandManager.Instance.RemoveCard(card);
 
-            if (hasEffect) {
-                foreach (AEffect effect in card.Data.Effects) {
-                    if ((effect.Type & EffectType.Discard) != 0)
-                        effect.Play(player);
-                }
-            } else {
+            if (!hasEffect) {
                 if (Local.PlayerRef == player) {
                     DiscardDropHandler discardDropHandler = FindFirstObjectByType<DiscardDropHandler>();
 
                     if (discardDropHandler != null)
                         discardDropHandler.SetLatestDiscardedCard(card);
+                }
+
+                return;
+            }
+
+            if (card.Data.HasChoiceEffect(EffectType.Discard)) {
+                if (player == PlayerController.Local.PlayerRef) {
+                    // TODO: Open the choice UI.
+                    // TODO: Create a method to call the effect in network. Link it to the choice UI.
+                }
+            } else {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if ((effect.Type & EffectType.Discard) != 0)
+                        effect.Play(player);
                 }
             }
         }

@@ -10,18 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Dagger
+  m_Name: SacrificialDagger
   m_EditorClassIdentifier: 
-  Name: Dagger
-  Exemplars: 3
-  IsStartingCard: 0
-  Type: 1
+  Name: sacrificial_dagger
+  Exemplars: 4
+  IsStartingCard: 1
+  _DeckExemplars: 1
+  Type: 2
   IsFamilyCard: 0
   _Family: -1
   _Level: 0
   Effects:
-  - {fileID: 11400000, guid: 3b19148191f0cd645b763825b9407bac, type: 2}
+  - {fileID: 11400000, guid: 1f77126f0838f6846a834ae79a701472, type: 2}
+  - {fileID: 11400000, guid: 4e39a52677fb3154597dfc4c42f3f229, type: 2}
   ReduceInSilence: 0
+  _RecycleEloquence: 3
   _Eloquence: 5
   IsFree: 0
   CurrentEloquence: 5

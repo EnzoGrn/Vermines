@@ -98,6 +98,30 @@ MonoBehaviour:
     m_Localized: Crusader
     m_Metadata:
       m_Items: []
+  - m_Id: 835652668088320
+    m_Localized: Sacrificial Dagger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1153649811120128
+    m_Localized: Royal missive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1154694318645248
+    m_Localized: Demented scroll
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1164176885014528
+    m_Localized: Worker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1164264067817472
+    m_Localized: Insectonomicon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1164366673076224
+    m_Localized: Idol
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

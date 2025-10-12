@@ -10,22 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Cloak
+  m_Name: Royal missive
   m_EditorClassIdentifier: 
-  Name: Cloak
-  Exemplars: 2
-  IsStartingCard: 0
-  Type: 1
+  Name: royal_missive
+  Exemplars: 0
+  IsStartingCard: 1
+  _DeckExemplars: 1
+  Type: 2
   IsFamilyCard: 0
   _Family: -1
   _Level: 0
   Effects:
-  - {fileID: 11400000, guid: 9551e3acdbfcd04409fa20e813879934, type: 2}
+  - {fileID: 11400000, guid: d0944170c9980c24ab2899b620b8ec40, type: 2}
+  - {fileID: 11400000, guid: a6d6518f5e74bb649b1b6b7d4884c924, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 6
+  _RecycleEloquence: 1
+  _Eloquence: 2
   IsFree: 0
-  CurrentEloquence: 6
+  CurrentEloquence: 2
   _Souls: 0
   CurrentSouls: 0
   _SpriteName: 
-  _Sprite: {fileID: 21300000, guid: 316558326d0b7c342963bc38919a5a43, type: 3}
+  _Sprite: {fileID: 21300000, guid: de219bfed381d41409b55c13f7c6d012, type: 3}

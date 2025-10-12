@@ -21,6 +21,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             effect.Amount     = EditorGUILayout.IntField(new GUIContent("Amount", "The amount of data to earn."), effect.Amount);
             effect.DataToEarn = (DataType)EditorGUILayout.EnumPopup(new GUIContent("Data type", "The type of the data you want to earn."), effect.DataToEarn);
+            effect.Everyone   = EditorGUILayout.Toggle(new GUIContent("Everyone", "If true, everyone will earn the data."), effect.Everyone);
 
             GUILayout.EndVertical();
             GUILayout.Space(10);

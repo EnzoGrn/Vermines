@@ -12,17 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Insectonomicon
   m_EditorClassIdentifier: 
-  Name: Insectonomicon
-  Exemplars: 3
+  Name: insectonomicon
+  Exemplars: 6
   IsStartingCard: 0
+  _DeckExemplars: 0
   Type: 2
   IsFamilyCard: 0
   _Family: -1
   _Level: 0
   Effects:
   - {fileID: 11400000, guid: 7d2949c04b66bfd4e92e4ffdf393d727, type: 2}
-  _Eloquence: 8
-  CurrentEloquence: 8
+  - {fileID: 11400000, guid: 9d80460d1d280e64f84d4f6463d2f846, type: 2}
+  ReduceInSilence: 0
+  _RecycleEloquence: 7
+  _Eloquence: 7
+  IsFree: 0
+  CurrentEloquence: 7
   _Souls: 0
   CurrentSouls: 0
   _SpriteName: 

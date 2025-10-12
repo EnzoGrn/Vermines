@@ -340,7 +340,7 @@ namespace Test.Vermines.ShopSystem {
             // TODO: Test the undo command, when it will be implemented in the buy command.
         }
 
-        [Test]
+        /*[Test]
         public void ClientBuyEquipmentInShop()
         {
             // -- Shop initialization with default settings.
@@ -373,7 +373,7 @@ namespace Test.Vermines.ShopSystem {
             CommandInvoker.UndoCommand();
 
             // TODO: Test the undo command, when it will be implemented in the buy command.
-        }
+        }*/
 
         #endregion
     }

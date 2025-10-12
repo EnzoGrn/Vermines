@@ -95,6 +95,30 @@ MonoBehaviour:
     m_Key: crusader
     m_Metadata:
       m_Items: []
+  - m_Id: 835652668088320
+    m_Key: sacrificial_dagger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1153649811120128
+    m_Key: royal_missive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1154694318645248
+    m_Key: demented_scroll
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1164176885014528
+    m_Key: worker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1164264067817472
+    m_Key: insectonomicon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1164366673076224
+    m_Key: idol
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -16,6 +16,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         #region Constants
 
         private static readonly string drawTemplate = "Draw {0} card";
+        private static readonly string everyoneDrawTemplate = "Everyone draws {0} card";
         private static readonly string linkerTemplate = " then ";
 
         #endregion
@@ -47,7 +48,21 @@ namespace Vermines.Gameplay.Cards.Effect {
                 UpdateDescription();
             }
         }
-        
+
+        [SerializeField]
+        private bool _Everyone = false;
+
+        public bool Everyone
+        {
+            get => _Everyone;
+            set
+            {
+                _Everyone = value;
+
+                UpdateDescription();
+            }
+        }
+
         [SerializeField]
         private AEffect _SubEffect = null;
 
@@ -67,13 +82,14 @@ namespace Vermines.Gameplay.Cards.Effect {
         #region UI Elements
 
         public Sprite DrawIcon = null;
+        public Sprite EveryoneIcon = null;
         public Sprite Then = null;
 
         #endregion
 
-        public override void Play(PlayerRef player)
+        private void Draw(PlayerRef player, int amount)
         {
-            for (int i = 0; i < Amount; i++) {
+            for (int i = 0; i < amount; i++) {
                 ICommand drawCommand = new DrawCommand(player);
 
                 CommandResponse command = CommandInvoker.ExecuteCommand(drawCommand);
@@ -82,9 +98,17 @@ namespace Vermines.Gameplay.Cards.Effect {
                     PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
 
                     GameEvents.InvokeOnDrawCard(deck.Hand.Last());
-
-                    Debug.Log($"[DrawEffect] Player {player} drew a card from his deck. He drew {deck.Hand.Last().Data.Name}.");
                 }
+            }
+        }
+
+        public override void Play(PlayerRef player)
+        {
+            if (Everyone) {
+                foreach (var pData in GameDataStorage.Instance.PlayerData)
+                    Draw(pData.Key, Amount);
+            } else {
+                Draw(player, Amount);
             }
 
             base.Play(player);
@@ -92,10 +116,12 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override List<(string, Sprite)> Draw()
         {
-            List<(string, Sprite)> elements = new() {
-                { (null       , DrawIcon) },
-                { ($"{Amount}", null) }
-            };
+            List<(string, Sprite)> elements = new();
+
+            if (Everyone)
+                elements.Add((null, EveryoneIcon));
+            elements.Add((null, DrawIcon));
+            elements.Add(($"{Amount}", null));
 
             if (SubEffect != null) {
                 elements.Add((null, Then));
@@ -107,7 +133,10 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         protected override void UpdateDescription()
         {
-            Description = $"{string.Format(drawTemplate, Amount)}";
+            if (Everyone)
+                Description = $"{string.Format(everyoneDrawTemplate, Amount)}";
+            else
+                Description = $"{string.Format(drawTemplate, Amount)}";
 
             if (Amount > 1)
                 Description += "s";
@@ -126,6 +155,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             if (DrawIcon == null)
                 DrawIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Draw");
+            if (EveryoneIcon == null)
+                EveryoneIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Everyone");
             if (Then == null)
                 Then = Resources.Load<Sprite>("Sprites/UI/Effects/Then");
         }
