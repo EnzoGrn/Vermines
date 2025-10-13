@@ -51,6 +51,7 @@ namespace Vermines.Player {
         public List<ICard> Deck { get; set; }
         public List<ICard> Hand { get; set; }
         public List<ICard> Discard { get; set; }
+        public List<ICard> ToolDiscard { get; set; }
         public List<ICard> Graveyard { get; set; }
         public List<ICard> PlayedCards { get; set; }
         public List<ICard> Equipments { get; set; }
@@ -60,6 +61,7 @@ namespace Vermines.Player {
             Deck        = new List<ICard>();
             Hand        = new List<ICard>();
             Discard     = new List<ICard>();
+            ToolDiscard = new List<ICard>();
             Graveyard   = new List<ICard>();
             PlayedCards = new List<ICard>();
             Equipments  = new List<ICard>();
@@ -97,11 +99,23 @@ namespace Vermines.Player {
             
             if (card != null && Hand.Contains(card)) {
                 Hand.Remove(card);
-                Discard.Add(card);
 
+                if (card.Data.Type == CardType.Tools)
+                    ToolDiscard.Add(card);
+                else
+                    Discard.Add(card);
                 return card;
             }
+
             return null;
+        }
+
+        public void MergeToolDiscard(int seed)
+        {
+            if (ToolDiscard.Count > 0) {
+                Deck.Merge(ToolDiscard);
+                Deck.Shuffle(seed);
+            }
         }
 
         public ICard PlayCard(int cardId)
@@ -146,6 +160,7 @@ namespace Vermines.Player {
             serializedPlayerDeck += $"Deck[{string.Join(","        , Deck.Select(card        => card.ID))}]";
             serializedPlayerDeck += $";Hand[{string.Join(","       , Hand.Select(card        => card.ID))}]";
             serializedPlayerDeck += $";Discard[{string.Join(","    , Discard.Select(card     => card.ID))}]";
+            serializedPlayerDeck += $";ToolDiscard[{string.Join(",", ToolDiscard.Select(card => card.ID))}]";
             serializedPlayerDeck += $";Graveyard[{string.Join(","  , Graveyard.Select(card   => card.ID))}]";
             serializedPlayerDeck += $";PlayedCards[{string.Join(",", PlayedCards.Select(card => card.ID))}]";
             serializedPlayerDeck += $";Equipments[{string.Join("," , Equipments.Select(card  => card.ID))}]";
@@ -178,6 +193,10 @@ namespace Vermines.Player {
                     string content = deckSection[10..^1];
 
                     deck.Graveyard = CardSetDatabase.Instance.GetCardByIds(content);
+                } else if (deckSection.StartsWith("ToolDiscard[") && deckSection.EndsWith("]")) {
+                    string content = deckSection[12..^1];
+
+                    deck.ToolDiscard = CardSetDatabase.Instance.GetCardByIds(content);
                 } else if (deckSection.StartsWith("PlayedCards[") && deckSection.EndsWith("]")) {
                     string content = deckSection[12..^1];
 
