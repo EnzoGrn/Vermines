@@ -1,10 +1,9 @@
 ﻿using OMGG.DesignPattern;
-using UnityEngine;
 using System.Linq;
 using Fusion;
 
 namespace Vermines.Gameplay.Phases {
-    using Vermines.CardSystem.Data;
+
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
@@ -36,6 +35,9 @@ namespace Vermines.Gameplay.Phases {
                     GameEvents.OnShopRefilled.Invoke(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
             }
 
+            // Merge the tool discards in the deck.
+            GameDataStorage.Instance.PlayerDeck[player].MergeToolDiscard(GameManager.Instance.SettingsData.Seed);
+
             // Refill Hand
             for (int i = 0; i < GameManager.Instance.SettingsData.NumberOfCardsToDrawAtEndOfTurn; i++) {
                 ICommand drawCardCommand = new DrawCommand(player);
@@ -53,10 +55,7 @@ namespace Vermines.Gameplay.Phases {
 
             // Clear the context manager
             if (UIContextManager.Instance != null)
-            {
                 UIContextManager.Instance.ClearContext();
-            }
-
             OnPhaseEnding(player, true); // Here true, because everyone know that the phase is over.
         }
 
