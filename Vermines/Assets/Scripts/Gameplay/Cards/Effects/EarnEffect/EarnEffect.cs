@@ -17,6 +17,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         private static readonly string eloquenceTemplate   = "<b><color=purple>{0}E</color></b>";
         private static readonly string soulTemplate        = "<b><color=red>{0}A</color></b>";
         private static readonly string descriptionTemplate = "Earn ";
+        private static readonly string descriptionEveryoneTemplate = "Everyone earns ";
         private static readonly string linkerTemplate      = " then ";
 
         #endregion
@@ -64,6 +65,20 @@ namespace Vermines.Gameplay.Cards.Effect {
         }
 
         [SerializeField]
+        private bool _Everyone = false;
+
+        public bool Everyone
+        {
+            get => _Everyone;
+            set
+            {
+                _Everyone = value;
+
+                UpdateDescription();
+            }
+        }
+
+        [SerializeField]
         private AEffect _SubEffect = null;
 
         public override AEffect SubEffect
@@ -83,15 +98,24 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public Sprite EloquenceIcon = null;
         public Sprite SoulIcon      = null;
+        public Sprite EveryoneIcon  = null;
         public Sprite ThenIcon      = null;
 
         #endregion
 
         public override void Play(PlayerRef player)
         {
-            ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
+            if (Everyone) {
+                foreach (var pData in GameDataStorage.Instance.PlayerData) {
+                    ICommand earnCommand = new EarnCommand(pData.Key, Amount, DataToEarn);
 
-            CommandInvoker.ExecuteCommand(earnCommand);
+                    CommandInvoker.ExecuteCommand(earnCommand);
+                }
+            } else {
+                ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
+
+                CommandInvoker.ExecuteCommand(earnCommand);
+            }
 
             base.Play(player);
         }
@@ -100,6 +124,8 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             List<(string, Sprite)> elements = new();
 
+            if (Everyone)
+                elements.Add((null, EveryoneIcon));
             if (DataToEarn == DataType.Eloquence) {
                 elements.Add(($"+{Amount}E", null));
                 elements.Add((null, EloquenceIcon));
@@ -118,10 +144,12 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         protected override void UpdateDescription()
         {
+            string description = Everyone ? descriptionEveryoneTemplate : descriptionTemplate;
+
             if (DataToEarn == DataType.Eloquence)
-                Description = $"{descriptionTemplate}{string.Format(eloquenceTemplate, Amount)}";
+                Description = $"{description}{string.Format(eloquenceTemplate, Amount)}";
             else if (DataToEarn == DataType.Soul)
-                Description = $"{descriptionTemplate}{string.Format(soulTemplate, Amount)}";
+                Description = $"{description}{string.Format(soulTemplate, Amount)}";
             if (SubEffect != null) {
                 string subDescription = SubEffect.Description;
 
@@ -139,6 +167,8 @@ namespace Vermines.Gameplay.Cards.Effect {
                 EloquenceIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Eloquence");
             if (SoulIcon == null)
                 SoulIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Souls");
+            if (EveryoneIcon == null)
+                EveryoneIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Everyone");
             if (ThenIcon == null)
                 ThenIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Then");
         }

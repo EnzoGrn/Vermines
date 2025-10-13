@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
   m_Name: RogueEffect
   m_EditorClassIdentifier: 
-  _Type: 0
-  _Description: Earn <b><color=purple>2E</color></b> then draw 2 cards.
-  _SubEffect: {fileID: 11400000, guid: d8ad3ee64227e1a42b35e741ff904701, type: 2}
+  _Type: 1
+  _Description: Earn <b><color=purple>2E</color></b> then earn <b><color=red>2A</color></b>.
+  _SubEffect: {fileID: 11400000, guid: cf749a4dd8b7fba4d925f77d43219803, type: 2}

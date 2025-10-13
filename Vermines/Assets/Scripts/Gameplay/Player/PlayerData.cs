@@ -30,16 +30,19 @@ namespace Vermines.Player {
 
         public CardFamily Family;
 
+        public int NumberOfSlotInTable;
+
         #endregion
 
         public PlayerData(PlayerRef player)
         {
-            PlayerRef   = player;
-            IsConnected = false;
-            Eloquence   = 0;
-            Souls       = 0;
-            Family      = CardFamily.None;
-            Nickname    = player.ToString();
+            PlayerRef           = player;
+            IsConnected         = false;
+            Eloquence           = 0;
+            Souls               = 0;
+            Family              = CardFamily.None;
+            NumberOfSlotInTable = 3;
+            Nickname            = player.ToString();
         }
     }
 

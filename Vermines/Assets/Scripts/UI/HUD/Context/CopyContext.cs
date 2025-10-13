@@ -7,9 +7,9 @@ public class CopyContext : IUIContext
     /// <summary>
     /// The type of card to be removed.
     /// </summary>
-    protected CardCopyEffectContext _cardContext;
+    protected CardSelectedEffectContext _cardContext;
 
-    public CopyContext(CardCopyEffectContext cardContext)
+    public CopyContext(CardSelectedEffectContext cardContext)
     {
         _cardContext = cardContext;
 
@@ -21,7 +21,7 @@ public class CopyContext : IUIContext
 
         if (gameplayUIController.GetActiveScreen(out var lastScreen))
         {
-            gameplayUIController.ShowWithParams<GameplayUICopyEffect, CardCopyEffectContext>(_cardContext, lastScreen);
+            gameplayUIController.ShowWithParams<GameplayUICopyEffect, CardSelectedEffectContext>(_cardContext, lastScreen);
         }
     }
 

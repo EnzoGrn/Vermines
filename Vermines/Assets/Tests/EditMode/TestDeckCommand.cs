@@ -55,12 +55,12 @@ namespace Test.Vermines.Gameplay.Deck {
                 { playerTwo   , playerTwoDeck }
             };
 
-            localDeck.Deck.Add(CardSetDatabase.Instance.GetCardByID(72));
-            localDeck.Deck.Add(CardSetDatabase.Instance.GetCardByID(73));
-            localDeck.PlayedCards.Add(CardSetDatabase.Instance.GetCardByID(74));
-            localDeck.PlayedCards.Add(CardSetDatabase.Instance.GetCardByID(75));
-            localDeck.Hand.Add(CardSetDatabase.Instance.GetCardByID(76));
-            localDeck.Hand.Add(CardSetDatabase.Instance.GetCardByID(77));
+            localDeck.Deck.Add(CardSetDatabase.Instance.GetCardByID(45));
+            localDeck.Deck.Add(CardSetDatabase.Instance.GetCardByID(46));
+            localDeck.PlayedCards.Add(CardSetDatabase.Instance.GetCardByID(47));
+            localDeck.PlayedCards.Add(CardSetDatabase.Instance.GetCardByID(48));
+            localDeck.Hand.Add(CardSetDatabase.Instance.GetCardByID(49));
+            localDeck.Hand.Add(CardSetDatabase.Instance.GetCardByID(50));
 
             GameDataStorage.Instance.PlayerDeck = _Decks;
         }

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Villagers
   m_EditorClassIdentifier: 
-  Name: Villager
-  Exemplars: 2
+  Name: villager
+  Exemplars: 3
   IsStartingCard: 0
   Type: 0
   IsFamilyCard: 1
@@ -21,9 +21,11 @@ MonoBehaviour:
   _Level: 1
   Effects:
   - {fileID: 11400000, guid: d9211d323b393e14b95463cb72c961d5, type: 2}
+  ReduceInSilence: 0
   _Eloquence: 2
+  IsFree: 0
   CurrentEloquence: 2
-  _Souls: 5
-  CurrentSouls: 5
+  _Souls: 4
+  CurrentSouls: 4
   _SpriteName: Villager
   _Sprite: {fileID: 0}

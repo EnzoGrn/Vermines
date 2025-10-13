@@ -53,16 +53,16 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             if (UIContextManager.Instance)
             {
-                CardCopyEffectContext cardCopyEffectContext = new CardCopyEffectContext(CardType.Tools, Card);
+                CardSelectedEffectContext cardCopyEffectContext = new(CardType.Tools, Card);
                 CopyContext copyContext = new CopyContext(cardCopyEffectContext);
                 UIContextManager.Instance.PushContext(copyContext);
             }
-            GameEvents.OnCardCopiedEffect.AddListener(OnCardCopied);
+            GameEvents.OnEffectSelectCard.AddListener(OnCardCopied);
         }
 
         private void OnCardCopied(ICard card)
         {
-            GameEvents.OnCardCopiedEffect.RemoveListener(OnCardCopied);
+            GameEvents.OnEffectSelectCard.RemoveListener(OnCardCopied);
             UIContextManager.Instance.PopContext();
 
             if (card.Data.Type != CardType.Tools)

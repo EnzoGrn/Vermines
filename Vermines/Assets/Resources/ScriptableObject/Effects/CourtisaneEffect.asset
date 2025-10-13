@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
   m_Name: CourtisaneEffect
   m_EditorClassIdentifier: 
-  _Type: 0
+  _Type: 1
   _Description: Draw 2 cards.
   _SubEffect: {fileID: 11400000, guid: 6cf5ee24cc599b848b7bcf95c71b7498, type: 2}

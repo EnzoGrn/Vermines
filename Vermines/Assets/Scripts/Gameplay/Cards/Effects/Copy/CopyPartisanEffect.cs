@@ -6,14 +6,13 @@ using System;
 using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
-    using UnityEditor.SceneManagement;
+
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Chronicle;
     using Vermines.Player;
-    using Vermines.UI.Screen;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Copy/Copy a partisan effect.")]
     public class CopyPartisanEffect : AEffect {
@@ -54,25 +53,32 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (player != PlayerController.Local.PlayerRef)
                 return;
             if (UIContextManager.Instance) {
-                CardCopyEffectContext cardCopyEffectContext = new(CardType.Partisan, Card);
-                CopyContext           copyContext           = new(cardCopyEffectContext);
+                CardSelectedEffectContext cardCopyEffectContext = new(CardType.Partisan, Card);
+                CopyContext               copyContext           = new(cardCopyEffectContext);
 
                 UIContextManager.Instance.PushContext(copyContext);
             }
 
-            GameEvents.OnCardCopiedEffect.AddListener(CopiedEffect);
+            GameEvents.OnEffectSelectCard.AddListener(CopiedEffect);
         }
 
         public override void Stop(PlayerRef player)
         {
-            if (player != PlayerController.Local.PlayerRef)
-                return;
-            Card.Data.RemoveEffectCopied();
+            if (_CardCopied != null) {
+                foreach (var effect in _CardCopied.Data.Effects) {
+                    if ((effect.Type & EffectType.Passive) != 0)
+                        effect.Stop(player);
+                }
+
+                Card.Data.RemoveEffectCopied();
+
+                _CardCopied = null;
+            }
         }
 
         private void CopiedEffect(ICard card)
         {
-            GameEvents.OnCardCopiedEffect.RemoveListener(CopiedEffect);
+            GameEvents.OnEffectSelectCard.RemoveListener(CopiedEffect);
             UIContextManager.Instance.PopContext();
 
             if (card.Data.Type != CardType.Partisan)
@@ -90,10 +96,11 @@ namespace Vermines.Gameplay.Cards.Effect {
             Card.Data.CopyEffect(card.Data.Effects);
 
             foreach (var effect in card.Data.Effects) {
-                if (effect.Type == EffectType.Sacrifice || effect.Type == EffectType.OnOtherSacrifice)
+                if ((effect.Type & EffectType.Sacrifice) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0)
                     continue;
                 effect.Play(player);
             }
+
             PlayerData pData = GameDataStorage.Instance.PlayerData[player];
 
             ChronicleEntry entry = new() {

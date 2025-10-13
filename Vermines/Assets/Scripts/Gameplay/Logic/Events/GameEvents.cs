@@ -31,6 +31,9 @@ public static class GameEvents
     public static TrackedEvent<ICard> OnCardSacrifiedRefused = new("OnCardSacrifiedRefused");
     public static TrackedEvent<ICard> OnCardSacrified = new("OnCardSacrified");
 
+    // --- CARD RECYCLING ---
+    public static TrackedEvent<ICard> OnCardRecycled = new("OnCardRecycled");
+
     // --- CARD DISCARD ---
     public static TrackedEvent<ICard> OnCardDiscardedRefused = new("OnCardDiscardedRefused");
     public static TrackedEvent<ICard> OnCardDiscarded = new("OnCardDiscarded");
@@ -49,7 +52,8 @@ public static class GameEvents
     public static TrackedEvent<ShopType, Dictionary<int, ICard>> OnShopRefilled = new("OnShopRefilled");
 
     // --- CARD EFFECTS ---
-    public static TrackedEvent<ICard> OnCardCopiedEffect = new("OnCardCopiedEffect");
+    public static TrackedEvent<ICard> OnEffectSelectCard = new("OnEffectSelectCard");
+    public static TrackedEvent<ICard> OnCardReborned = new("OnCardReborned");
 
     // --- DISCARD PILE ---
     public static TrackedEvent OnDiscardShuffled = new("OnDiscardShuffled");

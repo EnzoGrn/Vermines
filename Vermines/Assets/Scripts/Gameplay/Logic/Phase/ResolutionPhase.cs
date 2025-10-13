@@ -4,7 +4,7 @@ using System.Linq;
 using Fusion;
 
 namespace Vermines.Gameplay.Phases {
-
+    using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
@@ -25,8 +25,6 @@ namespace Vermines.Gameplay.Phases {
 
         public override void Run(PlayerRef player)
         {
-            Debug.Log($"Phase {Type} is now running");
-
             // Refill Shop
             ICommand refillShopCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 
@@ -49,17 +47,9 @@ namespace Vermines.Gameplay.Phases {
 
                     GameEvents.InvokeOnDrawCard(deck.Hand.Last());
                 }
-
-                // Dump all the deck of the user
-                Debug.Log($"[SERVER]: (Resolution Phase) Player {player} refill his hand: {GameDataStorage.Instance.PlayerDeck[player].Serialize()}");
             }
 
-            foreach (ICard card in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
-                foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Passive)
-                        effect.Stop(player);
-                }
-            }
+            StopEffects(player);
 
             // Clear the context manager
             if (UIContextManager.Instance != null)
@@ -68,6 +58,18 @@ namespace Vermines.Gameplay.Phases {
             }
 
             OnPhaseEnding(player, true); // Here true, because everyone know that the phase is over.
+        }
+
+        private void StopEffects(PlayerRef player)
+        {
+            foreach (ICard card in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if ((effect.Type & EffectType.Passive) != 0)
+                        effect.Stop(player);
+                }
+            }
+
+            RoundEventDispatcher.ExecutePlayerEvents(player);
         }
 
         #endregion

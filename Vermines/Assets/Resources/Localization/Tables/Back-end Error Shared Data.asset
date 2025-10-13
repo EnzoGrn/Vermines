@@ -95,6 +95,22 @@ MonoBehaviour:
     m_Key: CardWrongOwner
     m_Metadata:
       m_Items: []
+  - m_Id: 7507090221293568
+    m_Key: Recycle_NotYourTurn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7507868038193152
+    m_Key: Recycle_WrongPhase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7508156933464064
+    m_Key: Recycle_CardNotInHand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7546112767418368
+    m_Key: Recycle_WrongCardType
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
