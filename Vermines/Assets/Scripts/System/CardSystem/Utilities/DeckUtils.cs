@@ -33,6 +33,8 @@ namespace Vermines.CardSystem.Utilities {
 
         static public ICard Draw(this List<ICard> deck)
         {
+            if (deck == null || deck.Count == 0)
+                return null;
             ICard card = deck[0];
 
             deck.RemoveAt(0);

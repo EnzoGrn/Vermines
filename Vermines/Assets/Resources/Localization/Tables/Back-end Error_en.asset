@@ -122,6 +122,14 @@ MonoBehaviour:
     m_Localized: The selected card does not have a choice effect.
     m_Metadata:
       m_Items: []
+  - m_Id: 9275802486038528
+    m_Localized: You cannot change the cards from this shop.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9276500577607680
+    m_Localized: The selected card does not exist in the shop.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

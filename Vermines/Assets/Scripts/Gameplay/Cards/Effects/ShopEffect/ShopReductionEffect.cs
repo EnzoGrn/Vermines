@@ -73,41 +73,15 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            foreach (var shopTarget in _ShopTarget) {
-                Debug.Log($"[SHOP REDUCTION PLAY]: {shopTarget}, Apply reduction of {_Amount}");
-
-                ShopSection shopSection = GameDataStorage.Instance.Shop.Sections[shopTarget];
-
-                if (shopSection == null)
-                    continue;
-                foreach (var slot in shopSection.AvailableCards)
-                    slot.Value.Data.EloquenceReduction(_Amount);
-                foreach (var card in shopSection.Deck)
-                    card.Data.EloquenceReduction(_Amount);
-                foreach (var card in shopSection.DiscardDeck)
-                    card.Data.EloquenceReduction(_Amount);
-            }
-
+            foreach (var shopTarget in _ShopTarget)
+                GameDataStorage.Instance.Shop.ApplyReduction(shopTarget, _Amount);
             base.Play(player);
         }
 
         public override void Stop(PlayerRef player)
         {
-            foreach (var shopTarget in _ShopTarget) {
-                Debug.Log($"[SHOP REDUCTION STOP]: {shopTarget}, Remove reduction of {_Amount}");
-
-                ShopSection shopSection = GameDataStorage.Instance.Shop.Sections[shopTarget];
-
-                if (shopSection == null)
-                    continue;
-                foreach (var slot in shopSection.AvailableCards)
-                    slot.Value.Data.RemoveReduction(_Amount);
-                foreach (var card in shopSection.Deck)
-                    card.Data.RemoveReduction(_Amount);
-                foreach (var card in shopSection.DiscardDeck)
-                    card.Data.RemoveReduction(_Amount);
-            }
-
+            foreach (var shopTarget in _ShopTarget)
+                GameDataStorage.Instance.Shop.RemoveReduction(shopTarget, _Amount);
             base.Stop(player);
         }
 

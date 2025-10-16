@@ -24,21 +24,18 @@ namespace Vermines.Gameplay.Phases {
 
         public override void Run(PlayerRef player)
         {
-            // Refill Shop
+            // 1. Refill Shop
             ICommand refillShopCommand = new FillShopCommand(GameDataStorage.Instance.Shop);
 
-            CommandResponse response = CommandInvoker.ExecuteCommand(refillShopCommand);
+            CommandInvoker.ExecuteCommand(refillShopCommand);
 
-            if (response.Status == CommandStatus.Success) {
-                foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
-                    //ShopManager.Instance.ReceiveFullShopList(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
-                    GameEvents.OnShopRefilled.Invoke(shopSection.Key, shopSection.Value.AvailableCards.ToDictionary(x => x.Key, x => x.Value));
-            }
+            foreach (var shopSection in GameDataStorage.Instance.Shop.Sections)
+                GameEvents.OnShopRefilled.Invoke(shopSection.Key, GameDataStorage.Instance.Shop.GetDisplayCards(shopSection.Key));
 
-            // Merge the tool discards in the deck.
+            // 2. Merge the tool discards in the deck.
             GameDataStorage.Instance.PlayerDeck[player].MergeToolDiscard(GameManager.Instance.SettingsData.Seed);
 
-            // Refill Hand
+            // 3. Refill Hand
             for (int i = 0; i < GameManager.Instance.SettingsData.NumberOfCardsToDrawAtEndOfTurn; i++) {
                 ICommand drawCardCommand = new DrawCommand(player);
 
@@ -51,11 +48,14 @@ namespace Vermines.Gameplay.Phases {
                 }
             }
 
+            // 4. Stop Passive effect.
             StopEffects(player);
 
-            // Clear the context manager
+            // 5. Clear the context manager
             if (UIContextManager.Instance != null)
                 UIContextManager.Instance.ClearContext();
+
+            // 6. Launch the next round.
             OnPhaseEnding(player, true); // Here true, because everyone know that the phase is over.
         }
 
