@@ -647,11 +647,44 @@ namespace Vermines {
                     MessageArgs = new GameActionErrorArgs(response.Args)
                 });
 
-
                 return;
             }
 
             PlayerController.Local.RPC_NetworkEventCardEffect(playerId, cardID, data);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RPC_EffectChosen(int playerId, int cardId, int effectIndex)
+        {
+            PlayerRef playerSource = PlayerRef.FromEncoded(playerId);
+
+            if (playerSource != GetCurrentPlayer()) {
+                SendError(new GameActionError { // You are not supposed to chose an effect when it's not your turn.
+                    Scope       = ErrorScope.Local,
+                    Target      = playerSource,
+                    Severity    = ErrorSeverity.Major,
+                    Location    = ErrorLocation.Effect,
+                    MessageKey  = "Effect_NotYourTurn",
+                    MessageArgs = new GameActionErrorArgs(cardId.ToString(), effectIndex.ToString())
+                });
+            }
+            ICommand        checker  = new ADMIN_CheckChosenEffectCommand(playerSource, cardId, effectIndex);
+            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
+
+            if (response.Status != CommandStatus.Success) {
+                SendError(new GameActionError {
+                    Scope       = ErrorScope.Local,
+                    Target      = playerSource,
+                    Severity    = ErrorSeverity.Major,
+                    Location    = ErrorLocation.Effect,
+                    MessageKey  = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
+                });
+
+                return;
+            }
+
+            PlayerController.Local.RPC_EffectChosen(playerId, cardId, effectIndex);
         }
 
         #endregion

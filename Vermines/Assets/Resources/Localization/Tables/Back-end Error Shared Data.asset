@@ -111,6 +111,14 @@ MonoBehaviour:
     m_Key: Recycle_WrongCardType
     m_Metadata:
       m_Items: []
+  - m_Id: 9236123669749760
+    m_Key: EffectNotExist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9237089961893888
+    m_Key: NotAChoiceEffect
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
