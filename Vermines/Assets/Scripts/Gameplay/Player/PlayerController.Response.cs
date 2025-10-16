@@ -14,7 +14,6 @@ namespace Vermines.Player {
     using Vermines.ShopSystem.Enumerations;
     using Vermines.ShopSystem;
     using Vermines.UI.Card;
-    using Vermines.Menu.Screen.Tavern.Network;
 
     public partial class PlayerController : NetworkBehaviour {
 
@@ -285,6 +284,15 @@ namespace Vermines.Player {
 
             foreach (AEffect effect in card.Data.Effects)
                 effect.NetworkEventFunction(player, data);
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_EffectChosen(int playerId, int cardId, int effectIndex)
+        {
+            PlayerRef player = PlayerRef.FromEncoded(playerId);
+            ICard     card   = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            card.Data.Effects[effectIndex].Play(player);
         }
     }
 }
