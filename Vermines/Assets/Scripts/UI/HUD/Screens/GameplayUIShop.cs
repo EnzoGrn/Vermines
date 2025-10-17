@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Vermines.CardSystem.Data;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Player;
@@ -121,7 +122,6 @@ namespace Vermines.UI.Screen
             }
 
             GameEvents.OnShopRefilled.AddListener(ReceiveFullShopList);
-
             GameEvents.OnCardPurchased.AddListener(OnCardPurchased);
         }
 
@@ -228,80 +228,66 @@ namespace Vermines.UI.Screen
 
         #region Events
 
-        public void OnCardPurchased(ShopType shopType, int slotIndex)
+        public void OnCardPurchased(ShopType shopType, int cardId)
         {
-            if (!previousShopStates.TryGetValue(shopType, out var shopList))
-            {
-                Debug.LogWarning($"[ShopManager] No shop list found for type {shopType}");
+            if (!previousShopStates.TryGetValue(shopType, out var shopList)) {
+                Debug.LogWarning($"[ShopManager] No shop list found for type {shopType}.");
+
                 return;
             }
 
-            if (!shopList.ContainsKey(slotIndex))
-            {
-                Debug.LogWarning($"[ShopManager] Slot index {slotIndex} not found in shop {shopType}");
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            if (!shopList.ContainsValue(card)) {
+                Debug.LogWarning($"[ShopManager] Card {cardId} not found in shop {shopType}.");
+
                 return;
             }
 
             // If the card bought is an equipment card, invoke the specific event
-            if (PlayerController.Local.PlayerRef == GameManager.Instance.PlayerTurnOrder[GameManager.Instance.CurrentPlayerIndex])
-            {
-                if (shopList[slotIndex].Data.Type == CardType.Equipment)
-                {
-                    ICard equipmentCard = shopList[slotIndex];
-                    GameEvents.OnEquipmentCardPurchased.Invoke(equipmentCard, slotIndex);
-                }
-                else
-                {
-                    ICard card = shopList[slotIndex];
-                }
+            if (PlayerController.Local.PlayerRef == GameManager.Instance.GetCurrentPlayer()) {
+                if (card.Data.Type == CardType.Equipment)
+                    GameEvents.OnEquipmentCardPurchased.Invoke(card);
             }
 
-            Debug.Log($"[ShopManager] Card purchased from {shopType} shop at slot {slotIndex}");
+            int index = 0;
 
-            shopList[slotIndex] = null;
+            foreach (var kvp in shopList) {
+                if (kvp.Value != null && kvp.Value.ID == card.ID)
+                    break;
+                index++;
+            }
 
-            ReceiveFullShopList(shopType, shopList);
+            shopList[index] = null;
+
+            ReceiveFullShopList(shopType, GameDataStorage.Instance.Shop.GetDisplayCards(shopType));
         }
 
         public void OnCardClicked(ICard card, int slodId)
         {
-            Debug.Log($"[ShopCardClickHandler] Card clicked: {card.Data.Name}");
-
             if (card == null)
                 return;
-
             ShopPopupPlugin plugin = Get<ShopPopupPlugin>();
 
-            if (plugin == null)
-            {
-                Debug.LogErrorFormat(
-                    gameObject,
-                    "[{0}] Critical Error: Missing 'ShopPopupPlugin' reference on GameObject '{1}'. This component is required to render the card list. Please assign a valid GameObject in the Inspector.",
-                    nameof(GameplayUISacrifice),
-                    gameObject.name
-                );
+            if (plugin == null) {
+                Debug.LogErrorFormat(gameObject, "[{0}] Critical Error: Missing 'ShopPopupPlugin' reference on GameObject '{1}'. This component is required to render the card list. Please assign a valid GameObject in the Inspector.", nameof(GameplayUIShop), gameObject.name);
+
                 return;
             }
 
             plugin.SetParam(card);
 
-            if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
-            {
-                plugin.Setup((c) =>
-                {
-                    GameEvents.OnCardClickedInShopWithSlotIndex.Invoke(_shopType, slodId);
+            if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>()) {
+                plugin.Setup((c) => {
+                    GameEvents.OnCardClickedInShopWithSlotIndex.Invoke(_shopType, card.ID);
                     GameplayUIController controller = GameObject.FindAnyObjectByType<GameplayUIController>();
+
                     if (controller != null)
-                    {
                         controller.ShowLast();
-                    }
                 }, isReplace: true, _shopType);
-            }
-            else
-            {
-                plugin.Setup((c) =>
-                {
-                    GameEvents.InvokeOnCardPurchaseRequested(_shopType, slodId);
+            } else {
+                plugin.Setup((c) => {
+                    GameEvents.InvokeOnCardPurchaseRequested(_shopType, card.ID);
                 }, isReplace: false, _shopType);
             }
 

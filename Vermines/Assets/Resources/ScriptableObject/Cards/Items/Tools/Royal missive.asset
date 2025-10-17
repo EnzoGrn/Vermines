@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Royal missive
   m_EditorClassIdentifier: 
   Name: royal_missive
-  Exemplars: 0
+  Exemplars: 4
   IsStartingCard: 1
   _DeckExemplars: 1
   Type: 2

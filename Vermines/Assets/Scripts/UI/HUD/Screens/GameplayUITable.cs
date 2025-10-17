@@ -332,7 +332,7 @@ namespace Vermines.UI.Screen
         /// <summary>
         /// Add 
         /// </summary>
-        private void AddEquipment(ICard card, int slotIndex)
+        private void AddEquipment(ICard card)
         {
             // Get the first free slot in the equipment slots, don't use the slotIndex parameter
             for (int i = 0; i < equipmentSlots.Count; i++)

@@ -121,6 +121,22 @@ MonoBehaviour:
     m_Localized: Vous ne pouvez pas recycler une carte qui n'est pas un outil.
     m_Metadata:
       m_Items: []
+  - m_Id: 9236123669749760
+    m_Localized: L'effet de la carte choisie n'existe pas.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9237089961893888
+    m_Localized: "La carte s\xE9lectionn\xE9e n'a pas d'effet de choix."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9275802486038528
+    m_Localized: On ne peux pas changer les cartes de cette boutique.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9276500577607680
+    m_Localized: "La carte s\xE9lectionn\xE9e n'existe pas dans la boutique."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

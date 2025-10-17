@@ -2,7 +2,7 @@
 using Fusion;
 
 namespace Vermines.Player {
-
+    using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.Menu.Screen;
     using Vermines.Network.Utilities;
@@ -83,6 +83,21 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_CardSacrified(Object.InputAuthority.RawEncoded, cardId);
         }
 
+        public void OnEffectChoice(ICard card, AEffect effect)
+        {
+            int index = -1;
+
+            foreach (AEffect e in card.Data.Effects) {
+                if (e.Equals(effect))
+                    break;
+                index++;
+            }
+
+            if (index == -1)
+                return;
+            GameManager.Instance.RPC_EffectChosen(Object.InputAuthority.RawEncoded, card.ID, index + 1);
+        }
+
         public void OnPlay(int cardId)
         {
             GameManager.Instance.RPC_CardPlayed(Object.InputAuthority.RawEncoded, cardId);
@@ -103,9 +118,9 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, false);
         }
 
-        public void OnBuy(ShopType shopType, int slot)
+        public void OnBuy(ShopType shopType, int cardId)
         {
-            GameManager.Instance.RPC_BuyCard(shopType, slot, Object.InputAuthority.RawEncoded);
+            GameManager.Instance.RPC_BuyCard(Object.InputAuthority.RawEncoded, shopType, cardId);
         }
 
         public void OnActiveEffectActivated(int cardID)
@@ -113,9 +128,9 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_ActivateEffect(Object.InputAuthority.RawEncoded, cardID);
         }
 
-        public void OnShopReplaceCard(ShopType shopType, int slot)
+        public void OnShopReplaceCard(ShopType shopType, int cardId)
         {
-            GameManager.Instance.RPC_ReplaceCardInShop(Object.InputAuthority.RawEncoded, shopType, slot);
+            GameManager.Instance.RPC_ReplaceCardInShop(Object.InputAuthority.RawEncoded, shopType, cardId);
         }
 
         public void OnReducedInSilenced(ICard cardToBeSilenced)

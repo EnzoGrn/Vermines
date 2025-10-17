@@ -3,7 +3,7 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.CardSystem.Data.Effect {
-
+    using System;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
 
@@ -133,6 +133,22 @@ namespace Vermines.CardSystem.Data.Effect {
         }
 
         virtual public void OnValidate() {}
+
+        #endregion
+
+        #region Comparator
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not AEffect other)
+                return false;
+            return Type == other.Type && Description == other.Description && Card.ID == other.Card.ID;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Type, Description, Card.ID);
+        }
 
         #endregion
     }

@@ -2,15 +2,15 @@ using OMGG.DesignPattern;
 
 namespace Vermines.ShopSystem.Commands {
 
+    using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Elements;
-    using Vermines.CardSystem.Utilities;
     using Vermines.ShopSystem.Data;
 
     public class CLIENT_ChangeCardCommand : ACommand {
 
         private ShopArgs _Parameters;
 
-        private ShopSection _Backup;
+        private ShopSectionBase _Backup;
 
         public CLIENT_ChangeCardCommand(ShopArgs parameters)
         {
@@ -19,37 +19,19 @@ namespace Vermines.ShopSystem.Commands {
 
         public override CommandResponse Execute()
         {
-            ShopSection shop = _Parameters.Shop.Sections[_Parameters.ShopType];
+            ICard oldCard = CardSetDatabase.Instance.GetCardByID(_Parameters.CardId);
+            ShopSectionBase shop = _Parameters.Shop.Sections[_Parameters.ShopType];
 
             _Backup = shop.DeepCopy();
 
-            ICard oldCard = shop.AvailableCards[_Parameters.SlotIndex];
+            ICard newCard = shop.ChangeCard(oldCard);
 
-            shop.DiscardDeck.Add(oldCard);
-
-            ICard newCard = DrawCard(shop);
-
-            shop.AvailableCards[_Parameters.SlotIndex] = newCard;
-
-            return new CommandResponse(CommandStatus.Success, "", _Parameters.ShopType.ToString(), oldCard.Data.Name, newCard.Data.Name);
+            return new CommandResponse(CommandStatus.Success, "", _Parameters.ShopType.ToString(), oldCard.ID.ToString(), newCard.ID.ToString());
         }
 
         public override void Undo()
         {
             _Parameters.Shop.Sections[_Parameters.ShopType] = _Backup;
-        }
-
-        private ICard DrawCard(ShopSection shopSection)
-        {
-            if (shopSection.Deck.Count == 0) {
-                shopSection.DiscardDeck.Reverse();
-                shopSection.Deck.Merge(shopSection.DiscardDeck);
-
-                if (shopSection.Deck.Count == 0)
-                    return null;
-            }
-
-            return shopSection.Deck.Draw();
         }
     }
 
@@ -71,11 +53,13 @@ namespace Vermines.ShopSystem.Commands {
             if (Args.Shop == null)
                 return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", Args.ShopType.ToString());
 
-            // 1. Check if the shop and slot exist
-            if (!Args.Shop.Sections.ContainsKey(Args.ShopType))
-                return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", Args.ShopType.ToString());
-            if (!Args.Shop.HasCardAtSlot(Args.ShopType, Args.SlotIndex))
-                return new CommandResponse(CommandStatus.CriticalError, "Shop_SlotEmpty", Args.ShopType.ToString());
+            // 1. Check if it's a shop that can have card replacement.
+            if (Args.ShopType != Enumerations.ShopType.Courtyard)
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_Replace_NotAllowShop", Args.ShopType.ToString());
+
+            // 2. Check if the shop contains the card.
+            if (!Args.Shop.HasCard(Args.ShopType, Args.CardId))
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_CardNotExist", Args.ShopType.ToString());
             return new CommandResponse(CommandStatus.Success, string.Empty);
         }
     }

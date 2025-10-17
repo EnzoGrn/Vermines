@@ -1,163 +1,190 @@
 using System.Collections.Generic;
-using Defective.JSON;
+using System.Linq;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Vermines.ShopSystem.Data {
 
     using Vermines.ShopSystem.Enumerations;
     using Vermines.CardSystem.Elements;
-    using System.Linq;
 
+    [JsonObject(MemberSerialization.OptIn)]
     public class ShopData : ScriptableObject {
 
-        public void Initialize(ShopType type, int slots = 5)
-        {
-            Sections ??= new Dictionary<ShopType, ShopSection>();
+        #region Properties
 
-            if (Sections.ContainsKey(type) == false)
-                Sections.Remove(type);
-            Sections.Add(type, new ShopSection(slots));
+        [JsonProperty]
+        public Dictionary<ShopType, ShopSectionBase> Sections;
+
+        #endregion
+
+        #region Initialization
+
+        public void Initialize()
+        {
+            Sections ??= new Dictionary<ShopType, ShopSectionBase>();
         }
 
-        public Dictionary<ShopType, ShopSection> Sections;
+        public void AddSection(ShopType type, ShopSectionBase section)
+        {
+            Initialize();
 
-        /// <summary>
-        /// Serialize the shop.
-        /// </summary>
-        /// <example>
-        /// [
-        ///    {
-        ///        type: 0,
-        ///        slots: [
-        ///           { 0: null },
-        ///           { 1:    5 },
-        ///           { 2: null },
-        ///           { 3:   45 },
-        ///           { 4:  155 },
-        ///           { 5:    1 }
-        ///        ],
-        ///        deck: [10,11,12,16,18]
-        ///        discard: [2,3,1,7,8]
-        ///    },
-        ///    {
-        ///        type: 1,
-        ///        slots: [
-        ///           { 0: null },
-        ///           { 1:    6 },
-        ///           { 2:   19 },
-        ///           { 3:   15 },
-        ///           { 4:  145 },
-        ///           { 5:  111 }
-        ///        ],
-        ///        deck: [30,31,32,36,38]
-        ///        discard: [22,23,21,27,28]
-        ///    }
-        /// ]
-        /// </example>
-        /// <returns>The shop's data</returns>
+            if (Sections.ContainsKey(type))
+                Sections[type] = section;
+            else
+                Sections.Add(type, section);
+        }
+
+        #endregion
+
+        #region Serialization
+
         public string Serialize()
         {
-            JSONObject json = new(JSONObject.Type.Array);
-
-            foreach (var section in Sections)
-            {
-                JSONObject sectionJson = new(JSONObject.Type.Object);
-
-                sectionJson.AddField("type", (int)section.Key);
-
-                json.Add(section.Value.Serialize(sectionJson));
-            }
-
-            return json.ToString();
-        }
-
-        /// <summary>
-        /// Deserialize the shop, please use Initialize before calling this method.
-        /// </summary>
-        public void Deserialize(string json)
-        {
-            JSONObject data = new(json);
-
-            for (int i = 0; i < data.count; i++) {
-                JSONObject typeJSON = data[i].GetField("type");
-
-                if (typeJSON != null) {
-                    ShopType type = (ShopType)typeJSON.intValue;
-
-                    Sections[type].Deserialize(data[i]);
+            JsonSerializerSettings settings = new() {
+                TypeNameHandling = TypeNameHandling.Auto, // Keep sub-classes (CourtyardSection / MarketSection).
+                Converters       = new List<JsonConverter> {
+                    new CardJsonConverter()
                 }
+            };
+
+            return JsonConvert.SerializeObject(this, settings);
+        }
+
+        public string SerializeSection(ShopType type)
+        {
+            if (!Sections.TryGetValue(type, out var section))
+                return "{}";
+            JsonSerializerSettings settings = new() {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Converters       = new List<JsonConverter> {
+                    new CardJsonConverter()
+                }
+            };
+
+            return JsonConvert.SerializeObject(section, settings);
+        }
+
+        public void DeserializeSection(ShopType type, string data)
+        {
+            JsonSerializerSettings settings = new() {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Converters       = new List<JsonConverter> {
+                    new CardJsonConverter()
+                }
+            };
+
+            if (type == ShopType.Courtyard) {
+                var section = JsonConvert.DeserializeObject<CourtyardSection>(data, settings);
+
+                AddSection(type, section);
+            } else if (type == ShopType.Market) {
+                var section = JsonConvert.DeserializeObject<MarketSection>(data, settings);
+
+                AddSection(type, section);
             }
         }
 
-        public bool HasCard(ShopType type, int cardID)
+        public static ShopData Deserialize(string json)
         {
-            ShopSection section = Sections[type];
+            JsonSerializerSettings settings = new() {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Converters       = new List<JsonConverter> {
+                    new CardJsonConverter()
+                }
+            };
 
-            if (section == null)
-                return false;
-            return section.HasCard(cardID);
+            ShopData data = JsonConvert.DeserializeObject<ShopData>(json, settings);
+
+            return data;
         }
 
-        public bool HasCardAtSlot(ShopType type, int slot)
-        {
-            ShopSection section = Sections[type];
+        #endregion
 
-            if (section == null)
+        #region Getters & Setters
+
+        public bool HasCard(ShopType type, int cardId)
+        {
+            if (!Sections.TryGetValue(type, out ShopSectionBase section))
                 return false;
-            return section.HasCardAtSlot(slot);
+            return section.HasCard(cardId);
         }
 
-        /// <summary>
-        /// Call this methods only if the card can be buy, because it's remove it from the shop
-        /// </summary>
-        /// <param name="cardID">The card wanted</param>
-        /// <returns>The card bought</returns>
+        public void SetFree(ShopType type, bool free)
+        {
+            if (Sections.TryGetValue(type, out var section))
+                section.SetFree(free);
+        }
+
+        public Dictionary<int, ICard> GetDisplayCards(ShopType type)
+        {
+            if (!Sections.TryGetValue(type, out var section))
+                return new Dictionary<int, ICard>();
+            if (section is CourtyardSection courtyard)
+                return new Dictionary<int, ICard>(courtyard.AvailableCards);
+            if (section is MarketSection market) {
+                Dictionary<int, ICard> result = new();
+
+                foreach (var kvp in market.CardPiles)
+                    result[kvp.Key] = kvp.Value.Count > 0 ? kvp.Value[^1] : null;
+                return result;
+            }
+
+            Debug.LogWarning($"[ShopData.GetDisplayCards({type})]: type not handle.");
+
+            return new Dictionary<int, ICard>();
+        }
+
+        #endregion
+
+        #region Methods
+
         public ICard BuyCard(ShopType type, int cardID)
         {
-            ShopSection section = Sections[type];
-
-            if (section == null)
+            if (!Sections.TryGetValue(type, out var section))
                 return null;
             return section.BuyCard(cardID);
         }
 
-        public ICard BuyCardAtSlot(ShopType type, int slot)
+        public void ApplyReduction(ShopType type, int amount)
         {
-            ShopSection section = Sections[type];
-
-            if (section == null)
-                return null;
-            return section.BuyCardAtSlot(slot);
+            if (Sections.TryGetValue(type, out var section))
+                section.ApplyReduction(amount);
         }
 
-        public void FillShop(ShopType type, List<ICard> cards)
+        public void RemoveReduction(ShopType type, int amount)
         {
-            ShopSection section = Sections[type];
-
-            if (section == null)
-                return;
-            section.Deck = cards;
+            if (Sections.TryGetValue(type, out var section))
+                section.RemoveReduction(amount);
         }
+
+        #endregion
+
+        #region Utilities
 
         public ShopData DeepCopy()
         {
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
-            if (this.Sections == null)
+            if (Sections == null)
                 return shop;
-
-            shop.Sections = this.Sections.ToDictionary(
-                entry => entry.Key,
-                entry => entry.Value.DeepCopy()
-            );
+            shop.Sections = Sections.ToDictionary(entry => entry.Key, entry => entry.Value.DeepCopy());
 
             return shop;
         }
 
+        public void CopyFrom(ShopData other)
+        {
+            if (other == null)
+                return;
+            Sections = other.Sections;
+        }
+
         public void Clear()
         {
-            if (Sections != null)
-                Sections.Clear();
+            Sections?.Clear();
         }
+
+        #endregion
     }
 }

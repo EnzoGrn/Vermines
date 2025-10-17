@@ -48,13 +48,9 @@ namespace Vermines.Gameplay.Phases {
         private void OnCardPurchaseRequested(ShopType type, int id)
         {
             if (PlayerController.Local.PlayerRef == _CurrentPlayerRef)
-            {
                 PlayerController.Local.OnBuy(type, id);
-            }
             else
-            {
                 Debug.LogWarning("You can't buy a card if it's not your turn.");
-            }
         }
 
         public void OnDiscard(ICard card)

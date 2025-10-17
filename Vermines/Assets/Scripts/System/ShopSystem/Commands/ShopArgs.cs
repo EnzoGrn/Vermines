@@ -9,13 +9,13 @@ namespace Vermines.ShopSystem {
 
         public ShopType ShopType;
 
-        public int SlotIndex;
+        public int CardId;
 
-        public ShopArgs(ShopData shop, ShopType shopType, int slotIndex)
+        public ShopArgs(ShopData shop, ShopType shopType, int cardId)
         {
             Shop      = shop;
             ShopType  = shopType;
-            SlotIndex = slotIndex;
+            CardId    = cardId;
         }
     }
 }
