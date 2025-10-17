@@ -1,12 +1,12 @@
 ﻿using Fusion;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Localization;
+using UnityEngine.UI;
 using Vermines.CardSystem.Enumerations;
-using Vermines.Gameplay.Phases;
 using Vermines.Player;
-using Vermines.CardSystem.Elements;
+using Vermines.UI.Utils;
 
 namespace Vermines.UI.Screen
 {
@@ -16,29 +16,13 @@ namespace Vermines.UI.Screen
     {
         #region Attributes
 
-        [Header("Navigation Buttons")]
-
-        /// <summary>
-        /// The turn button.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected UnityEngine.UI.Button _CloseButton;
-
-        [Header("Message Source")]
-
-        /// <summary>
-        /// The config of the summary message.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        private CardFamily _raceName;
-
         [Header("Message Text")]
-
-        /// <summary>
-        /// The text component of the message.
-        /// </summary>
         [InlineHelp, SerializeField]
         protected Text _MessageText;
+
+        [Header("Character")]
+        [InlineHelp, SerializeField]
+        private Image _CultistImage;
 
         #endregion
 
@@ -49,50 +33,36 @@ namespace Vermines.UI.Screen
 
         #region Override Methods
 
-        /// <summary>
-        /// The Unity awake method.
-        /// Calls partial method <see cref="AwakeUser"/> to be implemented on the SDK side.
-        /// </summary>
         public override void Awake()
         {
             base.Awake();
-
             AwakeUser();
         }
 
-        /// <summary>
-        /// The screen init method.
-        /// Calls partial method <see cref="InitUser"/> to be implemented on the SDK side.
-        /// </summary>
         public override void Init()
         {
             base.Init();
-
             InitUser();
         }
 
-        /// <summary>
-        /// The screen show method.
-        /// Calls partial method <see cref="ShowUser"/> to be implemented on the SDK side.
-        /// Will check is the session code is compatible with the party code to toggle the session UI part.
-        /// </summary>
         public override void Show()
         {
+            PlayerRef currentPlayer = GameManager.Instance.GetCurrentPlayer();
+            GameDataStorage.Instance.PlayerData.TryGet(currentPlayer, out PlayerData playerData);
+            _CultistImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, playerData.Family, "Cultist");
+
+             if (PlayerController.Local != null && currentPlayer == PlayerController.Local.PlayerRef)
+                LocalizeMessage("Turn.your");
+            else
+                LocalizeMessage("Turn.text", playerData.Nickname);
+
             base.Show();
-
             ShowUser();
-
-            LoadAndAnnounce();
         }
 
-        /// <summary>
-        /// The screen hide method.
-        /// Calls partial method <see cref="HideUser"/> to be implemented on the SDK side.
-        /// </summary>
         public override void Hide()
         {
             base.Hide();
-
             HideUser();
         }
 
@@ -100,29 +70,36 @@ namespace Vermines.UI.Screen
 
         #region Methods
 
-        public void LoadAndAnnounce()
+        private void LocalizeMessage(string key, params object[] args)
         {
-            if (_raceName == CardFamily.None)
+            var localizedString = new LocalizedString("UIUtils", key);
+            string localizedText = localizedString.GetLocalizedString();
+
+            if (string.IsNullOrEmpty(localizedText))
             {
-                foreach (var player in GameDataStorage.Instance.PlayerData)
+                Debug.LogWarning($"[Localization] Missing key: {key}");
+                localizedText = key;
+            }
+
+            if (args != null && args.Length > 0)
+            {
+                try
                 {
-                    Debug.Log(player);
-                    if (player.Key == PlayerController.Local.PlayerRef)
-                    {
-                        PlayerData playerData = player.Value;
-                        _raceName = playerData.Family;
-                    }
+                    localizedText = string.Format(localizedText, args);
+                }
+                catch (FormatException e)
+                {
+                    Debug.LogError($"[Localization] Format error for key '{key}': {e.Message}");
                 }
             }
+
+            _MessageText.text = localizedText;
         }
 
         #endregion
 
         #region Events
 
-        /// <summary>
-        /// Is called when the <see cref="_CloseButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
         protected virtual void OnClose()
         {
             Controller.Hide();
