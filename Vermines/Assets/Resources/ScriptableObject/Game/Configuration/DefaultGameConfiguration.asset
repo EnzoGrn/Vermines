@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f8066587305ca645a51cf1d7688d5ba, type: 3}
   m_Name: DefaultGameConfiguration
   m_EditorClassIdentifier: 
-  NumberOfCardsToStartWith: 2
+  NumberOfCardsToStartWith: 3
   NumberOfCardsToDrawAtEndOfTurn: 3
   MaxEloquence: 20
   EloquenceToStartWith: 0
@@ -20,4 +20,5 @@ MonoBehaviour:
   MaxSoul: 100
   SoulToStartWith: 0
   BonusSoulInFamilySacrifice: 5
+  NumberOfSlotInTable: 3
   MaxSacrificesPerTurn: 1

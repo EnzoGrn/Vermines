@@ -260,15 +260,21 @@ namespace Vermines {
 
         private void InitializePlayerOrder()
         {
-            // TODO: Create a random order of players at the start of the game.
+            // 1. Get all players
+            List<PlayerRef> players = new();
 
-            int orderIndex = 0;
+            foreach (var kvp in GameDataStorage.Instance.PlayerData)
+                players.Add(kvp.Key);
+            // 2. Shuffle with the game seed.
+            for (int i = players.Count - 1; i > 0; i--) {
+                int k = Rand.Next(i + 1);
 
-            foreach (var playerData in GameDataStorage.Instance.PlayerData) {
-                PlayerTurnOrder.Set(orderIndex, playerData.Key);
-
-                orderIndex++;
+                (players[i], players[k]) = (players[k], players[i]);
             }
+
+            // 3. Fill the NetworkArray
+            for (int i = 0; i < players.Count; i++)
+                PlayerTurnOrder.Set(i, players[i]);
         }
 
         #region Rpcs
