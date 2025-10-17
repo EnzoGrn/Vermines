@@ -20,31 +20,31 @@ namespace Vermines.Player {
         #region Shop
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_BuyCard(int playerSRef, NetworkChronicleEntry nEntry, ShopType sType, int slot)
+        public void RPC_BuyCard(int playerSRef, NetworkChronicleEntry nEntry, ShopType sType, int cardId)
         {
             PlayerRef playerSource = PlayerRef.FromEncoded(playerSRef);
 
             // The state authority already process the command on his side. So ignore it.
             if (!HasStateAuthority) {
-                ShopArgs parameters = new(GameDataStorage.Instance.Shop, sType, slot);
+                ShopArgs parameters = new(GameDataStorage.Instance.Shop, sType, cardId);
                 ICommand buyCommand = new CLIENT_BuyCommand(playerSource, parameters);
 
                 CommandInvoker.ExecuteCommand(buyCommand);
             }
 
-            GameEvents.OnCardPurchased.Invoke(sType, slot);
+            GameEvents.OnCardPurchased.Invoke(sType, cardId);
 
             AddChronicle(nEntry.ToChronicleEntry());
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_ReplaceCardInShop(int playerSRef, NetworkChronicleEntry nEntry, ShopType shopType, int slot)
+        public void RPC_ReplaceCardInShop(int playerSRef, NetworkChronicleEntry nEntry, ShopType shopType, int cardId)
         {
-            ICommand replaceCommand = new CLIENT_ChangeCardCommand(new ShopArgs(GameDataStorage.Instance.Shop, shopType, slot));
+            ICommand replaceCommand = new CLIENT_ChangeCardCommand(new ShopArgs(GameDataStorage.Instance.Shop, shopType, cardId));
 
             CommandInvoker.ExecuteCommand(replaceCommand);
 
-            GameEvents.OnShopRefilled.Invoke(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
+            GameEvents.OnShopRefilled.Invoke(shopType, GameDataStorage.Instance.Shop.GetDisplayCards(shopType));
 
             AddChronicle(nEntry.ToChronicleEntry());
         }

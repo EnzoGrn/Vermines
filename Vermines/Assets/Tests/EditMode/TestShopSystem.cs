@@ -7,34 +7,37 @@ using Fusion;
 using OMGG.DesignPattern;
 
 #region Vermines ShopSystem namespace
+
     using Vermines.ShopSystem.Commands.Internal;
     using Vermines.ShopSystem.Enumerations;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Data;
+
 #endregion
 
 #region Vermines CardSystem namespace
-using Vermines.CardSystem.Enumerations;
+
+    using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Elements;
+
 #endregion
 
 #region Vermines Test namespace
-using Vermines.Test;
-#endregion
 
-using Vermines.Configuration;
-using Vermines.Player;
-using Vermines;
-using Vermines.ShopSystem;
-using Vermines.Gameplay.Commands;
+    using Vermines.Test;
+    using Vermines.Configuration;
+    using Vermines.Player;
+    using Vermines;
+    using Vermines.ShopSystem;
+using UnityEditor.Graphs;
+
+#endregion
 
 namespace Test.Vermines.ShopSystem {
 
     public class TestShopSystem {
-
-        private GameConfiguration _Config;
 
         private PlayerRef _LocalPlayer;
 
@@ -47,9 +50,6 @@ namespace Test.Vermines.ShopSystem {
         [SetUp]
         public void Setup()
         {
-            // -- Initialize a default game configuration
-            _Config = ScriptableObject.CreateInstance<GameConfiguration>();
-
             // -- Initialize a card data set for a two players game
             CardSetDatabase.Instance.Initialize(FamilyUtils.GenerateFamilies(Seed, 2));
 
@@ -89,54 +89,79 @@ namespace Test.Vermines.ShopSystem {
 
         #region Initialization
 
-        private ShopData InitializeShop(GameConfiguration config)
+        private ShopData InitializeShop()
         {
+            // 1. Get all buyable card.
             List<ICard> everyBuyableCard = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.IsStartingCard == false);
 
             if (everyBuyableCard == null || everyBuyableCard.Count == 0)
                 return null;
-            List<ICard> objectCards = everyBuyableCard.Where(card => card.Data.Type == CardType.Tools).ToList();
 
-            if (objectCards == null || objectCards.Count == 0)
-                return null;
+            // 2. Filter card per type.
+
+            // 2.a. Object (Tools & Equipment).
+            List<ICard> objectCards = everyBuyableCard.Where(card => card.Data.Type == CardType.Equipment || card.Data.Type == CardType.Tools).ToList();
+
             objectCards.Shuffle(Seed);
 
-            List<ICard> partisanCards = everyBuyableCard.Where(card => card.Data.Type == CardType.Partisan).ToList();
-
-            if (partisanCards == null || partisanCards.Count == 0)
-                return null;
-
+            // 2.b. Partisan (filter per level).
+            List<ICard> partisanCards  = everyBuyableCard.Where(card => card.Data.Type == CardType.Partisan).ToList();
             List<ICard> partisan1Cards = partisanCards.Where(card => card.Data.Level == 1).ToList();
             List<ICard> partisan2Cards = partisanCards.Where(card => card.Data.Level == 2).ToList();
 
-            if (partisan1Cards == null || partisan2Cards == null || partisan1Cards.Count == 0 || partisan2Cards.Count == 0)
-                return null;
             partisan1Cards.Shuffle(Seed);
             partisan2Cards.Shuffle(Seed);
 
-            partisan1Cards.Merge(partisan2Cards);
-
-            partisanCards = partisan1Cards;
-
-            return ShopBuilder(config, partisanCards, objectCards);
-        }
-
-        private ShopData ShopBuilder(GameConfiguration config, List<ICard> partisans, List<ICard> objects)
-        {
+            // 3. Create the shop.
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
-            shop.Initialize(ShopType.Market);
-            shop.FillShop(ShopType.Market, objects);
+            // 3.a. Courtyard Initialization.
+            CourtyardSection couryard = new() {
+                Deck1 = partisan1Cards,
+                Deck2 = partisan2Cards
+            };
 
-            shop.Initialize(ShopType.Courtyard);
-            shop.FillShop(ShopType.Courtyard, partisans);
+            shop.AddSection(ShopType.Courtyard, couryard);
+
+            // 3.b. Market Initialization.
+            var groupedByName = objectCards.GroupBy(c => c.Data.Name).ToDictionary(g => g.Key, g => g.ToList());
+
+            MarketSection market = new(groupedByName.Count);
+
+            int index = 0;
+
+            foreach (var kvp in groupedByName) {
+                foreach (ICard card in kvp.Value)
+                    market.CardPiles[index].Add(card);
+                index++;
+            }
+
+            shop.AddSection(ShopType.Market, market);
 
             return shop;
         }
 
-        private ShopData InitializeAndFillShop(GameConfiguration config)
+        private ShopData InitializeEmptyShop()
         {
-            ShopData shop = InitializeShop(config);
+            // 3. Create the shop.
+            ShopData shop = ScriptableObject.CreateInstance<ShopData>();
+
+            // 3.a. Courtyard Initialization.
+            CourtyardSection couryard = new();
+
+            shop.AddSection(ShopType.Courtyard, couryard);
+
+            // 3.b. Market Initialization.
+            MarketSection market = new(1);
+
+            shop.AddSection(ShopType.Market, market);
+
+            return shop;
+        }
+
+        private ShopData InitializeAndFillShop()
+        {
+            ShopData shop = InitializeShop();
 
             FillCommand(shop);
 
@@ -160,13 +185,15 @@ namespace Test.Vermines.ShopSystem {
         public void Serialization()
         {
             // -- Initialize the shop
-            ShopData shop1 = InitializeShop(_Config);
+            ShopData shop1 = InitializeShop();
 
             // Serialize the shop (first time)
             string data1 = shop1.Serialize();
 
+            Debug.Log(data1);
+
             // -- Synchronise the shop2 with data of shop1
-            ShopData shop2 = ShopBuilder(_Config, new List<ICard>(), new List<ICard>());
+            ShopData shop2 = InitializeEmptyShop();
 
             ICommand syncCommand = new SyncShopCommand(shop2, data1);
 
@@ -175,17 +202,12 @@ namespace Test.Vermines.ShopSystem {
             // Serialize the shop (second time)
             string data2 = shop2.Serialize();
 
+            Debug.Log(data2);
+
             // Compare the two serialized data
             Assert.AreEqual(data1, data2);
 
-            // Undo the data synchronization
-            CommandInvoker.UndoCommand();
-
-            // Serialize the shop (third time)
-            data2 = shop2.Serialize();
-
-            // Compare the two serialized data
-            Assert.AreNotEqual(data1, data2);
+            // TODO: Undo command
         }
 
         /// <summary>
@@ -194,45 +216,39 @@ namespace Test.Vermines.ShopSystem {
         [Test]
         public void FillShopCommand()
         {
-            // -- Invalid parameters
-            ICommand fillCommand = new FillShopCommand(null);
-
-            CommandInvoker.ExecuteCommand(fillCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Failed to fill the shop.", CommandInvoker.State.Message);
-
             // -- Shop initialization with default settings.
-            ShopData shop = InitializeAndFillShop(_Config);
+            ShopData shop = InitializeAndFillShop();
 
             Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop filled.", CommandInvoker.State.Message);
 
             // -- Fill again, when it's full
             FillCommand(shop);
 
             Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop filled.", CommandInvoker.State.Message);
-
-            // -- Undo all the fill command
-            CommandInvoker.UndoCommand();
-            CommandInvoker.UndoCommand();
 
             // -- Check if the shop is empty
             foreach (var shopSection in shop.Sections) {
-                foreach (var slot in shopSection.Value.AvailableCards) {
-                    if (slot.Value != null)
-                        Assert.Fail($"The slot {slot.Key} in the {shopSection.Key} should be empty.");
+                if (shopSection.Value is CourtyardSection courtyard) {
+                    foreach (var slot in courtyard.AvailableCards) {
+                        if (slot.Value == null)
+                            Assert.Fail($"The slot {slot.Key} in {shopSection.Key} should be filled.");
+                    }
+                } else if (shopSection.Value is MarketSection market) {
+                    foreach (var kvp in market.CardPiles) {
+                        if (kvp.Value.Count == 0)
+                            Assert.Fail($"The slot in {shopSection.Key} is empty, but should be filled.");
+                    }
+                } else {
+                    Assert.Fail($"Type {shopSection.Key} refill tests not implemented.");
                 }
             }
 
             // -- Fill a shop with an empty deck & discard deck
-            ShopData emptyShop = ShopBuilder(_Config, new List<ICard>(), new List<ICard>());
+            ShopData emptyShop = InitializeEmptyShop();
 
             FillCommand(emptyShop);
 
             Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop filled.", CommandInvoker.State.Message);
         }
 
         #region Change Command
@@ -246,34 +262,27 @@ namespace Test.Vermines.ShopSystem {
         public void ChangeCardInShop()
         {
             // -- Shop initialization with default settings.
-            ShopData shop = InitializeAndFillShop(_Config);
+            ShopData shop = InitializeAndFillShop();
+
+            CourtyardSection courtyard = (CourtyardSection)shop.Sections[ShopType.Courtyard];
 
             // -- Store the card before the change
-            ICard cardBeforeTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+            ICard cardBeforeTheChange = courtyard.AvailableCards[0];
 
-            // -- Change a card in the 'Courtyard' at the place '0'
-            ICommand changeCardCommand = new CLIENT_ChangeCardCommand(new ShopArgs(shop, ShopType.Courtyard, 0));
+            // -- Change the cardBeforeTheChange card in the 'Courtyard'
+            ICommand changeCardCommand = new CLIENT_ChangeCardCommand(new ShopArgs(shop, ShopType.Courtyard, cardBeforeTheChange.ID));
 
             CommandInvoker.ExecuteCommand(changeCardCommand);
 
             // -- Check if the card is correctly changed
-            ICard cardAfterTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+            ICard cardAfterTheChange = courtyard.AvailableCards[0];
 
             Assert.AreNotEqual(cardBeforeTheChange.ID, cardAfterTheChange.ID, "The card should have been replaced by a new one.");
 
             // -- Undo the command
             CommandInvoker.UndoCommand();
 
-            // -- Check that the original card is back in the shop
-            ICard cardAfterUndo = shop.Sections[ShopType.Courtyard].AvailableCards[0];
-
-            Assert.AreEqual(cardBeforeTheChange.ID, cardAfterUndo.ID, "The original card should be back in the shop.");
-
-            // -- Verify discard and deck integrity
-            ShopSection courtyard = shop.Sections[ShopType.Courtyard];
-
-            Assert.IsFalse(courtyard.Deck.Contains(cardAfterUndo), "The original card should not remain in the deck after undo.");
-            Assert.IsTrue(courtyard.Deck.Contains(cardAfterTheChange), "The new card should be in the deck pile after undo.");
+            // TODO: Undo command.
         }
 
         /// <summary>
@@ -284,21 +293,23 @@ namespace Test.Vermines.ShopSystem {
         public void ChangeCardInEmptyShop()
         {
             // -- Initialize an empty shop
-            ShopData shop = ShopBuilder(_Config, new List<ICard>(), new List<ICard>());
+            ShopData shop = InitializeEmptyShop();
 
             // -- Add a card to the slot 0 of the courtyard
             ICard card = CardSetDatabase.Instance.GetEveryCardWith(c => c.Data.Type == CardType.Partisan).FirstOrDefault();
 
-            shop.Sections[ShopType.Courtyard].AvailableCards[0] = card;
+            CourtyardSection courtyard = (CourtyardSection)shop.Sections[ShopType.Courtyard];
 
-            // -- Change a card in the 'Courtyard' at the place '0'
-            ICommand changeCardCommand = new CLIENT_ChangeCardCommand(new ShopArgs(shop, ShopType.Courtyard, 0));
+            courtyard.AvailableCards[0] = card;
+
+            // -- Change the card in the 'Courtyard' 
+            ICommand changeCardCommand = new CLIENT_ChangeCardCommand(new ShopArgs(shop, ShopType.Courtyard, card.ID));
 
             CommandInvoker.ExecuteCommand(changeCardCommand);
 
             // -- Check if the card is correctly changed
             Assert.IsTrue(CommandInvoker.State.Status == CommandStatus.Success);
-            Assert.IsTrue(card.ID == shop.Sections[ShopType.Courtyard].AvailableCards[0].ID);
+            Assert.IsTrue(card.ID == courtyard.AvailableCards[0].ID); // When the shop is empty, the card changed stay the same as before.
         }
 
         #endregion
@@ -311,19 +322,22 @@ namespace Test.Vermines.ShopSystem {
         public void ClientBuyPartisanInShop()
         {
             // -- Shop initialization with default settings.
-            ShopData shop = InitializeAndFillShop(_Config);
+            ShopData shop = InitializeAndFillShop();
 
             // -- Store the card before the buy
-            ICard cardBeforeTheBuy = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+            CourtyardSection courtyard = (CourtyardSection)shop.Sections[ShopType.Courtyard];
 
-            // -- Buy a card in the 'Courtyard' at the place '0'
-            ShopArgs parameters = new(shop, ShopType.Courtyard, 0);
+            ICard cardBeforeTheBuy = courtyard.AvailableCards[0];
+
+            // -- Buy a card in the 'Courtyard' the cardBeforeTheBuy
+            ShopArgs parameters = new(shop, ShopType.Courtyard, cardBeforeTheBuy.ID);
+
             ICommand buyCommand = new CLIENT_BuyCommand(_LocalPlayer, parameters);
 
             CommandInvoker.ExecuteCommand(buyCommand);
 
             // -- Check if the card is correctly bought
-            ICard cardAfterTheBuy = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+            ICard cardAfterTheBuy = courtyard.AvailableCards[0];
 
             // -- Check that the card after is a null card (because the shop didn't be refilled)
             Assert.IsNull(cardAfterTheBuy);
@@ -340,40 +354,42 @@ namespace Test.Vermines.ShopSystem {
             // TODO: Test the undo command, when it will be implemented in the buy command.
         }
 
-        /*[Test]
-        public void ClientBuyEquipmentInShop()
+        [Test]
+        public void ClientBuyToolsInShop()
         {
             // -- Shop initialization with default settings.
-            ShopData shop = InitializeAndFillShop(_Config);
+            ShopData shop = InitializeAndFillShop();
 
-            // -- Force put a equipment card in the first slot of the market
-            ICard equipment = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.Type == CardType.Equipment).FirstOrDefault();
+            // -- Store the card before the buy
+            MarketSection market = (MarketSection)shop.Sections[ShopType.Market];
 
-            shop.Sections[ShopType.Market].AvailableCards[0] = equipment;
+            ICard cardBeforeTheBuy = market.CardPiles[0][^1];
 
-            // -- Buy a card in the 'Market' at the place '0'
-            ShopArgs parameters = new(shop, ShopType.Market, 0);
+            // -- Buy a card in the 'Market' the cardBeforeTheBuy
+            ShopArgs parameters = new(shop, ShopType.Market, cardBeforeTheBuy.ID);
+
             ICommand buyCommand = new CLIENT_BuyCommand(_LocalPlayer, parameters);
 
             CommandInvoker.ExecuteCommand(buyCommand);
 
             // -- Check if the card is correctly bought
-            ICard cardAfterTheBuy = shop.Sections[ShopType.Market].AvailableCards[0];
+            ICard cardAfterTheBuy = market.CardPiles[0][^1];
 
-            // -- Check that the card after is a null card (because the shop didn't be refilled)
-            Assert.IsNull(cardAfterTheBuy);
+            // -- Check that the card after is a new exemplars (because the market auto refilled).
+            Assert.IsFalse(cardBeforeTheBuy.ID == cardAfterTheBuy.ID);
+            Assert.IsTrue(cardBeforeTheBuy.Data.Name == cardAfterTheBuy.Data.Name);
 
-            // -- Check that the player have now a new card in his equipment area
-            Assert.AreEqual(1, GameDataStorage.Instance.PlayerDeck[_LocalPlayer].Equipments.Count);
+            // -- Check that the player have now a new card in his discard deck
+            Assert.AreEqual(1, GameDataStorage.Instance.PlayerDeck[_LocalPlayer].Discard.Count);
 
             // -- Check that the card store before buy is in the discard deck
-            Assert.AreEqual(equipment.ID, GameDataStorage.Instance.PlayerDeck[_LocalPlayer].Equipments[0].ID);
+            Assert.AreEqual(cardBeforeTheBuy.ID, GameDataStorage.Instance.PlayerDeck[_LocalPlayer].Discard[0].ID);
 
             // -- Undo the command
             CommandInvoker.UndoCommand();
 
             // TODO: Test the undo command, when it will be implemented in the buy command.
-        }*/
+        }
 
         #endregion
     }

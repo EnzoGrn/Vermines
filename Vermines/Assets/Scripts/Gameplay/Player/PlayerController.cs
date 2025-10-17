@@ -118,9 +118,9 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, false);
         }
 
-        public void OnBuy(ShopType shopType, int slot)
+        public void OnBuy(ShopType shopType, int cardId)
         {
-            GameManager.Instance.RPC_BuyCard(shopType, slot, Object.InputAuthority.RawEncoded);
+            GameManager.Instance.RPC_BuyCard(Object.InputAuthority.RawEncoded, shopType, cardId);
         }
 
         public void OnActiveEffectActivated(int cardID)
@@ -128,9 +128,9 @@ namespace Vermines.Player {
             GameManager.Instance.RPC_ActivateEffect(Object.InputAuthority.RawEncoded, cardID);
         }
 
-        public void OnShopReplaceCard(ShopType shopType, int slot)
+        public void OnShopReplaceCard(ShopType shopType, int cardId)
         {
-            GameManager.Instance.RPC_ReplaceCardInShop(Object.InputAuthority.RawEncoded, shopType, slot);
+            GameManager.Instance.RPC_ReplaceCardInShop(Object.InputAuthority.RawEncoded, shopType, cardId);
         }
 
         public void OnReducedInSilenced(ICard cardToBeSilenced)

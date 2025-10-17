@@ -20,7 +20,6 @@ namespace Vermines {
     using Vermines.ShopSystem.Data;
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
-    using Vermines.Gameplay.Phases;
     using Vermines.Configuration.Network;
 
     public class GameInitializer : NetworkBehaviour {
@@ -104,45 +103,62 @@ namespace Vermines {
 
         public int InitializeShop(int seed)
         {
+            // 1. Get all buyable card.
             List<ICard> everyBuyableCard = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.IsStartingCard == false);
 
             if (everyBuyableCard == null || everyBuyableCard.Count == 0)
                 return -1;
+
+            // 2. Filter card per type.
+
+            // 2.a. Object (Tools & Equipment).
             List<ICard> objectCards = everyBuyableCard.Where(card => card.Data.Type == CardType.Equipment || card.Data.Type == CardType.Tools).ToList();
 
-            if (objectCards == null || objectCards.Count == 0)
-                return -1;
             objectCards.Shuffle(seed);
 
-            List<ICard> partisanCards = everyBuyableCard.Where(card => card.Data.Type == CardType.Partisan).ToList();
-
-            if (partisanCards == null || partisanCards.Count == 0)
-                return -1;
-
+            // 2.b. Partisan (filter per level).
+            List<ICard> partisanCards  = everyBuyableCard.Where(card => card.Data.Type == CardType.Partisan).ToList();
             List<ICard> partisan1Cards = partisanCards.Where(card => card.Data.Level == 1).ToList();
             List<ICard> partisan2Cards = partisanCards.Where(card => card.Data.Level == 2).ToList();
 
-            if (partisan1Cards == null || partisan2Cards == null || partisan1Cards.Count == 0 || partisan2Cards.Count == 0)
-                return -1;
             partisan1Cards.Shuffle(seed);
             partisan2Cards.Shuffle(seed);
 
-            partisan1Cards.Merge(partisan2Cards);
-
-            partisanCards = partisan1Cards;
-
+            // 3. Create the shop.
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
-            shop.Initialize(ShopType.Market);
-            shop.FillShop(ShopType.Market, objectCards);
+            // 3.a. Courtyard Initialization.
+            CourtyardSection couryard = new() {
+                Deck1 = partisan1Cards,
+                Deck2 = partisan2Cards
+            };
 
-            shop.Initialize(ShopType.Courtyard);
-            shop.FillShop(ShopType.Courtyard, partisanCards);
+            couryard.Refill();
 
+            shop.AddSection(ShopType.Courtyard, couryard);
+
+            RPC_InitializeShopSection(ShopType.Courtyard, shop.SerializeSection(ShopType.Courtyard));
+
+            // 3.b. Market Initialization.
+            var groupedByName = objectCards.GroupBy(c => c.Data.Name).ToDictionary(g => g.Key, g => g.ToList());
+
+            MarketSection market = new(groupedByName.Count);
+
+            int index = 0;
+
+            foreach (var kvp in groupedByName) {
+                foreach (ICard card in kvp.Value)
+                    market.CardPiles[index].Add(card);
+                index++;
+            }
+
+            shop.AddSection(ShopType.Market, market);
+
+            RPC_InitializeShopSection(ShopType.Market, shop.SerializeSection(ShopType.Market));
+
+            // 4. Save the shop in GameDataStorage.
             GameDataStorage.Instance.Shop = shop;
 
-            // -- RPC Command for sync initialization
-            RPC_InitializeShop(GameDataStorage.Instance.Shop.Serialize());
 
             return 0;
         }
@@ -232,29 +248,20 @@ namespace Vermines {
 
         #region Initialize Shop
 
-        /// <summary>
-        /// This function is called by the host to initialize the shop at the start of the game.
-        /// </summary>
-        /// <param name="data">
-        /// The serialized data of the shop.
-        /// </param>
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPC_InitializeShop(string data)
+        private void RPC_InitializeShopSection(ShopType type, string data)
         {
-            StartCoroutine(WaitAndInitializeShop(data));
+            StartCoroutine(WaitAndInitializeShop(type, data));
         }
 
         /// <summary>
         /// This function wait the player correct initialization before initializing the shop.
         /// </summary>
-        /// <param name="data">
-        /// The serialized data of the shop.
-        /// </param>
-        private IEnumerator WaitAndInitializeShop(string data)
+        private IEnumerator WaitAndInitializeShop(ShopType type, string data)
         {
             yield return new WaitUntil(() => PlayerController.Local != null && GameDataStorage.Instance.PlayerDeck != null && CardSetDatabase.Instance != null && CardSetDatabase.Instance.Size > 0);
 
-            ExecuteShopInitialization(data);
+            ExecuteShopInitialization(type, data);
         }
 
         /// <summary>
@@ -263,19 +270,14 @@ namespace Vermines {
         /// <param name="data">
         /// The serialized data of the shop.
         /// </param>
-        private void ExecuteShopInitialization(string data)
+        private void ExecuteShopInitialization(ShopType type, string data)
         {
             // Ignore the host because it's shop is already initialized (it's just synchronising the shop with others)
             if (HasStateAuthority == false) {
                 _Queue.EnqueueRPC(() => {
-                    GameDataStorage.Instance.Shop = ScriptableObject.CreateInstance<ShopData>();
+                    GameDataStorage.Instance.Shop ??= ScriptableObject.CreateInstance<ShopData>();
 
-                    ICommand initializeCommand = new SyncShopCommand(GameDataStorage.Instance.Shop, data);
-
-                    CommandResponse syncStatus = CommandInvoker.ExecuteCommand(initializeCommand);
-
-                    if (syncStatus.Status != CommandStatus.Success)
-                        Debug.LogWarning($"[SERVER]: {syncStatus.Message}");
+                    GameDataStorage.Instance.Shop.DeserializeSection(type, data);
                 });
             }
 

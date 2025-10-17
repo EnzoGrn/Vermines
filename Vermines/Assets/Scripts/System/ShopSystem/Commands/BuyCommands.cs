@@ -1,15 +1,14 @@
 using OMGG.DesignPattern;
+using UnityEngine;
 using Fusion;
 
 namespace Vermines.ShopSystem.Commands {
 
     using Vermines.Gameplay.Phases.Enumerations;
-
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Elements;
-
     using Vermines.Player;
-    using System.Diagnostics;
+    using Vermines.CardSystem.Data;
 
     /// <summary>
     /// This buy command is simulate on all clients but not on the authority object client.
@@ -29,7 +28,7 @@ namespace Vermines.ShopSystem.Commands {
         public override CommandResponse Execute()
         {
             PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
-            ICard      card       = _Args.Shop.BuyCardAtSlot(_Args.ShopType, _Args.SlotIndex);
+            ICard      card       = _Args.Shop.BuyCard(_Args.ShopType, _Args.CardId);
 
             if (card.Data.Type == CardType.Equipment)
                 playerDeck.Equipments.Add(card);
@@ -69,9 +68,15 @@ namespace Vermines.ShopSystem.Commands {
             if (_Parameters.Shop == null)
                 return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", _Parameters.ShopType.ToString());
 
-            // 1. Check phase
-            if (_CurrentPhase == PhaseType.Gain && _Parameters.Shop.HasCardAtSlot(_Parameters.ShopType, _Parameters.SlotIndex)) {
-                ICard freeCard = _Parameters.Shop.Sections[_Parameters.ShopType].GetCardAtSlot(_Parameters.SlotIndex);
+            // 1. Check if the shop and card is in shop
+            if (!_Parameters.Shop.Sections.ContainsKey(_Parameters.ShopType))
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", _Parameters.ShopType.ToString());
+            if (!_Parameters.Shop.HasCard(_Parameters.ShopType, _Parameters.CardId))
+                return new CommandResponse(CommandStatus.CriticalError, "Shop_SlotEmpty", _Parameters.ShopType.ToString());
+
+            // 2. Check phase
+            if (_CurrentPhase == PhaseType.Gain && _Parameters.Shop.HasCard(_Parameters.ShopType, _Parameters.CardId)) {
+                ICard freeCard = CardSetDatabase.Instance.GetCardByID(_Parameters.CardId);
 
                 if (freeCard.Data.IsFree)
                     return new CommandResponse(CommandStatus.Success, string.Empty);
@@ -79,14 +84,8 @@ namespace Vermines.ShopSystem.Commands {
                 return new CommandResponse(CommandStatus.Invalid, "Shop_Buy_WrongPhase");
             }
 
-            // 2. Check if the shop and slot exist
-            if (!_Parameters.Shop.Sections.ContainsKey(_Parameters.ShopType))
-                return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", _Parameters.ShopType.ToString());
-            if (!_Parameters.Shop.HasCardAtSlot(_Parameters.ShopType, _Parameters.SlotIndex))
-                return new CommandResponse(CommandStatus.CriticalError, "Shop_SlotEmpty", _Parameters.ShopType.ToString());
-
             // 3. Get the wanted card
-            ICard card = _Parameters.Shop.Sections[_Parameters.ShopType].GetCardAtSlot(_Parameters.SlotIndex);
+            ICard card = CardSetDatabase.Instance.GetCardByID(_Parameters.CardId);
 
             // 4. Check if player has enough eloquence
             int canPay = CanPurchase(GameDataStorage.Instance.PlayerData[_Player], card);
@@ -139,7 +138,7 @@ namespace Vermines.ShopSystem.Commands {
         {
             PlayerData playerData = GameDataStorage.Instance.PlayerData[_Player];
             PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
-            ICard      card       = _Parameters.Shop.Sections[_Parameters.ShopType].BuyCardAtSlot(_Parameters.SlotIndex);
+            ICard      card       = _Parameters.Shop.BuyCard(_Parameters.ShopType, _Parameters.CardId);
 
             // 1. Process the purchase
             int remainingE = Purchase(_Player, playerData, card);

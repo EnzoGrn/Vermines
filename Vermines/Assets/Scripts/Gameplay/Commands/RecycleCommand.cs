@@ -7,8 +7,8 @@ namespace Vermines.Gameplay.Commands {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
     using Vermines.Player;
-    using Vermines.ShopSystem.Data;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.ShopSystem.Data;
 
     public class ADMIN_CheckRecycleCommand : ACommand {
 
@@ -57,9 +57,9 @@ namespace Vermines.Gameplay.Commands {
         private readonly ICard _Card;
         private readonly int   _CardId;
 
-        private ShopSection _Shop;
+        private ShopSectionBase _Shop;
 
-        public CLIENT_CardRecycleCommand(PlayerRef player, int cardID, ShopSection section)
+        public CLIENT_CardRecycleCommand(PlayerRef player, int cardID, ShopSectionBase section)
         {
             _Player = player;
             _Card   = CardSetDatabase.Instance.GetCardByID(cardID);
@@ -75,7 +75,7 @@ namespace Vermines.Gameplay.Commands {
 
             GameDataStorage.Instance.PlayerDeck[_Player] = deck;
 
-            _Shop.DiscardDeck.Add(_Card);
+            _Shop.ReturnCard(_Card);
 
             PlayerData playerData = GameDataStorage.Instance.PlayerData[_Player];
 
