@@ -46,7 +46,7 @@ public static class GameEvents
     public static Dictionary<ShopType, TrackedEvent<int, ICard>> OnShopsEvents = new();
     public static TrackedEvent<ShopType, int> OnCardPurchaseRequested = new("OnCardPurchaseRequested");
     public static TrackedEvent<ShopType, int> OnCardPurchased = new("OnCardPurchased");
-    public static TrackedEvent<ICard, int> OnEquipmentCardPurchased = new("OnEquipmentCardPurchased");
+    public static TrackedEvent<ICard> OnEquipmentCardPurchased = new("OnEquipmentCardPurchased");
     public static TrackedEvent<ShopType, int> OnShopCardReplaced = new("OnShopCardReplaced");
     public static TrackedEvent<ShopType, List<ShopCardEntry>> OnShopUpdated = new("OnShopUpdated");
     public static TrackedEvent<ShopType, Dictionary<int, ICard>> OnShopRefilled = new("OnShopRefilled");
@@ -84,10 +84,9 @@ public static class GameEvents
         }
     }
 
-    public static void InvokeOnCardPurchaseRequested(ShopType shopType, int slotIndex)
+    public static void InvokeOnCardPurchaseRequested(ShopType shopType, int cardId)
     {
-        Debug.Log($"[GameEvents] InvokeOnCardPurchaseRequested: {shopType}, Slot: {slotIndex}");
-        OnCardPurchaseRequested.Invoke(shopType, slotIndex);
+        OnCardPurchaseRequested.Invoke(shopType, cardId);
     }
 
     public static void InvokeOnPlayerWin(PlayerRef winnerRef, PlayerRef localPlayerRef)

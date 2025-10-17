@@ -34,6 +34,7 @@
         public bool IsAnonyme { get; set; }
 
         private CardData _Data;
+
         public CardData Data
         {
             get => IsAnonyme ? null : _Data; // Security check

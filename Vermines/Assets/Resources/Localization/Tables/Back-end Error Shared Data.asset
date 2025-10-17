@@ -119,6 +119,14 @@ MonoBehaviour:
     m_Key: NotAChoiceEffect
     m_Metadata:
       m_Items: []
+  - m_Id: 9275802486038528
+    m_Key: Shop_Replace_NotAllowShop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9276500577607680
+    m_Key: Shop_CardNotExist
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

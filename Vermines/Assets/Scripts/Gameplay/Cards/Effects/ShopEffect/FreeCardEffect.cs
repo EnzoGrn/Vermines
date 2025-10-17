@@ -84,7 +84,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             GameEvents.OnCardPurchased.AddListener(OnBuy);
         }
 
-        public void OnBuy(ShopType shopType, int slotId)
+        public void OnBuy(ShopType shopType, int cardId)
         {
             if (_ShopTarget != shopType)
                 return;

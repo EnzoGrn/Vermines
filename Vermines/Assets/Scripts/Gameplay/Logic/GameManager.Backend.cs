@@ -119,7 +119,7 @@ namespace Vermines {
         #region Shop
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_BuyCard(ShopType shopType, int slot, int playerId)
+        public void RPC_BuyCard(int playerId, ShopType shopType, int cardId)
         {
             PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
 
@@ -135,7 +135,7 @@ namespace Vermines {
                 return;
             }
 
-            ShopArgs parameters = new(GameDataStorage.Instance.Shop, shopType, slot);
+            ShopArgs parameters = new(GameDataStorage.Instance.Shop, shopType, cardId);
 
             ICommand                checker = new ADMIN_CheckBuyCommand(playerSource, GetCurrentPhase(), parameters);
             CommandResponse checkerResponse = CommandInvoker.ExecuteCommand(checker);
@@ -157,7 +157,7 @@ namespace Vermines {
                 return;
             }
 
-            ICard cardBought = parameters.Shop.Sections[shopType].GetCardAtSlot(slot);
+            ICard cardBought = CardSetDatabase.Instance.GetCardByID(cardId);
 
             ICommand buyCommand = new ADMIN_BuyCommand(playerSource, parameters);
 
@@ -188,11 +188,11 @@ namespace Vermines {
 
             ChroniclePayloadStorage.Add(entry.Id, payloadJson);
 
-            PlayerController.Local.RPC_BuyCard(playerId, NetworkChronicleEntry.FromChronicleEntry(entry), shopType, slot);
+            PlayerController.Local.RPC_BuyCard(playerId, NetworkChronicleEntry.FromChronicleEntry(entry), shopType, cardId);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RPC_ReplaceCardInShop(int playerId, ShopType shopType, int slot)
+        public void RPC_ReplaceCardInShop(int playerId, ShopType shopType, int cardId)
         {
             PlayerRef playerSource = PlayerRef.FromEncoded(playerId); // The player who initiated the buy request
 
@@ -208,12 +208,12 @@ namespace Vermines {
                 return;
             }
 
-            ShopArgs parameters = new(GameDataStorage.Instance.Shop, shopType, slot);
+            ShopArgs parameters = new(GameDataStorage.Instance.Shop, shopType, cardId);
 
             ICommand        checker  = new ADMIN_CheckChangeCardCommand(parameters);
             CommandResponse response = CommandInvoker.ExecuteCommand(checker);
 
-            if (response.Status != CommandStatus.Success) { // Can only failed if the shop or the slot selected is empty. So if it's a cheat, bug or a desync.
+            if (response.Status != CommandStatus.Success) { // Can only failed if the shop or the card selected doesn't exist. So if it's a cheat, bug or a desync.
                 SendError(new GameActionError {
                     Scope       = ErrorScope.Local,
                     Target      = playerSource,
@@ -226,11 +226,11 @@ namespace Vermines {
                 return;
             }
             PlayerData   player = GameDataStorage.Instance.PlayerData[playerSource];
-            ICard cardToReplace = GameDataStorage.Instance.Shop.Sections[shopType].GetCardAtSlot(slot);
+            ICard cardToReplace = CardSetDatabase.Instance.GetCardByID(cardId);
             
             CommandInvoker.ExecuteCommand(new CLIENT_ChangeCardCommand(parameters)); // Simulate the change to get the new card
 
-            ICard newCard = GameDataStorage.Instance.Shop.Sections[shopType].GetCardAtSlot(slot);
+            ICard newCard = CardSetDatabase.Instance.GetCardByID(response.Args[^1]); // CLIENT_ChangeCardCommand return when success: Shoptype, oldCard id and newCard id. So we take the last args to know the newCard.
 
             CommandInvoker.UndoCommand(); // Undo the change in the simulation to keep the real state intact until the RPC is sent to all clients.
 
@@ -259,7 +259,7 @@ namespace Vermines {
 
             ChroniclePayloadStorage.Add(entry.Id, payloadJson);
 
-            PlayerController.Local.RPC_ReplaceCardInShop(playerId, NetworkChronicleEntry.FromChronicleEntry(entry), shopType, slot);
+            PlayerController.Local.RPC_ReplaceCardInShop(playerId, NetworkChronicleEntry.FromChronicleEntry(entry), shopType, cardId);
         }
 
         #endregion
