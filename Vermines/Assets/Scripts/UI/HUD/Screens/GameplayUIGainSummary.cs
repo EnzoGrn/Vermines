@@ -82,6 +82,11 @@ namespace Vermines.UI.Screen
         {
             base.Show();
 
+            if (Controller.GetLastScreen(out GameplayUIScreen turnScreen) && turnScreen is GameplayUITurn)
+            {
+                Controller.RemoveLastScreen();
+            }
+
             ShowUser();
 
             LoadAndAnnounce();

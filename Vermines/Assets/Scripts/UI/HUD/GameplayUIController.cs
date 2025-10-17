@@ -216,6 +216,29 @@ namespace Vermines.UI
             ShowLast();
         }
 
+        public virtual void Hide<S>() where S : GameplayUIScreen
+        {
+            if (_ScreenLookup.TryGetValue(typeof(S), out var result))
+            {
+                if (_ActiveScreen == result)
+                {
+                    Debug.Log($"Hiding screen: {_ActiveScreen.GetType().Name}");
+                    _ActiveScreen.Hide();
+                    _ActiveScreen = null;
+                    ShowLast();
+                }
+            }
+            else
+            {
+                Debug.LogError($"Hide() - Screen type '{typeof(S).Name}' not found.");
+            }
+        }
+
+        public virtual void RemoveLastScreen()
+        {
+            _LastScreen = null;
+        }
+
         /// <summary>
         /// Get a screen based on type.
         /// </summary>

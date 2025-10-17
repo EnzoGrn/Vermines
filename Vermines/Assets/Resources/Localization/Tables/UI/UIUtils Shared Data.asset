@@ -75,6 +75,14 @@ MonoBehaviour:
     m_Key: table.default_text
     m_Metadata:
       m_Items: []
+  - m_Id: 54313612796452864
+    m_Key: Turn.text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54726171320082432
+    m_Key: Turn.your
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

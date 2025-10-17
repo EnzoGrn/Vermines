@@ -79,6 +79,14 @@ MonoBehaviour:
     m_Localized: Zone de jeu
     m_Metadata:
       m_Items: []
+  - m_Id: 54313612796452864
+    m_Localized: C'est au tour de {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54726171320082432
+    m_Localized: C'est ton tour
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

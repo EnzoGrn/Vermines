@@ -1,15 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
-namespace Vermines.Gameplay.Phases {
+namespace Vermines.Gameplay.Phases
+{
 
     using Vermines.CardSystem.Elements;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
     using Vermines.UI;
+    using Vermines.UI.Screen;
 
-    public class SacrificePhase : APhase {
+    public class SacrificePhase : APhase
+    {
 
         #region Type
 
@@ -19,58 +23,117 @@ namespace Vermines.Gameplay.Phases {
 
         #region Properties
 
-        /// <summary>
-        /// The current number of cards the player sacrificed during this phase.
-        /// </summary>
         private int _NumberOfCardSacrified = 0;
-
         private PlayerRef _CurrentPlayer;
+
+        private Coroutine _sacrificeCoroutine;
 
         #endregion
 
-        public SacrificePhase() {}
+        public SacrificePhase() { }
 
         #region Override Methods
 
         public override void Run(PlayerRef player)
         {
-            // Check if the game is currently initialized
-            if (player == PlayerRef.None || PlayerController.Local == null || GameDataStorage.Instance.PlayerDeck == null || GameDataStorage.Instance.PlayerDeck.TryGetValue(player, out PlayerDeck _) == false)
+            PlayerController.Local.StartCoroutine(SacrificeRoutine());
+
+            if (player == PlayerRef.None ||
+                PlayerController.Local == null ||
+                GameDataStorage.Instance.PlayerDeck == null ||
+                !GameDataStorage.Instance.PlayerDeck.TryGetValue(player, out PlayerDeck _))
                 return;
+
             Reset();
-
             _CurrentPlayer = player;
+        }
 
-            List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
+        private IEnumerator SacrificeRoutine()
+        {
+            GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>(FindObjectsInactive.Include);
+
+            if (gameplayUIController != null)
+                gameplayUIController.Show<GameplayUITurn>();
+
+            yield return new WaitForSeconds(3f);
+
+            if (gameplayUIController != null && gameplayUIController.GetActiveScreen(out GameplayUIScreen activescreen) &&
+                activescreen is GameplayUITurn)
+                gameplayUIController.Hide();
+
+            if (_CurrentPlayer == PlayerRef.None)
+            {
+                Debug.LogWarning("[SacrificePhase] CurrentPlayer is None. Ending phase early.");
+                OnPhaseEnding(_CurrentPlayer, true);
+                yield break;
+            }
+
+            if (GameDataStorage.Instance.PlayerDeck == null)
+            {
+                Debug.LogError("[SacrificePhase] PlayerDeck is null.");
+                OnPhaseEnding(_CurrentPlayer, true);
+                yield break;
+            }
+
+            if (!GameDataStorage.Instance.PlayerDeck.TryGetValue(_CurrentPlayer, out PlayerDeck playerDeck))
+            {
+                Debug.LogWarning($"[SacrificePhase] No PlayerDeck entry for player {_CurrentPlayer}. Ending phase early.");
+                OnPhaseEnding(_CurrentPlayer, true);
+                yield break;
+            }
+
+            List<ICard> playedCards = playerDeck.PlayedCards;
 
             GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
 
-            if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef) {
-                CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
+            try
+            {
+                if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
+                {
+                    CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
+                    if (camera != null)
+                        camera.GoOnSacrificeLocation();
 
-                if (camera != null)
-                    camera.GoOnSacrificeLocation();
-            } else if (playedCards.Count == 0) {
-                OnPhaseEnding(_CurrentPlayer, true);
+                    while (_NumberOfCardSacrified < GameManager.Instance.SettingsData.MaxSacrificesPerTurn &&
+                           GameDataStorage.Instance.PlayerDeck.TryGetValue(_CurrentPlayer, out var currentDeck) &&
+                           currentDeck.PlayedCards.Count > 0)
+                    {
+                        yield return null;
+                    }
 
+                    CamManager cam = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
+                    if (cam != null)
+                        cam.GoOnNoneLocation();
+
+                    OnPhaseEnding(_CurrentPlayer, true);
+                }
+                else
+                {
+                    OnPhaseEnding(_CurrentPlayer, true);
+                }
+            }
+            finally
+            {
                 GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
             }
         }
 
+
         public override void Reset()
         {
             _NumberOfCardSacrified = 0;
-            _CurrentPlayer         = PlayerRef.None;
+            _CurrentPlayer = PlayerRef.None;
         }
 
         public override void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
-            CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
-
-            // Return to sky location
-            if (_CurrentPlayer == PlayerController.Local.PlayerRef && camera != null)
-                camera.GoOnNoneLocation();
             base.OnPhaseEnding(player, logic);
+
+            if (_sacrificeCoroutine != null && PlayerController.Local != null)
+            {
+                PlayerController.Local.StopCoroutine(_sacrificeCoroutine);
+                _sacrificeCoroutine = null;
+            }
 
             GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
         }
@@ -85,30 +148,18 @@ namespace Vermines.Gameplay.Phases {
                 return;
             if (_CurrentPlayer != PlayerController.Local.PlayerRef)
                 return;
-            if (_NumberOfCardSacrified >= GameManager.Instance.Configuration.MaxSacrificesPerTurn)
+            if (_NumberOfCardSacrified >= GameManager.Instance.SettingsData.MaxSacrificesPerTurn)
                 return;
 
             Debug.Log("[Client]: Card Sacrified");
+
             int cardId = cardSacrified.ID;
-            ICard card = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Find(card => card.ID == cardId);
+            ICard card = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Find(c => c.ID == cardId);
 
             if (card != null)
             {
-                int cardCount = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Count;
                 PlayerController.Local.OnCardSacrified(card.ID);
-                cardCount--;
                 _NumberOfCardSacrified++;
-
-                if (_NumberOfCardSacrified >= GameManager.Instance.SettingsData.MaxSacrificesPerTurn || cardCount == 0)
-                {
-                    // Pop up context
-                    OnPhaseEnding(_CurrentPlayer, false);
-                    GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
-                    if (gameplayUIController != null)
-                    {
-                        // TODO: Hide the tableAdd commentMore actions
-                    }
-                }
             }
             else
             {
@@ -116,6 +167,7 @@ namespace Vermines.Gameplay.Phases {
                 GameEvents.OnCardSacrifiedRefused.Invoke(cardSacrified);
             }
         }
+
         #endregion
     }
 }
