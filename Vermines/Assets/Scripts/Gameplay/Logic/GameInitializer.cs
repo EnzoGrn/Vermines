@@ -46,24 +46,26 @@ namespace Vermines {
 
         public void InitializePlayers(GameSettingsData settings)
         {
-            List<CardFamily> playersFamily = GameDataStorage.Instance.GetPlayersFamily();
-            List<CardFamily> families      = FamilyUtils.GenerateFamilies(settings.Seed, GameDataStorage.Instance.PlayerData.Count, playersFamily);
-            int              orderIndex    = 0;
+            List<CardFamily> existingFamilies  = GameDataStorage.Instance.GetPlayersFamily();
+            List<CardFamily> generatedFamilies = FamilyUtils.GenerateFamilies(settings.Seed, GameDataStorage.Instance.PlayerData.Count, existingFamilies); 
 
-            foreach (var player in GameDataStorage.Instance.PlayerData) {
-                Vermines.Player.PlayerData data = player.Value;
+            int index = 0;
+
+            foreach (var playerEntry in GameDataStorage.Instance.PlayerData) {
+                PlayerRef playerRef = playerEntry.Key;
+                PlayerData     data = playerEntry.Value;
 
                 if (data.Family == CardFamily.None)
-                    data.Family = families[orderIndex];
-                data.Eloquence = GiveEloquence(orderIndex, settings.EloquenceToStartWith);
+                    data.Family = generatedFamilies[index % generatedFamilies.Count];
+                data.Eloquence = settings.EloquenceToStartWith;
                 data.Souls     = settings.SoulToStartWith;
 
-                GameDataStorage.Instance.PlayerData.Set(player.Key, data);
+                GameDataStorage.Instance.PlayerData.Set(playerRef, data);
 
-                orderIndex++;
+                index++;
             }
 
-            RPC_InitializeGame(FamilyUtils.FamiliesListToIds(families));
+            RPC_InitializeGame(FamilyUtils.FamiliesListToIds(generatedFamilies));
         }
 
         public int DeckDistribution(System.Random rand)
@@ -317,16 +319,24 @@ namespace Vermines {
         /// <param name="number">
         /// The number of cards to draw for each player at the start of the game.
         /// </param>
-        private void ExecuteStartingDraw(int number)
+        private void ExecuteStartingDraw(int baseCardsToDraw)
         {
-            for (int i = 0; i < number; i++) {
-                foreach (var kvp in GameDataStorage.Instance.PlayerDeck.ToList()) {
-                    ICommand drawCommand = new DrawCommand(kvp.Key);
+            NetworkArray<PlayerRef> order = GameManager.Instance.PlayerTurnOrder;
+            int playerCount = GameDataStorage.Instance.PlayerData.Count;
+            
+            for (int i = 0; i < playerCount; i++) {
+                PlayerRef player = order.Get(i);
 
+                if (player == PlayerRef.None)
+                    continue;
+                int cardsToDraw = (i == 0) ? baseCardsToDraw - 1 : baseCardsToDraw;
+
+                for (int j = 0; j < cardsToDraw; j++) {
+                    ICommand    drawCommand = new DrawCommand(player);
                     CommandResponse command = CommandInvoker.ExecuteCommand(drawCommand);
 
-                    if (command.Status == CommandStatus.Success && PlayerController.Local.PlayerRef == kvp.Key) {
-                        PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[kvp.Key];
+                    if (command.Status == CommandStatus.Success && PlayerController.Local.PlayerRef == player) {
+                        PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
 
                         GameEvents.InvokeOnDrawCard(deck.Hand.Last());
                     }
