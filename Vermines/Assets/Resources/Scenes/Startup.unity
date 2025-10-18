@@ -3287,7 +3287,7 @@ MonoBehaviour:
   _IsModal: 1
   _Plugins: []
   SceneRef:
-    RawValue: 2
+    RawValue: 3
   _SessionCodeField: {fileID: 971623573}
   _CreateButton: {fileID: 1838712131}
   _JoinButton: {fileID: 779885440}
@@ -9925,7 +9925,7 @@ MonoBehaviour:
   _IsModal: 0
   _Plugins: []
   _SceneToLoadWhenReady:
-    RawValue: 3
+    RawValue: 4
   _CodeText: {fileID: 460842077}
   _SessionGameObject: {fileID: 400591680}
   _CopySessionButton: {fileID: 1372278481}
@@ -10534,7 +10534,7 @@ MonoBehaviour:
   _Plugins:
   - {fileID: 1041615074}
   SceneRef:
-    RawValue: 3
+    RawValue: 4
   SelectedCultist: {fileID: 0}
   _PlayButton: {fileID: 391078639}
   _PartyButton: {fileID: 1006080143}

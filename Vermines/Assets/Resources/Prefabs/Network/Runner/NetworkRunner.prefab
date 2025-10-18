@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 1318204148776143994}
   - component: {fileID: 6909658878594372984}
   - component: {fileID: 3556042087958073447}
-  - component: {fileID: 5099341651379279974}
-  - component: {fileID: 9097703777632059610}
+  - component: {fileID: -6778522997390759753}
+  - component: {fileID: -7471926013900066193}
   m_Layer: 0
   m_Name: NetworkRunner
   m_TagString: Untagged
@@ -116,7 +116,7 @@ MonoBehaviour:
   OnObjectExitAOI:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5099341651379279974
+--- !u!114 &-6778522997390759753
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -125,12 +125,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6349328883958122919}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90a93abf1a391964a94e5c139605105b, type: 3}
+  m_Script: {fileID: 11500000, guid: 2f1bdcf2d06b12a4aa78927189b78436, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   IsSceneTakeOverEnabled: 1
   LogSceneLoadErrors: 1
---- !u!114 &9097703777632059610
+  AddressableScenesLabel: FusionScenes
+--- !u!114 &-7471926013900066193
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -139,6 +140,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 6349328883958122919}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fff55373d55b384b9af927cc1eaa712, type: 3}
+  m_Script: {fileID: 11500000, guid: b8edbe7108d8a43ab838cf8b8d9453df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

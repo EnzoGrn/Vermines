@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: ServerStatus_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: 3f7a6877c30107b478586fbb2caab49f, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7020208128
+    m_Localized: "Serveur ferm\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9738117120
+    m_Localized: "D\xE9marrage"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 433622867968
+    m_Localized: Reconnexion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 577533632512
+    m_Localized: Connexion perdu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 567576354816
+    m_Localized: "Arr\xEAt"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 861718700032
+    m_Localized: "D\xE9chargement de la sc\xE8ne actuelle"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 946674327552
+    m_Localized: "D\xE9marrage de la connexion r\xE9seau"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16424121655296
+    m_Localized: En attente de connexion au serveur
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16781925146624
+    m_Localized: "Chargement de la sc\xE8ne de jeu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16963920191488
+    m_Localized: "En attente du chargement de la sc\xE8ne de jeu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17286034350080
+    m_Localized: "En attente du jeu en r\xE9seau"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17533800275968
+    m_Localized: En attente du chargement du jeu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17776335904768
+    m_Localized: "Initialisation de la sc\xE8ne"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17977469558784
+    m_Localized: "Initialisation du jeu en r\xE9seau"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18119350280192
+    m_Localized: "D\xE9connexion du serveur"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18374917611520
+    m_Localized: "D\xE9chargement de la sc\xE8ne de jeu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18506966884352
+    m_Localized: "Chargement de la sc\xE8ne du menu"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

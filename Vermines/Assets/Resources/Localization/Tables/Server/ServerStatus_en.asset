@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: ServerStatus_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 3f7a6877c30107b478586fbb2caab49f, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7020208128
+    m_Localized: Server Closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9738117120
+    m_Localized: Starting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 433622867968
+    m_Localized: Reconnecting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 567576354816
+    m_Localized: Quitting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 577533632512
+    m_Localized: Connexion lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 861718700032
+    m_Localized: Unloading current scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 946674327552
+    m_Localized: Starting network connection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16424121655296
+    m_Localized: Waiting for server connection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16781925146624
+    m_Localized: Loading gameplay scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16963920191488
+    m_Localized: Waiting for gameplay scene load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17286034350080
+    m_Localized: Waiting for networked game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17533800275968
+    m_Localized: Waiting for gameplay load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17776335904768
+    m_Localized: Activating scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17977469558784
+    m_Localized: Activating network game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18119350280192
+    m_Localized: Disconnect from server
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18374917611520
+    m_Localized: Unloading gameplay scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18506966884352
+    m_Localized: Loading menu scene
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []
