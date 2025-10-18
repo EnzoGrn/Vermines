@@ -90,6 +90,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-fr
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e5170446c1cbb0e44b721fd093a90008
+    m_Address: ServerStatus_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f3d894b94caa94b448c44ca04bd78a8f
     m_Address: LanguageSettings_fr
     m_ReadOnly: 1
