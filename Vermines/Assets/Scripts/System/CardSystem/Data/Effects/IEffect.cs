@@ -142,12 +142,16 @@ namespace Vermines.CardSystem.Data.Effect {
         {
             if (obj is not AEffect other)
                 return false;
-            return Type == other.Type && Description == other.Description && Card.ID == other.Card.ID;
+
+            bool cardEqual = (Card == null && other.Card == null)
+                             || (Card != null && other.Card != null && Card.ID == other.Card.ID);
+
+            return Type == other.Type && Description == other.Description && cardEqual;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Type, Description, Card.ID);
+            return HashCode.Combine(Type, Description, Card?.ID ?? 0);
         }
 
         #endregion
