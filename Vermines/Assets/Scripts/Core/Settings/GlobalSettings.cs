@@ -14,5 +14,6 @@ namespace Vermines.Core.Settings {
         public string MenuScene = "Menu";
 
         public NetworkSettings Network;
+        public OptionsData DefaultOptions;
     }
 }

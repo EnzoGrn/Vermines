@@ -7,6 +7,7 @@ namespace Vermines.Core.Network {
         public string UserID;
 
         public GameMode GameMode;
+        public GameplayType GameplayType;
 
         public string DisplayName;
         public string SessionName;

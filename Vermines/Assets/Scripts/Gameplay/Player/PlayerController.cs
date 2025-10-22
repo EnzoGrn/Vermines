@@ -2,14 +2,53 @@
 using Fusion;
 
 namespace Vermines.Player {
+
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
+    using Vermines.Core;
+    using Vermines.Core.Player;
+    using Vermines.Core.Scene;
     using Vermines.Menu.Screen;
     using Vermines.Network.Utilities;
     using Vermines.Service;
     using Vermines.ShopSystem.Enumerations;
 
-    public partial class PlayerController : NetworkBehaviour {
+    public partial class PlayerController : NetworkBehaviour, IPlayer, IContextBehaviour {
+
+        #region Player's value
+
+        public string UserID { get; private set; }
+        public string UnityID { get; private set; }
+        public string Nickname { get; private set; }
+
+        public SceneContext Context { get; set; }
+
+        [Networked]
+        private NetworkString<_64> NetworkedUserID { get; set; }
+
+        [Networked]
+        private NetworkString<_32> NetworkedNickname { get; set; }
+
+        [Networked]
+        public PlayerStatistics Statistics { get; private set; }
+
+        public PlayerDeck Deck { get; private set; }
+
+        #endregion
+
+        #region Methods
+
+        public void UpdateStatistics(PlayerStatistics statistics)
+        {
+            Statistics = statistics;
+        }
+
+        public void UpdateDeck(PlayerDeck deck)
+        {
+            Deck = deck;
+        }
+
+        #endregion
 
         public static PlayerController Local { get; private set; }
 

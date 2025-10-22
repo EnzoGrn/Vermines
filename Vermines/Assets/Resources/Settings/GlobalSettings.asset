@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RunnerPrefab: {fileID: 6909658878594372984, guid: f9de5fbb9e25841459e71cc8d6d0eb09, type: 3}
   LoadingScene: LoadingScene
-  MenuScene: Startup
+  MenuScene: Menu
   Network: {fileID: 11400000, guid: d7484ce1aeae71849b98d43c50dfcd37, type: 2}

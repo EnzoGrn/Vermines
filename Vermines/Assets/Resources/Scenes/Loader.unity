@@ -858,7 +858,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _MainScene: EnvironmentDay
   _SceneToLoads:
-  - Startup
+  - Menu
   - MenuCameraTravelling
   _FadeInObject: {fileID: 2119301007}
   _FadeOutObject: {fileID: 76211469}

@@ -23,6 +23,7 @@ namespace Vermines.Core.Network {
 
         public const string DISPLAY_NAME_KEY = "name";
         public const string MODE_KEY         = "mode";
+        public const string TYPE_KEY         = "type";
 
         #endregion
 
@@ -120,7 +121,7 @@ namespace Vermines.Core.Network {
             _StopGameOnDisconnect = false;
             ErrorStatus           = null;
 
-            Log($"StartGame() UserID:{request.UserID} GameMode:{request.GameMode} DisplayName:{request.DisplayName} SessionName:{request.SessionName} ScenePath:{request.ScenePath} MaxPlayers:{request.MaxPlayers} ExtraPeers:{request.ExtraPeers} CustomLobby:{request.CustomLobby}");
+            Log($"StartGame() UserID:{request.UserID} GameMode:{request.GameMode} DisplayName:{request.DisplayName} SessionName:{request.SessionName} ScenePath:{request.ScenePath} MaxPlayers:{request.MaxPlayers} ExtraPeers:{request.ExtraPeers} CustomLobby:{request.CustomLobby} GameplayType: {request.GameplayType}");
         }
 
         private void StopGame(string errorStatus = null)
@@ -466,7 +467,7 @@ namespace Vermines.Core.Network {
 
             Log($"NetworkGame.Initialize() - Peer {peer.ID}");
 
-            networkGame.Initialize();
+            networkGame.Initialize(peer.Request.GameplayType);
 
             // TODO: Implement GameplayMode
 
@@ -649,6 +650,7 @@ namespace Vermines.Core.Network {
         {
             return new Dictionary<string, SessionProperty> {
                 [DISPLAY_NAME_KEY] = request.DisplayName,
+                [TYPE_KEY]         = (int)request.GameplayType,
                 [MODE_KEY]         = (int)request.GameMode
             };
         }
