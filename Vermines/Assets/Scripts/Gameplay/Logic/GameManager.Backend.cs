@@ -228,9 +228,9 @@ namespace Vermines {
             PlayerData   player = GameDataStorage.Instance.PlayerData[playerSource];
             ICard cardToReplace = CardSetDatabase.Instance.GetCardByID(cardId);
             
-            CommandInvoker.ExecuteCommand(new CLIENT_ChangeCardCommand(parameters)); // Simulate the change to get the new card
+            response = CommandInvoker.ExecuteCommand(new CLIENT_ChangeCardCommand(parameters)); // Simulate the change to get the new card
 
-            ICard newCard = CardSetDatabase.Instance.GetCardByID(response.Args[2]); // CLIENT_ChangeCardCommand return when success: Shoptype, oldCard id and newCard id. So we take the last args to know the newCard.
+            ICard newCard = CardSetDatabase.Instance.GetCardByID(response.Args[^1]); // CLIENT_ChangeCardCommand return when success: Shoptype, oldCard id and newCard id. So we take the last args to know the newCard.
 
             CommandInvoker.UndoCommand(); // Undo the change in the simulation to keep the real state intact until the RPC is sent to all clients.
 
