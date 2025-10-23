@@ -142,7 +142,6 @@ namespace Vermines.UI.Screen
             }
 
             PlayerController.Local.OnEffectChoice(_card, effect);
-            Controller.Hide();
         }
 
         #endregion

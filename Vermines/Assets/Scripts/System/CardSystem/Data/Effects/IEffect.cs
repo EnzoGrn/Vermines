@@ -142,9 +142,7 @@ namespace Vermines.CardSystem.Data.Effect {
         {
             if (obj is not AEffect other)
                 return false;
-
-            bool cardEqual = (Card == null && other.Card == null)
-                             || (Card != null && other.Card != null && Card.ID == other.Card.ID);
+            bool cardEqual = (Card == null && other.Card == null) || (Card != null && other.Card != null && Card.ID == other.Card.ID);
 
             return Type == other.Type && Description == other.Description && cardEqual;
         }

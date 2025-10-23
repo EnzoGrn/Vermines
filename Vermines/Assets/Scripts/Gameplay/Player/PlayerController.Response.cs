@@ -153,11 +153,9 @@ namespace Vermines.Player {
             if (card.Data.HasChoiceEffect(EffectType.Discard)) {
                 if (player == PlayerController.Local.PlayerRef) {
                     GameplayUIController uiController = FindFirstObjectByType<GameplayUIController>();
-                    if (uiController != null) {
+
+                    if (uiController != null)
                         uiController.ShowWithParams<GameplayUIChoiceEffect, ICard>(card);
-                    }
-                    // TODO: Open the choice UI.
-                    // TODO: Create a method to call the effect in network. Link it to the choice UI.
                 }
             } else {
                 foreach (AEffect effect in card.Data.Effects) {
@@ -297,6 +295,13 @@ namespace Vermines.Player {
         {
             PlayerRef player = PlayerRef.FromEncoded(playerId);
             ICard     card   = CardSetDatabase.Instance.GetCardByID(cardId);
+
+            if (player == PlayerController.Local.PlayerRef) {
+                GameplayUIController uiController = FindFirstObjectByType<GameplayUIController>();
+
+                if (uiController != null)
+                    uiController.Hide<GameplayUIChoiceEffect>();
+            }
 
             card.Data.Effects[effectIndex].Play(player);
         }
