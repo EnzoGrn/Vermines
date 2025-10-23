@@ -1,10 +1,11 @@
-using System;
-using TMPro;
 using UnityEngine;
+using TMPro;
 
 namespace Vermines.Environment.Interaction.Button {
 
-    public class ButtonSignInteraction : MonoBehaviour {
+    using Vermines.UI;
+
+    public class ButtonSignInteraction : UIButton {
 
         [SerializeField]
         private TextMeshPro _TextMesh;
@@ -14,9 +15,6 @@ namespace Vermines.Environment.Interaction.Button {
 
         [SerializeField]
         private Color _HoverColor = Color.yellow;
-
-        [HideInInspector]
-        public Action OnClicked;
 
         private void Awake()
         {
@@ -38,7 +36,7 @@ namespace Vermines.Environment.Interaction.Button {
 
         private void OnMouseDown()
         {
-            OnClicked?.Invoke();
+            onClick?.Invoke();
         }
     }
 }

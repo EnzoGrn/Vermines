@@ -82,16 +82,16 @@ namespace Vermines.Core.Settings {
             OptionsValue newValue = originalValue;
 
             if (value is bool boolValue) {
-                newValue.Type = OptionsValueType.Bool;
+                newValue.Type      = OptionsValueType.Bool;
                 newValue.BoolValue = boolValue;
             } else if (value is float floatValue) {
-                newValue.Type = OptionsValueType.Float;
+                newValue.Type             = OptionsValueType.Float;
                 newValue.FloatValue.Value = floatValue;
             } else if (value is int intValue) {
-                newValue.Type = OptionsValueType.Int;
+                newValue.Type           = OptionsValueType.Int;
                 newValue.IntValue.Value = intValue;
             } else if (value is string stringValue) {
-                newValue.Type = OptionsValueType.String;
+                newValue.Type        = OptionsValueType.String;
                 newValue.StringValue = stringValue;
             } else if (value is OptionsValue optionsValueNew) {
                 newValue = optionsValueNew;

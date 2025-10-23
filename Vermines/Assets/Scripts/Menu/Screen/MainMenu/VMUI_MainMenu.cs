@@ -172,16 +172,16 @@ namespace Vermines.Menu.Screen {
 
         public void ActiveButton()
         {
-            _PlayButton.OnClicked     += OnPlayButtonPressed;
-            _SettingsButton.OnClicked += OnSettingsButtonPressed;
-            _QuitButton.OnClicked     += OnQuitButtonPressed;
+            _PlayButton.onClick.AddListener(OnPlayButtonPressed);
+            _SettingsButton.onClick.AddListener(OnSettingsButtonPressed);
+            _QuitButton.onClick.AddListener(OnQuitButtonPressed);
         }
 
         public void DeactiveButton()
         {
-            _PlayButton.OnClicked     -= OnPlayButtonPressed;
-            _SettingsButton.OnClicked -= OnSettingsButtonPressed;
-            _QuitButton.OnClicked     -= OnQuitButtonPressed;
+            _PlayButton.onClick.RemoveListener(OnPlayButtonPressed);
+            _SettingsButton.onClick.RemoveListener(OnSettingsButtonPressed);
+            _QuitButton.onClick.RemoveListener(OnQuitButtonPressed);
         }
 
         #endregion

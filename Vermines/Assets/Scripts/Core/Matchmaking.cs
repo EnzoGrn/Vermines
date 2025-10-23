@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
-using Fusion.Photon.Realtime;
 using Fusion.Sockets;
 using Fusion;
 using UnityEngine;

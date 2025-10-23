@@ -26,6 +26,8 @@ namespace Vermines.Core.Services {
         {
             PlayerData = LoadPlayer();
 
+            Debug.Log(PlayerData);
+
             try {
                 PlayerData.UnityID = await GetUnityID();
             } catch (Exception exception) {
@@ -68,7 +70,7 @@ namespace Vermines.Core.Services {
         {
             #if UNITY_EDITOR
                 if (UnityEditor.CloudProjectSettings.projectId.IsNullOrEmpty())
-                    return default;
+                        return default;
             #endif
 
             if (UnityServices.State == ServicesInitializationState.Uninitialized)
@@ -82,7 +84,7 @@ namespace Vermines.Core.Services {
             return AuthenticationService.Instance.PlayerId;
         }
 
-#endregion
+        #endregion
 
         #region Methods
 

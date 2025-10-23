@@ -16,3 +16,101 @@ MonoBehaviour:
   LoadingScene: LoadingScene
   MenuScene: Menu
   Network: {fileID: 11400000, guid: d7484ce1aeae71849b98d43c50dfcd37, type: 2}
+  DefaultOptions:
+    _Values:
+    - Key: Windowed
+      Type: 1
+      BoolValue: 0
+      StringValue: 
+      FloatValue:
+        Value: 0
+        MinValue: 0
+        MaxValue: 0
+      IntValue:
+        Value: 0
+        MinValue: 0
+        MaxValue: 0
+    - Key: GraphicsQuality
+      Type: 3
+      BoolValue: 0
+      StringValue: 
+      FloatValue:
+        Value: 0
+        MinValue: 0
+        MaxValue: 0
+      IntValue:
+        Value: 2
+        MinValue: 0
+        MaxValue: 0
+    - Key: Resolution
+      Type: 3
+      BoolValue: 0
+      StringValue: 
+      FloatValue:
+        Value: 0
+        MinValue: 0
+        MaxValue: 0
+      IntValue:
+        Value: -1
+        MinValue: 0
+        MaxValue: 0
+    - Key: MusicVolume
+      Type: 2
+      BoolValue: 0
+      StringValue: 
+      FloatValue:
+        Value: 0.4
+        MinValue: 0.001
+        MaxValue: 1
+      IntValue:
+        Value: 0
+        MinValue: 0
+        MaxValue: 0
+    - Key: EffectsVolume
+      Type: 2
+      BoolValue: 0
+      StringValue: 
+      FloatValue:
+        Value: 1
+        MinValue: 0.001
+        MaxValue: 1
+      IntValue:
+        Value: 0
+        MinValue: 0
+        MaxValue: 0
+    - Key: TargetFPS
+      Type: 3
+      BoolValue: 0
+      StringValue: 
+      FloatValue:
+        Value: 0
+        MinValue: 0
+        MaxValue: 0
+      IntValue:
+        Value: 360
+        MinValue: 30
+        MaxValue: 360
+    - Key: LimitFPS
+      Type: 1
+      BoolValue: 0
+      StringValue: 
+      FloatValue:
+        Value: 0
+        MinValue: 0
+        MaxValue: 0
+      IntValue:
+        Value: 0
+        MinValue: 0
+        MaxValue: 0
+    - Key: VSync
+      Type: 1
+      BoolValue: 0
+      StringValue: 
+      FloatValue:
+        Value: 0
+        MinValue: 0
+        MaxValue: 0
+      IntValue:
+        Value: 0
+        MinValue: 0
+        MaxValue: 0

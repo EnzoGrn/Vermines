@@ -859,7 +859,6 @@ MonoBehaviour:
   _MainScene: EnvironmentDay
   _SceneToLoads:
   - Menu
-  - MenuCameraTravelling
   _FadeInObject: {fileID: 2119301007}
   _FadeOutObject: {fileID: 76211469}
 --- !u!1 &349198671
