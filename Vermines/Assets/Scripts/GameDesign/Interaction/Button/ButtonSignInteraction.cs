@@ -16,8 +16,10 @@ namespace Vermines.Environment.Interaction.Button {
         [SerializeField]
         private Color _HoverColor = Color.yellow;
 
-        private void Awake()
+        new private void Awake()
         {
+            _TextMesh = GetComponentInChildren<TextMeshPro>();
+
             if (_TextMesh != null)
                 _TextMesh.color = _NormalColor;
         }

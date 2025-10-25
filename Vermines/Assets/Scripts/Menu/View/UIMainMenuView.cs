@@ -5,6 +5,9 @@ namespace Vermines.Menu.View {
 
     using Vermines.Environment.Interaction.Button;
     using Vermines.Core.UI;
+    using Vermines.UI.Dialog;
+    using Vermines.Extension;
+    using Vermines.UI;
 
     public class UIMainMenuView : UIView {
 
@@ -27,25 +30,39 @@ namespace Vermines.Menu.View {
 
         #endregion
 
+        #region Methods
+
+        public void ActiveButton()
+        {
+            _PlayButton.onClick.AddListener(OnPlayButton);
+            _SettingsButton.onClick.AddListener(OnSettingsButton);
+            _QuitButton.onClick.AddListener(OnQuitButton);
+        }
+
+        public void DeactiveButton()
+        {
+            _PlayButton.onClick.RemoveListener(OnPlayButton);
+            _SettingsButton.onClick.RemoveListener(OnSettingsButton);
+            _QuitButton.onClick.RemoveListener(OnQuitButton);
+        }
+
+        #endregion
+
         #region Events
 
         protected override void OnInitialize()
         {
             base.OnInitialize();
 
-            _PlayButton.onClick.AddListener(OnPlayButton);
-            _SettingsButton.onClick.AddListener(OnSettingsButton);
-            _QuitButton.onClick.AddListener(OnQuitButton);
+            ActiveButton();
 
             _ApplicationVersion.text = $"Version ${Application.version}";
         }
 
         protected override void OnDeinitialize()
         {
-            _PlayButton.onClick.RemoveListener(OnPlayButton);
-            _SettingsButton.onClick.RemoveListener(OnSettingsButton);
-            _QuitButton.onClick.RemoveListener(OnQuitButton);
-
+            DeactiveButton();
+            
             base.OnDeinitialize();
         }
 
@@ -80,14 +97,23 @@ namespace Vermines.Menu.View {
 
         private void OnSettingsButton()
         {
-            Debug.Log("Settings");
-            // TODO: Open Settings
+            Open<UISettingsView>();
         }
 
         private void OnQuitButton()
         {
-            Debug.Log("Quit");
-            // TODO: Open Dialog and quit.
+            UIYesNoDialog dialog = Open<UIYesNoDialog>();
+
+            dialog.Title.SetTextSafe("EXIT GAME");
+            dialog.Description.SetTextSafe("Are you sure you want to exit the game?");
+
+            dialog.YesButtonText.SetTextSafe("EXIT");
+            dialog.NoButtonText.SetTextSafe("CANCEL");
+
+            dialog.HasClosed += (result) => {
+                if (result)
+                    SceneUI.Scene.Quit();
+            };
         }
 
         #endregion

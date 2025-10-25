@@ -26,8 +26,6 @@ namespace Vermines.Core.Services {
         {
             PlayerData = LoadPlayer();
 
-            Debug.Log(PlayerData);
-
             try {
                 PlayerData.UnityID = await GetUnityID();
             } catch (Exception exception) {

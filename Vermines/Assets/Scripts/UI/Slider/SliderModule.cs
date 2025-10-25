@@ -1,39 +1,29 @@
-using UnityEngine.UI;
-using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine;
 
 namespace Vermines.UI {
 
-    public class SliderModule : MonoBehaviour {
+    using Vermines.Core.UI;
+
+    public class SliderModule : UIWidget {
 
         #region Fields
-
-        [SerializeField]
-        [Tooltip("Only work on runtime, not in editor")]
-        private bool _Interactable = true;
-
-        public bool Interactable
-        {
-            get => _Interactable;
-            set
-            {
-                _Interactable = value;
-
-                SetInteractable(_Interactable);
-            }
-        }
 
         [SerializeField]
         private TMPro.TMP_Text _Value;
 
         [SerializeField]
-        private Button _Decrease;
+        private UIButton _Decrease;
+
+        public UISlider Slider => _Slider;
 
         [SerializeField]
-        private Slider _Slider;
+        private UISlider _Slider;
 
         [SerializeField]
-        private Button _Increase;
+        private UIButton _Increase;
+
+        public bool Pourcentage;
 
         #endregion
 
@@ -41,24 +31,31 @@ namespace Vermines.UI {
 
         #region Methods
 
-        private void Awake()
+        protected override void OnInitialize()
         {
-            SetInteractable(_Interactable);
+            base.OnInitialize();
+
+            _Increase.onClick.AddListener(IncreaseProgress);
+            _Decrease.onClick.AddListener(DecreaseProgress);
+            _Slider.onValueChanged.AddListener(SetValue);
+
+            CurrentValue = Slider.value;
 
             UpdateUI();
         }
 
-        private void SetInteractable(bool interactable)
+        protected override void OnDeinitialize()
         {
-            _Decrease.interactable = interactable;
-            _Increase.interactable = interactable;
+            _Increase.onClick.RemoveListener(IncreaseProgress);
+            _Decrease.onClick.RemoveListener(DecreaseProgress);
+            _Slider.onValueChanged.AddListener(SetValue);
 
-            _Slider.interactable   = false;
+            base.OnDeinitialize();
         }
 
         public void SetValue(float value)
         {
-            CurrentValue  = Mathf.Clamp(value, 0.0f, 1.0f);
+            CurrentValue  = Mathf.Clamp(value, Slider.minValue, Slider.maxValue);
             _Slider.value = CurrentValue;
 
             OnValueChanged?.Invoke(CurrentValue);
@@ -68,8 +65,8 @@ namespace Vermines.UI {
 
         public void IncreaseProgress()
         {
-            CurrentValue += 0.05f;
-            CurrentValue  = Mathf.Clamp(CurrentValue, 0.0f, 1.0f);
+            CurrentValue += Pourcentage ? 0.05f : 30;
+            CurrentValue = Mathf.Clamp(CurrentValue, Slider.minValue, Slider.maxValue);
             _Slider.value = CurrentValue;
 
             OnValueChanged?.Invoke(CurrentValue);
@@ -79,8 +76,8 @@ namespace Vermines.UI {
 
         public void DecreaseProgress()
         {
-            CurrentValue -= 0.05f;
-            CurrentValue  = Mathf.Clamp(CurrentValue, 0.0f, 1.0f);
+            CurrentValue -= Pourcentage ? 0.05f : 30;
+            CurrentValue  = Mathf.Clamp(CurrentValue, Slider.minValue, Slider.maxValue);
             _Slider.value = CurrentValue;
 
             OnValueChanged?.Invoke(CurrentValue);
@@ -90,12 +87,12 @@ namespace Vermines.UI {
 
         private void UpdateUI()
         {
-            int value = Mathf.RoundToInt(CurrentValue * 100);
+            int value = Mathf.RoundToInt(Pourcentage ? CurrentValue * 100 : CurrentValue);
 
-            if (CurrentValue <= 0.0f) {
+            if (CurrentValue <= Slider.minValue) {
                 _Decrease.interactable = false;
                 _Increase.interactable = true;
-            } else if (CurrentValue >= 1.0f) {
+            } else if (CurrentValue >= Slider.maxValue) {
                 _Decrease.interactable = true;
                 _Increase.interactable = false;
             } else {
@@ -104,7 +101,7 @@ namespace Vermines.UI {
             }
 
             if (_Value != null)
-                _Value.text = value.ToString("F0") + "%";
+                _Value.text = value.ToString("F0") + (Pourcentage ? "%" : "");
         }
 
         #endregion

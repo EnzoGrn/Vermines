@@ -1,6 +1,4 @@
-using OMGG.Menu.Configuration;
 using OMGG.Menu.Screen;
-using OMGG.Menu.Tools;
 using UnityEngine.UI;
 using UnityEngine;
 using Fusion;
@@ -83,7 +81,7 @@ namespace Vermines.Menu.Screen {
             _Content?.SetActive(gameObject.activeSelf);
 
             foreach (var category in _Categories) {
-                category.Init(this);
+                // category.Init(this);
                 category.SetActiveCategorie(false);
             }
             SelectCategory(_Categories[0]);
