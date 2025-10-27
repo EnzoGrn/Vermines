@@ -1,6 +1,7 @@
 ﻿using Fusion;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Vermines.CardSystem.Data;
 using Vermines.CardSystem.Elements;
@@ -48,7 +49,7 @@ namespace Vermines.UI.Screen
         public List<ShopUIConfigEntry> shopConfigEntries;
 
         protected Dictionary<ShopType, ShopUIConfig> shopConfigs = new();
-        protected Dictionary<ShopType, Dictionary<int, ICard>> previousShopStates = new();
+        protected Dictionary<ShopType, List<ICard>> previousShopStates = new();
 
         protected override bool ShouldHidePlugins => false;
 
@@ -183,14 +184,14 @@ namespace Vermines.UI.Screen
             _shopType = shopType;
         }
 
-        public List<Vermines.UI.Screen.ShopCardEntry> GetEntries(ShopType type)
+        public List<ShopCardEntry> GetEntries(ShopType type)
         {
             if (previousShopStates.TryGetValue(type, out var shopList))
             {
                 List<ShopCardEntry> entries = new();
-                foreach (var kvp in shopList)
+                foreach (var card in shopList)
                 {
-                    entries.Add(new ShopCardEntry(kvp.Value));
+                    entries.Add(new ShopCardEntry(card));
                 }
                 return entries;
             }
@@ -201,26 +202,23 @@ namespace Vermines.UI.Screen
         {
             List<ShopCardEntry> entries = new();
 
-            // Check if there's an old list for this shop type
-            Dictionary<int, ICard> oldList = previousShopStates.ContainsKey(type)
+            // Get old list as List<ICard>
+            List<ICard> oldList = previousShopStates.ContainsKey(type)
                 ? previousShopStates[type]
-                : new Dictionary<int, ICard>();
+                : new List<ICard>();
 
-            foreach (var kvp in newList)
+            // Sort new list by slot index for consistency
+            var sortedNewList = newList.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value).ToList();
+
+            for (int i = 0; i < sortedNewList.Count; i++)
             {
-                int slotIndex = kvp.Key;
-                ICard newCard = kvp.Value;
-
-                // Check if the card is new or has changed in the slot
-                bool isNew = !oldList.TryGetValue(slotIndex, out var oldCard) || oldCard?.ID != newCard?.ID;
-
+                ICard newCard = sortedNewList[i];
+                bool isNew = i >= oldList.Count || oldList[i]?.ID != newCard?.ID;
                 entries.Add(new ShopCardEntry(newCard, isNew));
             }
 
-            // Update the previous shop list
-            previousShopStates[type] = new Dictionary<int, ICard>(newList);
+            previousShopStates[type] = sortedNewList;
 
-            // Notification
             GameEvents.OnShopUpdated.Invoke(type, entries);
         }
 
@@ -230,38 +228,35 @@ namespace Vermines.UI.Screen
 
         public void OnCardPurchased(ShopType shopType, int cardId)
         {
-            if (!previousShopStates.TryGetValue(shopType, out var shopList)) {
+            if (!previousShopStates.TryGetValue(shopType, out var shopList))
+            {
                 Debug.LogWarning($"[ShopManager] No shop list found for type {shopType}.");
-
                 return;
             }
 
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
-            if (!shopList.ContainsValue(card)) {
+            if (!shopList.Contains(card))
+            {
                 Debug.LogWarning($"[ShopManager] Card {cardId} not found in shop {shopType}.");
-
                 return;
             }
 
             // If the card bought is an equipment card, invoke the specific event
-            if (PlayerController.Local.PlayerRef == GameManager.Instance.GetCurrentPlayer()) {
+            if (PlayerController.Local.PlayerRef == GameManager.Instance.GetCurrentPlayer())
+            {
                 if (card.Data.Type == CardType.Equipment)
                     GameEvents.OnEquipmentCardPurchased.Invoke(card);
             }
 
-            int index = 0;
+            // Remove the card from the list
+            int index = shopList.FindIndex(c => c != null && c.ID == card.ID);
+            if (index >= 0)
+                shopList[index] = null;
 
-            foreach (var kvp in shopList) {
-                if (kvp.Value != null && kvp.Value.ID == card.ID)
-                    break;
-                index++;
-            }
-
-            shopList[index] = null;
-
+            // Update the shop UI
             ReceiveFullShopList(shopType, GameDataStorage.Instance.Shop.GetDisplayCards(shopType));
         }
+
 
         public void OnCardClicked(ICard card, int slodId)
         {
