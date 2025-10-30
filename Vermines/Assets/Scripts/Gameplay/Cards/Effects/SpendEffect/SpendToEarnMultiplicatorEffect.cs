@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using OMGG.DesignPattern;
 using UnityEngine;
 using Fusion;
@@ -99,21 +99,25 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (player != PlayerController.Local.PlayerRef)
                 return;
             if (UIContextManager.Instance) {
-                // TODO: Context for Assassin
-            }
+                SpendEffectContext spendEffectContext = new(
+                            Spend,
+                            _DataToSpend,
+                            _DataToEarn,
+                            _Multiplicator
+                );
 
-           // TODO: Bind a GameEvents.... for a void function(int). -> Spend(int amount)
+                UIContextManager.Instance.PushContext(spendEffectContext);
+            }
         }
 
         private void Spend(int amount)
         {
-            // Unbind the GameEvents.
+            if (UIContextManager.Instance)
+                UIContextManager.Instance.PopContextOfType<SpendEffectContext>();
 
-            // TODO: Pop the context.
-            // if (UIContextManager.Instance)
-            //    UIContextManager.Instance.PopContextOfType<...>();
             if (amount <= 0 || (_DataToSpend == DataType.Eloquence && amount > GameManager.Instance.Configuration.MaxEloquence) || (_DataToSpend == DataType.Soul && amount > GameManager.Instance.Configuration.MaxSoul))
                 return;
+
             PlayerController.Local.NetworkEventCardEffect(Card.ID, amount.ToString());
         }
 
