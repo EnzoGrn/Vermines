@@ -14,6 +14,8 @@ namespace Vermines.Core.Network {
 
     using Vermines.Extension;
     using Vermines.Core.Scene;
+    using Vermines.Menu.CustomLobby;
+    using Vermines.Core.Services;
 
     public class Networking : MonoBehaviour {
 
@@ -21,7 +23,6 @@ namespace Vermines.Core.Network {
 
         public const string STATUS_SERVER_CLOSED = "server_closed";
 
-        public const string DISPLAY_NAME_KEY = "name";
         public const string MODE_KEY         = "mode";
         public const string TYPE_KEY         = "type";
 
@@ -121,10 +122,10 @@ namespace Vermines.Core.Network {
             _StopGameOnDisconnect = false;
             ErrorStatus           = null;
 
-            Log($"StartGame() UserID:{request.UserID} GameMode:{request.GameMode} DisplayName:{request.DisplayName} SessionName:{request.SessionName} ScenePath:{request.ScenePath} MaxPlayers:{request.MaxPlayers} ExtraPeers:{request.ExtraPeers} CustomLobby:{request.CustomLobby} GameplayType: {request.GameplayType}");
+            Log($"StartGame() UserID:{request.UserID} GameMode:{request.GameMode} SessionName:{request.SessionName} ScenePath:{request.ScenePath} MaxPlayers:{request.MaxPlayers} ExtraPeers:{request.ExtraPeers} CustomLobby:{request.CustomLobby} GameplayType: {request.GameplayType}");
         }
 
-        private void StopGame(string errorStatus = null)
+        public void StopGame(string errorStatus = null)
         {
             Log($"StopGame()");
 
@@ -225,25 +226,32 @@ namespace Vermines.Core.Network {
                 peer.ConnectionTries--;
             StatusDescription = "unloading_current_scene";
 
-            UnityScene activeScene = SceneManager.GetActiveScene();
-
-            if (!IsSameScene(activeScene.path, peer.Request.ScenePath) && activeScene.name != _LoadingScene) {
+            if (!IsSceneLoaded(peer.Request.ScenePath) && !IsSceneLoaded(_LoadingScene)) {
                 Log($"Show loading scene.");
 
                 yield return ShowLoadingSceneCoroutine(true);
 
-                bool unloadScene = true;
+                int sceneCount = SceneManager.sceneCount;
+                List<UnityScene> scenesToUnload = new(sceneCount);
+
+                for (int i = 0; i < sceneCount; i++) {
+                    UnityScene s = SceneManager.GetSceneAt(i);
+
+                    if (s.name == _LoadingScene || PersistentSceneService.Instance.IsScenePersistent(s.name))
+                        continue;
+                    scenesToUnload.Add(s);
+                }
 
                 for (int i = 0; i < _CurrentSession.GamePeers.Length; i++) {
-                    if (activeScene == _CurrentSession.GamePeers[i].LoadedScene) {
-                        unloadScene = false;
+                    if (scenesToUnload.Contains(_CurrentSession.GamePeers[i].LoadedScene)) {
+                        scenesToUnload.Remove(_CurrentSession.GamePeers[i].LoadedScene);
 
                         break;
                     }
                 }
 
-                if (unloadScene) {
-                    Scene currentScene = activeScene.GetComponent<Scene>();
+                foreach (UnityScene s in scenesToUnload) {
+                    Scene currentScene = s.GetComponent<Scene>();
 
                     if (currentScene != null) {
                         Log($"Deinitializing Scene.");
@@ -251,9 +259,9 @@ namespace Vermines.Core.Network {
                         currentScene.Deinitialize();
                     }
 
-                    Log($"Unloading scene {activeScene.name}");
+                    Log($"Unloading scene {s.name}");
 
-                    yield return SceneManager.UnloadSceneAsync(activeScene);
+                    yield return PersistentSceneService.Instance.UnloadScene(s.name);
                     yield return null;
                 }
             }
@@ -309,7 +317,7 @@ namespace Vermines.Core.Network {
                     break;
                 }
 
-                if (_CurrentSession.ConnectionRequested == false) {
+                if (!_CurrentSession.ConnectionRequested) {
                     Log($"Stopping coroutine (requested by user");
 
                     break;
@@ -393,8 +401,10 @@ namespace Vermines.Core.Network {
 
             peer.LoadedScene = runner.SimulationUnityScene;
 
-            if (peer.ID == 0)
-                SceneManager.SetActiveScene(peer.LoadedScene);
+            UnityScene persistentScene = SceneManager.GetSceneByName(PersistentSceneService.Instance.PersistentScenes[0]);
+
+            if (persistentScene.IsValid())
+                SceneManager.SetActiveScene(persistentScene);
             StatusDescription = "waiting_gameplay_scene_load";
 
             var scene = peer.SceneManager.GameplayScene;
@@ -434,9 +444,14 @@ namespace Vermines.Core.Network {
 
             StatusDescription = "waiting_networked_game";
 
-            NetworkGame networkGame = scene.GetComponentInChildren<NetworkGame>(true);
+            ContextBehaviour networkManager = null;
 
-            while (networkGame.Object == null) {
+            if (peer.Request.GameplayType == GameplayType.Lobby)
+                networkManager = scene.GetComponentInChildren<NetworkLobby>(true);
+            else
+                networkManager = scene.GetComponentInChildren<NetworkGame>(true);
+
+            while (networkManager.Object == null) {
                 Log($"Waiting for NetworkGame - Peer {peer.ID}");
 
                 yield return null;
@@ -467,9 +482,54 @@ namespace Vermines.Core.Network {
 
             Log($"NetworkGame.Initialize() - Peer {peer.ID}");
 
-            networkGame.Initialize(peer.Request.GameplayType);
+            NetworkLobby lobby = null;
+            NetworkGame game = null;
 
-            // TODO: Implement GameplayMode
+            if (networkManager is NetworkGame ng) {
+                ng.Initialize(peer.Request.GameplayType);
+
+                game = ng;
+
+                while (scene.Context.GameplayMode == null) {
+                    Log($"Waiting for GameplayMode - Peer {peer.ID}");
+
+                    yield return null;
+
+                    if (Time.realtimeSinceStartup >= limitTime) {
+                        Debug.LogError($"{peerName} start timeout! Gameplay mode not started properly.");
+
+                        Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}");
+
+                        yield return DisconnectPeerCoroutine(peer);
+
+                        _Coroutine = null;
+
+                        yield break;
+                    }
+                }
+            } else if (networkManager is NetworkLobby nl) {
+                nl.Initialize();
+
+                lobby = nl;
+
+                while (scene.Context.Lobby == null) {
+                    Log($"Waiting for LobbyManager - Peer {peer.ID}");
+
+                    yield return null;
+
+                    if (Time.realtimeSinceStartup >= limitTime) {
+                        Debug.LogError($"{peerName} start timeout! LobbyManager not started properly.");
+
+                        Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}");
+
+                        yield return DisconnectPeerCoroutine(peer);
+
+                        _Coroutine = null;
+
+                        yield break;
+                    }
+                }
+            }
 
             StatusDescription = "activating_scene";
 
@@ -485,7 +545,8 @@ namespace Vermines.Core.Network {
 
             Log($"NetworkGame.Activate() - Peer {peer.ID}");
 
-            networkGame.Activate();
+            lobby?.Activate();
+            game?.Activate();
 
             if (SceneManager.GetSceneByName(_LoadingScene).IsValid()) {
                 yield return new WaitForSeconds(1f);
@@ -563,12 +624,15 @@ namespace Vermines.Core.Network {
 
             yield return null;
 
+            PersistentSceneService.Instance.SwitchToScene(PersistentSceneService.Instance.PersistentScenes[0]);
+
             if (gameplayScene.IsValid()) {
                 Debug.LogWarning($"Unloading scene {gameplayScene.name}");
 
-                yield return SceneManager.UnloadSceneAsync(gameplayScene);
+                yield return SceneManager.UnloadSceneAsync(gameplayScene.name);
                 yield return null;
             }
+
             peer.Loaded       = default;
             peer.Runner       = default;
             peer.SceneManager = default;
@@ -598,15 +662,13 @@ namespace Vermines.Core.Network {
                 var scene = SceneManager.GetSceneAt(i);
 
                 if (scene.name != _LoadingScene)
-                    yield return SceneManager.UnloadSceneAsync(scene);
+                    yield return PersistentSceneService.Instance.UnloadScene(scene.name);
             }
             StatusDescription = "loading_menu_scene";
 
             yield return null;
-            yield return SceneManager.LoadSceneAsync(menuSceneName, LoadSceneMode.Additive);
+            yield return PersistentSceneService.Instance.LoadSceneAdditive(menuSceneName);
             yield return ShowLoadingSceneCoroutine(false);
-
-            SceneManager.SetActiveScene(SceneManager.GetSceneByName(menuSceneName));
 
             _Coroutine = null;
         }
@@ -616,7 +678,7 @@ namespace Vermines.Core.Network {
             UnityScene loadingScene = SceneManager.GetSceneByName(_LoadingScene);
 
             if (!loadingScene.IsValid()) {
-                yield return SceneManager.LoadSceneAsync(_LoadingScene, LoadSceneMode.Additive);
+                yield return PersistentSceneService.Instance.LoadSceneAdditive(_LoadingScene);
 
                 loadingScene = SceneManager.GetSceneByName(_LoadingScene);
             }
@@ -639,7 +701,7 @@ namespace Vermines.Core.Network {
             if (show && additionalTime > 0f)
                 yield return new WaitForSeconds(additionalTime); // Wait additional time after fade in.
             if (!show)
-                yield return SceneManager.UnloadSceneAsync(loadingScene);
+                yield return PersistentSceneService.Instance.UnloadScene(loadingScene.name);
         }
 
         #endregion
@@ -649,9 +711,8 @@ namespace Vermines.Core.Network {
         private Dictionary<string, SessionProperty> CreateSessionProperties(SessionRequest request)
         {
             return new Dictionary<string, SessionProperty> {
-                [DISPLAY_NAME_KEY] = request.DisplayName,
-                [TYPE_KEY]         = (int)request.GameplayType,
-                [MODE_KEY]         = (int)request.GameMode
+                [TYPE_KEY] = (int)request.GameplayType,
+                [MODE_KEY] = (int)request.GameMode
             };
         }
 
@@ -667,6 +728,23 @@ namespace Vermines.Core.Network {
         #endregion
 
         #region Comparator
+
+        private static bool IsSceneLoaded(string sceneToCheck)
+        {
+            bool alreadyLoaded = false;
+
+            for (int i = 0; i < SceneManager.sceneCount; i++) {
+                UnityScene scene = SceneManager.GetSceneAt(i);
+
+                if (IsSameScene(scene.path, sceneToCheck)) {
+                    alreadyLoaded = true;
+
+                    break;
+                }
+            }
+
+            return alreadyLoaded;
+        }
 
         private static bool IsSameScene(string assetPath, string scenePath)
         {

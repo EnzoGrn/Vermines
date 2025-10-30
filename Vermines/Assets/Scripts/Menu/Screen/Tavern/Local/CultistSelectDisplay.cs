@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using OMGG.Menu.Screen;
-using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
-namespace Vermines.Menu.Screen.Tavern {
+namespace Vermines.Menu.Tavern {
 
     using Vermines.Characters;
+    using Vermines.Core.UI;
+    using Vermines.Menu.View;
 
-    public class CultistSelectDisplay : MenuScreenPlugin {
+    public class CultistSelectDisplay : UIBehaviour {
 
         #region Attributes
 
@@ -29,81 +29,75 @@ namespace Vermines.Menu.Screen.Tavern {
         private CultistInfoPanel _CultistInfoPanel;
 
         [SerializeField]
-        private TMP_Text _CultistNameText;
+        private TextMeshProUGUI _CultistNameText;
 
-        [SerializeField]
-        private Button _PlayButton;
+        private readonly List<CultistSelectButton> _CultistButtons = new();
 
-        private List<CultistSelectButton> _CultistButtons = new();
-
-        private int _PlayerCultistID;
+        private UITavernView _View;
 
         #endregion
 
-        #region Overrides Methods
+        #region Methods
 
-        public override void Init(MenuUIScreen screen)
+        public void Initialize(UITavernView view)
         {
-            base.Init(screen);
+            _View = view;
 
             Cultist[] cultists = _CultistDatabase.GetAllCultists();
 
             foreach (Cultist cultist in cultists) {
                 CultistSelectButton selectedButtonInstance = Instantiate(_SelectButtonPrefab, _CultistHolder);
 
+                selectedButtonInstance.Initialize();
                 selectedButtonInstance.SetCharacter(this, cultist);
 
                 _CultistButtons.Add(selectedButtonInstance);
             }
 
-            Reset();
+            Clear();
         }
 
-        public override void Show(MenuUIScreen screen)
+        public void Deinitialize()
         {
-            base.Show(screen);
-        }
-
-        public override void Hide(MenuUIScreen screen)
-        {
-            base.Hide(screen);
-
-            Reset();
+            foreach (CultistSelectButton button in _CultistButtons)
+                button.Deinitialize();
         }
 
         #endregion
 
         #region Methods
 
-        private void Reset()
+        private void Clear()
         {
             _CultistInfoPanel.gameObject.SetActive(false);
             _CultistInfoPanel.SetCharacter(ScriptableObject.CreateInstance<Cultist>());
 
             foreach (CultistSelectButton button in _CultistButtons)
                 button.UnSelect();
-            _PlayerCultistID = -1;
-
-            _PlayButton.interactable = false;
+            _View.PlayerCultist           = default;
+            _View.PlayButton.interactable = false;
         }
 
-        public void Select(Cultist cultist)
+        #endregion
+
+        #region Events
+
+        public void OnSelect(Cultist cultist)
         {
-            if (_PlayerCultistID == cultist.ID)
+            if (_View.PlayerCultist == cultist)
                 return;
-            if (_PlayerCultistID != -1)
-                _CultistButtons.Find(button => button.Cultist.ID == _PlayerCultistID).UnSelect();
+            if (_View.PlayerCultist && _View.PlayerCultist.ID != -1)
+                _CultistButtons.Find(button => button.Cultist.ID == _View.PlayerCultist.ID).UnSelect();
             _CultistInfoPanel.SetCharacter(cultist);
             _CultistInfoPanel.gameObject.SetActive(true);
 
-            _PlayerCultistID = cultist.ID;
-
-            _PlayButton.interactable = true;
+            _View.PlayerCultist = cultist;
+            _View.PlayButton.interactable = true;
         }
 
-        public Cultist GetSelectedCultist()
+        public void OnClose()
         {
-            return _CultistDatabase.GetCultistByID(_PlayerCultistID);
+            Clear();
         }
 
         #endregion

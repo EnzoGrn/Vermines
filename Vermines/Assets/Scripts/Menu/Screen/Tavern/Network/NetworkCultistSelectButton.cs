@@ -1,15 +1,16 @@
-using OMGG.Menu.Screen;
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
-namespace Vermines.Menu.Screen.Tavern.Network {
+namespace Vermines.Menu.CustomLobby {
 
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
     using Vermines.Characters;
+    using Vermines.Core.UI;
+    using Vermines.UI;
 
-    public class NetworkCultistSelectButton : MenuScreenPlugin {
+    public class NetworkCultistSelectButton : UIBehaviour {
 
         #region Attributes
 
@@ -25,13 +26,13 @@ namespace Vermines.Menu.Screen.Tavern.Network {
         private Image _CultistImage;
 
         [SerializeField]
-        private TMP_Text _CultistNameText;
+        private TextMeshProUGUI _CultistNameText;
 
         [SerializeField]
         private GameObject _SelectedOverlay;
 
         [SerializeField]
-        private Button _Button;
+        private UIButton _Button;
 
         [Header("Cultist Select")]
 
@@ -44,6 +45,16 @@ namespace Vermines.Menu.Screen.Tavern.Network {
         #endregion
 
         #region Methods
+
+        public void Initialize()
+        {
+            _Button.onClick.AddListener(SelectCharacter);
+        }
+
+        public void Deinitialize()
+        {
+            _Button.onClick.RemoveListener(SelectCharacter);
+        }
 
         public void SetCharacter(NetworkCultistSelectDisplay cultistSelect, Cultist cultist)
         {

@@ -7,7 +7,7 @@ namespace Vermines.Menu.Screen {
 
     using Button = UnityEngine.UI.Button;
 
-    using Vermines.Menu.Screen.Tavern;
+    using Vermines.Menu.Tavern;
     using Vermines.Characters;
 
     /// <summary>
@@ -102,8 +102,8 @@ namespace Vermines.Menu.Screen {
 
             CultistSelectDisplay cultistSelectDisplay = FindFirstObjectByType<CultistSelectDisplay>();
 
-            if (cultistSelectDisplay)
-                SelectedCultist = cultistSelectDisplay.GetSelectedCultist();
+            //if (cultistSelectDisplay)
+            //    SelectedCultist = cultistSelectDisplay.GetSelectedCultist();
         }
 
         /// <summary>
@@ -129,8 +129,8 @@ namespace Vermines.Menu.Screen {
         {
             CultistSelectDisplay cultistSelectDisplay = FindFirstObjectByType<CultistSelectDisplay>();
 
-            if (cultistSelectDisplay)
-                SelectedCultist = cultistSelectDisplay.GetSelectedCultist();
+            //if (cultistSelectDisplay)
+            //    SelectedCultist = cultistSelectDisplay.GetSelectedCultist();
             ConnectionArgs.Session  = null;
             ConnectionArgs.Creating = false;
             ConnectionArgs.Region   = ConnectionArgs.PreferredRegion;

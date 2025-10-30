@@ -1,15 +1,11 @@
 ﻿using Fusion ;
 using OMGG.Network.Fusion;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Phases {
-    using System.Collections;
+
     using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.Menu.Screen.Tavern.Network;
-    using Vermines.Player;
-    using Vermines.UI.Plugin;
 
     public class PhaseManager : NetworkBehaviour {
 

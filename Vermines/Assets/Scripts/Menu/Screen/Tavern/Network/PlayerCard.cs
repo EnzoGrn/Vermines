@@ -1,13 +1,14 @@
-using OMGG.Menu.Screen;
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
-namespace Vermines.Menu.Screen.Tavern.Network {
+namespace Vermines.Menu.CustomLobby {
 
     using Vermines.Characters;
+    using Vermines.Core.UI;
+    using Vermines.Extension;
 
-    public class PlayerCard : MenuScreenPlugin {
+    public class PlayerCard : UIBehaviour {
 
         #region Attributes
 
@@ -34,13 +35,13 @@ namespace Vermines.Menu.Screen.Tavern.Network {
         private Image _CultistIconImage;
 
         [SerializeField]
-        private TMP_Text _PlayerNameText;
+        private TextMeshProUGUI _PlayerNameText;
 
         [SerializeField]
-        private TMP_Text _CultistNameText;
+        private TextMeshProUGUI _CultistNameText;
 
         [SerializeField]
-        private TMP_Text _PlayerStatusText;
+        private TextMeshProUGUI _PlayerStatusText;
 
         bool _IsMine = false;
 
@@ -48,21 +49,23 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
         #region Methods
 
-        public void UpdateDisplay(CultistSelectState state, bool isMine = false)
+        public void UpdateDisplay(CultistSelectState state, string playerName, bool isMine = false)
         {
             if (state.CultistID != -1) {
                 Cultist cultist = _CultistDatabase.GetCultistByID(state.CultistID);
 
                 _CultistIconImage.sprite  = cultist.CultistSprite;
                 _CultistIconImage.enabled = true;
-                _CultistNameText.text     = cultist.Name;
+
+                _CultistNameText.SetTextSafe(cultist.Name);
             } else {
                 _CultistIconImage.enabled = false;
-                _CultistNameText.text     = string.Empty;
+
+                _CultistNameText.SetTextSafe(string.Empty);
             }
 
-            _PlayerStatusText.text = state.IsLockedIn ? "(Selected)" : "(Choosing...)";
-            _PlayerNameText.text   = $"{state.Name}";
+            _PlayerStatusText.SetTextSafe(state.IsLockedIn ? "(Selected)" : "(Choosing...)");
+            _PlayerNameText.SetTextSafe(playerName);
 
             SetIsMine(isMine);
 

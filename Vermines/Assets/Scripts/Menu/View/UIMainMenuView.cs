@@ -1,5 +1,4 @@
 using UnityEngine;
-using TMPro;
 
 namespace Vermines.Menu.View {
 
@@ -23,9 +22,6 @@ namespace Vermines.Menu.View {
         private ButtonSignInteraction _QuitButton;
 
         [SerializeField]
-        private TextMeshProUGUI _ApplicationVersion;
-
-        [SerializeField]
         private GameObject SignGameObject;
 
         #endregion
@@ -46,6 +42,28 @@ namespace Vermines.Menu.View {
             _QuitButton.onClick.RemoveListener(OnQuitButton);
         }
 
+        private void InTavern()
+        {
+            MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
+
+            if (camera) {
+                camera.OnSplineEnd.RemoveListener(() => InTavern());
+                camera.OnKnotPassed.RemoveListener((knotIndex) => OnKnotPassed(knotIndex));
+            }
+
+            Open<UITavernView>();
+        }
+
+        private void OnKnotPassed(int knotIndex)
+        {
+            MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
+
+            if (camera) {
+                if (camera.GetKnotsCount() / 2 == knotIndex)
+                    camera.SetEndLookAt();
+            }
+        }
+
         #endregion
 
         #region Events
@@ -55,8 +73,6 @@ namespace Vermines.Menu.View {
             base.OnInitialize();
 
             ActiveButton();
-
-            _ApplicationVersion.text = $"Version ${Application.version}";
         }
 
         protected override void OnDeinitialize()
@@ -91,8 +107,18 @@ namespace Vermines.Menu.View {
 
         private void OnPlayButton()
         {
-            Debug.Log("Play");
-            // TODO: Open Tavern
+            MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
+
+            if (camera) {
+                camera.OnSplineEnd.AddListener(() => InTavern());
+                camera.OnKnotPassed.AddListener((knotIndex) => OnKnotPassed(knotIndex));
+
+                camera.OnSplineStarted();
+            } else {
+                Debug.LogWarning($"[UIMainMenuView]: No CinemachineCamera found in the scene. The spline will not be played. Automatically open the 'UITavernView'.");
+
+                InTavern();
+            }
         }
 
         private void OnSettingsButton()

@@ -2,11 +2,12 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Core.Scene {
-
+    using Vermines.Characters;
     using Vermines.Core.Player;
     using Vermines.Core.Services;
     using Vermines.Core.Settings;
     using Vermines.Core.UI;
+    using Vermines.Menu.CustomLobby;
 
     [System.Serializable]
     public class SceneContext {
@@ -18,6 +19,9 @@ namespace Vermines.Core.Scene {
 
         [HideInInspector]
         public PlayerData PlayerData;
+
+        [HideInInspector]
+        public Cultist PlayerCultist = default;
 
         #endregion
 
@@ -40,6 +44,13 @@ namespace Vermines.Core.Scene {
 
         #endregion
 
+        #region Scene
+
+        public string CustomGameScenePath;
+        public string GameScenePath;
+
+        #endregion
+
         #region Gameplay
 
         [HideInInspector]
@@ -55,6 +66,12 @@ namespace Vermines.Core.Scene {
         public PlayerRef LocalPlayerRef;
 
         public NetworkGame NetworkGame;
+        [HideInInspector]
+        public GameplayMode GameplayMode;
+
+        public NetworkLobby NetworkLobby;
+        [HideInInspector]
+        public LobbyManager Lobby;
 
         #endregion
 

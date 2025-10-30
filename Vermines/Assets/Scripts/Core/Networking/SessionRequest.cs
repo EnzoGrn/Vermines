@@ -9,7 +9,6 @@ namespace Vermines.Core.Network {
         public GameMode GameMode;
         public GameplayType GameplayType;
 
-        public string DisplayName;
         public string SessionName;
         public string ScenePath;
         public string CustomLobby;

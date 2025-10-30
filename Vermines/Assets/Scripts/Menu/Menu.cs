@@ -7,6 +7,7 @@ namespace Vermines.Menu {
     using UnityScene = UnityEngine.SceneManagement.Scene;
 
     using Vermines.Core.Scene;
+    using Vermines.Core.Services;
 
     public class Menu : Scene {
 
@@ -23,26 +24,12 @@ namespace Vermines.Menu {
         {
             base.OnInitialize();
 
-            StartCoroutine(LoadScene(_SceneToLoad));
+            StartCoroutine(PersistentSceneService.Instance.LoadSceneAdditive(_SceneToLoad));
         }
 
         protected override void OnDeinitialize()
         {
             base.OnDeinitialize();
-
-            if (_SceneToLoad != null) {
-                UnityScene scene = SceneManager.GetSceneByName(_SceneToLoad);
-
-                if (scene.IsValid())
-                    SceneManager.UnloadSceneAsync(_SceneToLoad);
-            }
-        }
-
-        private IEnumerator LoadScene(string scene)
-        {
-            UnityEngine.AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Additive);
-
-            yield return new WaitUntil(() => asyncLoad.isDone);
         }
 
         #endregion

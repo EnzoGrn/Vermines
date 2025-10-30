@@ -226,10 +226,10 @@ namespace Vermines.UI {
                 yield return null;
             base.OnOpen();
 
+            _Content?.SetActive(true);
+
             PrepareResolutionDropdown();
             LoadValues();
-
-            _Content?.SetActive(true);
 
             SelectCategory(_Categories[0]);
             foreach (BookCategories categories in _Categories)
@@ -262,16 +262,19 @@ namespace Vermines.UI {
 
         private IEnumerator HideAnimCoroutine()
         {
+            _Content?.SetActive(false);
+
+            foreach (BookCategories categories in _Categories)
+                categories.Close();
+            Context.RuntimeSettings.Options.DiscardChanges();
+            Context.Audio.UpdateVolume();
+
             Animator.Play(HideAnimHash);
 
             yield return new WaitUntil(() => Animator.GetCurrentAnimatorStateInfo(0).shortNameHash == HideAnimHash);
 
             while (Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
                 yield return null;
-            foreach (BookCategories categories in _Categories)
-                categories.Close();
-            Context.RuntimeSettings.Options.DiscardChanges();
-            Context.Audio.UpdateVolume();
 
             base.OnCloseButton();
         }
@@ -326,8 +329,6 @@ namespace Vermines.UI {
 
         protected override void OnCloseButton()
         {
-            _Content?.SetActive(false);
-
             StartCoroutine(CloseCoroutine());
         }
 

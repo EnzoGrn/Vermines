@@ -2,6 +2,8 @@ using UnityEngine;
 using System;
 using TMPro;
 
+#pragma warning disable CS0414
+
 namespace Vermines.UI.Dialog {
 
     using Vermines.Extension;

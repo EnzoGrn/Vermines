@@ -1,10 +1,10 @@
 using OMGG.Menu.Screen;
 using UnityEngine;
 using Fusion;
-using Vermines.Menu.Screen.Tavern.Network;
-using Vermines.Player;
 
 namespace Vermines.Menu.Screen {
+
+    using Vermines.Player;
 
     using Button = UnityEngine.UI.Button;
 

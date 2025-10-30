@@ -9,6 +9,7 @@ namespace Vermines.Core {
 
     using Vermines.Core.Network;
     using Vermines.Core.Scene;
+    using Vermines.Core.Settings;
 
     public class Matchmaking : SceneService, INetworkRunnerCallbacks {
 
@@ -54,8 +55,11 @@ namespace Vermines.Core {
         {
             if (request.GameMode != GameMode.Server && request.GameMode != GameMode.Host)
                 return;
+            NetworkSettings settings = Context.Settings.Network;
+
             request.UserID      = Context.PlayerData.UserID;
             request.CustomLobby = _LobbyName;
+            request.SessionName = settings.CodeGenerator.EncodeRegion(settings.CodeGenerator.Create(), 0);
 
             Global.Networking.StartGame(request);
         }

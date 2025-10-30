@@ -1,15 +1,13 @@
 using Fusion;
 using System;
 
-namespace Vermines.Menu.Screen.Tavern.Network {
+namespace Vermines.Menu.CustomLobby {
 
     public struct CultistSelectState : INetworkStruct, IEquatable<CultistSelectState> {
 
         #region Attributes
 
         public PlayerRef ClientID;
-
-        public NetworkString<_32> Name;
 
         public int CultistID;
 
@@ -19,12 +17,11 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
         #region Constructors
 
-        public CultistSelectState(PlayerRef player, string name = "", int cultistID = -1, bool isLockedIn = false)
+        public CultistSelectState(PlayerRef player, int cultistID = -1, bool isLockedIn = false)
         {
             ClientID   = player;
             CultistID  = cultistID;
             IsLockedIn = isLockedIn;
-            Name       = name;
         }
 
         #endregion
@@ -33,7 +30,7 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
         public readonly bool Equals(CultistSelectState other)
         {
-            return (ClientID == other.ClientID && Name == other.Name && CultistID == other.CultistID && IsLockedIn == other.IsLockedIn);
+            return (ClientID == other.ClientID && CultistID == other.CultistID && IsLockedIn == other.IsLockedIn);
         }
 
         #endregion

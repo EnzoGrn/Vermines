@@ -1,14 +1,17 @@
 using System.Collections.Generic;
-using OMGG.Menu.Screen;
 using UnityEngine;
-using Fusion;
 using TMPro;
 
-namespace Vermines.Menu.Screen.Tavern.Network {
-    using UnityEngine.UI;
-    using Vermines.Characters;
+namespace Vermines.Menu.CustomLobby {
 
-    public class NetworkCultistSelectDisplay : NetworkBehaviour {
+    using Vermines.Characters;
+    using Vermines.Menu.Tavern;
+    using Vermines.UI;
+    using Vermines.Core.UI;
+    using Vermines.Core.Scene;
+    using Vermines.Extension;
+
+    public class NetworkCultistSelectDisplay : UIBehaviour {
 
         const string Ready   = "Unready";
         const string UnReady = "Ready";
@@ -38,54 +41,56 @@ namespace Vermines.Menu.Screen.Tavern.Network {
         private CultistInfoPanel _CultistInfoPanel;
 
         [SerializeField]
-        private TMP_Text _CultistNameText;
+        private TextMeshProUGUI _CultistNameText;
 
         private List<NetworkCultistSelectButton> _CultistButtons = new();
 
         [SerializeField]
-        private TMP_Text _ReadyStateText;
+        private TextMeshProUGUI _ReadyStateText;
 
-        public Button ReadyButton;
+        public UIButton ReadyButton;
+
+        private SceneContext _Context;
 
         #endregion
 
-        #region Overrides Methods
+        #region Methods
 
-        public override void Spawned()
+        public void Initialize(SceneContext context, bool hasInputAuthority)
         {
-            if (HasInputAuthority) {
+            _Context = context;
+
+            ReadyButton.onClick.AddListener(OnReadyButton);
+
+            if (hasInputAuthority) {
                 Cultist[] allCultists = _CultistDatabase.GetAllCultists();
 
                 foreach (Cultist cultist in allCultists) {
                     NetworkCultistSelectButton selectedButtonInstance = Instantiate(_SelectButtonPrefab, _CultistHolder);
 
+                    selectedButtonInstance.Initialize();
                     selectedButtonInstance.SetCharacter(this, cultist);
 
                     _CultistButtons.Add(selectedButtonInstance);
                 }
 
-                Reset();
-
-                CustomLobbyController controller = FindFirstObjectByType<CustomLobbyController>(FindObjectsInactive.Include);
-
-                if (controller == null) {
-                    OpenErrorPopup("Problem occurred while joining to find the lobby.", "Check your internet connection, disconnect and try again. If the problem persists, please contact the support team.");
-
-                    return;
-                }
-
-                controller.RPC_OnPlayerConnected(Runner.LocalPlayer, PlayerPrefs.GetString("OMGG.Profile.Username"));
+                Clear();
             } else {
                 _SelectPanel.SetActive(false);
                 _CultistInfoFullPanel.SetActive(false);
             }
         }
 
-        #endregion
+        public void Deinitialize()
+        {
+            ReadyButton.onClick.RemoveListener(OnReadyButton);
 
-        #region Methods
+            foreach (NetworkCultistSelectButton button in _CultistButtons)
+                button.Deinitialize();
+            Clear();
+        }
 
-        private void Reset()
+        private void Clear()
         {
             _CultistInfoPanel.gameObject.SetActive(false);
             _CultistInfoPanel.SetCharacter(ScriptableObject.CreateInstance<Cultist>());
@@ -95,17 +100,14 @@ namespace Vermines.Menu.Screen.Tavern.Network {
                 button.UnSelect();
             }
 
-            _ReadyStateText.text = UnReady;
+            _ReadyStateText.SetTextSafe(UnReady);
 
             ReadyButton.interactable = false;
         }
 
-        private void OpenErrorPopup(string title, string description)
-        {
-            var popup = FindAnyObjectByType<Popup>(FindObjectsInactive.Include);
+        #endregion
 
-            popup.OpenPopup(description, title);
-        }
+        #region Methods
 
         public void HandleStatesChanged()
         {
@@ -113,25 +115,26 @@ namespace Vermines.Menu.Screen.Tavern.Network {
             // This line check if you are the local player.
             if (_CultistButtons.Count == 0)
                 return;
-            CustomLobbyController controller = FindFirstObjectByType<CustomLobbyController>(FindObjectsInactive.Include);
+            NetworkLobby   lobby = _Context.NetworkLobby;
+            LobbyManager manager = _Context.Lobby;
 
             foreach (NetworkCultistSelectButton button in _CultistButtons) {
-                if (controller.IsCultistTaken(button.Cultist.ID, false))
+                if (manager.IsCultistTaken(button.Cultist.ID, false))
                     button.SetDisabled();
                 else
                     button.SetEnabled();
             }
 
-            for (int i = 0; i < controller.Players.Length; i++) {
-                CultistSelectState playerState = controller.Players.Get(i);
+            foreach (LobbyPlayerController player in lobby.ActivePlayers) {
+                CultistSelectState state = player.State;
 
-                if (playerState.ClientID != Runner.LocalPlayer)
+                if (state.ClientID != _Context.LocalPlayerRef)
                     continue;
-                _ReadyStateText.text = playerState.IsLockedIn ? Ready : UnReady;
+                _ReadyStateText.SetTextSafe(state.IsLockedIn ? Ready : UnReady);
 
-                if (playerState.CultistID != -1 && !playerState.IsLockedIn && controller.IsCultistTaken(playerState.CultistID, false)) {
+                if (state.CultistID != -1 && !state.IsLockedIn && manager.IsCultistTaken(state.CultistID, false)) {
                     _CultistButtons.ForEach(button => {
-                        if (button.Cultist.ID == playerState.CultistID)
+                        if (button.Cultist.ID == state.CultistID)
                             button.UnSelect();
                     });
 
@@ -141,7 +144,7 @@ namespace Vermines.Menu.Screen.Tavern.Network {
                     _CultistInfoPanel.gameObject.SetActive(false);
                 } else if (IsLockdIn()) {
                     _CultistButtons.ForEach(button => {
-                        if (button.Cultist.ID == playerState.CultistID)
+                        if (button.Cultist.ID == state.CultistID)
                             button.SetDisabled();
                     });
                 }
@@ -150,28 +153,28 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
         public void Select(int cultistID, bool force = false)
         {
-            CustomLobbyController controller = FindFirstObjectByType<CustomLobbyController>(FindObjectsInactive.Include);
+            NetworkLobby   lobby = _Context.NetworkLobby;
+            LobbyManager manager = _Context.Lobby;
 
-            for (int i = 0; i < controller.Players.Length; i++) {
-                CultistSelectState playerState = controller.Players.Get(i);
+            foreach (LobbyPlayerController player in lobby.ActivePlayers) {
+                CultistSelectState state = player.State;
 
-                if (playerState.ClientID != Runner.LocalPlayer)
+                if (state.ClientID != _Context.LocalPlayerRef)
                     continue;
-                if (playerState.IsLockedIn && !force)
+                if (state.IsLockedIn && !force)
                     return;
-                if (playerState.CultistID == cultistID)
+                if (state.CultistID == cultistID)
                     return;
-                if (controller.IsCultistTaken(cultistID, false) && !force)
+                if (manager.IsCultistTaken(cultistID, false) && !force)
                     return;
-                if (playerState.CultistID != -1)
-                    _CultistButtons.Find(button => button.Cultist.ID == playerState.CultistID).UnSelect();
+                if (state.CultistID != -1)
+                    _CultistButtons.Find(button => button.Cultist.ID == state.CultistID).UnSelect();
             }
 
             if (_CultistDatabase.IsValidCultistID(cultistID)) {
                 Cultist cultist = _CultistDatabase.GetCultistByID(cultistID);
 
-                _CultistNameText.text = cultist.Name;
-
+                _CultistNameText.SetTextSafe(cultist.Name);
                 _CultistInfoPanel.SetCharacter(cultist);
                 _CultistInfoPanel.gameObject.SetActive(true);
 
@@ -179,60 +182,59 @@ namespace Vermines.Menu.Screen.Tavern.Network {
             } else
                 ReadyButton.interactable = false;
 
-            controller.RPC_Select(Runner.LocalPlayer, cultistID, force);
+            manager.RPC_Select(_Context.LocalPlayerRef, cultistID, force);
         }
 
         public void Select(Cultist cultist, bool force = false)
         {
-            CustomLobbyController controller = FindFirstObjectByType<CustomLobbyController>(FindObjectsInactive.Include);
+            NetworkLobby lobby = _Context.NetworkLobby;
+            LobbyManager manager = _Context.Lobby;
 
-            for (int i = 0; i < controller.Players.Length; i++) {
-                CultistSelectState playerState = controller.Players.Get(i);
+            foreach (LobbyPlayerController player in lobby.ActivePlayers) {
+                CultistSelectState state = player.State;
 
-                if (playerState.ClientID != Runner.LocalPlayer)
+                if (state.ClientID != _Context.LocalPlayerRef)
                     continue;
-                if (playerState.IsLockedIn && !force)
+                if (state.IsLockedIn && !force)
                     return;
-                if (playerState.CultistID == cultist.ID)
+                if (state.CultistID == cultist.ID)
                     return;
-                if (controller.IsCultistTaken(cultist.ID, false) && !force)
-                        return;
-                if (playerState.CultistID != -1)
-                    _CultistButtons.Find(button => button.Cultist.ID == playerState.CultistID).UnSelect();
+                if (manager.IsCultistTaken(cultist.ID, false) && !force)
+                    return;
+                if (state.CultistID != -1)
+                    _CultistButtons.Find(button => button.Cultist.ID == state.CultistID).UnSelect();
             }
 
             if (_CultistDatabase.IsValidCultistID(cultist.ID)) {
-                _CultistNameText.text = cultist.Name;
-
+                _CultistNameText.SetTextSafe(cultist.Name);
                 _CultistInfoPanel.SetCharacter(cultist);
                 _CultistInfoPanel.gameObject.SetActive(true);
 
                 ReadyButton.interactable = true;
             } else
                 ReadyButton.interactable = false;
-
-            controller.RPC_Select(Runner.LocalPlayer, cultist.ID, force);
+            manager.RPC_Select(_Context.LocalPlayerRef, cultist.ID, force);
         }
 
         public void LockIn(bool isLockedIn)
         {
-            CustomLobbyController controller = FindFirstObjectByType<CustomLobbyController>(FindObjectsInactive.Include);
+            LobbyManager lobby = _Context.Lobby;
 
-            controller.RPC_LockIn(Runner.LocalPlayer, isLockedIn);
+            lobby.RPC_LockIn(_Context.LocalPlayerRef, isLockedIn);
 
             _ReadyStateText.text = isLockedIn ? Ready : UnReady;
         }
 
         public bool IsLockdIn()
         {
-            CustomLobbyController controller = FindFirstObjectByType<CustomLobbyController>(FindObjectsInactive.Include);
+            NetworkLobby lobby = _Context.NetworkLobby;
 
-            for (int i = 0; i < controller.Players.Length; i++) {
-                CultistSelectState playerState = controller.Players.Get(i);
+            foreach (LobbyPlayerController player in lobby.ActivePlayers) {
+                CultistSelectState state = player.State;
 
-                if (playerState.ClientID != Runner.LocalPlayer)
+                if (state.ClientID != _Context.LocalPlayerRef)
                     continue;
-                return playerState.IsLockedIn;
+                return state.IsLockedIn;
             }
 
             return false;
@@ -242,24 +244,16 @@ namespace Vermines.Menu.Screen.Tavern.Network {
 
         #region Events
 
-        public void OnLockInPressed()
+        private void OnReadyButton()
         {
-            if (Runner == null || !Runner.IsRunning || Runner.LocalPlayer == default)
-                return;
-            CustomLobbyController controller = FindFirstObjectByType<CustomLobbyController>(FindObjectsInactive.Include);
+            NetworkLobby lobby = _Context.NetworkLobby;
 
-            if (controller == null)
-                return;
-            for (int i = 0; i < controller.Players.Length; i++) {
-                CultistSelectState playerState = controller.Players.Get(i);
+            foreach (LobbyPlayerController player in lobby.ActivePlayers) {
+                CultistSelectState state = player.State;
 
-                if (Runner == null)
-                    return;
-                if (playerState.ClientID == default)
+                if (state.ClientID == default || state.ClientID != _Context.LocalPlayerRef)
                     continue;
-                if (playerState.ClientID != Runner.LocalPlayer)
-                    continue;
-                LockIn(!playerState.IsLockedIn);
+                LockIn(!state.IsLockedIn);
             }
         }
 

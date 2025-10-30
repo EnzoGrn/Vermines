@@ -1,15 +1,17 @@
+using System.Threading.Tasks;
+using System.Collections;
 using OMGG.Menu.Connection;
 using UnityEngine;
 using Fusion;
 
-namespace Vermines.Menu.Screen.Tavern.Network {
+namespace Vermines.Menu.Tavern.Network {
 
     using Vermines.Menu.Connection.Element;
     using Vermines.Characters;
     using Vermines.Service;
     using Vermines.Configuration.Network;
-    using System.Threading.Tasks;
-    using System.Collections;
+    using Vermines.Menu.Screen;
+    using Vermines.Menu.CustomLobby;
 
     [RequireComponent(typeof(SettingsManager))]
     public class CustomLobbyController : NetworkBehaviour, IPlayerLeft {
@@ -117,7 +119,7 @@ namespace Vermines.Menu.Screen.Tavern.Network {
                         continue;
                     Cultist cultist = _CultistDatabase.GetCultistByID(playerState.CultistID);
 
-                    services.UpdatePlayerState(playerState.ClientID, playerState.Name.Value, cultist.family);
+                    services.UpdatePlayerState(playerState.ClientID, "", cultist.family);
                 }
 
                 // -- Change UI to gameplay
@@ -234,7 +236,7 @@ namespace Vermines.Menu.Screen.Tavern.Network {
                 CultistSelectState state = Players.Get(i);
 
                 if (state.ClientID != default(PlayerRef))
-                    _PlayerCards[i].UpdateDisplay(state, state.ClientID == Runner.LocalPlayer);
+                    _PlayerCards[i].UpdateDisplay(state, "Username", state.ClientID == Runner.LocalPlayer);
                 else
                     _PlayerCards[i].DisableDisplay();
             }
@@ -282,7 +284,7 @@ namespace Vermines.Menu.Screen.Tavern.Network {
         {
             for (int i = 0; i < Players.Length; i++) {
                 if (Players.Get(i).Equals(default(CultistSelectState))) {
-                    Players.Set(i, new CultistSelectState(playerRef, playerName));
+                    Players.Set(i, new CultistSelectState(playerRef));
 
                     return;
                 }
@@ -299,7 +301,7 @@ namespace Vermines.Menu.Screen.Tavern.Network {
                     return;
                 if (IsCultistTaken(cultistID, true) && !force)
                     return;
-                Players.Set(i, new CultistSelectState(player, Players.Get(i).Name.Value, cultistID, Players.Get(i).IsLockedIn));
+                Players.Set(i, new CultistSelectState(player, cultistID, Players.Get(i).IsLockedIn));
             }
         }
 
@@ -318,7 +320,7 @@ namespace Vermines.Menu.Screen.Tavern.Network {
                         return;
                 }
 
-                Players.Set(i, new CultistSelectState(player, state.Name.Value, state.CultistID, isLockedIn));
+                Players.Set(i, new CultistSelectState(player, state.CultistID, isLockedIn));
             }
 
             if (isLockedIn)

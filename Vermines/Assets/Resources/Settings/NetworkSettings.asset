@@ -16,22 +16,5 @@ MonoBehaviour:
   - DisplayName: Auto
     Region: 
     Icon: {fileID: 0}
-  - DisplayName: Asia
-    Region: asia
-    Icon: {fileID: 0}
-  - DisplayName: Europe
-    Region: eu
-    Icon: {fileID: 0}
-  - DisplayName: Japan
-    Region: jp
-    Icon: {fileID: 0}
-  - DisplayName: South America
-    Region: sa
-    Icon: {fileID: 0}
-  - DisplayName: South Korea
-    Region: kr
-    Icon: {fileID: 0}
-  - DisplayName: USA, East
-    Region: us
-    Icon: {fileID: 0}
+  _CodeGenerator: {fileID: 11400000, guid: 05a83dd833e73be429bacc85cf1c344f, type: 2}
   QueueName: vermines

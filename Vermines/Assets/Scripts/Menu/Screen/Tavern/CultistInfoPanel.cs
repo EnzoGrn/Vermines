@@ -1,15 +1,15 @@
-using OMGG.Menu.Screen;
 using UnityEngine.UI;
 using UnityEngine;
+using TMPro;
 
-namespace Vermines.Menu.Screen.Tavern {
+namespace Vermines.Menu.Tavern {
 
-    using TMPro;
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
     using Vermines.Characters;
+    using Vermines.Core.UI;
 
-    public class CultistInfoPanel : MonoBehaviour {
+    public class CultistInfoPanel : UIBehaviour {
 
         #region Attributes
 

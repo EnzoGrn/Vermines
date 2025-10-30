@@ -1327,8 +1327,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 3742561660756849517}
+  NetworkedBehaviours: []
 --- !u!114 &3742561660756849517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1349,7 +1348,7 @@ MonoBehaviour:
   _CultistInfoPanel: {fileID: 5479191639673499423}
   _CultistNameText: {fileID: 2280141700620790412}
   _ReadyStateText: {fileID: 4964444271885079078}
-  ReadyButton: {fileID: 3773851336040941988}
+  ReadyButton: {fileID: 0}
 --- !u!1 &6063380527243995379
 GameObject:
   m_ObjectHideFlags: 0
