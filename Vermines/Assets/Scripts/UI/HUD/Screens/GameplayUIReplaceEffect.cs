@@ -143,7 +143,6 @@ namespace Vermines.UI.Screen
         public void OnDoneButtonPressed()
         {
             onDoneCallback?.Invoke(shopReplacements);
-            UIContextManager.Instance.PopContext();
             GameEvents.OnCardClickedInShopWithSlotIndex.RemoveListener(OnShopCardClicked);
             Controller.Hide();
         }

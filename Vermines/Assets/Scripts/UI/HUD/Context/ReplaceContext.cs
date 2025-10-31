@@ -21,22 +21,16 @@ public class ReplaceEffectContext : IUIContext
         if (gameplayUIController != null)
         {
             gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
-            gameplayUIController.ShowWithParams<GameplayUIReplaceEffect, Action<Dictionary<ShopType, int>>>(OnDone, lastScreen);
+            gameplayUIController.ShowWithParams<GameplayUIReplaceEffect, Action<Dictionary<ShopType, int>>>(_onDone, lastScreen);
         }
     }
 
     public void Exit()
     {
-        _onDone?.Invoke(dictShopSlot);
     }
 
     public string GetName()
     {
         return "Replace Effect";
-    }
-
-    private void OnDone(Dictionary<ShopType, int> result)
-    {
-        dictShopSlot = result;
     }
 }

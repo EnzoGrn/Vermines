@@ -55,7 +55,7 @@ namespace Vermines.UI.Card
                     go.SetActive(false);
                 }
 
-                if (PhaseManager.Instance.Phases.TryGetValue(GameManager.Instance.GetCurrentPhase(), out var phase) && phase is ActionPhase actionPhase)
+                if (PhaseManager.Instance.Phases.TryGetValue(GameManager.Instance.GetCurrentPhase(), out var phase) && phase is ActionPhaseAsset actionPhase)
                 {
                     actionPhase.OnDiscard(card);
                 }
