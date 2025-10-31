@@ -1,13 +1,13 @@
 ﻿using Fusion;
 using OMGG.DesignPattern;
+using System.Linq;
 using UnityEngine;
 using Vermines.CardSystem.Data.Effect;
 using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Enumerations;
 using Vermines.Gameplay.Commands.Deck;
 using Vermines.Player;
 using Vermines.ShopSystem.Commands;
-using System.Linq;
-using Vermines.CardSystem.Enumerations;
 
 namespace Vermines.Gameplay.Phases
 {
