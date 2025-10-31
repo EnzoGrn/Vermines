@@ -1,12 +1,16 @@
+using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using Fusion.Sockets;
 using Fusion;
 using UnityEngine;
+using WebSocketSharp;
 
 namespace Vermines.Menu.CustomLobby {
 
     using Vermines.Extension;
     using Vermines.Core;
+    using Vermines.Core.Network;
+    using Vermines.Utils;
 
     public sealed class NetworkLobby : ContextBehaviour, IPlayerJoined, IPlayerLeft {
 
@@ -28,12 +32,15 @@ namespace Vermines.Menu.CustomLobby {
         private Dictionary<PlayerRef, LobbyPlayerController> _PendingPlayers = new();
 
         private List<LobbyPlayerController> _SpawnedPlayers = new(byte.MaxValue);
+        private List<LobbyPlayerController> _AllPlayers     = new(byte.MaxValue);
 
         private LobbyManager _LobbyManager;
 
         private bool _IsActive;
 
         #endregion
+
+        private FusionCallbacksHandler _FusionCallbacks = new();
 
         #region Getters & Setters
 
@@ -61,6 +68,12 @@ namespace Vermines.Menu.CustomLobby {
                 _LobbyManager = Runner.Spawn(_LobbyManagerPrefab);
             _LocalPlayer = Runner.LocalPlayer;
 
+            _FusionCallbacks.DisconnectedFromServer -= OnDisconnectedFromServer;
+            _FusionCallbacks.DisconnectedFromServer += OnDisconnectedFromServer;
+
+            Runner.RemoveCallbacks(_FusionCallbacks);
+            Runner.AddCallbacks(_FusionCallbacks);
+
             ActivePlayers.Clear();
         }
 
@@ -68,11 +81,15 @@ namespace Vermines.Menu.CustomLobby {
         {
             _IsActive = true;
 
-            foreach (PlayerRef playerRef in Runner.ActivePlayers)
-                SpawnPlayer(playerRef);
+            foreach (PlayerRef player in Runner.ActivePlayers) {
+                LobbyPlayerController controller = GetPlayer(player);
+
+                if (controller != null)
+                    controller.UpdateContext(Context);
+            }
         }
 
-        private void SpawnPlayer(PlayerRef playerRef)
+        private void SpawnPlayer(PlayerRef playerRef, [CallerMemberName] string caller = "")
         {
             if (GetPlayer(playerRef) != null || _PendingPlayers.ContainsKey(playerRef)) {
                 Log.Error($"Player for {playerRef} is already spawned!");
@@ -87,6 +104,64 @@ namespace Vermines.Menu.CustomLobby {
             #if UNITY_EDITOR
                 player.gameObject.name = $"Player Unknown (Pending)";
             #endif
+        }
+
+        public override void FixedUpdateNetwork()
+        {
+            if (Runner == null)
+                return;
+            _AllPlayers.Clear();
+
+            Runner.GetAllBehaviours<LobbyPlayerController>(_AllPlayers);
+
+            foreach (LobbyPlayerController player in _AllPlayers) {
+                PlayerRef inputAuthority = player.Object.InputAuthority;
+
+                if (inputAuthority.IsRealPlayer) {
+                    if (HasInputAuthority && !Runner.IsPlayerValid(inputAuthority)) {
+                        _AllPlayers.Remove(player);
+
+                        OnPlayerLeft(player);
+                    }
+                } else {
+                    _AllPlayers.Remove(player);
+                }
+            }
+
+            ActivePlayers.Clear();
+
+            foreach (LobbyPlayerController player in _AllPlayers) {
+                if (player.UserID.IsNullOrEmpty())
+                    continue;
+                ActivePlayers.Add(player);
+            }
+
+            if (!HasStateAuthority || _PendingPlayers.Count == 0)
+                return;
+            var playersToRemove = ListPool.Get<PlayerRef>(128);
+
+            foreach (var playerPair in _PendingPlayers) {
+                var playerRef = playerPair.Key;
+                var player    = playerPair.Value;
+
+                if (!player.IsInitialized)
+                    continue;
+                playersToRemove.Add(playerRef);
+
+                player.Refresh();
+
+                Runner.SetPlayerObject(playerRef, player.Object);
+
+                #if UNITY_EDITOR
+                    player.gameObject.name = $"Player {player.Nickname}";
+                #endif
+
+                _LobbyManager.PlayerJoined(player);
+            }
+
+            for (int i = 0; i < playersToRemove.Count; i++)
+                _PendingPlayers.Remove(playersToRemove[i]);
+            ListPool.Return(playersToRemove);
         }
 
         #endregion
@@ -118,6 +193,11 @@ namespace Vermines.Menu.CustomLobby {
             ActivePlayers.Remove(player);
 
             Runner.Despawn(player.Object);
+
+            LobbyUIView view = Context.UI.Get<LobbyUIView>();
+
+            if (view != null)
+                view.OnPlayerStatesChanged();
         }
 
         private void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason _)

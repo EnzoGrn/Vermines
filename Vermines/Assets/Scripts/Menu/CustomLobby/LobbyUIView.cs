@@ -9,6 +9,8 @@ namespace Vermines.Menu.CustomLobby {
     using Vermines.UI;
     using Vermines.Extension;
     using Vermines.Core;
+    using Fusion;
+    using static PlasticGui.PlasticTableColumn;
 
     public class LobbyUIView : UIView {
 
@@ -46,6 +48,8 @@ namespace Vermines.Menu.CustomLobby {
             _CopySessionButton.onClick.AddListener(OnCopySessionButton);
 
             _SessionCode.SetTextSafe(Context.Runner.SessionInfo.Name);
+
+            OnPlayerStatesChanged();
         }
 
         protected override void OnDeinitialize()
@@ -60,20 +64,20 @@ namespace Vermines.Menu.CustomLobby {
 
         public void OnPlayerStatesChanged()
         {
-            if (_PlayerCards == null || _PlayerCards.Length == 0)
+            if (_PlayerCards == null || _PlayerCards.Length == 0 || Context == null || Context.Runner == null)
                 return;
-            List<LobbyPlayerController> players = Context.NetworkLobby.ActivePlayers;
+            List<LobbyPlayerController> players = Context.Runner.GetAllBehaviours<LobbyPlayerController>();
 
-            foreach (PlayerCard card in _PlayerCards)
-                card.DisableDisplay();
             for (int i = 0; i < _PlayerCards.Length; i++) {
-                LobbyPlayerController player = players[i];
-                PlayerCard        playerCard = _PlayerCards[i];
+                if (i < players.Count && players[i] != null) {
+                    CultistSelectState state = players[i].State;
 
-                if (player != null)
-                    playerCard.UpdateDisplay(player.State, player.Nickname, player.Object.InputAuthority == Context.Runner.LocalPlayer);
-                else
-                    playerCard.DisableDisplay();
+                    if (state.ClientID != default)
+                        _PlayerCards[i].UpdateDisplay(state, players[i].Nickname, state.ClientID == Context.Runner.LocalPlayer);
+                    else
+                        _PlayerCards[i].DisableDisplay();
+                } else
+                    _PlayerCards[i].DisableDisplay();
             }
 
             foreach (NetworkCultistSelectDisplay display in FindObjectsByType<NetworkCultistSelectDisplay>(FindObjectsInactive.Include, FindObjectsSortMode.None))

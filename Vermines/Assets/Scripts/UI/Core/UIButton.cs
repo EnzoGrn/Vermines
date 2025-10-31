@@ -37,6 +37,9 @@ namespace Vermines.UI {
                 _Parent = _TempWidgetList.Count > 0 ? _TempWidgetList[0] : null;
 
                 _TempWidgetList.Clear();
+
+                if (_Parent == null)
+                    return;
             }
 
             if (_CustomClickSound.Clips.Length > 0)
@@ -62,7 +65,7 @@ namespace Vermines.UI {
 
             if (transition == Transition.Animation) {
                 Animator buttonAnimator = animator;
-
+                
                 if (buttonAnimator != null)
                     buttonAnimator.keepAnimatorStateOnDisable = true;
             }

@@ -7,6 +7,8 @@ namespace Vermines.Menu.CustomLobby {
 
         #region Attributes
 
+        public bool IsValid => ClientID.IsRealPlayer;
+
         public PlayerRef ClientID;
 
         public int CultistID;

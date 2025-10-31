@@ -71,6 +71,7 @@ namespace Vermines.Core {
                 GameMode     = GameMode.Client,
                 SessionName  = session.Name,
                 CustomLobby  = _LobbyName,
+                GameplayType = GameplayType.Lobby
             };
 
             Global.Networking.StartGame(request);
@@ -79,10 +80,11 @@ namespace Vermines.Core {
         public void JoinSession(string sessionName)
         {
             Global.Networking.StartGame(new SessionRequest() {
-                UserID      = Context.PlayerData.UserID,
-                GameMode    = GameMode.Client,
-                SessionName = sessionName,
-                CustomLobby = _LobbyName
+                UserID       = Context.PlayerData.UserID,
+                GameMode     = GameMode.Client,
+                SessionName  = sessionName,
+                CustomLobby  = _LobbyName,
+                GameplayType = GameplayType.Lobby
             });
         }
 

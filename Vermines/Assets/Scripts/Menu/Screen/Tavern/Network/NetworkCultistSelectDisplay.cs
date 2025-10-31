@@ -125,14 +125,16 @@ namespace Vermines.Menu.CustomLobby {
                     button.SetEnabled();
             }
 
-            foreach (LobbyPlayerController player in lobby.ActivePlayers) {
+            List<LobbyPlayerController> players = _Context.Runner.GetAllBehaviours<LobbyPlayerController>();
+
+            foreach (LobbyPlayerController player in players) {
                 CultistSelectState state = player.State;
 
                 if (state.ClientID != _Context.LocalPlayerRef)
                     continue;
                 _ReadyStateText.SetTextSafe(state.IsLockedIn ? Ready : UnReady);
 
-                if (state.CultistID != -1 && !state.IsLockedIn && manager.IsCultistTaken(state.CultistID, false)) {
+                if (state.CultistID > 0 && !state.IsLockedIn && manager.IsCultistTaken(state.CultistID, false)) {
                     _CultistButtons.ForEach(button => {
                         if (button.Cultist.ID == state.CultistID)
                             button.UnSelect();
@@ -153,10 +155,10 @@ namespace Vermines.Menu.CustomLobby {
 
         public void Select(int cultistID, bool force = false)
         {
-            NetworkLobby   lobby = _Context.NetworkLobby;
+            List<LobbyPlayerController> players = _Context.Runner.GetAllBehaviours<LobbyPlayerController>();
             LobbyManager manager = _Context.Lobby;
 
-            foreach (LobbyPlayerController player in lobby.ActivePlayers) {
+            foreach (LobbyPlayerController player in players) {
                 CultistSelectState state = player.State;
 
                 if (state.ClientID != _Context.LocalPlayerRef)
@@ -167,7 +169,7 @@ namespace Vermines.Menu.CustomLobby {
                     return;
                 if (manager.IsCultistTaken(cultistID, false) && !force)
                     return;
-                if (state.CultistID != -1)
+                if (state.CultistID > 0)
                     _CultistButtons.Find(button => button.Cultist.ID == state.CultistID).UnSelect();
             }
 
@@ -187,10 +189,10 @@ namespace Vermines.Menu.CustomLobby {
 
         public void Select(Cultist cultist, bool force = false)
         {
-            NetworkLobby lobby = _Context.NetworkLobby;
+            List<LobbyPlayerController> players = _Context.Runner.GetAllBehaviours<LobbyPlayerController>();
             LobbyManager manager = _Context.Lobby;
 
-            foreach (LobbyPlayerController player in lobby.ActivePlayers) {
+            foreach (LobbyPlayerController player in players) {
                 CultistSelectState state = player.State;
 
                 if (state.ClientID != _Context.LocalPlayerRef)
@@ -201,7 +203,7 @@ namespace Vermines.Menu.CustomLobby {
                     return;
                 if (manager.IsCultistTaken(cultist.ID, false) && !force)
                     return;
-                if (state.CultistID != -1)
+                if (state.CultistID > 0)
                     _CultistButtons.Find(button => button.Cultist.ID == state.CultistID).UnSelect();
             }
 
@@ -227,9 +229,9 @@ namespace Vermines.Menu.CustomLobby {
 
         public bool IsLockdIn()
         {
-            NetworkLobby lobby = _Context.NetworkLobby;
+            List<LobbyPlayerController> players = _Context.Runner.GetAllBehaviours<LobbyPlayerController>();
 
-            foreach (LobbyPlayerController player in lobby.ActivePlayers) {
+            foreach (LobbyPlayerController player in players) {
                 CultistSelectState state = player.State;
 
                 if (state.ClientID != _Context.LocalPlayerRef)
@@ -246,9 +248,9 @@ namespace Vermines.Menu.CustomLobby {
 
         private void OnReadyButton()
         {
-            NetworkLobby lobby = _Context.NetworkLobby;
+            List<LobbyPlayerController> players = _Context.Runner.GetAllBehaviours<LobbyPlayerController>();
 
-            foreach (LobbyPlayerController player in lobby.ActivePlayers) {
+            foreach (LobbyPlayerController player in players) {
                 CultistSelectState state = player.State;
 
                 if (state.ClientID == default || state.ClientID != _Context.LocalPlayerRef)

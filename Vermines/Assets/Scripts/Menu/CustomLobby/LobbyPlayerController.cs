@@ -1,7 +1,7 @@
 using Fusion;
 
 namespace Vermines.Menu.CustomLobby {
-
+    using UnityEngine;
     using Vermines.Core;
     using Vermines.Core.Player;
     using Vermines.Core.Scene;
@@ -13,6 +13,8 @@ namespace Vermines.Menu.CustomLobby {
         public string UserID { get; private set; }
         public string UnityID { get; private set; }
         public string Nickname { get; private set; }
+
+        public bool IsInitialized => _InitCounter <= 0;
 
         public SceneContext Context { get; set; }
 
@@ -34,6 +36,8 @@ namespace Vermines.Menu.CustomLobby {
 
         private bool _PlayerDataSent;
 
+        private int _InitCounter;
+
         #endregion
 
         #region Methods
@@ -42,10 +46,14 @@ namespace Vermines.Menu.CustomLobby {
         {
             State = state;
 
-            LobbyUIView view = Context.UI.Get<LobbyUIView>();
+            UpdateUI();
+        }
 
-            if (view != null)
-                view.OnPlayerStatesChanged();
+        public void UpdateContext(SceneContext context)
+        {
+            Context = context;
+
+            UpdateUI();
         }
 
         private void UpdateLocalState()
@@ -56,6 +64,25 @@ namespace Vermines.Menu.CustomLobby {
                 UserID   = NetworkedUserID.Value;
                 Nickname = NetworkedNickname.Value;
             }
+
+            UpdateUI();
+        }
+
+        public void Refresh()
+        {
+            CultistSelectState state = State;
+
+            state.ClientID = Object.InputAuthority;
+
+            State = state;
+        }
+
+        private void UpdateUI()
+        {
+            LobbyUIView view = Context.UI.Get<LobbyUIView>();
+
+            if (view != null)
+                view.OnPlayerStatesChanged();
         }
 
         #endregion
@@ -66,11 +93,13 @@ namespace Vermines.Menu.CustomLobby {
         {
             _LocalSyncToken = default;
             _PlayerDataSent = false;
+            _InitCounter    = 10;
 
             if (HasInputAuthority)
                 Context.LocalPlayerRef = Object.InputAuthority;
             UI.Initialize(Context, Object.HasInputAuthority);
             UpdateLocalState();
+            UpdateUI();
 
             Runner.SetIsSimulated(Object, true);
         }
@@ -86,6 +115,8 @@ namespace Vermines.Menu.CustomLobby {
         {
             UpdateLocalState();
 
+            if (_LocalSyncToken != default && Runner.IsForward)
+                _InitCounter = Mathf.Max(0, _InitCounter - 1);
             if (HasInputAuthority) {
                 if (!_PlayerDataSent && Runner.IsForward && Context.PlayerData != null) {
                     string unityID = Context.PlayerData.UnityID ?? string.Empty;

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using Fusion;
+using System;
 
 namespace Vermines.Menu.CustomLobby {
 
@@ -15,6 +16,8 @@ namespace Vermines.Menu.CustomLobby {
 
         public CultistDatabase CultistDatabase;
 
+        public Action<PlayerRef> OnPlayerJoinedGame;
+
         #endregion
 
         #region Methods
@@ -24,9 +27,18 @@ namespace Vermines.Menu.CustomLobby {
             Context.Lobby = this;
         }
 
+        public void PlayerJoined(LobbyPlayerController p)
+        {
+            CultistSelectState state = p.State;
+
+            p.UpdateState(state);
+
+            RPC_PlayerJoinedGame(p.Object.InputAuthority);
+        }
+
         public void PlayerLeft(LobbyPlayerController p)
         {
-            List<LobbyPlayerController> players = Context.NetworkLobby.ActivePlayers;
+            List<LobbyPlayerController> players = Context.Runner.GetAllBehaviours<LobbyPlayerController>();
 
             // Un-ready everyone if a player leaves
             foreach (LobbyPlayerController player in players) {
@@ -40,7 +52,7 @@ namespace Vermines.Menu.CustomLobby {
 
         public bool IsCultistTaken(int cultistID, bool checkAll)
         {
-            List<LobbyPlayerController> players = Context.NetworkLobby.ActivePlayers;
+            List<LobbyPlayerController> players = Context.Runner.GetAllBehaviours<LobbyPlayerController>();
 
             foreach (LobbyPlayerController player in players) {
                 CultistSelectState state = player.State;
@@ -78,6 +90,12 @@ namespace Vermines.Menu.CustomLobby {
 
         #region Methods
 
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
+        private void RPC_PlayerJoinedGame(PlayerRef playerRef)
+        {
+            OnPlayerJoinedGame?.Invoke(playerRef);
+        }
+
         [Rpc(RpcSources.StateAuthority, RpcTargets.Proxies, Channel = RpcChannel.Reliable)]
         private void RPC_StopGame()
         {
@@ -87,7 +105,7 @@ namespace Vermines.Menu.CustomLobby {
         [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
         public void RPC_Select(PlayerRef playerRef, int cultistID, bool force = false)
         {
-            List<LobbyPlayerController> players = Context.NetworkLobby.ActivePlayers;
+            List<LobbyPlayerController> players = Context.Runner.GetAllBehaviours<LobbyPlayerController>();
 
             foreach (LobbyPlayerController player in players) {
                 if (player.State.ClientID != playerRef)
@@ -103,7 +121,7 @@ namespace Vermines.Menu.CustomLobby {
         [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
         public async void RPC_LockIn(PlayerRef playerRef, bool isLockedIn = true)
         {
-            List<LobbyPlayerController> players = Context.NetworkLobby.ActivePlayers;
+            List<LobbyPlayerController> players = Context.Runner.GetAllBehaviours<LobbyPlayerController>();
 
             foreach (LobbyPlayerController player in players) {
                 CultistSelectState state = player.State;

@@ -51,7 +51,7 @@ namespace Vermines.Menu.CustomLobby {
 
         public void UpdateDisplay(CultistSelectState state, string playerName, bool isMine = false)
         {
-            if (state.CultistID != -1) {
+            if (state.CultistID > 0) {
                 Cultist cultist = _CultistDatabase.GetCultistByID(state.CultistID);
 
                 _CultistIconImage.sprite  = cultist.CultistSprite;
