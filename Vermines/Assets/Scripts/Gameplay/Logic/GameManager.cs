@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using OMGG.Menu.Connection;
 using OMGG.Network.Fusion;
+using OMGG.Chronicle;
 using Fusion;
 
 namespace Vermines {
@@ -15,7 +16,6 @@ namespace Vermines {
     using Vermines.Configuration.Network;
     using Vermines.Configuration;
     using Vermines.Gameplay.Phases.Enumerations;
-    using OMGG.Chronicle;
 
     public partial class GameManager : NetworkBehaviour {
 

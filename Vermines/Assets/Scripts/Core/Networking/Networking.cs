@@ -231,16 +231,7 @@ namespace Vermines.Core.Network {
 
                 yield return ShowLoadingSceneCoroutine(true);
 
-                int sceneCount = SceneManager.sceneCount;
-                List<UnityScene> scenesToUnload = new(sceneCount);
-
-                for (int i = 0; i < sceneCount; i++) {
-                    UnityScene s = SceneManager.GetSceneAt(i);
-
-                    if (s.name == _LoadingScene || PersistentSceneService.Instance.IsScenePersistent(s.name))
-                        continue;
-                    scenesToUnload.Add(s);
-                }
+                List<UnityScene> scenesToUnload = GetScenesToUnload();
 
                 for (int i = 0; i < _CurrentSession.GamePeers.Length; i++) {
                     if (scenesToUnload.Contains(_CurrentSession.GamePeers[i].LoadedScene)) {
@@ -565,12 +556,8 @@ namespace Vermines.Core.Network {
         {
             StatusDescription = "disconnect_server";
 
-            UnityScene gameplayScene = default;
-
             try {
                 if (peer.Runner != null) {
-                    gameplayScene = peer.Runner.SimulationUnityScene;
-
                     if (peer.Runner.IsServer && peer.Runner.SessionInfo != null) {
                         Log($"Closing the room.");
 
@@ -582,20 +569,18 @@ namespace Vermines.Core.Network {
                 Debug.LogException(exception);
             }
 
-            if (!gameplayScene.IsValid())
-                gameplayScene = peer.LoadedScene;
-            if (gameplayScene.IsValid()) {
-                Scene scene = gameplayScene.GetComponent<Scene>(true);
+            List<UnityScene> scenesToUnload = GetScenesToUnload();
 
-                if (scene != null) {
-                    try {
-                        Log($"Deinitialize scene.");
+            foreach (UnityScene s in scenesToUnload) {
+                Scene currentScene = s.GetComponent<Scene>();
 
-                        scene.Deinitialize();
-                    } catch (Exception exception) {
-                        Debug.LogException(exception);
-                    }
+                if (currentScene != null) {
+                    Log($"Deinitializing Scene.");
+
+                    currentScene.Deinitialize();
                 }
+
+                yield return null;
             }
             Task shutdownTask = null;
 
@@ -622,10 +607,10 @@ namespace Vermines.Core.Network {
 
             PersistentSceneService.Instance.SwitchToScene(PersistentSceneService.Instance.PersistentScenes[0]);
 
-            if (gameplayScene.IsValid()) {
-                Debug.LogWarning($"Unloading scene {gameplayScene.name}");
+            foreach (UnityScene s in scenesToUnload) {
+                Debug.LogWarning($"Unloading scene {s.name}");
 
-                yield return SceneManager.UnloadSceneAsync(gameplayScene.name);
+                yield return SceneManager.UnloadSceneAsync(s.name);
                 yield return null;
             }
 
@@ -703,6 +688,22 @@ namespace Vermines.Core.Network {
         #endregion
 
         #region Utils
+
+        private List<UnityScene> GetScenesToUnload()
+        {
+            int sceneCount = SceneManager.sceneCount;
+            List<UnityScene> scenesToUnload = new(sceneCount);
+
+            for (int i = 0; i < sceneCount; i++) {
+                UnityScene s = SceneManager.GetSceneAt(i);
+
+                if (s.name == _LoadingScene || PersistentSceneService.Instance.IsScenePersistent(s.name))
+                    continue;
+                scenesToUnload.Add(s);
+            }
+
+            return scenesToUnload;
+        }
 
         private Dictionary<string, SessionProperty> CreateSessionProperties(SessionRequest request)
         {

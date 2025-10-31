@@ -127,14 +127,15 @@ namespace Vermines.Player {
             int index = -1;
 
             foreach (AEffect e in card.Data.Effects) {
+                index++;
+
                 if (e.Equals(effect))
                     break;
-                index++;
             }
 
             if (index == -1)
                 return;
-            GameManager.Instance.RPC_EffectChosen(Object.InputAuthority.RawEncoded, card.ID, index + 1);
+            GameManager.Instance.RPC_EffectChosen(Object.InputAuthority.RawEncoded, card.ID, index);
         }
 
         public void OnPlay(int cardId)
