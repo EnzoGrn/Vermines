@@ -8,6 +8,7 @@ namespace Vermines.Menu.View {
     using Vermines.UI;
     using Vermines.Characters;
     using WebSocketSharp;
+    using Unity.Cinemachine;
 
     public class UITavernView : UICloseView {
 
@@ -85,6 +86,8 @@ namespace Vermines.Menu.View {
             await Task.Delay((int)(duration * 1000));
 
             camera.OnSplineReseted();
+
+            base.OnClose();
         }
 
         private void OnSettingsButton()

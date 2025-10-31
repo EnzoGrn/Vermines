@@ -16,6 +16,8 @@ namespace Vermines.Menu  {
 
         [Header("Camera")]
 
+        public CinemachineSplineDolly SpineDolly => _SplineDolly;
+
         [SerializeField]
         private CinemachineSplineDolly _SplineDolly;
 

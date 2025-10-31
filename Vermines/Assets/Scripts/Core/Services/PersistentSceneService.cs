@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Vermines.Core.Services {
+
+    using UnityScene = UnityEngine.SceneManagement.Scene;
 
     public class PersistentSceneService : MonoBehaviour {
 
@@ -18,7 +21,7 @@ namespace Vermines.Core.Services {
         #region Attributes
 
         public readonly List<string> PersistentScenes = new();
-        private readonly HashSet<string> _LoadedScenes  = new();
+        private readonly HashSet<string> _LoadedScenes = new();
 
         #endregion
 
@@ -90,6 +93,26 @@ namespace Vermines.Core.Services {
         public void SwitchToScene(string sceneName)
         {
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
+        }
+
+        public void ApplyPersistentSceneRenderSettings()
+        {
+            foreach (string sceneName in PersistentScenes) {
+                UnityScene scene = SceneManager.GetSceneByName(sceneName);
+
+                if (!scene.isLoaded)
+                    continue;
+                foreach (var root in scene.GetRootGameObjects()) {
+                    var skybox = root.GetComponentInChildren<SkyboxEvolution>(true);
+
+                    if (skybox != null)
+                        skybox.InitSkyboxSettings();
+                    var volume = root.GetComponentInChildren<UnityEngine.Rendering.Volume>(true);
+
+                    if (volume != null)
+                        volume.enabled = true;
+                }
+            }
         }
 
         #endregion

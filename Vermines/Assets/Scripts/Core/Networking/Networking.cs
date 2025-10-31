@@ -401,10 +401,6 @@ namespace Vermines.Core.Network {
 
             peer.LoadedScene = runner.SimulationUnityScene;
 
-            UnityScene persistentScene = SceneManager.GetSceneByName(PersistentSceneService.Instance.PersistentScenes[0]);
-
-            if (persistentScene.IsValid())
-                SceneManager.SetActiveScene(persistentScene);
             StatusDescription = "waiting_gameplay_scene_load";
 
             var scene = peer.SceneManager.GameplayScene;

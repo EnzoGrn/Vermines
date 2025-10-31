@@ -1,3 +1,4 @@
+using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine;
 using Fusion;
@@ -8,6 +9,7 @@ namespace Vermines.Core.Network {
 
     using Vermines.Core.Scene;
     using Vermines.Extension;
+    using Vermines.Core.Services;
 
     public class NetworkSceneManager : NetworkSceneManagerDefault {
 
@@ -34,6 +36,9 @@ namespace Vermines.Core.Network {
             foreach (var behaviour in contextBehaviours)
                 behaviour.Context = _GameplayScene.Context;
             yield return base.OnSceneLoaded(sceneRef, scene, sceneParams);
+
+            PersistentSceneService.Instance.SwitchToScene(PersistentSceneService.Instance.PersistentScenes[0]);
+            PersistentSceneService.Instance.ApplyPersistentSceneRenderSettings();
 
             _IsBusy = false;
         }
