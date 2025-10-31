@@ -30392,11 +30392,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5098197779626184342, guid: be997712c43c15a4bb1129a79c2222a8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -158.09998
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5098197779626184342, guid: be997712c43c15a4bb1129a79c2222a8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -75.4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5098197779626184342, guid: be997712c43c15a4bb1129a79c2222a8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -30999,11 +30999,11 @@ RectTransform:
   - {fileID: 7470609364076711344}
   m_Father: {fileID: 8712377334975275789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -95.755615, y: -80.34845}
   m_SizeDelta: {x: 125, y: 125}
-  m_Pivot: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &958373605679785028
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36047,11 +36047,11 @@ RectTransform:
   - {fileID: 8380065187460872775}
   m_Father: {fileID: 8712377334975275789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -95.755615, y: 80.34845}
   m_SizeDelta: {x: 125, y: 125}
-  m_Pivot: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &5397706867584831890
 RectTransform:
   m_ObjectHideFlags: 0
@@ -40961,11 +40961,11 @@ RectTransform:
   - {fileID: 3399042653153181414}
   m_Father: {fileID: 8712377334975275789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -125, y: 0}
   m_SizeDelta: {x: 125, y: 125}
-  m_Pivot: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8867805374489905371
 MonoBehaviour:
   m_ObjectHideFlags: 0

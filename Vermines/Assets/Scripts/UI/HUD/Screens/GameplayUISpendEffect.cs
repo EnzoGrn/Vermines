@@ -1,5 +1,4 @@
 ﻿using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Vermines.CardSystem.Enumerations;
@@ -7,13 +6,14 @@ using Vermines.CardSystem.Enumerations;
 namespace Vermines.UI.Screen
 {
     using Text = TMPro.TMP_Text;
+    using InputField = TMPro.TMP_InputField;
 
     public class GameplayUISpendEffect : GameplayUIScreen, IParamReceiver<(Action<int> onDone, DataType dataToSpend, DataType dataToEarn, int multiplicator)>
     {
         #region Attributes
 
         [Header("UI Elements")]
-        [SerializeField] private TMP_InputField amountInputField;
+        [SerializeField] private InputField amountInputField;
         [SerializeField] private Button doneButton;
         [SerializeField] private Text earnPreviewLabel;
         [SerializeField] private Text spendLabel;

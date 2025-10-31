@@ -6,7 +6,6 @@ using Vermines.CardSystem.Enumerations;
 
 public class SpendEffectContext : IUIContext
 {
-    private int _amountSpent = 0;
     private readonly Action<int> _callback;
     private readonly DataType _dataToSpend;
     private readonly DataType _dataToEarn;
