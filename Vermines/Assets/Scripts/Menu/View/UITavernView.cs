@@ -6,9 +6,9 @@ namespace Vermines.Menu.View {
     using Vermines.Menu.Tavern;
     using Vermines.UI.Core;
     using Vermines.UI;
-    using Vermines.Characters;
-    using WebSocketSharp;
-    using Unity.Cinemachine;
+    using Fusion;
+    using Vermines.Core.Network;
+    using Vermines.Core;
 
     public class UITavernView : UICloseView {
 
@@ -32,10 +32,10 @@ namespace Vermines.Menu.View {
 
         #region Getters & Setters
 
-        public Cultist PlayerCultist
+        public int PlayerCultist
         {
-            get => Context.PlayerCultist;
-            set => Context.PlayerCultist = value;
+            get => Context.PlayerData.CultistID;
+            set => Context.PlayerData.CultistID = value;
         }
 
         #endregion
@@ -102,24 +102,19 @@ namespace Vermines.Menu.View {
 
         private void OnQuickPlayButton()
         {
-            if (!Context.PlayerData.UnityID.IsNullOrEmpty()) {
+            SessionRequest session = new() {
+                GameMode = GameMode.AutoHostOrClient,
+                GameplayType = GameplayType.Standart,
+                MaxPlayers = 4,
+                ScenePath = Context.MatchmakingScenePath
+            };
 
-            }
-            /*
-             CultistSelectDisplay cultistSelectDisplay = FindFirstObjectByType<CultistSelectDisplay>();
+            Context.Matchmaking.CreateSession(session, isCustom: false);
+        }
 
-            //if (cultistSelectDisplay)
-            //    SelectedCultist = cultistSelectDisplay.GetSelectedCultist();
-            ConnectionArgs.Session  = null;
-            ConnectionArgs.Creating = false;
-            ConnectionArgs.Region   = ConnectionArgs.PreferredRegion;
-
-            Controller.Show<VMUI_Loading>(this);
-
-            var result = await Connection.ConnectAsync(ConnectionArgs, SceneRef);
-
-            await Controller.HandleConnectionResult(result, Controller);
-             */
+        public void OnCultistSelected(int cultistID)
+        {
+            PlayerCultist = cultistID;
         }
 
         #endregion

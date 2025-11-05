@@ -21,6 +21,9 @@ EditorBuildSettings:
     path: Assets/Resources/Scenes/Lobby/CustomLobby.unity
     guid: 0b407a157d8fde04eab959f548075ac1
   - enabled: 1
+    path: Assets/Resources/Scenes/Matchmaking.unity
+    guid: 680aa334024f4de48af40473e7e8021a
+  - enabled: 1
     path: Assets/Resources/Scenes/Game.unity
     guid: a45fb4c356ba9d241a28d641679fb411
   - enabled: 1

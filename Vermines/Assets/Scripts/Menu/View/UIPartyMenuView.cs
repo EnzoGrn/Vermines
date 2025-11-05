@@ -66,12 +66,12 @@ namespace Vermines.Menu.View {
         {
             SessionRequest session = new() {
                 GameMode     = GameMode.Host,
-                GameplayType = GameplayType.Lobby,
+                GameplayType = GameplayType.Standart,
                 MaxPlayers   = 4,
                 ScenePath    = Context.CustomGameScenePath
             };
 
-            Context.Matchmaking.CreateSession(session);
+            Context.Matchmaking.CreateSession(session, isCustom: true);
         }
 
         private void OnJoinButton()
@@ -94,7 +94,7 @@ namespace Vermines.Menu.View {
                 return;
             }
 
-            Context.Matchmaking.JoinSession(lobbyCode);
+            Context.Matchmaking.JoinSession(lobbyCode, isCustom: true);
         }
 
         #endregion

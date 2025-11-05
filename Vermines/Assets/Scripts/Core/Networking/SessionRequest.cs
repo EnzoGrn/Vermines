@@ -13,6 +13,8 @@ namespace Vermines.Core.Network {
         public string ScenePath;
         public string CustomLobby;
 
+        public bool IsCustom;
+
         public int MaxPlayers;
         public int ExtraPeers;
 

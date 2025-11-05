@@ -82,16 +82,31 @@ namespace Vermines.Menu.Tavern {
 
         #region Events
 
-        public void OnSelect(Cultist cultist)
+        public void OnSelect(int cultistID)
         {
-            if (_View.PlayerCultist == cultist)
+            if (_View.PlayerCultist == cultistID)
                 return;
-            if (_View.PlayerCultist && _View.PlayerCultist.ID != -1)
-                _CultistButtons.Find(button => button.Cultist.ID == _View.PlayerCultist.ID).UnSelect();
+            if (_View.PlayerCultist > 0)
+                _CultistButtons.Find(button => button.Cultist.ID == _View.PlayerCultist).UnSelect();
+            Cultist cultist = _CultistDatabase.GetCultistByID(cultistID);
+
             _CultistInfoPanel.SetCharacter(cultist);
             _CultistInfoPanel.gameObject.SetActive(true);
 
-            _View.PlayerCultist = cultist;
+            _View.OnCultistSelected(cultist.ID);
+            _View.PlayButton.interactable = true;
+        }
+
+        public void OnSelect(Cultist cultist)
+        {
+            if (_View.PlayerCultist == cultist.ID)
+                return;
+            if (_View.PlayerCultist > 0)
+                _CultistButtons.Find(button => button.Cultist.ID == _View.PlayerCultist).UnSelect();
+            _CultistInfoPanel.SetCharacter(cultist);
+            _CultistInfoPanel.gameObject.SetActive(true);
+
+            _View.OnCultistSelected(cultist.ID);
             _View.PlayButton.interactable = true;
         }
 

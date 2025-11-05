@@ -2,12 +2,13 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Core.Scene {
-    using Vermines.Characters;
+
     using Vermines.Core.Player;
     using Vermines.Core.Services;
     using Vermines.Core.Settings;
     using Vermines.Core.UI;
     using Vermines.Menu.CustomLobby;
+    using Vermines.Menu.Matchmaking;
 
     [System.Serializable]
     public class SceneContext {
@@ -19,9 +20,6 @@ namespace Vermines.Core.Scene {
 
         [HideInInspector]
         public PlayerData PlayerData;
-
-        [HideInInspector]
-        public Cultist PlayerCultist = default;
 
         #endregion
 
@@ -47,6 +45,7 @@ namespace Vermines.Core.Scene {
         #region Scene
 
         public string CustomGameScenePath;
+        public string MatchmakingScenePath;
         public string GameScenePath;
 
         #endregion
@@ -72,6 +71,8 @@ namespace Vermines.Core.Scene {
         public NetworkLobby NetworkLobby;
         [HideInInspector]
         public LobbyManager Lobby;
+
+        public NetworkMatchmaking NetworkMatchmaking;
 
         #endregion
 

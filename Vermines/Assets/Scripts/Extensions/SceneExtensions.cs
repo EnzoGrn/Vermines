@@ -37,13 +37,15 @@ namespace Vermines.Extension {
             List<T> objectComponents = ListPool<T>.Shared.Get(16);
             List<GameObject>   roots = ListPool<GameObject>.Shared.Get(16);
 
+            if (!scene.IsValid() || !scene.isLoaded)
+                return allComponents;
             scene.GetRootGameObjects(roots);
 
-            int count = roots.Count;
+            foreach (GameObject root in roots) {
+                root.GetComponentsInChildren(includeInactive, objectComponents);
 
-            for (int i = 0; i < count; i++) {
-                roots[i].GetComponentsInChildren(includeInactive, objectComponents);
-                allComponents.AddRange(objectComponents);
+                if (objectComponents.Count > 0)
+                    allComponents.AddRange(objectComponents);
                 objectComponents.Clear();
             }
 

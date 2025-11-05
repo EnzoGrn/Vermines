@@ -16,6 +16,7 @@ namespace Vermines.Core.Network {
     using Vermines.Core.Scene;
     using Vermines.Menu.CustomLobby;
     using Vermines.Core.Services;
+    using Vermines.Menu.Matchmaking;
 
     public class Networking : MonoBehaviour {
 
@@ -23,8 +24,9 @@ namespace Vermines.Core.Network {
 
         public const string STATUS_SERVER_CLOSED = "server_closed";
 
-        public const string MODE_KEY         = "mode";
-        public const string TYPE_KEY         = "type";
+        public const string MODE_KEY   = "mode";
+        public const string TYPE_KEY   = "type";
+        public const string CUSTOM_KEY = "custom";
 
         #endregion
 
@@ -284,7 +286,7 @@ namespace Vermines.Core.Network {
                 ObjectProvider              = pool,
                 CustomLobbyName             = peer.Request.CustomLobby,
                 SceneManager                = peer.SceneManager,
-                EnableClientSessionCreation = false
+                EnableClientSessionCreation = true
             };
 
             if (peer.Request.MaxPlayers > 0)
@@ -433,10 +435,12 @@ namespace Vermines.Core.Network {
 
             ContextBehaviour networkManager = null;
 
-            if (peer.Request.GameplayType == GameplayType.Lobby)
+            if (peer.Request.IsCustom == true)
                 networkManager = scene.GetComponentInChildren<NetworkLobby>(true);
             else
-                networkManager = scene.GetComponentInChildren<NetworkGame>(true);
+                networkManager = scene.GetComponentInChildren<NetworkMatchmaking>(true);
+            //else
+            //    networkManager = scene.GetComponentInChildren<NetworkGame>(true);
 
             while (networkManager.Object == null) {
                 Log($"Waiting for NetworkGame - Peer {peer.ID}");
@@ -469,8 +473,9 @@ namespace Vermines.Core.Network {
 
             Log($"NetworkGame.Initialize() - Peer {peer.ID}");
 
-            NetworkLobby lobby = null;
-            NetworkGame game = null;
+            NetworkLobby             lobby = null;
+            NetworkMatchmaking matchmaking = null;
+            NetworkGame               game = null;
 
             if (networkManager is NetworkGame ng) {
                 ng.Initialize(peer.Request.GameplayType);
@@ -516,6 +521,10 @@ namespace Vermines.Core.Network {
                         yield break;
                     }
                 }
+            } else if (networkManager is NetworkMatchmaking nm) {
+                nm.Initialize();
+
+                matchmaking = nm;
             }
 
             StatusDescription = "activating_scene";
@@ -533,6 +542,7 @@ namespace Vermines.Core.Network {
             Log($"NetworkGame.Activate() - Peer {peer.ID}");
 
             lobby?.Activate();
+            matchmaking?.Activate();
             game?.Activate();
 
             if (SceneManager.GetSceneByName(_LoadingScene).IsValid()) {
@@ -708,8 +718,9 @@ namespace Vermines.Core.Network {
         private Dictionary<string, SessionProperty> CreateSessionProperties(SessionRequest request)
         {
             return new Dictionary<string, SessionProperty> {
-                [TYPE_KEY] = (int)request.GameplayType,
-                [MODE_KEY] = (int)request.GameMode
+                [TYPE_KEY]   = (int)request.GameplayType,
+                [MODE_KEY]   = (int)request.GameMode,
+                [CUSTOM_KEY] =      request.IsCustom
             };
         }
 

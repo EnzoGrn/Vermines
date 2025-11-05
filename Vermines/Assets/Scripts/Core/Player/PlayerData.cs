@@ -26,6 +26,16 @@ namespace Vermines.Core.Player {
             }
         }
 
+        public int CultistID
+        {
+            get => _CultistID;
+            set
+            {
+                _CultistID = value;
+                IsDirty = true;
+            }
+        }
+
         public bool IsDirty { get; private set; }
 
         [SerializeField]
@@ -36,6 +46,9 @@ namespace Vermines.Core.Player {
 
         [SerializeField]
         private string _Nickname;
+
+        [SerializeField]
+        private int _CultistID = -1;
 
         [SerializeField]
         private bool _IsLocked;

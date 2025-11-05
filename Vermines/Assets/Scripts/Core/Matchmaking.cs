@@ -51,41 +51,32 @@ namespace Vermines.Core {
 
         #region Methods
 
-        public void CreateSession(SessionRequest request)
+        public void CreateSession(SessionRequest request, bool isCustom)
         {
-            if (request.GameMode != GameMode.Server && request.GameMode != GameMode.Host)
+            if (request.GameMode != GameMode.Server && request.GameMode != GameMode.Host && request.GameMode != GameMode.AutoHostOrClient)
                 return;
             NetworkSettings settings = Context.Settings.Network;
 
-            request.UserID      = Context.PlayerData.UserID;
-            request.CustomLobby = _LobbyName;
-            request.SessionName = settings.CodeGenerator.EncodeRegion(settings.CodeGenerator.Create(), 0);
+            request.UserID = Context.PlayerData.UserID;
+
+            if (isCustom)
+                request.SessionName = settings.CodeGenerator.EncodeRegion(settings.CodeGenerator.Create(), 0);
+            request.IsCustom = isCustom;
 
             Global.Networking.StartGame(request);
         }
 
-        public void JoinSession(SessionInfo session)
+        public void JoinSession(string sessionName, bool isCustom)
         {
             var request = new SessionRequest {
                 UserID       = Context.PlayerData.UserID,
                 GameMode     = GameMode.Client,
-                SessionName  = session.Name,
-                CustomLobby  = _LobbyName,
-                GameplayType = GameplayType.Lobby
+                GameplayType = GameplayType.Standart,
+                IsCustom     = isCustom,
+                SessionName  = sessionName
             };
 
             Global.Networking.StartGame(request);
-        }
-
-        public void JoinSession(string sessionName)
-        {
-            Global.Networking.StartGame(new SessionRequest() {
-                UserID       = Context.PlayerData.UserID,
-                GameMode     = GameMode.Client,
-                SessionName  = sessionName,
-                CustomLobby  = _LobbyName,
-                GameplayType = GameplayType.Lobby
-            });
         }
 
         public async Task JoinLobby(bool force = false)
@@ -222,6 +213,8 @@ namespace Vermines.Core {
 
         void INetworkRunnerCallbacks.OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
         {
+            Debug.LogError($"OnHostMigration");
+
             HostMigration?.Invoke(runner, hostMigrationToken);
         }
 
