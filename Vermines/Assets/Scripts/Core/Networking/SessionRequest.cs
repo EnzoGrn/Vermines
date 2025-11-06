@@ -14,6 +14,7 @@ namespace Vermines.Core.Network {
         public string CustomLobby;
 
         public bool IsCustom;
+        public bool IsGameSession;
 
         public int MaxPlayers;
         public int ExtraPeers;

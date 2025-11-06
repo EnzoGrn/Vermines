@@ -24,9 +24,10 @@ namespace Vermines.Core.Network {
 
         public const string STATUS_SERVER_CLOSED = "server_closed";
 
-        public const string MODE_KEY   = "mode";
-        public const string TYPE_KEY   = "type";
-        public const string CUSTOM_KEY = "custom";
+        public const string MODE_KEY     = "mode";
+        public const string TYPE_KEY     = "type";
+        public const string CUSTOM_KEY   = "custom";
+        public const string GAME_SESSION = "game_s";
 
         #endregion
 
@@ -435,12 +436,14 @@ namespace Vermines.Core.Network {
 
             ContextBehaviour networkManager = null;
 
-            if (peer.Request.IsCustom == true)
-                networkManager = scene.GetComponentInChildren<NetworkLobby>(true);
-            else
-                networkManager = scene.GetComponentInChildren<NetworkMatchmaking>(true);
-            //else
-            //    networkManager = scene.GetComponentInChildren<NetworkGame>(true);
+            if (peer.Request.IsGameSession) {
+                networkManager = scene.GetComponentInChildren<NetworkGame>(true);
+            } else {
+                if (peer.Request.IsCustom)
+                    networkManager = scene.GetComponentInChildren<NetworkLobby>(true);
+                else
+                    networkManager = scene.GetComponentInChildren<NetworkMatchmaking>(true);
+            }
 
             while (networkManager.Object == null) {
                 Log($"Waiting for NetworkGame - Peer {peer.ID}");
@@ -477,29 +480,7 @@ namespace Vermines.Core.Network {
             NetworkMatchmaking matchmaking = null;
             NetworkGame               game = null;
 
-            if (networkManager is NetworkGame ng) {
-                ng.Initialize(peer.Request.GameplayType);
-
-                game = ng;
-
-                while (scene.Context.GameplayMode == null) {
-                    Log($"Waiting for GameplayMode - Peer {peer.ID}");
-
-                    yield return null;
-
-                    if (Time.realtimeSinceStartup >= limitTime) {
-                        Debug.LogError($"{peerName} start timeout! Gameplay mode not started properly.");
-
-                        Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}");
-
-                        yield return DisconnectPeerCoroutine(peer);
-
-                        _Coroutine = null;
-
-                        yield break;
-                    }
-                }
-            } else if (networkManager is NetworkLobby nl) {
+            if (networkManager is NetworkLobby nl) {
                 nl.Initialize();
 
                 lobby = nl;
@@ -525,6 +506,28 @@ namespace Vermines.Core.Network {
                 nm.Initialize();
 
                 matchmaking = nm;
+            } else if (networkManager is NetworkGame ng) {
+                ng.Initialize(peer.Request.GameplayType);
+
+                game = ng;
+
+                while (scene.Context.GameplayMode == null) {
+                    Log($"Waiting for GameplayMode - Peer {peer.ID}");
+
+                    yield return null;
+
+                    if (Time.realtimeSinceStartup >= limitTime) {
+                        Debug.LogError($"{peerName} start timeout! Gameplay not started properly.");
+
+                        Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}");
+
+                        yield return DisconnectPeerCoroutine(peer);
+
+                        _Coroutine = null;
+
+                        yield break;
+                    }
+                }
             }
 
             StatusDescription = "activating_scene";
@@ -718,9 +721,10 @@ namespace Vermines.Core.Network {
         private Dictionary<string, SessionProperty> CreateSessionProperties(SessionRequest request)
         {
             return new Dictionary<string, SessionProperty> {
-                [TYPE_KEY]   = (int)request.GameplayType,
-                [MODE_KEY]   = (int)request.GameMode,
-                [CUSTOM_KEY] =      request.IsCustom
+                [TYPE_KEY]     = (int)request.GameplayType,
+                [MODE_KEY]     = (int)request.GameMode,
+                [CUSTOM_KEY]   =      request.IsCustom,
+                [GAME_SESSION] =      request.IsGameSession
             };
         }
 

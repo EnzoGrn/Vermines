@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Localization;
 using Vermines.CardSystem.Enumerations;
-using Vermines.Gameplay.Phases;
+using Vermines.Gameplay.Phases.Data;
 using Vermines.Player;
 using Vermines.CardSystem.Elements;
 

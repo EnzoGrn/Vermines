@@ -99,7 +99,7 @@ namespace Vermines.UI.Card
                 CardDisplay display = card.GetComponent<CardDisplay>();
                 if (display != null)
                 {
-                    if (PhaseManager.Instance.Phases.TryGetValue(GameManager.Instance.GetCurrentPhase(), out var phase) && phase is ActionPhase actionPhase)
+                    if (PhaseManager.Instance.Phases.TryGetValue(GameManager.Instance.GetCurrentPhase(), out var phase) && phase is ActionPhaseAsset actionPhase)
                     {
                         actionPhase.OnDiscardNoEffect(display.Card);
                     }

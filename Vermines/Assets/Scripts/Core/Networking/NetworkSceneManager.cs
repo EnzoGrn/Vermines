@@ -1,4 +1,3 @@
-using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine;
 using Fusion;
@@ -21,20 +20,26 @@ namespace Vermines.Core.Network {
 
         protected override IEnumerator OnSceneLoaded(SceneRef sceneRef, UnityScene scene, NetworkLoadSceneParameters sceneParams)
         {
-            _IsBusy        = true;
-            _GameplayScene = scene.GetComponent<Scene>(true);
+            _IsBusy = true;
 
-            float contextTimeout = 20.0f;
+            Scene sceneComponent = scene.GetComponent<Scene>(true);
 
-            while (!_GameplayScene.ContextReady && contextTimeout > 0.0f) {
-                yield return null;
+            if (sceneComponent != null) {
+                _GameplayScene = sceneComponent;
 
-                contextTimeout -= Time.unscaledDeltaTime;
+                float contextTimeout = 20.0f;
+
+                while (!_GameplayScene.ContextReady && contextTimeout > 0.0f) {
+                    yield return null;
+
+                    contextTimeout -= Time.unscaledDeltaTime;
+                }
+                var contextBehaviours = scene.GetComponents<IContextBehaviour>(true);
+
+                foreach (var behaviour in contextBehaviours)
+                    behaviour.Context = _GameplayScene.Context;
             }
-            var contextBehaviours = scene.GetComponents<IContextBehaviour>(true);
 
-            foreach (var behaviour in contextBehaviours)
-                behaviour.Context = _GameplayScene.Context;
             yield return base.OnSceneLoaded(sceneRef, scene, sceneParams);
 
             PersistentSceneService.Instance.SwitchToScene(PersistentSceneService.Instance.PersistentScenes[0]);

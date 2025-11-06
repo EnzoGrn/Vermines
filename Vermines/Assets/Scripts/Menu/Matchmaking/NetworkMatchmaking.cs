@@ -1,11 +1,12 @@
 using Fusion;
-using Fusion.Sockets;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 using Vermines.Core;
 using Vermines.Core.Network;
-using Vermines.Extension;
+using Vermines.Core.Scene;
 
 namespace Vermines.Menu.Matchmaking {
 
@@ -16,11 +17,18 @@ namespace Vermines.Menu.Matchmaking {
         [SerializeField, Tooltip("Minimum number of players required to launch the game.")]
         private int _MinPlayersToStart = 2;
 
+        [SerializeField, Tooltip("Delay in seconds before starting the game once enough players are present.")]
+        private float _StartDelay = 5f;
+
+        [SerializeField, Tooltip("Maximum wait time in seconds before leaving if no players joined.")]
+        private float _TimeoutDelay = 30f;
+
         private readonly List<PlayerRef> _ActivePlayers = new(byte.MaxValue);
 
         private bool _IsGameStarting;
-
         private bool _IsActive;
+        private float _StartTimer;
+        private float _TimeoutTimer;
 
         #endregion
 
@@ -32,13 +40,16 @@ namespace Vermines.Menu.Matchmaking {
 
             _IsActive       = false;
             _IsGameStarting = false;
+            _StartTimer     = 0f;
+            _TimeoutTimer   = 0f;
 
             Log.Info("[Matchmaking] Initialized and waiting for players...");
         }
 
         public void Activate()
         {
-            _IsActive = true;
+            _IsActive     = true;
+            _TimeoutTimer = 0f;
         }
 
         public void LeaveGame()
@@ -50,8 +61,24 @@ namespace Vermines.Menu.Matchmaking {
         {
             if (!_IsActive || Runner == null)
                 return;
-            if (!_IsGameStarting && Runner.IsServer && _ActivePlayers.Count >= _MinPlayersToStart)
-                StartGame();
+            if (!_IsGameStarting && Runner.IsServer && _ActivePlayers.Count >= _MinPlayersToStart) {
+                _StartTimer += Runner.DeltaTime;
+
+                if (_StartTimer >= _StartDelay)
+                    StartGame();
+            }
+            else
+                _StartTimer = 0f;
+
+            if (_ActivePlayers.Count <= 1 && !_IsGameStarting) {
+                _TimeoutTimer += Runner.DeltaTime;
+
+
+                if (_TimeoutTimer >= _TimeoutDelay)
+                    LeaveGame();
+            }
+            else
+                _TimeoutTimer = 0f;
         }
 
         private void StartGame()
@@ -60,7 +87,36 @@ namespace Vermines.Menu.Matchmaking {
 
             Log.Info($"[Matchmaking] Enough players ({_ActivePlayers.Count}), starting game...");
 
-            // TODO: Launch the game by requesting the networking.
+            RPC_StartGame(Context.GameScenePath, GameplayType.Standart, KeyGen.GenerateSecretKey());
+        }
+
+        private IEnumerator StartSessionCoroutine(string scene, GameplayType gameplay, string key)
+        {
+            NetworkRunner oldRunner = Runner;
+            SceneContext    context = Context;
+
+            if (oldRunner != null && oldRunner.IsRunning) {
+                Log.Info($"[Matchmaking] Shutting down matchmaking session...");
+
+                var shutdown = oldRunner.Shutdown(true);
+
+                while (!shutdown.IsCompleted)
+                    yield return null;
+            }
+
+            Log.Info($"[Matchmaking] Starting game session...");
+
+            SessionRequest newRequest = new() {
+                UserID        = context.PeerUserID,
+                GameMode      = GameMode.AutoHostOrClient,
+                ScenePath     = scene,
+                GameplayType  = gameplay,
+                IsGameSession = true,
+                SessionName   = oldRunner.SessionInfo.Name,
+                CustomLobby   = key
+            };
+
+            Global.Networking.StartGame(newRequest);
         }
 
         #endregion
@@ -74,6 +130,8 @@ namespace Vermines.Menu.Matchmaking {
             if (!_ActivePlayers.Contains(player))
                 _ActivePlayers.Add(player);
             Log.Info($"[Matchmaking] Player joined: {player} (Total: {_ActivePlayers.Count})");
+
+            _TimeoutTimer = 0f;
         }
 
         public void PlayerLeft(PlayerRef player)
@@ -83,6 +141,19 @@ namespace Vermines.Menu.Matchmaking {
             if (_ActivePlayers.Contains(player))
                 _ActivePlayers.Remove(player);
             Log.Warn($"[Matchmaking] Player left: {player} (Remaining: {_ActivePlayers.Count})");
+
+            if (_ActivePlayers.Count < _MinPlayersToStart)
+                _StartTimer = 0f;
+        }
+
+        #endregion
+
+        #region RPC
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
+        private void RPC_StartGame(string sceneName, GameplayType gameplay, string key)
+        {
+            StartCoroutine(StartSessionCoroutine(sceneName, gameplay, key));
         }
 
         #endregion

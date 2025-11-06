@@ -4,8 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Phases {
-
+    using System.Collections;
+    using System.Linq;
     using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.Player;
+    using Vermines.UI;
+    using Vermines.UI.Screen;
+
+    [System.Serializable]
+    public class PhaseEntry
+    {
+        public PhaseType phaseType;
+        public PhaseAsset phaseAsset;
+    }
 
     public class PhaseManager : NetworkBehaviour {
 
@@ -19,6 +30,9 @@ namespace Vermines.Gameplay.Phases {
 
         [Networked]
         public PhaseType CurrentPhase { get; set; }
+
+        [SerializeField]
+        private List<PhaseEntry> phaseEntries;
 
         private Dictionary<PhaseType, IPhase> _Phases;
         public Dictionary<PhaseType, IPhase> Phases => _Phases;
@@ -39,15 +53,12 @@ namespace Vermines.Gameplay.Phases {
 
         private void SetUpPhases()
         {
-            _Phases = new Dictionary<PhaseType, IPhase>() {
-                { PhaseType.Sacrifice , new SacrificePhase() },
-                { PhaseType.Gain      , new GainPhase() },
-                { PhaseType.Action    , new ActionPhase() },
-                { PhaseType.Resolution, new ResolutionPhase() }
-            };
+            _Phases = new Dictionary<PhaseType, IPhase>();
+            foreach (var entry in phaseEntries)
+                _Phases[entry.phaseType] = entry.phaseAsset;
 
             if (Runner.IsServer)
-                CurrentPhase = PhaseType.Sacrifice;
+                CurrentPhase = _Phases.Keys.First();
         }
 
         private void SetUpUI()
@@ -68,7 +79,8 @@ namespace Vermines.Gameplay.Phases {
         {
             if (!Runner.IsServer)
                 return;
-            CurrentPhase = PhaseType.Sacrifice;
+
+            CurrentPhase = _Phases.Keys.First();
 
             ResetCardActivations();
 
@@ -77,7 +89,29 @@ namespace Vermines.Gameplay.Phases {
             // TODO: Add to the config a limit of turn and end the game if reach
             if (GameManager.Instance.CurrentPlayerIndex == 0)
                 GameManager.Instance.TotalTurnPlayed++;
+
             RPC_UpdateTurnUI();
+        }
+
+        private IEnumerator SacrificeRoutine()
+        {
+            GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>(FindObjectsInactive.Include);
+
+            if (gameplayUIController != null)
+                gameplayUIController.Show<GameplayUITurn>();
+
+            yield return new WaitForSeconds(3f);
+
+            if (gameplayUIController != null &&
+                gameplayUIController.GetActiveScreen(out GameplayUIScreen activeScreen) &&
+                activeScreen is GameplayUITurn)
+            {
+                gameplayUIController.Hide();
+            }
+
+            if (!Runner.IsServer)
+                yield break;
+            RPC_ProcessPhase(CurrentPhase, GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex));
         }
 
         private void ResetCardActivations()
@@ -121,15 +155,16 @@ namespace Vermines.Gameplay.Phases {
             // Check if the player did every phases.
             if (CurrentPhase == PhaseType.Resolution) {
                 NextTurn();
+
+                RPC_TurnAnnounced();
             } else {
                 CurrentPhase++;
 
                 Debug.Log($"[SERVER]: Next phase is {CurrentPhase}.");
 
                 RPC_UpdatePhaseUI();
+                RPC_ProcessPhase(CurrentPhase, GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex));
             }
-
-            RPC_ProcessPhase(CurrentPhase, GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex));
         }
 
         #region RPC
@@ -163,6 +198,12 @@ namespace Vermines.Gameplay.Phases {
             PhaseCompleted();
         }
 
+        [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
+        public void RPC_TurnAnnounced()
+        {
+            PlayerController.Local.StartCoroutine(SacrificeRoutine());
+        }
+
         #endregion
 
         #region Events
@@ -171,9 +212,11 @@ namespace Vermines.Gameplay.Phases {
         {
             if (!Runner.IsServer || !GameManager.Instance.Start)
                 return;
+
             foreach (var player in GameDataStorage.Instance.PlayerData)
                 GameEvents.OnPlayerUpdated.Invoke(player.Value);
-            RPC_ProcessPhase(CurrentPhase, GameManager.Instance.PlayerTurnOrder.Get(GameManager.Instance.CurrentPlayerIndex));
+
+            RPC_TurnAnnounced();
         }
 
         public void OnPhaseCompleted()

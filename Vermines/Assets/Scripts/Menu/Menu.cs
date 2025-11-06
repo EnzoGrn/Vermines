@@ -1,10 +1,6 @@
-using UnityEngine.SceneManagement;
 using UnityEngine;
-using System.Collections;
 
 namespace Vermines.Menu {
-
-    using UnityScene = UnityEngine.SceneManagement.Scene;
 
     using Vermines.Core.Scene;
     using Vermines.Core.Services;
@@ -25,11 +21,6 @@ namespace Vermines.Menu {
             base.OnInitialize();
 
             StartCoroutine(PersistentSceneService.Instance.LoadSceneAdditive(_SceneToLoad));
-        }
-
-        protected override void OnDeinitialize()
-        {
-            base.OnDeinitialize();
         }
 
         #endregion

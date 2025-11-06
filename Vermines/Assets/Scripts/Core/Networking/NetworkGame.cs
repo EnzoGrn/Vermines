@@ -49,11 +49,12 @@ namespace Vermines.Core {
             }
         }
 
+
         public void Activate()
         {
             _IsActive = true;
 
-            _Gameplay.Activate();
+            // _Gameplay.Activate();
 
             foreach (PlayerRef playerRef in Runner.ActivePlayers)
                 SpawnPlayer(playerRef);

@@ -9,6 +9,7 @@ namespace Vermines.Menu.CustomLobby {
     using Vermines.Characters;
     using Vermines.Core;
     using Vermines.Core.Network;
+    using Vermines.Core.Scene;
 
     public class LobbyManager : ContextBehaviour {
 
@@ -66,6 +67,18 @@ namespace Vermines.Menu.CustomLobby {
             return false;
         }
 
+        private bool CanStart()
+        {
+            List<LobbyPlayerController> players = Context.Runner.GetAllBehaviours<LobbyPlayerController>();
+
+            if (players.Count < 2)
+                return false;
+            foreach (LobbyPlayerController player in players)
+                if (!player.State.IsLockedIn)
+                    return false;
+            return true;
+        }
+
         public void StopGame()
         {
             if (!HasStateAuthority) {
@@ -84,6 +97,32 @@ namespace Vermines.Menu.CustomLobby {
             yield return new WaitForSecondsRealtime(0.25f);
 
             Global.Networking.StopGame();
+        }
+
+        private IEnumerator StartSessionCoroutine(string scene, GameplayType gameplay, string key, bool host)
+        {
+            NetworkRunner oldRunner = Runner;
+            SceneContext    context = Context;
+
+            if (oldRunner != null && oldRunner.IsRunning) {
+                var shutdown = oldRunner.Shutdown(true);
+
+                while (!shutdown.IsCompleted)
+                    yield return null;
+            }
+
+            SessionRequest newRequest = new() {
+                UserID        = context.PeerUserID,
+                GameMode      = host ? GameMode.Host : GameMode.Client,
+                ScenePath     = scene,
+                GameplayType  = gameplay,
+                IsGameSession = true,
+                IsCustom      = true,
+                SessionName   = oldRunner.SessionInfo.Name,
+                CustomLobby   = key
+            };
+
+            Global.Networking.StartGame(newRequest);
         }
 
         #endregion
@@ -119,7 +158,7 @@ namespace Vermines.Menu.CustomLobby {
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
-        public async void RPC_LockIn(PlayerRef playerRef, bool isLockedIn = true)
+        public void RPC_LockIn(PlayerRef playerRef, bool isLockedIn = true)
         {
             List<LobbyPlayerController> players = Context.Runner.GetAllBehaviours<LobbyPlayerController>();
 
@@ -138,7 +177,14 @@ namespace Vermines.Menu.CustomLobby {
                 player.UpdateState(new CultistSelectState(playerRef, state.CultistID, isLockedIn));
             }
 
-            Debug.Log("TODO: Start the game by calling the Global.Networking");
+            if (CanStart())
+                RPC_StartGame(Context.GameScenePath, GameplayType.Standart, KeyGen.GenerateSecretKey());
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
+        private void RPC_StartGame(string scene, GameplayType gameplay, string key)
+        {
+            StartCoroutine(StartSessionCoroutine(scene, gameplay, key, HasStateAuthority));
         }
 
         #endregion

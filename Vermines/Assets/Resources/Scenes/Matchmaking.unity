@@ -1511,7 +1511,7 @@ MonoBehaviour:
     Settings: {fileID: 0}
     CustomGameScenePath: 
     MatchmakingScenePath: Matchmaking
-    GameScenePath: Menu
+    GameScenePath: Game
     IsVisible: 0
     HasInput: 0
     Runner: {fileID: 0}
@@ -2026,6 +2026,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _MinPlayersToStart: 2
+  _StartDelay: 5
+  _TimeoutDelay: 30
 --- !u!114 &1844938084
 MonoBehaviour:
   m_ObjectHideFlags: 0

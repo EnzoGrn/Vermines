@@ -1,5 +1,7 @@
 using System.Reflection;
 using Fusion;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Vermines.Extension {
 
@@ -25,6 +27,22 @@ namespace Vermines.Extension {
 
                 playerField?.SetValue(simulation, playerRef);
             }
+        }
+
+        public static void MoveToRunnerSceneExtended(this NetworkRunner runner, GameObject gameObject)
+        {
+            if (gameObject.scene == runner.SimulationUnityScene)
+                return;
+            if (runner.Config.PeerMode != NetworkProjectConfig.PeerModes.Single)
+                runner.AddVisibilityNodes(gameObject);
+            SceneManager.MoveGameObjectToScene(gameObject, runner.SimulationUnityScene);
+        }
+
+        public static void MoveToRunnerSceneExtended(this NetworkRunner runner, Component component)
+        {
+            if (component == null)
+                return;
+            runner.MoveToRunnerSceneExtended(component.gameObject);
         }
     }
 }

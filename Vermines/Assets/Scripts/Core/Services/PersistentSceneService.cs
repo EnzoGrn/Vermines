@@ -37,6 +37,13 @@ namespace Vermines.Core.Services {
             return PersistentScenes.Contains(sceneName);
         }
 
+        public UnityScene GetFirstPersistentScene()
+        {
+            if (PersistentScenes.Count == 0)
+                return default;
+            return SceneManager.GetSceneByName(PersistentScenes[0]);
+        }
+
         #endregion
 
         #region Methods
