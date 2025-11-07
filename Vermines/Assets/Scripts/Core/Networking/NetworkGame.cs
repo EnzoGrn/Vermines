@@ -40,12 +40,15 @@ namespace Vermines.Core {
 
         #region Methods
 
-        public void Initialize(GameplayType type)
+        public void Initialize(GameplayType type, string data = null)
         {
             if (HasStateAuthority) {
                 var prefab = _ModePrefabs.Find(t => t.Type == type);
 
                 _Gameplay = Runner.Spawn(prefab);
+
+                if (data != null && data != "")
+                    _Gameplay.Initialize(data);
             }
         }
 
@@ -56,11 +59,11 @@ namespace Vermines.Core {
 
             // _Gameplay.Activate();
 
-            foreach (PlayerRef playerRef in Runner.ActivePlayers)
-                SpawnPlayer(playerRef);
+            //foreach (PlayerRef playerRef in Runner.ActivePlayers)
+            //    SpawnPlayer(playerRef);
         }
 
-        private void SpawnPlayer(PlayerRef playerRef)
+        /*private void SpawnPlayer(PlayerRef playerRef)
         {
             if (GetPlayer(playerRef) != null || _PendingPlayers.ContainsKey(playerRef)) {
                 Log.Error($"Player for {playerRef} is already spawned!");
@@ -75,7 +78,7 @@ namespace Vermines.Core {
             #if UNITY_EDITOR
                 player.gameObject.name = $"Player Unknown (Pending)";
             #endif
-        }
+        }*/
 
         #endregion
 
@@ -103,7 +106,7 @@ namespace Vermines.Core {
         {
             if (!Runner.IsServer || !_IsActive)
                 return;
-            SpawnPlayer(playerRef);
+            //SpawnPlayer(playerRef);
         }
 
         void IPlayerLeft.PlayerLeft(PlayerRef playerRef)

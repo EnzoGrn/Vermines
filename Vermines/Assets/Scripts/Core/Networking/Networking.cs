@@ -46,6 +46,8 @@ namespace Vermines.Core.Network {
 
         private Coroutine _Coroutine;
 
+        private bool _IsChangeScene;
+
         #endregion
 
         #region MonoBehaviour Methods
@@ -57,6 +59,8 @@ namespace Vermines.Core.Network {
 
         protected void Update()
         {
+            if (_IsChangeScene)
+                return;
             if (_PendingSession != null) {
                 if (_CurrentSession == null) {
                     _CurrentSession = _PendingSession;
@@ -151,6 +155,8 @@ namespace Vermines.Core.Network {
 
         public void UpdateCurrentSession()
         {
+            if (_IsChangeScene)
+                return;
             if (_CurrentSession == null) {
                 Status            = string.Empty;
                 StatusDescription = string.Empty;
@@ -639,6 +645,124 @@ namespace Vermines.Core.Network {
 
         #endregion
 
+        public IEnumerator ApplySceneChangeLocalCoroutine(string peerID, string scenePath, bool isCustom, bool isGameSession, GameplayType gameplayType, string data, System.Action onComplete = null)
+        {
+            _IsChangeScene = true;
+
+            yield return ShowLoadingSceneCoroutine(true);
+
+            Log($"Show loading scene.");
+
+            List<UnityScene> scenesToUnload = GetScenesToUnload();
+
+            foreach (var s in scenesToUnload) {
+                if (s.name == scenePath)
+                    continue;
+                Scene currentScene = s.GetComponent<Scene>();
+
+                if (currentScene != null) {
+                    Log($"Deinitializing Scene.");
+
+                    currentScene.Deinitialize();
+                }
+
+                Log($"Unloading scene {s.name}");
+
+                yield return PersistentSceneService.Instance.UnloadScene(s.name);
+                yield return null;
+            }
+
+            UnityScene newScene = SceneManager.GetSceneByName(scenePath);
+            float       timeout = Time.realtimeSinceStartup + 30f;
+
+            while (!newScene.IsValid() || !newScene.isLoaded) {
+                newScene = SceneManager.GetSceneByName(scenePath);
+
+                if (Time.realtimeSinceStartup >= timeout) {
+                    Debug.LogError($"Timeout waiting for scene {scenePath} to be loaded.");
+
+                    yield break;
+                }
+
+                yield return null;
+            }
+
+            Scene scene = newScene.GetComponent<Scene>(true);
+
+            scene.PrepareContext();
+
+            SceneContext context = scene.Context;
+
+            context.IsVisible  = true;
+            context.HasInput   = true;
+            context.Runner     = _CurrentSession?.GamePeers?[0]?.Runner ?? context.Runner;
+            context.PeerUserID = peerID;
+
+            ContextBehaviour networkManager = null;
+
+            if (isGameSession)
+                networkManager = scene.GetComponentInChildren<NetworkGame>(true);
+            else if (isCustom)
+                networkManager = scene.GetComponentInChildren<NetworkLobby>(true);
+            else
+                networkManager = scene.GetComponentInChildren<NetworkMatchmaking>(true);
+            while (networkManager.Object == null) {
+                Log($"Waiting for NetworkGame");
+
+                yield return null;
+            }
+
+            NetworkLobby             lobby = null;
+            NetworkMatchmaking matchmaking = null;
+            NetworkGame               game = null;
+
+            if (networkManager is NetworkLobby nl) {
+                nl.Initialize();
+
+                lobby = nl;
+
+                while (scene.Context.Lobby == null) {
+                    Log($"Waiting for LobbyManager");
+
+                    yield return null;
+                }
+            } else if (networkManager is NetworkMatchmaking nm) {
+                nm.Initialize();
+
+                matchmaking = nm;
+            } else if (networkManager is NetworkGame ng) {
+                ng.Initialize(gameplayType, data);
+
+                game = ng;
+
+                while (scene.Context.GameplayMode == null) {
+                    UnityScene persistent = PersistentSceneService.Instance.GetFirstPersistentScene();
+
+                    scene.Context.GameplayMode = persistent.GetComponent<GameplayMode>();
+
+                    Log($"Waiting for GameplayMode");
+
+                    yield return null;
+                }
+            }
+
+            scene.Initialize();
+
+            yield return scene.Activate();
+
+            lobby?.Activate();
+            matchmaking?.Activate();
+            game?.Activate();
+
+            yield return ShowLoadingSceneCoroutine(false);
+
+            onComplete?.Invoke();
+
+            _IsChangeScene = false;
+
+            yield break;
+        }
+
         private IEnumerator LoadMenuCoroutine()
         {
             string menuSceneName = Global.Settings.MenuScene;
@@ -667,7 +791,7 @@ namespace Vermines.Core.Network {
             _Coroutine = null;
         }
 
-        private IEnumerator ShowLoadingSceneCoroutine(bool show, float additionalTime = 1f)
+        public IEnumerator ShowLoadingSceneCoroutine(bool show, float additionalTime = 1f)
         {
             UnityScene loadingScene = SceneManager.GetSceneByName(_LoadingScene);
 
@@ -702,7 +826,7 @@ namespace Vermines.Core.Network {
 
         #region Utils
 
-        private List<UnityScene> GetScenesToUnload()
+        public List<UnityScene> GetScenesToUnload()
         {
             int sceneCount = SceneManager.sceneCount;
             List<UnityScene> scenesToUnload = new(sceneCount);

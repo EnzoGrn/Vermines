@@ -1,14 +1,10 @@
 using Fusion;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
-using Vermines.Core;
-using Vermines.Core.Network;
-using Vermines.Core.Scene;
 
 namespace Vermines.Menu.Matchmaking {
+
+    using Vermines.Core;
 
     public class NetworkMatchmaking : ContextBehaviour, IPlayerJoined, IPlayerLeft {
 
@@ -87,36 +83,9 @@ namespace Vermines.Menu.Matchmaking {
 
             Log.Info($"[Matchmaking] Enough players ({_ActivePlayers.Count}), starting game...");
 
-            RPC_StartGame(Context.GameScenePath, GameplayType.Standart, KeyGen.GenerateSecretKey());
-        }
+            RPC_ShowLoadingScreen();
 
-        private IEnumerator StartSessionCoroutine(string scene, GameplayType gameplay, string key)
-        {
-            NetworkRunner oldRunner = Runner;
-            SceneContext    context = Context;
-
-            if (oldRunner != null && oldRunner.IsRunning) {
-                Log.Info($"[Matchmaking] Shutting down matchmaking session...");
-
-                var shutdown = oldRunner.Shutdown(true);
-
-                while (!shutdown.IsCompleted)
-                    yield return null;
-            }
-
-            Log.Info($"[Matchmaking] Starting game session...");
-
-            SessionRequest newRequest = new() {
-                UserID        = context.PeerUserID,
-                GameMode      = GameMode.AutoHostOrClient,
-                ScenePath     = scene,
-                GameplayType  = gameplay,
-                IsGameSession = true,
-                SessionName   = oldRunner.SessionInfo.Name,
-                CustomLobby   = key
-            };
-
-            Global.Networking.StartGame(newRequest);
+            Context.SceneChangeController.RPC_RequestSceneChange(Context.GameScenePath, false, true, GameplayType.Standart, Context.MatchmakingScenePath, _ActivePlayers.Count);
         }
 
         #endregion
@@ -132,6 +101,7 @@ namespace Vermines.Menu.Matchmaking {
             Log.Info($"[Matchmaking] Player joined: {player} (Total: {_ActivePlayers.Count})");
 
             _TimeoutTimer = 0f;
+            _StartTimer   = 0f;
         }
 
         public void PlayerLeft(PlayerRef player)
@@ -148,12 +118,12 @@ namespace Vermines.Menu.Matchmaking {
 
         #endregion
 
-        #region RPC
+        #region RPCs
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
-        private void RPC_StartGame(string sceneName, GameplayType gameplay, string key)
+        private void RPC_ShowLoadingScreen()
         {
-            StartCoroutine(StartSessionCoroutine(sceneName, gameplay, key));
+            StartCoroutine(Global.Networking.ShowLoadingSceneCoroutine(true));
         }
 
         #endregion

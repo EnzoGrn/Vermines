@@ -2,7 +2,7 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Core.Scene {
-
+    using Vermines.Core.Network;
     using Vermines.Core.Player;
     using Vermines.Core.Services;
     using Vermines.Core.Settings;
@@ -60,6 +60,7 @@ namespace Vermines.Core.Scene {
 
         [HideInInspector]
         public NetworkRunner Runner;
+        public SceneChangeController SceneChangeController;
 
         [HideInInspector]
         public PlayerRef LocalPlayerRef;

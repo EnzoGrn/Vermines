@@ -57,4 +57,3 @@ This repository is **not open source**.
 - All assets (visuals, sounds, etc.) are licensed **exclusively to OMGG** and may not be reused or redistributed.
 
 For any inquiries or collaboration proposals, feel free to contact us.
-

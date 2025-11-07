@@ -5,7 +5,8 @@ using Fusion;
 using System;
 
 namespace Vermines.Menu.CustomLobby {
-
+    using Newtonsoft.Json;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Characters;
     using Vermines.Core;
     using Vermines.Core.Network;
@@ -99,30 +100,24 @@ namespace Vermines.Menu.CustomLobby {
             Global.Networking.StopGame();
         }
 
-        private IEnumerator StartSessionCoroutine(string scene, GameplayType gameplay, string key, bool host)
+        private void StartSession()
         {
-            NetworkRunner oldRunner = Runner;
-            SceneContext    context = Context;
+            RPC_ShowLoadingScreen();
 
-            if (oldRunner != null && oldRunner.IsRunning) {
-                var shutdown = oldRunner.Shutdown(true);
+            List<LobbyPlayerController> players = Context.Runner.GetAllBehaviours<LobbyPlayerController>();
+            Dictionary<int, CardFamily> families = new();
 
-                while (!shutdown.IsCompleted)
-                    yield return null;
+            foreach (LobbyPlayerController player in players) {
+                Cultist cultist = CultistDatabase.GetCultistByID(player.State.CultistID);
+
+                families.Add(player.State.ClientID.RawEncoded, cultist.family);
+
+                Runner.Despawn(player.Object);
             }
 
-            SessionRequest newRequest = new() {
-                UserID        = context.PeerUserID,
-                GameMode      = host ? GameMode.Host : GameMode.Client,
-                ScenePath     = scene,
-                GameplayType  = gameplay,
-                IsGameSession = true,
-                IsCustom      = true,
-                SessionName   = oldRunner.SessionInfo.Name,
-                CustomLobby   = key
-            };
+            string data = JsonConvert.SerializeObject(families);
 
-            Global.Networking.StartGame(newRequest);
+            Context.SceneChangeController.RPC_RequestSceneChange(Context.GameScenePath, true, true, GameplayType.Standart, Context.CustomGameScenePath, players.Count, data);
         }
 
         #endregion
@@ -178,13 +173,13 @@ namespace Vermines.Menu.CustomLobby {
             }
 
             if (CanStart())
-                RPC_StartGame(Context.GameScenePath, GameplayType.Standart, KeyGen.GenerateSecretKey());
+                StartSession();
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
-        private void RPC_StartGame(string scene, GameplayType gameplay, string key)
+        private void RPC_ShowLoadingScreen()
         {
-            StartCoroutine(StartSessionCoroutine(scene, gameplay, key, HasStateAuthority));
+            StartCoroutine(Global.Networking.ShowLoadingSceneCoroutine(true));
         }
 
         #endregion

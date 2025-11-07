@@ -1,7 +1,8 @@
+using UnityEngine;
 using Fusion;
 
 namespace Vermines.Menu.CustomLobby {
-    using UnityEngine;
+
     using Vermines.Core;
     using Vermines.Core.Player;
     using Vermines.Core.Scene;

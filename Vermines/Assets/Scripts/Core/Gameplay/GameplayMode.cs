@@ -1,7 +1,11 @@
 using UnityEngine;
+using Fusion;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Vermines.Core {
 
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
 
     public abstract class GameplayMode : ContextBehaviour {
@@ -16,9 +20,18 @@ namespace Vermines.Core {
 
         public override void Spawned()
         {
-            Debug.LogError($"Spawned() GameplayMode");
-
             Context.GameplayMode = this;
+        }
+
+        public void Initialize(string data)
+        {
+            Dictionary<int, CardFamily>                 temp = JsonConvert.DeserializeObject<Dictionary<int, CardFamily>>(data);
+            Dictionary<PlayerRef, CardFamily> playerFamilies = new();
+
+            foreach (var kvp in temp)
+                playerFamilies[PlayerRef.FromEncoded(kvp.Key)] = kvp.Value;
+            foreach (var kvp in playerFamilies)
+                Debug.LogError($"{kvp.Key} chose the {kvp.Value}.");
         }
 
         #endregion

@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,6 +29,15 @@ namespace Vermines.Core.Services {
 
         public bool IsSceneLoaded(string sceneName)
         {
+            /*int count = SceneManager.sceneCount;
+
+            for (int i = 0; i < count; i++) {
+                UnityScene scene = SceneManager.GetSceneAt(i);
+
+                if (sceneName == scene.name && (scene.IsValid() && scene.isLoaded))
+                    return true;
+            }
+            return false;*/
             return _LoadedScenes.Contains(sceneName);
         }
 
@@ -77,7 +86,7 @@ namespace Vermines.Core.Services {
         {
             if (IsSceneLoaded(sceneName))
                 yield break;
-            AsyncOperation op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            UnityEngine.AsyncOperation op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
             yield return new WaitUntil(() => op.isDone);
 
@@ -86,11 +95,11 @@ namespace Vermines.Core.Services {
 
         public IEnumerator UnloadScene(string sceneName)
         {
-            if (!IsSceneLoaded(sceneName))
-                yield break;
             if (PersistentScenes.Contains(sceneName))
                 yield break;
-            AsyncOperation op = SceneManager.UnloadSceneAsync(sceneName);
+            if (!IsSceneLoaded(sceneName))
+                yield break;
+            UnityEngine.AsyncOperation op = SceneManager.UnloadSceneAsync(sceneName);
 
             yield return new WaitUntil(() => op.isDone);
 

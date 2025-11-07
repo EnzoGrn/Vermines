@@ -501,54 +501,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 494089267}
   m_CullTransparentMesh: 1
---- !u!1 &545877913
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 545877915}
-  - component: {fileID: 545877914}
-  m_Layer: 0
-  m_Name: Matchmaking
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &545877914
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 545877913}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5867ca07fbeb7684fa31e446e413a488, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  IsJoiningToLobby: 0
-  IsConnectedToLobby: 0
-  _LobbyRunner: {fileID: 1619141180}
---- !u!4 &545877915
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 545877913}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1619141181}
-  m_Father: {fileID: 1043327962}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &570972953
 GameObject:
   m_ObjectHideFlags: 0
@@ -1515,12 +1467,13 @@ MonoBehaviour:
     IsVisible: 0
     HasInput: 0
     Runner: {fileID: 0}
+    SceneChangeController: {fileID: 1446653945}
     NetworkGame: {fileID: 0}
     GameplayMode: {fileID: 0}
     NetworkLobby: {fileID: 0}
     Lobby: {fileID: 0}
     NetworkMatchmaking: {fileID: 1844938083}
-    Matchmaking: {fileID: 545877914}
+    Matchmaking: {fileID: 0}
   _SelfInitialized: 0
 --- !u!4 &1043327962
 Transform:
@@ -1539,7 +1492,7 @@ Transform:
   - {fileID: 268482988}
   - {fileID: 1844938082}
   - {fileID: 2032660944}
-  - {fileID: 545877915}
+  - {fileID: 1446653947}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1422743189
@@ -1617,7 +1570,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1422743189}
   m_CullTransparentMesh: 1
---- !u!1 &1619141179
+--- !u!1 &1446653944
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1625,41 +1578,60 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1619141181}
-  - component: {fileID: 1619141180}
+  - component: {fileID: 1446653947}
+  - component: {fileID: 1446653945}
+  - component: {fileID: 1446653946}
   m_Layer: 0
-  m_Name: LobbyRunner
+  m_Name: SceneChangeController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1619141180
+--- !u!114 &1446653945
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1619141179}
+  m_GameObject: {fileID: 1446653944}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1199893898, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Script: {fileID: 11500000, guid: 1926a0d5382847742b2c5337116bba83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &1619141181
+--- !u!114 &1446653946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446653944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3627222255
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1446653945}
+--- !u!4 &1446653947
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1619141179}
+  m_GameObject: {fileID: 1446653944}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 545877915}
+  m_Father: {fileID: 1043327962}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1647021070
 GameObject:
