@@ -15,6 +15,7 @@ MonoBehaviour:
   RunnerPrefab: {fileID: 6909658878594372984, guid: f9de5fbb9e25841459e71cc8d6d0eb09, type: 3}
   LoadingScene: LoadingScene
   MenuScene: Menu
+  Cultists: {fileID: 11400000, guid: bcf36aae321d60c408c9cb3400afd7e3, type: 2}
   Network: {fileID: 11400000, guid: d7484ce1aeae71849b98d43c50dfcd37, type: 2}
   DefaultOptions:
     _Values:

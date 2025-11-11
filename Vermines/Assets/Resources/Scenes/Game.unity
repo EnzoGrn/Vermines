@@ -243,6 +243,7 @@ Transform:
   - {fileID: 140482769}
   - {fileID: 84382205}
   - {fileID: 2105702294}
+  - {fileID: 709042929}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &607863924
@@ -266,10 +267,11 @@ MonoBehaviour:
     Settings: {fileID: 0}
     CustomGameScenePath: CustomLobby
     MatchmakingScenePath: 
-    GameScenePath: 
+    GameScenePath: Game
     IsVisible: 0
     HasInput: 0
     Runner: {fileID: 0}
+    SceneChangeController: {fileID: 709042927}
     NetworkGame: {fileID: 2105702296}
     GameplayMode: {fileID: 0}
     NetworkLobby: {fileID: 0}
@@ -279,6 +281,69 @@ MonoBehaviour:
   _SelfInitialized: 0
   UI_SCENE_NAME: UI
   _SceneToLoad: GameplayCameraTravelling
+--- !u!1 &709042926
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 709042929}
+  - component: {fileID: 709042927}
+  - component: {fileID: 709042928}
+  m_Layer: 0
+  m_Name: SceneChangeController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &709042927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709042926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1926a0d5382847742b2c5337116bba83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &709042928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709042926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 4037407315
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 709042927}
+--- !u!4 &709042929
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709042926}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 607863923}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1479738454
 GameObject:
   m_ObjectHideFlags: 0

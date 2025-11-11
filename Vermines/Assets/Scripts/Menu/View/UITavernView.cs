@@ -1,14 +1,15 @@
 using System.Threading.Tasks;
 using UnityEngine;
+using Fusion;
 
 namespace Vermines.Menu.View {
 
     using Vermines.Menu.Tavern;
     using Vermines.UI.Core;
     using Vermines.UI;
-    using Fusion;
     using Vermines.Core.Network;
     using Vermines.Core;
+    using Vermines.Characters;
 
     public class UITavernView : UICloseView {
 
@@ -35,7 +36,11 @@ namespace Vermines.Menu.View {
         public int PlayerCultist
         {
             get => Context.PlayerData.CultistID;
-            set => Context.PlayerData.CultistID = value;
+            set
+            {
+                Global.PlayerService.PlayerData.CultistID = value;
+                Context.PlayerData.CultistID              = value;
+            }
         }
 
         #endregion
@@ -63,6 +68,13 @@ namespace Vermines.Menu.View {
             _PlayButton.onClick.RemoveListener(OnQuickPlayButton);
 
             base.OnDeinitialize();
+        }
+
+        protected override void OnOpen()
+        {
+            PlayerCultist = -1;
+
+            base.OnOpen();
         }
 
         protected override async void OnClose()
@@ -112,9 +124,9 @@ namespace Vermines.Menu.View {
             Context.Matchmaking.CreateSession(session, isCustom: false);
         }
 
-        public void OnCultistSelected(int cultistID)
+        public void OnCultistSelected(Cultist cultist)
         {
-            PlayerCultist = cultistID;
+            PlayerCultist = cultist.ID;
         }
 
         #endregion

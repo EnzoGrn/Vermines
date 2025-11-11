@@ -1,22 +1,20 @@
 using System.Collections.Generic;
 using System.Collections;
+using Newtonsoft.Json;
 using UnityEngine;
 using Fusion;
 using System;
 
 namespace Vermines.Menu.CustomLobby {
-    using Newtonsoft.Json;
+
     using Vermines.CardSystem.Enumerations;
     using Vermines.Characters;
     using Vermines.Core;
     using Vermines.Core.Network;
-    using Vermines.Core.Scene;
 
     public class LobbyManager : ContextBehaviour {
 
         #region Attributes
-
-        public CultistDatabase CultistDatabase;
 
         public Action<PlayerRef> OnPlayerJoinedGame;
 
@@ -108,7 +106,7 @@ namespace Vermines.Menu.CustomLobby {
             Dictionary<int, CardFamily> families = new();
 
             foreach (LobbyPlayerController player in players) {
-                Cultist cultist = CultistDatabase.GetCultistByID(player.State.CultistID);
+                Cultist cultist = Global.Settings.Cultists.GetCultistByID(player.State.CultistID);
 
                 families.Add(player.State.ClientID.RawEncoded, cultist.family);
 
@@ -144,7 +142,7 @@ namespace Vermines.Menu.CustomLobby {
             foreach (LobbyPlayerController player in players) {
                 if (player.State.ClientID != playerRef)
                     continue;
-                if (!CultistDatabase.IsValidCultistID(cultistID) && !force)
+                if (!Global.Settings.Cultists.IsValidCultistID(cultistID) && !force)
                     return;
                 if (IsCultistTaken(cultistID, true) && !force)
                     return;
@@ -163,7 +161,7 @@ namespace Vermines.Menu.CustomLobby {
                 if (state.ClientID != playerRef)
                     continue;
                 if (isLockedIn) {
-                    if (!CultistDatabase.IsValidCultistID(state.CultistID))
+                    if (!Global.Settings.Cultists.IsValidCultistID(state.CultistID))
                         return;
                     if (IsCultistTaken(state.CultistID, true))
                         return;

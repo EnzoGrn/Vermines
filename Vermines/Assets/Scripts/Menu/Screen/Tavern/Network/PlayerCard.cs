@@ -5,17 +5,13 @@ using TMPro;
 namespace Vermines.Menu.CustomLobby {
 
     using Vermines.Characters;
+    using Vermines.Core;
     using Vermines.Core.UI;
     using Vermines.Extension;
 
     public class PlayerCard : UIBehaviour {
 
         #region Attributes
-
-        [Header("Database")]
-
-        [SerializeField]
-        private CultistDatabase _CultistDatabase;
 
         [Header("UI Elements")]
 
@@ -52,7 +48,7 @@ namespace Vermines.Menu.CustomLobby {
         public void UpdateDisplay(CultistSelectState state, string playerName, bool isMine = false)
         {
             if (state.CultistID > 0) {
-                Cultist cultist = _CultistDatabase.GetCultistByID(state.CultistID);
+                Cultist cultist = Global.Settings.Cultists.GetCultistByID(state.CultistID);
 
                 _CultistIconImage.sprite  = cultist.CultistSprite;
                 _CultistIconImage.enabled = true;

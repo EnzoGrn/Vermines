@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using Fusion.Sockets;
 using Fusion;
@@ -89,7 +88,7 @@ namespace Vermines.Menu.CustomLobby {
             }
         }
 
-        private void SpawnPlayer(PlayerRef playerRef, [CallerMemberName] string caller = "")
+        private void SpawnPlayer(PlayerRef playerRef)
         {
             if (GetPlayer(playerRef) != null || _PendingPlayers.ContainsKey(playerRef)) {
                 Log.Error($"Player for {playerRef} is already spawned!");

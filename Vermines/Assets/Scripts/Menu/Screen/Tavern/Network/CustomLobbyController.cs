@@ -12,6 +12,7 @@ namespace Vermines.Menu.Tavern.Network {
     using Vermines.Configuration.Network;
     using Vermines.Menu.Screen;
     using Vermines.Menu.CustomLobby;
+    using Vermines.Core;
 
     [RequireComponent(typeof(SettingsManager))]
     public class CustomLobbyController : NetworkBehaviour, IPlayerLeft {
@@ -28,9 +29,6 @@ namespace Vermines.Menu.Tavern.Network {
 
         [Networked, Capacity(4), OnChangedRender(nameof(OnPlayerStatesChanged))]
         public NetworkArray<CultistSelectState> Players { get; }
-
-        [SerializeField]
-        private CultistDatabase _CultistDatabase;
 
         #endregion
 
@@ -117,7 +115,7 @@ namespace Vermines.Menu.Tavern.Network {
 
                     if (playerState.ClientID == default(PlayerRef))
                         continue;
-                    Cultist cultist = _CultistDatabase.GetCultistByID(playerState.CultistID);
+                    Cultist cultist = Global.Settings.Cultists.GetCultistByID(playerState.CultistID);
 
                     services.UpdatePlayerState(playerState.ClientID, "", cultist.family);
                 }
@@ -297,7 +295,7 @@ namespace Vermines.Menu.Tavern.Network {
             for (int i = 0; i < Players.Length; i++) {
                 if (Players.Get(i).ClientID != player)
                     continue;
-                if (!_CultistDatabase.IsValidCultistID(cultistID) && !force)
+                if (!Global.Settings.Cultists.IsValidCultistID(cultistID) && !force)
                     return;
                 if (IsCultistTaken(cultistID, true) && !force)
                     return;
@@ -314,7 +312,7 @@ namespace Vermines.Menu.Tavern.Network {
                 if (state.ClientID != player)
                     continue;
                 if (isLockedIn) {
-                    if (!_CultistDatabase.IsValidCultistID(state.CultistID))
+                    if (!Global.Settings.Cultists.IsValidCultistID(state.CultistID))
                         return;
                     if (IsCultistTaken(state.CultistID, true))
                         return;

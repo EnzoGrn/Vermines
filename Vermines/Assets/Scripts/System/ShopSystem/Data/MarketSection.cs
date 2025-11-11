@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using Newtonsoft.Json;
+using UnityEngine;
 using Fusion;
 
 namespace Vermines.ShopSystem.Data {
@@ -8,37 +9,39 @@ namespace Vermines.ShopSystem.Data {
     using Vermines.CardSystem.Elements;
 
     [JsonObject(MemberSerialization.OptIn)]
+    [CreateAssetMenu(menuName = "Vermines/Shops/MarketSection")]
     public class MarketSection : ShopSectionBase, IEnumerable<ICard> {
 
         #region Attributes
 
-        [JsonProperty]
-        public Dictionary<int, List<ICard>> CardPiles;
-
-        [JsonProperty]
-        private readonly int _Slots;
-
         public int Slots => _Slots;
+
+        [JsonProperty, SerializeField]
+        private int _Slots = 5;
+
+        [JsonProperty]
+        public Dictionary<int, List<ICard>> CardPiles = new();
 
         #endregion
 
         #region Constructor & Copy Constructor
 
-        public MarketSection(int slots)
+        public override void Initialize()
         {
-            CardPiles = new();
+            if (CardPiles == null || CardPiles.Count == 0) {
+                CardPiles = new();
 
-            _Slots = slots;
-
-            for (int i = 0; i < slots; i++)
-                CardPiles[i] = new List<ICard>();
+                for (int i = 0; i < _Slots; i++)
+                    CardPiles[i] = new();
+            }
         }
 
         public override ShopSectionBase DeepCopy()
         {
-            MarketSection section = new(_Slots) {
-                CardPiles = new Dictionary<int, List<ICard>>(this.CardPiles)
-            };
+            MarketSection section = Instantiate(this);
+
+            section._Slots    = this._Slots;
+            section.CardPiles = new Dictionary<int, List<ICard>>(this.CardPiles);
 
             return section;
         }

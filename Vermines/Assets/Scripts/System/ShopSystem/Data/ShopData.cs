@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
+using System;
 
 namespace Vermines.ShopSystem.Data {
 
@@ -9,12 +10,14 @@ namespace Vermines.ShopSystem.Data {
     using Vermines.CardSystem.Elements;
 
     [JsonObject(MemberSerialization.OptIn)]
+    [Serializable]
+    [CreateAssetMenu(menuName = "Vermines/Shops/Shop Config")]
     public class ShopData : ScriptableObject {
 
         #region Properties
 
         [JsonProperty]
-        public Dictionary<ShopType, ShopSectionBase> Sections;
+        public SerializableDictionary<ShopType, ShopSectionBase> Sections = new();
 
         #endregion
 
@@ -22,7 +25,10 @@ namespace Vermines.ShopSystem.Data {
 
         public void Initialize()
         {
-            Sections ??= new Dictionary<ShopType, ShopSectionBase>();
+            Sections ??= new();
+
+            foreach (var kvp in Sections)
+                Sections[kvp.Key] = kvp.Value.DeepCopy();
         }
 
         public void AddSection(ShopType type, ShopSectionBase section)
@@ -168,7 +174,9 @@ namespace Vermines.ShopSystem.Data {
 
             if (Sections == null)
                 return shop;
-            shop.Sections = Sections.ToDictionary(entry => entry.Key, entry => entry.Value.DeepCopy());
+            shop.Sections = new SerializableDictionary<ShopType, ShopSectionBase>(
+                Sections.ToDictionary(entry => entry.Key, entry => entry.Value.DeepCopy())
+            );
 
             return shop;
         }

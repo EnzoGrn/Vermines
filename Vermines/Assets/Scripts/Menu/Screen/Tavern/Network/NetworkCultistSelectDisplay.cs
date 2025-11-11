@@ -10,6 +10,7 @@ namespace Vermines.Menu.CustomLobby {
     using Vermines.Core.UI;
     using Vermines.Core.Scene;
     using Vermines.Extension;
+    using Vermines.Core;
 
     public class NetworkCultistSelectDisplay : UIBehaviour {
 
@@ -17,11 +18,6 @@ namespace Vermines.Menu.CustomLobby {
         const string UnReady = "Ready";
 
         #region Attributes
-
-        [Header("Database")]
-
-        [SerializeField]
-        private CultistDatabase _CultistDatabase;
 
         [Header("UI Elements")]
 
@@ -63,7 +59,7 @@ namespace Vermines.Menu.CustomLobby {
             ReadyButton.onClick.AddListener(OnReadyButton);
 
             if (hasInputAuthority) {
-                Cultist[] allCultists = _CultistDatabase.GetAllCultists();
+                Cultist[] allCultists = Global.Settings.Cultists.GetAllCultists();
 
                 foreach (Cultist cultist in allCultists) {
                     NetworkCultistSelectButton selectedButtonInstance = Instantiate(_SelectButtonPrefab, _CultistHolder);
@@ -173,8 +169,8 @@ namespace Vermines.Menu.CustomLobby {
                     _CultistButtons.Find(button => button.Cultist.ID == state.CultistID).UnSelect();
             }
 
-            if (_CultistDatabase.IsValidCultistID(cultistID)) {
-                Cultist cultist = _CultistDatabase.GetCultistByID(cultistID);
+            if (Global.Settings.Cultists.IsValidCultistID(cultistID)) {
+                Cultist cultist = Global.Settings.Cultists.GetCultistByID(cultistID);
 
                 _CultistNameText.SetTextSafe(cultist.Name);
                 _CultistInfoPanel.SetCharacter(cultist);
@@ -207,7 +203,7 @@ namespace Vermines.Menu.CustomLobby {
                     _CultistButtons.Find(button => button.Cultist.ID == state.CultistID).UnSelect();
             }
 
-            if (_CultistDatabase.IsValidCultistID(cultist.ID)) {
+            if (Global.Settings.Cultists.IsValidCultistID(cultist.ID)) {
                 _CultistNameText.SetTextSafe(cultist.Name);
                 _CultistInfoPanel.SetCharacter(cultist);
                 _CultistInfoPanel.gameObject.SetActive(true);

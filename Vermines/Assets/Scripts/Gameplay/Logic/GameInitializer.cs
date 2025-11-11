@@ -15,7 +15,6 @@ namespace Vermines {
     using Vermines.CardSystem.Utilities;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
-    using Vermines.ShopSystem.Commands.Internal;
     using Vermines.ShopSystem.Enumerations;
     using Vermines.ShopSystem.Data;
     using Vermines.Player;
@@ -128,21 +127,21 @@ namespace Vermines {
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
             // 3.a. Courtyard Initialization.
-            CourtyardSection couryard = new() {
-                Deck1 = partisan1Cards,
-                Deck2 = partisan2Cards
-            };
+            CourtyardSection courtyard = ScriptableObject.CreateInstance<CourtyardSection>();
 
-            couryard.Refill();
+            courtyard.Deck1 = partisan1Cards;
+            courtyard.Deck2 = partisan2Cards;
 
-            shop.AddSection(ShopType.Courtyard, couryard);
+            courtyard.Refill();
+
+            shop.AddSection(ShopType.Courtyard, courtyard);
 
             RPC_InitializeShopSection(ShopType.Courtyard, shop.SerializeSection(ShopType.Courtyard));
 
             // 3.b. Market Initialization.
             var groupedByName = objectCards.GroupBy(c => c.Data.Name).ToDictionary(g => g.Key, g => g.ToList());
 
-            MarketSection market = new(groupedByName.Count);
+            MarketSection market = ScriptableObject.CreateInstance<MarketSection>();
 
             int index = 0;
 

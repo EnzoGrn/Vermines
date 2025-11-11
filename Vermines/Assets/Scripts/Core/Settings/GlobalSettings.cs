@@ -1,6 +1,7 @@
 using Fusion;
 using System;
 using UnityEngine;
+using Vermines.Characters;
 
 namespace Vermines.Core.Settings {
 
@@ -12,6 +13,8 @@ namespace Vermines.Core.Settings {
 
         public string LoadingScene = "LoadingScene";
         public string MenuScene = "Menu";
+
+        public CultistDatabase Cultists;
 
         public NetworkSettings Network;
         public OptionsData DefaultOptions;

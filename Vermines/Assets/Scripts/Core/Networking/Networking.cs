@@ -275,7 +275,8 @@ namespace Vermines.Core.Network {
 
             yield return null;
 
-            NetworkObjectPool pool = new();
+            peer.NetworkPool = new();
+
             NetworkRunner   runner = Instantiate(Global.Settings.RunnerPrefab);
 
             runner.name = peerName;
@@ -290,7 +291,7 @@ namespace Vermines.Core.Network {
                 GameMode                    = peer.GameMode,
                 SessionName                 = peer.Request.SessionName,
                 Scene                       = peer.Scene,
-                ObjectProvider              = pool,
+                ObjectProvider              = peer.NetworkPool,
                 CustomLobbyName             = peer.Request.CustomLobby,
                 SceneManager                = peer.SceneManager,
                 EnableClientSessionCreation = true
@@ -435,8 +436,8 @@ namespace Vermines.Core.Network {
             sceneContext.Runner     = peer.Runner;
             sceneContext.PeerUserID = peer.UserID;
 
-            peer.Context = sceneContext;
-            pool.Context = sceneContext;
+            peer.Context             = sceneContext;
+            peer.NetworkPool.Context = sceneContext;
 
             StatusDescription = "waiting_networked_game";
 
@@ -647,6 +648,8 @@ namespace Vermines.Core.Network {
 
         public IEnumerator ApplySceneChangeLocalCoroutine(string peerID, string scenePath, bool isCustom, bool isGameSession, GameplayType gameplayType, string data, System.Action onComplete = null)
         {
+            GamePeer peer = GetGamePeer(peerID);
+
             _IsChangeScene = true;
 
             yield return ShowLoadingSceneCoroutine(true);
@@ -693,9 +696,11 @@ namespace Vermines.Core.Network {
 
             SceneContext context = scene.Context;
 
+            peer.NetworkPool.Context = context;
+
             context.IsVisible  = true;
             context.HasInput   = true;
-            context.Runner     = _CurrentSession?.GamePeers?[0]?.Runner ?? context.Runner;
+            context.Runner     = peer.Runner;
             context.PeerUserID = peerID;
 
             ContextBehaviour networkManager = null;
@@ -842,6 +847,18 @@ namespace Vermines.Core.Network {
             return scenesToUnload;
         }
 
+        public GamePeer GetPeer(NetworkRunner runner)
+        {
+            if (_CurrentSession == null)
+                return null;
+            foreach (GamePeer peer in _CurrentSession.GamePeers) {
+                if (peer.Runner == runner)
+                    return peer;
+            }
+
+            return null;
+        }
+
         private Dictionary<string, SessionProperty> CreateSessionProperties(SessionRequest request)
         {
             return new Dictionary<string, SessionProperty> {
@@ -864,6 +881,13 @@ namespace Vermines.Core.Network {
         #endregion
 
         #region Comparator
+
+        public GamePeer GetGamePeer(string peerUserId)
+        {
+            if (_CurrentSession == null)
+                return default;
+            return _CurrentSession.GamePeers.Find(peer => peer.UserID == peerUserId);
+        }
 
         private static bool IsSceneLoaded(string sceneToCheck)
         {

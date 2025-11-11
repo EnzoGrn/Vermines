@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace Vermines.Menu.Matchmaking {
 
+    using Vermines.CardSystem.Enumerations;
+    using Vermines.Characters;
     using Vermines.Core;
 
     public class NetworkMatchmaking : ContextBehaviour, IPlayerJoined, IPlayerLeft {
@@ -25,6 +27,8 @@ namespace Vermines.Menu.Matchmaking {
         private bool _IsActive;
         private float _StartTimer;
         private float _TimeoutTimer;
+
+        private readonly Dictionary<PlayerRef, CardFamily> _PlayerFamilies = new();
 
         #endregion
 
@@ -79,9 +83,10 @@ namespace Vermines.Menu.Matchmaking {
 
         private void StartGame()
         {
-            _IsGameStarting = true;
-
             Log.Info($"[Matchmaking] Enough players ({_ActivePlayers.Count}), starting game...");
+
+            _IsGameStarting           = true;
+            Runner.SessionInfo.IsOpen = false;
 
             RPC_ShowLoadingScreen();
 
@@ -102,6 +107,8 @@ namespace Vermines.Menu.Matchmaking {
 
             _TimeoutTimer = 0f;
             _StartTimer   = 0f;
+
+            _PlayerFamilies[player] = CardFamily.None;
         }
 
         public void PlayerLeft(PlayerRef player)
@@ -110,6 +117,8 @@ namespace Vermines.Menu.Matchmaking {
                 return;
             if (_ActivePlayers.Contains(player))
                 _ActivePlayers.Remove(player);
+            _PlayerFamilies.Remove(player);
+            
             Log.Warn($"[Matchmaking] Player left: {player} (Remaining: {_ActivePlayers.Count})");
 
             if (_ActivePlayers.Count < _MinPlayersToStart)

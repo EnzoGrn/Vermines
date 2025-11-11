@@ -45,7 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e03dfa1fa76f284ab93f6227aecb626, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 0
+  _Type: 0
+  SoulsLimit: 100
+  _BaseShopData: {fileID: 11400000, guid: da984adf5b7938e4f8143513dfe0b094, type: 2}
+  _State: 0
 --- !u!114 &9082486691376895040
 MonoBehaviour:
   m_ObjectHideFlags: 0

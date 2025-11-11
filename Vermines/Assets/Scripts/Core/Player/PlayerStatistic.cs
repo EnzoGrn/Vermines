@@ -13,6 +13,8 @@ namespace Vermines.Core.Player {
 
         public CardFamily Family;
 
+        public bool IsConnected;
+
         public bool IsValid => PlayerRef.IsRealPlayer;
     }
 }

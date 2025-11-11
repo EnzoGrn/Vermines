@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using UnityEngine;
+using Vermines.Characters;
 
 namespace Vermines.Core.Player {
 
@@ -26,13 +27,15 @@ namespace Vermines.Core.Player {
             }
         }
 
+        public Cultist Cultist => GetCultist();
+
         public int CultistID
         {
             get => _CultistID;
             set
             {
                 _CultistID = value;
-                IsDirty = true;
+                IsDirty    = true;
             }
         }
 
@@ -48,7 +51,10 @@ namespace Vermines.Core.Player {
         private string _Nickname;
 
         [SerializeField]
-        private int _CultistID = -1;
+        private Cultist _Cultist;
+
+        [SerializeField]
+        private int _CultistID;
 
         [SerializeField]
         private bool _IsLocked;
@@ -105,6 +111,15 @@ namespace Vermines.Core.Player {
         public void ClearDirty()
         {
             IsDirty = false;
+        }
+
+        private Cultist GetCultist()
+        {
+            if (_CultistID < 0)
+                return null;
+            Cultist cultist = Global.Settings.Cultists.GetCultistByID(_CultistID);
+
+            return cultist;
         }
 
         #endregion

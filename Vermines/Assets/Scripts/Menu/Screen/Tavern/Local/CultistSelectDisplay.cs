@@ -5,17 +5,13 @@ using TMPro;
 namespace Vermines.Menu.Tavern {
 
     using Vermines.Characters;
+    using Vermines.Core;
     using Vermines.Core.UI;
     using Vermines.Menu.View;
 
     public class CultistSelectDisplay : UIBehaviour {
 
         #region Attributes
-
-        [Header("Database")]
-
-        [SerializeField]
-        private CultistDatabase _CultistDatabase;
 
         [Header("UI Elements")]
 
@@ -43,7 +39,7 @@ namespace Vermines.Menu.Tavern {
         {
             _View = view;
 
-            Cultist[] cultists = _CultistDatabase.GetAllCultists();
+            Cultist[] cultists = Global.Settings.Cultists.GetAllCultists();
 
             foreach (Cultist cultist in cultists) {
                 CultistSelectButton selectedButtonInstance = Instantiate(_SelectButtonPrefab, _CultistHolder);
@@ -74,7 +70,6 @@ namespace Vermines.Menu.Tavern {
 
             foreach (CultistSelectButton button in _CultistButtons)
                 button.UnSelect();
-            _View.PlayerCultist           = default;
             _View.PlayButton.interactable = false;
         }
 
@@ -88,12 +83,12 @@ namespace Vermines.Menu.Tavern {
                 return;
             if (_View.PlayerCultist > 0)
                 _CultistButtons.Find(button => button.Cultist.ID == _View.PlayerCultist).UnSelect();
-            Cultist cultist = _CultistDatabase.GetCultistByID(cultistID);
+            Cultist cultist = Global.Settings.Cultists.GetCultistByID(cultistID);
 
             _CultistInfoPanel.SetCharacter(cultist);
             _CultistInfoPanel.gameObject.SetActive(true);
 
-            _View.OnCultistSelected(cultist.ID);
+            _View.OnCultistSelected(cultist);
             _View.PlayButton.interactable = true;
         }
 
@@ -106,7 +101,7 @@ namespace Vermines.Menu.Tavern {
             _CultistInfoPanel.SetCharacter(cultist);
             _CultistInfoPanel.gameObject.SetActive(true);
 
-            _View.OnCultistSelected(cultist.ID);
+            _View.OnCultistSelected(cultist);
             _View.PlayButton.interactable = true;
         }
 

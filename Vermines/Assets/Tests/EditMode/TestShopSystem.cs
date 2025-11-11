@@ -32,6 +32,7 @@ using OMGG.DesignPattern;
     using Vermines;
     using Vermines.ShopSystem;
 using UnityEditor.Graphs;
+using UnityEngine.PlayerLoop;
 
 #endregion
 
@@ -116,17 +117,21 @@ namespace Test.Vermines.ShopSystem {
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
             // 3.a. Courtyard Initialization.
-            CourtyardSection couryard = new() {
-                Deck1 = partisan1Cards,
-                Deck2 = partisan2Cards
-            };
+            CourtyardSection courtyard = ScriptableObject.CreateInstance<CourtyardSection>();
 
-            shop.AddSection(ShopType.Courtyard, couryard);
+            courtyard.Initialize();
+
+            courtyard.Deck1 = partisan1Cards;
+            courtyard.Deck2 = partisan2Cards;
+
+            shop.AddSection(ShopType.Courtyard, courtyard);
 
             // 3.b. Market Initialization.
             var groupedByName = objectCards.GroupBy(c => c.Data.Name).ToDictionary(g => g.Key, g => g.ToList());
 
-            MarketSection market = new(groupedByName.Count);
+            MarketSection market = ScriptableObject.CreateInstance<MarketSection>();
+
+            market.Initialize();
 
             int index = 0;
 
@@ -147,12 +152,14 @@ namespace Test.Vermines.ShopSystem {
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
             // 3.a. Courtyard Initialization.
-            CourtyardSection couryard = new();
+            CourtyardSection courtyard = ScriptableObject.CreateInstance<CourtyardSection>();
 
-            shop.AddSection(ShopType.Courtyard, couryard);
+            courtyard.Initialize();
+
+            shop.AddSection(ShopType.Courtyard, courtyard);
 
             // 3.b. Market Initialization.
-            MarketSection market = new(1);
+            MarketSection market = ScriptableObject.CreateInstance<MarketSection>();
 
             shop.AddSection(ShopType.Market, market);
 

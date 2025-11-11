@@ -16,7 +16,7 @@ namespace Vermines.Core.Services {
 
         public Action<PlayerData> PlayerDataChanged;
 
-        public PlayerData PlayerData { get; private set; }
+        public PlayerData PlayerData { get; set; }
 
         #endregion
 

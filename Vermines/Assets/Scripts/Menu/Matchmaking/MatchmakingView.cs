@@ -41,8 +41,7 @@ namespace Vermines.Menu.Matchmaking {
             dialog.Description.SetTextSafe("Are you sure you want to leave the lobby?");
 
             dialog.HasClosed += (result) => {
-                if (result == true)
-                {
+                if (result == true) {
                     if (Context != null && Context.Lobby != null)
                         Context.NetworkMatchmaking.LeaveGame();
                     else

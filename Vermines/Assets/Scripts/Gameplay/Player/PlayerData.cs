@@ -154,18 +154,24 @@ namespace Vermines.Player {
 
         public readonly string Serialize()
         {
-            string serializedPlayerDeck = string.Empty;
+            static string SerializeList(string name, List<ICard> list)
+            {
+                if (list == null || list.Count == 0)
+                    return $"{name}[]";
+                return $"{name}[{string.Join(",", list.Select(card => card.ID))}]";
+            }
 
-            // Decks serializer
-            serializedPlayerDeck += $"Deck[{string.Join(","        , Deck.Select(card        => card.ID))}]";
-            serializedPlayerDeck += $";Hand[{string.Join(","       , Hand.Select(card        => card.ID))}]";
-            serializedPlayerDeck += $";Discard[{string.Join(","    , Discard.Select(card     => card.ID))}]";
-            serializedPlayerDeck += $";ToolDiscard[{string.Join(",", ToolDiscard.Select(card => card.ID))}]";
-            serializedPlayerDeck += $";Graveyard[{string.Join(","  , Graveyard.Select(card   => card.ID))}]";
-            serializedPlayerDeck += $";PlayedCards[{string.Join(",", PlayedCards.Select(card => card.ID))}]";
-            serializedPlayerDeck += $";Equipments[{string.Join("," , Equipments.Select(card  => card.ID))}]";
+            string[] parts = new[] {
+                SerializeList("Deck", Deck),
+                SerializeList("Hand", Hand),
+                SerializeList("Discard", Discard),
+                SerializeList("ToolDiscard", ToolDiscard),
+                SerializeList("Graveyard", Graveyard),
+                SerializeList("PlayedCards", PlayedCards),
+                SerializeList("Equipments", Equipments)
+            };
 
-            return serializedPlayerDeck;
+            return string.Join(";", parts);
         }
 
         static public PlayerDeck Deserialize(string data)
