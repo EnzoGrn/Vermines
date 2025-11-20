@@ -2,6 +2,7 @@
 using UnityEngine;
 using Vermines.CardSystem.Data;
 using Vermines.CardSystem.Elements;
+using Vermines.Player;
 using Vermines.UI.Card;
 using Vermines.UI.Utils;
 
@@ -215,7 +216,7 @@ namespace Vermines.UI.Plugin
             cancel.onClick.RemoveAllListeners();
             cancel.onClick.AddListener(OnCancel);
 
-            confirmButton.interactable = GameManager.Instance.IsMyTurn();
+            confirmButton.interactable = PlayerController.Local.Context.GameplayMode.IsMyTurn;
         }
 
         #endregion

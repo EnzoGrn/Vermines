@@ -3,31 +3,37 @@ using NUnit.Framework;
 using UnityEngine;
 
 #region Vermines CardSystem namespace
-    using Vermines.CardSystem.Data;
-    using Vermines.CardSystem.Enumerations;
-    using Vermines.CardSystem.Utilities;
-    using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Data;
+using Vermines.CardSystem.Enumerations;
+using Vermines.CardSystem.Utilities;
+using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Data.Effect;
+using Vermines.Core.Scene;
+using System.Runtime.Remoting.Contexts;
 #endregion
 
-namespace Test.Vermines.CardSystem {
+namespace Test.Vermines.CardSystem
+{
 
-    public class TestCardSetDatabase {
+    public class TestCardSetDatabase
+    {
 
         private static readonly int Seed = 123456789;
 
-        private static readonly int NumberOfCardsForTwoPlayers   = 72;
+        private static readonly int NumberOfCardsForTwoPlayers = 72;
         private static readonly int NumberOfCardsForThreePlayers = 84;
-        private static readonly int NumberOfCardsForFourPlayers  = 96;
+        private static readonly int NumberOfCardsForFourPlayers = 96;
 
         private static readonly int NumberOfStarterCardsForThreePlayers = 15;
+
+        private SceneContext Context = new();
 
         [Test]
         public void TwoPlayersSet()
         {
             List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 2);
 
-            CardSetDatabase.Instance.Initialize(families);
+            CardSetDatabase.Instance.Initialize(families, Context);
 
             Assert.AreEqual(NumberOfCardsForTwoPlayers, CardSetDatabase.Instance.Size);
 
@@ -39,7 +45,7 @@ namespace Test.Vermines.CardSystem {
         {
             List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 3);
 
-            CardSetDatabase.Instance.Initialize(families);
+            CardSetDatabase.Instance.Initialize(families, Context);
 
             Assert.AreEqual(NumberOfCardsForThreePlayers, CardSetDatabase.Instance.Size);
 
@@ -51,7 +57,7 @@ namespace Test.Vermines.CardSystem {
         {
             List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 4);
 
-            CardSetDatabase.Instance.Initialize(families);
+            CardSetDatabase.Instance.Initialize(families, Context);
 
             Assert.AreEqual(NumberOfCardsForFourPlayers, CardSetDatabase.Instance.Size);
 
@@ -63,7 +69,7 @@ namespace Test.Vermines.CardSystem {
         {
             List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 3);
 
-            CardSetDatabase.Instance.Initialize(families);
+            CardSetDatabase.Instance.Initialize(families, Context);
 
             List<ICard> starterCards = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.IsStartingCard == true);
 
@@ -80,7 +86,7 @@ namespace Test.Vermines.CardSystem {
 
             List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 3);
 
-            CardSetDatabase.Instance.Initialize(families);
+            CardSetDatabase.Instance.Initialize(families, Context);
 
             ICard cardbyIDInt = CardSetDatabase.Instance.GetCardByID(5);
 
@@ -100,7 +106,7 @@ namespace Test.Vermines.CardSystem {
         {
             List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 3);
 
-            CardSetDatabase.Instance.Initialize(families);
+            CardSetDatabase.Instance.Initialize(families, Context);
 
             List<ICard> cardbyIDIntArray = CardSetDatabase.Instance.GetCardByIds(new int[] { 5, 6, 7 });
 
@@ -122,14 +128,16 @@ namespace Test.Vermines.CardSystem {
         {
             List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 1);
 
-            CardSetDatabase.Instance.Initialize(families);
+            CardSetDatabase.Instance.Initialize(families, Context);
 
             List<ICard> cards = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data != null);
 
             Assert.IsTrue(cards.Count == CardSetDatabase.Instance.Size);
 
-            foreach (ICard card in cards) {
-                foreach (AEffect effect in card.Data.Effects) {
+            foreach (ICard card in cards)
+            {
+                foreach (AEffect effect in card.Data.Effects)
+                {
                     Assert.True(effect != null);
                     Assert.True(effect.Card != null);
 
@@ -146,13 +154,14 @@ namespace Test.Vermines.CardSystem {
         {
             List<CardFamily> families = FamilyUtils.GenerateFamilies(Seed, 1);
 
-            CardSetDatabase.Instance.Initialize(families);
+            CardSetDatabase.Instance.Initialize(families, Context);
             CardSetDatabase.Instance.Print();
             CardSetDatabase.Instance.Reset();
         }
     }
 
-    public class TestCardLoader {
+    public class TestCardLoader
+    {
 
         [Test]
         public void NoInitialization()
@@ -165,7 +174,8 @@ namespace Test.Vermines.CardSystem {
         }
     }
 
-    public class TestCardFactory {
+    public class TestCardFactory
+    {
 
         [Test]
         public void CreateCardWithoutData()
@@ -176,22 +186,27 @@ namespace Test.Vermines.CardSystem {
         }
     }
 
-    public class TestCardBuilder {
+    public class TestCardBuilder
+    {
 
         [Test]
         public void UnknownTypeCard()
         {
-            try {
+            try
+            {
                 CardBuilder builder = new();
 
                 builder.CreateCard(CardType.None).Build();
-            } catch (System.Exception) {
+            }
+            catch (System.Exception)
+            {
                 Assert.Pass();
             }
         }
     }
-    
-    public class TestCard {
+
+    public class TestCard
+    {
 
         [Test]
         public void TryAccessAnonymousCard()
@@ -200,7 +215,7 @@ namespace Test.Vermines.CardSystem {
                 CardFamily.Ladybug
             };
 
-            CardSetDatabase.Instance.Initialize(families);
+            CardSetDatabase.Instance.Initialize(families, new SceneContext());
 
             ICard card = CardSetDatabase.Instance.GetCardByID(5);
 
@@ -219,19 +234,19 @@ namespace Test.Vermines.CardSystem {
         {
             CardData data = ScriptableObject.CreateInstance<CardData>();
 
-            data.Type         = CardType.Partisan;
-            data.Family       = CardFamily.Ladybug;
-            data.Level        = 2;
-            data.Souls        = 15;
+            data.Type = CardType.Partisan;
+            data.Family = CardFamily.Ladybug;
+            data.Level = 2;
+            data.Souls = 15;
             data.IsFamilyCard = true;
-            data.SpriteName   = "Merchant";
+            data.SpriteName = "Merchant";
 
             Assert.AreEqual(CardFamily.Ladybug, data.Family);
             Assert.AreEqual(2, data.Level);
             Assert.AreEqual(15, data.Souls);
             Assert.AreEqual("Merchant", data.SpriteName);
 
-            data.Type         = CardType.Tools;
+            data.Type = CardType.Tools;
             data.IsFamilyCard = false;
 
             Assert.AreNotEqual(CardFamily.Ladybug, data.Family);
@@ -245,7 +260,7 @@ namespace Test.Vermines.CardSystem {
             data.SpriteName = "Archbishop";
 
             Assert.AreNotEqual(CardFamily.Scarab, data.Family);
-            Assert.AreNotEqual( 3, data.Level);
+            Assert.AreNotEqual(3, data.Level);
             Assert.AreNotEqual(25, data.Souls);
             Assert.AreNotEqual("Archbishop", data.SpriteName);
 
@@ -253,7 +268,8 @@ namespace Test.Vermines.CardSystem {
         }
     }
 
-    public class TestFamilyCard {
+    public class TestFamilyCard
+    {
 
         [Test]
         public void FamilyListToIds()

@@ -96,7 +96,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            if (player != PlayerController.Local.PlayerRef)
+            if (player != Context.Runner.LocalPlayer)
                 return;
             if (UIContextManager.Instance) {
                 SpendEffectContext spendEffectContext = new(
@@ -114,15 +114,17 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             if (UIContextManager.Instance)
                 UIContextManager.Instance.PopContextOfType<SpendEffectContext>();
-
-            if (amount <= 0 || (_DataToSpend == DataType.Eloquence && amount > GameManager.Instance.Configuration.MaxEloquence) || (_DataToSpend == DataType.Soul && amount > GameManager.Instance.Configuration.MaxSoul))
+            if (amount <= 0 || (_DataToSpend == DataType.Eloquence && amount > Context.GameplayMode.MaxEloquence) || (_DataToSpend == DataType.Soul && amount > Context.GameplayMode.SoulsLimit))
                 return;
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
-            PlayerController.Local.NetworkEventCardEffect(Card.ID, amount.ToString());
+            player.NetworkEventCardEffect(Card.ID, amount.ToString());
         }
 
-        public override void NetworkEventFunction(PlayerRef player, string data)
+        public override void NetworkEventFunction(PlayerRef playerRef, string data)
         {
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
+
             int amount = int.Parse(data);
 
             ICommand spendCommand = new SpendCommand(player, amount, DataToSpend);
@@ -132,9 +134,8 @@ namespace Vermines.Gameplay.Cards.Effect {
             int amountEarned = amount * Multiplicator;
 
             ICommand earnCommand = new EarnCommand(player, amountEarned, DataToEarn);
-            CommandInvoker.ExecuteCommand(earnCommand);
 
-            PlayerData pData = GameDataStorage.Instance.PlayerData[player];
+            CommandInvoker.ExecuteCommand(earnCommand);
 
             ChronicleEntry entry = new() {
                 Id = $"assassin-{Card.ID}-{amount}",
@@ -145,7 +146,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                 IconKey = $"Partisan_Card_Effect",
                 DescriptionArgs = new string[] {
                     "ST_ContractSigned",
-                    pData.Nickname,
+                    player.Nickname,
                     DataToSpend == DataType.Eloquence ? "ST_Eloquence" : "ST_Soul",
                     amount.ToString(),
                     DataToEarn == DataType.Eloquence ? "ST_Eloquence" : "ST_Soul",
@@ -167,7 +168,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             entry.PayloadJson = payloadJson;
 
-            PlayerController.Local.AddChronicle(entry);
+            player.AddChronicle(entry);
         }
 
         public override List<(string, Sprite)> Draw()

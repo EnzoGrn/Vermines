@@ -41,7 +41,7 @@ namespace Vermines.Gameplay.Core {
 
         protected override void OnInitializeCards(List<CardFamily> families)
         {
-            CardSetDatabase.Instance.Initialize(families);
+            CardSetDatabase.Instance.Initialize(families, Context);
         }
 
         protected override void OnInitializeShop(ShopType shopType, string shopData)

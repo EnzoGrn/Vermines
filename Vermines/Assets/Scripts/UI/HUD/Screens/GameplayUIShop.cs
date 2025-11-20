@@ -6,6 +6,7 @@ using UnityEngine;
 using Vermines.CardSystem.Data;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
+using Vermines.Core.Scene;
 using Vermines.Player;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Plugin;
@@ -124,6 +125,16 @@ namespace Vermines.UI.Screen
 
             GameEvents.OnShopRefilled.AddListener(ReceiveFullShopList);
             GameEvents.OnCardPurchased.AddListener(OnCardPurchased);
+
+            Resync();
+        }
+
+        private void Resync()
+        {
+            SceneContext context = PlayerController.Local.Context;
+
+            foreach (var section in context.GameplayMode.Shop.Sections)
+                GameEvents.OnShopRefilled.Invoke(section.Key, context.GameplayMode.Shop.GetDisplayCards(section.Key));
         }
 
         /// <summary>
@@ -134,6 +145,8 @@ namespace Vermines.UI.Screen
         public override void Show()
         {
             base.Show();
+
+            Resync();
 
             // Get the ShopUIController in the plugin list.
             ShopUIController shopUIController = Get<ShopUIController>();
@@ -241,9 +254,10 @@ namespace Vermines.UI.Screen
                 return;
             }
 
+            SceneContext context = PlayerController.Local.Context;
+
             // If the card bought is an equipment card, invoke the specific event
-            if (PlayerController.Local.PlayerRef == GameManager.Instance.GetCurrentPlayer())
-            {
+            if (context.GameplayMode.IsMyTurn) {
                 if (card.Data.Type == CardType.Equipment)
                     GameEvents.OnEquipmentCardPurchased.Invoke(card);
             }
@@ -254,7 +268,7 @@ namespace Vermines.UI.Screen
                 shopList[index] = null;
 
             // Update the shop UI
-            ReceiveFullShopList(shopType, GameDataStorage.Instance.Shop.GetDisplayCards(shopType));
+            ReceiveFullShopList(shopType, context.GameplayMode.Shop.GetDisplayCards(shopType));
         }
 
 

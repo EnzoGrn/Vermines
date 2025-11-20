@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections;
 using Newtonsoft.Json;
-using UnityEngine;
 
 namespace Vermines.ShopSystem.Data {
 
@@ -9,62 +8,62 @@ namespace Vermines.ShopSystem.Data {
     using Vermines.CardSystem.Utilities;
 
     [JsonObject(MemberSerialization.OptIn)]
-    [CreateAssetMenu(menuName = "Vermines/Shops/CoutyardSection")]
     public class CourtyardSection : ShopSectionBase, IEnumerable<ICard> {
 
         #region Attributes
 
-        [JsonProperty, SerializeField]
-        private int _Level1Slots = 3;
-
-        [JsonProperty, SerializeField]
-        private int _Level2Slots = 2;
+        [JsonProperty]
+        private int _Level1Slots;
 
         [JsonProperty]
-        public Dictionary<int, ICard> AvailableCards = new();
+        private int _Level2Slots;
 
         [JsonProperty]
-        public List<ICard> Deck1 = new();
+        public Dictionary<int, ICard> AvailableCards;
 
         [JsonProperty]
-        public List<ICard> Deck2 = new();
+        public List<ICard> Deck1;
 
         [JsonProperty]
-        public List<ICard> Discard1 = new();
+        public List<ICard> Deck2;
 
         [JsonProperty]
-        public List<ICard> Discard2 = new();
+        public List<ICard> Discard1;
+
+        [JsonProperty]
+        public List<ICard> Discard2;
 
         #endregion
 
         #region Constructor & Copy Constructor
 
-        public override void Initialize()
+        public CourtyardSection(int level1Slots = 3, int level2Slots = 2)
         {
-            if (AvailableCards == null || AvailableCards.Count == 0) {
-                AvailableCards = new();
+            AvailableCards = new();
 
-                for (int i = 0; i < (_Level1Slots + _Level2Slots); i++)
-                    AvailableCards.Add(i, null);
-                Deck1 = new();
-                Deck2 = new();
+            _Level1Slots = level1Slots;
+            _Level2Slots = level2Slots;
 
-                Discard1 = new();
-                Discard2 = new();
-            }
+            for (int i = 0; i < (level1Slots + level2Slots); i++)
+                AvailableCards.Add(i, null);
+            Deck1 = new List<ICard>();
+            Deck2 = new List<ICard>();
+
+            Discard1 = new List<ICard>();
+            Discard2 = new List<ICard>();
         }
 
         public override ShopSectionBase DeepCopy()
         {
-            CourtyardSection section = Instantiate(this);
+            CourtyardSection section = new(_Level1Slots, _Level2Slots) {
+                AvailableCards = new Dictionary<int, ICard>(this.AvailableCards),
 
-            section._Level1Slots   = this._Level1Slots;
-            section._Level2Slots   = this._Level2Slots;
-            section.AvailableCards = new(this.AvailableCards);
-            section.Deck1          = new(this.Deck1);
-            section.Deck2          = new(this.Deck2);
-            section.Discard1       = new(this.Discard1);
-            section.Discard2       = new(this.Discard2);
+                Deck1 = new List<ICard>(this.Deck1),
+                Deck2 = new List<ICard>(this.Deck2),
+
+                Discard1 = new List<ICard>(this.Discard1),
+                Discard2 = new List<ICard>(this.Discard2)
+            };
 
             return section;
         }
@@ -135,7 +134,7 @@ namespace Vermines.ShopSystem.Data {
         public override ICard ChangeCard(ICard card)
         {
             int slotIndex = -1;
- 
+
             foreach (var kvp in AvailableCards) {
                 if (kvp.Value != null && kvp.Value.ID == card.ID) {
                     slotIndex = kvp.Key;
@@ -171,7 +170,7 @@ namespace Vermines.ShopSystem.Data {
 
                 return Deck1.Draw();
             }
-            
+
             if (Deck2.Count == 0) {
                 Discard2.Reverse();
                 Deck2.Merge(Discard2);

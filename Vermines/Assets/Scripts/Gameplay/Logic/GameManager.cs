@@ -70,22 +70,22 @@ namespace Vermines {
 
         // TODO: Change depending of the number of players max (possible in the settings)
         // TODO: Currently the game initialize in order of connexion, maybe create a random of the first player and next etc...
-        [Networked, Capacity(4)]
-        public NetworkArray<PlayerRef> PlayerTurnOrder { get; }
+        // [Networked, Capacity(4)]
+        // public NetworkArray<PlayerRef> PlayerTurnOrder { get; }
 
         /// <summary>
         /// The total amount of turn that has been played.
         /// </summary>
-        [Networked]
-        public int TotalTurnPlayed { get; set; } = 0;
+        // [Networked]
+        // public int TotalTurnPlayed { get; set; } = 0;
 
         /// <summary>
         /// Do PlayerTurnOrder[CurrentPlayerIndex] to get the current player.
         /// </summary>
-        [Networked]
-        public int CurrentPlayerIndex { get; set; } = 0;
+        // [Networked]
+        // public int CurrentPlayerIndex { get; set; } = 0;
 
-        public bool IsMyTurn()
+        /*public bool IsMyTurn()
         {
             return (PlayerTurnOrder.Get(CurrentPlayerIndex) == Runner.LocalPlayer);
         }
@@ -93,7 +93,7 @@ namespace Vermines {
         public PlayerRef GetCurrentPlayer()
         {
             return PlayerTurnOrder.Get(CurrentPlayerIndex);
-        }
+        }*/
 
         #endregion
 
@@ -119,7 +119,7 @@ namespace Vermines {
         {
             if (HasStateAuthority == false)
                 return;
-            if (SettingsData.Equals(default(GameSettingsData))) // If it's a default value (not a custom game), then load the default game configuration.
+            /*if (SettingsData.Equals(default(GameSettingsData))) // If it's a default value (not a custom game), then load the default game configuration.
                 SettingsData = Configuration.ToGameSettingsData();
             OnSettingsDataChanged();
             InitializePlayerOrder();
@@ -136,12 +136,13 @@ namespace Vermines {
 
             RPC_StartClientSideStuff();
 
-            PhaseManager.Instance.OnStartPhases();
+            PhaseManager.Instance.OnStartPhases();*/
         }
 
         public PhaseType GetCurrentPhase()
         {
-            return PhaseManager.Instance.CurrentPhase;
+            return PhaseType.Count;
+            // return PhaseManager.Instance.CurrentPhase;
         }
 
         public void UnloadSceneForCinematic(List<string> sceneToUnload)
@@ -155,7 +156,7 @@ namespace Vermines {
         public async Task ReturnToMenu()
         {
             // Get the Vermines Services
-            VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
+            /*VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
 
             if (services.IsCustomGame()) { // Custom game
                 if (HasStateAuthority) { // Load the lobby
@@ -188,7 +189,7 @@ namespace Vermines {
                 else {
                     await ReturnToTavern();
                 }
-            }
+            }*/
         }
 
         public async Task ForceEndCustomGame(PlayerRef player)
@@ -261,7 +262,7 @@ namespace Vermines {
         private void InitializePlayerOrder()
         {
             // 1. Get all players
-            List<PlayerRef> players = new();
+            /*List<PlayerRef> players = new();
 
             foreach (var kvp in GameDataStorage.Instance.PlayerData)
                 players.Add(kvp.Key);
@@ -274,7 +275,7 @@ namespace Vermines {
 
             // 3. Fill the NetworkArray
             for (int i = 0; i < players.Count; i++)
-                PlayerTurnOrder.Set(i, players[i]);
+                PlayerTurnOrder.Set(i, players[i]);*/
         }
 
         #region Rpcs
@@ -295,7 +296,8 @@ namespace Vermines {
         public void RPC_StartClientSideStuff()
         {
             // Get the skyboxEvolution componennt to set it up and bind listeners
-            Debug.Log("[GameManager]: Initialise SkyboxEvolution...");
+            /*Debug.Log("[GameManager]: Initialise SkyboxEvolution...");
+            
             FindAnyObjectByType<SkyboxEvolution>(FindObjectsInactive.Include)?.InitSkyboxSettings();
 
             PhaseManager.Instance.Initialize();
@@ -305,7 +307,7 @@ namespace Vermines {
             if (_routineManager)
                 _routineManager.StartRoutine();
             else
-                Debug.LogError("[GameManager]: Cannot find RoutineManager in the scene, please add it to the scene.");
+                Debug.LogError("[GameManager]: Cannot find RoutineManager in the scene, please add it to the scene.");*/
         }
 
         #endregion

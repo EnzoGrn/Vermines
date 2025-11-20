@@ -10,11 +10,12 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Cards.Effects;
+    using Vermines.Player;
 
     [System.Serializable]
     public struct EarnCondition {
 
-        public Func<PlayerRef, ICard, bool> Condition;
+        public Func<PlayerController, ICard, bool> Condition;
         public Func<List<(string, Sprite)>> Icons;
         public string Description;
     }
@@ -132,18 +133,20 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
-        private void Run(PlayerRef player, bool play = true)
+        private void Run(PlayerRef playerRef, bool play = true)
         {
-            if (Condition.Condition.Invoke(player, Card) == false)
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
+
+            if (!Condition.Condition.Invoke(player, Card))
                 return;
             ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
 
             CommandInvoker.ExecuteCommand(earnCommand);
 
             if (play)
-                base.Play(player);
+                base.Play(playerRef);
             else if (!play)
-                base.Stop(player);
+                base.Stop(playerRef);
         }
 
         public override void Play(PlayerRef player)
@@ -243,9 +246,9 @@ namespace Vermines.Gameplay.Cards.Effect {
             Description = "you have sacrificed 3 <b>{0}</b>"
         };
 
-        static public bool CheckSacrifice3ThisCard(PlayerRef player, ICard card)
+        static public bool CheckSacrifice3ThisCard(PlayerController player, ICard card)
         {
-            List<ICard> sacrificed = GameDataStorage.Instance.PlayerDeck[player].Graveyard;
+            List<ICard> sacrificed = player.Deck.Graveyard;
             int count = 0;
 
             foreach (ICard sacrificeCard in sacrificed) {

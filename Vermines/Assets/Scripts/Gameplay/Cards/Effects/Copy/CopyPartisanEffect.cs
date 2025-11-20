@@ -50,7 +50,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            if (player != PlayerController.Local.PlayerRef)
+            if (player != Context.Runner.LocalPlayer)
                 return;
             if (UIContextManager.Instance) {
                 CardSelectedEffectContext cardCopyEffectContext = new(CardType.Partisan, Card);
@@ -83,14 +83,19 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             if (card.Data.Type != CardType.Partisan)
                 return;
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
+
             _CardCopied = card;
 
-            RoundEventDispatcher.RegisterEvent(PlayerController.Local.PlayerRef, Stop);
-            PlayerController.Local.NetworkEventCardEffect(Card.ID, card.ID.ToString());
+            RoundEventDispatcher.RegisterEvent(player.Object.InputAuthority, Stop);
+
+            player.NetworkEventCardEffect(Card.ID, card.ID.ToString());
         }
 
-        public override void NetworkEventFunction(PlayerRef player, string data)
+        public override void NetworkEventFunction(PlayerRef playerRef, string data)
         {
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
+
             ICard card = CardSetDatabase.Instance.GetCardByID(data);
 
             Card.Data.CopyEffect(card.Data.Effects);
@@ -98,10 +103,8 @@ namespace Vermines.Gameplay.Cards.Effect {
             foreach (var effect in card.Data.Effects) {
                 if ((effect.Type & EffectType.Sacrifice) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0)
                     continue;
-                effect.Play(player);
+                effect.Play(playerRef);
             }
-
-            PlayerData pData = GameDataStorage.Instance.PlayerData[player];
 
             ChronicleEntry entry = new() {
                 Id              = $"copied-{Card.ID}-{card.ID}",
@@ -112,7 +115,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                 IconKey         = $"Partisan_Card_Effect",
                 DescriptionArgs = new string[] {
                     "ST_CardReplaced",
-                    pData.Nickname,
+                    player.Nickname,
                     Card.Data.Name,
                     card.Data.Name
                 }
@@ -131,7 +134,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             entry.PayloadJson = payloadJson;
 
-            PlayerController.Local.AddChronicle(entry);
+            player.AddChronicle(entry);
         }
 
         public override List<(string, Sprite)> Draw()

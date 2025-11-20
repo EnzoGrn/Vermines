@@ -1,6 +1,8 @@
 ﻿using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
+using Vermines.Core.Player;
+using Vermines.Core.Scene;
 using Vermines.Player;
 
 namespace Vermines.UI.Plugin
@@ -24,7 +26,7 @@ namespace Vermines.UI.Plugin
         [InlineHelp, SerializeField]
         protected Transform bannerParent;
 
-        private Dictionary<int, PlayerData> _players = new();
+        private Dictionary<int, PlayerStatistics> _players = new();
         private readonly List<PlayerBannerUI> _banners = new();
 
         #region Override Methods
@@ -38,7 +40,6 @@ namespace Vermines.UI.Plugin
             base.Show(screen);
 
             GameEvents.OnTurnChanged.AddListener(NextTurn);
-            GameEvents.OnPlayerInitialized.AddListener(Init);
             GameEvents.OnPlayerUpdated.AddListener(UpdatePlayer);
         }
 
@@ -50,32 +51,34 @@ namespace Vermines.UI.Plugin
             base.Hide();
 
             GameEvents.OnTurnChanged.RemoveListener(NextTurn);
-            GameEvents.OnPlayerInitialized.RemoveListener(Init);
             GameEvents.OnPlayerUpdated.RemoveListener(UpdatePlayer);
+        }
+
+        public void Awake()
+        {
+            Init();
         }
 
         #endregion
 
         public void Init()
         {
+            if (PlayerController.Local == null)
+                return;
             _players.Clear();
 
-            foreach (var player in GameManager.Instance.PlayerTurnOrder)
-            {
-                if (GameDataStorage.Instance.PlayerData.TryGet(player, out PlayerData playerData) == false)
-                {
-                    continue;
-                }
+            SceneContext context = PlayerController.Local.Context;
 
-                _players[player.PlayerId] = playerData;
-            }
-            foreach (var player in _players)
-            {
-                CreateBanner(player.Value, player.Key);
+            List<PlayerController> players = context.Runner.GetAllBehaviours<PlayerController>();
+
+            foreach (PlayerController player in players) {
+                _players[player.Object.InputAuthority.PlayerId] = player.Statistics;
+
+                CreateBanner(player);
             }
         }
 
-        public void CreateBanner(PlayerData playerData, int playerId)
+        public void CreateBanner(PlayerController player)
         {
             if (_banners.Count >= 4) // TODO: Replace with a config value
             {
@@ -83,7 +86,7 @@ namespace Vermines.UI.Plugin
                 return;
             }
             var banner = Instantiate(playerBannerPrefab, bannerParent);
-            banner.Initialize(playerData, playerId);
+            banner.Initialize(player);
             _banners.Add(banner);
             banner.Show();
             banner.SetActive(_banners.Count == 1); // Only the first banner is active initially
@@ -101,7 +104,7 @@ namespace Vermines.UI.Plugin
             });
         }
 
-        public void UpdateBanner(PlayerData playerData, int playerId)
+        public void UpdateBanner(PlayerStatistics playerData, int playerId)
         {
             var banner = _banners.Find(b => b.GetPlayerId() == playerId);
             if (banner != null)
@@ -112,22 +115,20 @@ namespace Vermines.UI.Plugin
 
         public void UpdateAllPlayers()
         {
-            foreach (var player in GameDataStorage.Instance.PlayerData)
-            {
-                if (_players.ContainsKey(player.Value.PlayerRef.PlayerId))
-                {
-                    _players[player.Value.PlayerRef.PlayerId] = player.Value;
-                    UpdateBanner(player.Value, player.Key.PlayerId);
-                }
-            }
+            List<PlayerController> players = PlayerController.Local.Context.Runner.GetAllBehaviours<PlayerController>();
+
+            foreach (PlayerController player in players)
+                UpdatePlayer(player);
         }
 
-        public void UpdatePlayer(PlayerData playerData)
+        public void UpdatePlayer(PlayerController player)
         {
-            if (_players.ContainsKey(playerData.PlayerRef.PlayerId))
-            {
-                _players[playerData.PlayerRef.PlayerId] = playerData;
-                UpdateBanner(playerData, playerData.PlayerRef.PlayerId);
+            int playerId = player.Object.InputAuthority.PlayerId;
+
+            if (_players.ContainsKey(playerId)) {
+                _players[playerId] = player.Statistics;
+
+                UpdateBanner(player.Statistics, playerId);
             }
         }
 

@@ -117,11 +117,11 @@ namespace Vermines.UI.Screen
                 }
                 else if (plugin is BookPagePlugin bookPage)
                 {
-                    bookPage.ShowPlayerInfo(GameDataStorage.Instance.PlayerData[PlayerController.Local.PlayerRef]);
+                    bookPage.ShowPlayerInfo(PlayerController.Local);
                 }
                 else if (plugin is PlayerBookTabPlugin bookTab)
                 {
-                    bookTab.SetPlayerTabActive(GameDataStorage.Instance.PlayerData[PlayerController.Local.PlayerRef]);
+                    bookTab.SetPlayerTabActive(PlayerController.Local);
                 }
             }
         }

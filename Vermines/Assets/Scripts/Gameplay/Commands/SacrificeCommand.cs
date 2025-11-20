@@ -10,12 +10,12 @@ namespace Vermines.Gameplay.Commands {
 
     public class ADMIN_SacrificeCommand : ACommand {
 
-        private readonly PlayerRef _Player;
+        private PlayerController _Player;
 
         private readonly ICard _Card;
         private readonly int   _CardId;
 
-        public ADMIN_SacrificeCommand(PlayerRef player, int cardId)
+        public ADMIN_SacrificeCommand(PlayerController player, int cardId)
         {
             _Player = player;
             _Card   = CardSetDatabase.Instance.GetCardByID(cardId);
@@ -33,9 +33,7 @@ namespace Vermines.Gameplay.Commands {
                 return new CommandResponse(CommandStatus.Invalid, "Sacrifice_WrongCardType");
 
             // 2. Check if the card is in the player played cards.
-            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
-
-            if (!playerDeck.PlayedCards.Contains(_Card))
+            if (!_Player.Deck.PlayedCards.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Sacrifice_CardNotInTable", _Card.Data.Name);
             return new CommandResponse(CommandStatus.Success, "", _Card.Data.Name);
         }
@@ -43,12 +41,12 @@ namespace Vermines.Gameplay.Commands {
 
     public class CLIENT_CardSacrifiedCommand : ACommand {
 
-        private readonly PlayerRef _Player;
+        private PlayerController _Player;
 
         private readonly ICard _Card;
         private readonly int _CardId;
 
-        public CLIENT_CardSacrifiedCommand(PlayerRef player, int cardID)
+        public CLIENT_CardSacrifiedCommand(PlayerController player, int cardID)
         {
             _Player = player;
             _Card   = CardSetDatabase.Instance.GetCardByID(cardID);
@@ -57,12 +55,12 @@ namespace Vermines.Gameplay.Commands {
 
         public override CommandResponse Execute()
         {
-            PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[_Player];
+            PlayerDeck deck = _Player.Deck;
 
             deck.Graveyard.Add(_Card);
             deck.PlayedCards.Remove(_Card);
 
-            GameDataStorage.Instance.PlayerDeck[_Player] = deck;
+            _Player.UpdateDeck(deck);
 
             return new CommandResponse(CommandStatus.Success, "");
         }

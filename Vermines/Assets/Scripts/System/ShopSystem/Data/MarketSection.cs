@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections;
 using Newtonsoft.Json;
-using UnityEngine;
 using Fusion;
 
 namespace Vermines.ShopSystem.Data {
@@ -9,39 +8,37 @@ namespace Vermines.ShopSystem.Data {
     using Vermines.CardSystem.Elements;
 
     [JsonObject(MemberSerialization.OptIn)]
-    [CreateAssetMenu(menuName = "Vermines/Shops/MarketSection")]
     public class MarketSection : ShopSectionBase, IEnumerable<ICard> {
 
         #region Attributes
 
-        public int Slots => _Slots;
-
-        [JsonProperty, SerializeField]
-        private int _Slots = 5;
+        [JsonProperty]
+        public Dictionary<int, List<ICard>> CardPiles;
 
         [JsonProperty]
-        public Dictionary<int, List<ICard>> CardPiles = new();
+        private readonly int _Slots;
+
+        public int Slots => _Slots;
 
         #endregion
 
         #region Constructor & Copy Constructor
 
-        public override void Initialize()
+        public MarketSection(int slots)
         {
-            if (CardPiles == null || CardPiles.Count == 0) {
-                CardPiles = new();
+            CardPiles = new();
 
-                for (int i = 0; i < _Slots; i++)
-                    CardPiles[i] = new();
-            }
+            _Slots = slots;
+
+            for (int i = 0; i < slots; i++)
+                CardPiles[i] = new List<ICard>();
         }
 
         public override ShopSectionBase DeepCopy()
         {
-            MarketSection section = Instantiate(this);
-
-            section._Slots    = this._Slots;
-            section.CardPiles = new Dictionary<int, List<ICard>>(this.CardPiles);
+            MarketSection section = new(_Slots) {
+                CardPiles = new Dictionary<int, List<ICard>>(this.CardPiles)
+            };
 
             return section;
         }
@@ -92,7 +89,8 @@ namespace Vermines.ShopSystem.Data {
             foreach (var kvp in CardPiles) {
                 var pile = kvp.Value;
 
-                if (pile.Count > 0 && pile[^1].ID == cardId) {
+                if (pile.Count > 0 && pile[^1].ID == cardId)
+                {
                     ICard card = pile[^1];
 
                     pile.RemoveAt(pile.Count - 1);

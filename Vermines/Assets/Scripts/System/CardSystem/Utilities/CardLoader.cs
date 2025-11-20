@@ -7,10 +7,13 @@ namespace Vermines.CardSystem.Utilities {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
+    using Vermines.Core.Scene;
 
     public class CardLoader {
 
         private int _NumberOfPlayerToLoad;
+
+        private SceneContext Context;
 
         private List<CardFamily> _FamiliesToLoad;
 
@@ -19,8 +22,10 @@ namespace Vermines.CardSystem.Utilities {
         /// For that we need every family that will be used in the game.
         /// </summary>
         /// <param name="families">Families used in the current game</param>
-        public void Initialize(List<CardFamily> families)
+        public void Initialize(List<CardFamily> families, SceneContext context)
         {
+            Context = context;
+
             _NumberOfPlayerToLoad = families.Count;
             _FamiliesToLoad       = families;
         }
@@ -128,7 +133,7 @@ namespace Vermines.CardSystem.Utilities {
             for (int i = 0; i < copy.Effects.Count; i++) {
                 AEffect effect = Object.Instantiate(copy.Effects[i]);
 
-                effect.Initialize(null);
+                effect.Initialize(Context, null);
 
                 copy.Effects[i] = effect;
             }
@@ -144,7 +149,7 @@ namespace Vermines.CardSystem.Utilities {
             card.IsAnonyme = false;
 
             foreach (AEffect effect in card.Data.Effects)
-                effect.Initialize(card);
+                effect.Initialize(Context, card);
             return card;
         }
 

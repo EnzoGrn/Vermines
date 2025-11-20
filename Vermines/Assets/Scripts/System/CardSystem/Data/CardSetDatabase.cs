@@ -10,6 +10,7 @@ namespace Vermines.CardSystem.Data {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
+    using Vermines.Core.Scene;
 
     /// <summary>
     /// Singleton database, that store in game card set.
@@ -27,13 +28,13 @@ namespace Vermines.CardSystem.Data {
         /// For that we need every family that will be used in the game.
         /// </summary>
         /// <param name="families">Families used in the current game</param>
-        public void Initialize(List<CardFamily> families)
+        public void Initialize(List<CardFamily> families, SceneContext context)
         {
             CardFactory.Reset();
 
             CardLoader loader = new();
 
-            loader.Initialize(families);
+            loader.Initialize(families, context);
 
             _Cards = loader.Load();
         }

@@ -56,14 +56,14 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
-        public override void Play(PlayerRef player)
+        public override void Play(PlayerRef playerRef)
         {
-            PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
             // Check if their is card to sacrifice.
-            if (deck.PlayedCards.Count == 0) {
-                base.Play(player);
-            } else if (player == PlayerController.Local.PlayerRef) {
+            if (player.Deck.PlayedCards.Count == 0) {
+                base.Play(playerRef);
+            } else if (playerRef == Context.Runner.LocalPlayer) {
                 UIContextManager.Instance.PushContext<SacrificeContext>();
                 GameEvents.OnCardSacrificedRequested.AddListener(OnSacrificed);
             }
@@ -71,10 +71,13 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public void OnSacrificed(ICard card)
         {
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
+
             GameEvents.OnCardSacrificedRequested.RemoveListener(OnSacrificed);
             UIContextManager.Instance.PopContext();
-            PlayerController.Local.OnCardSacrified(card.ID);
-            PlayerController.Local.NetworkEventCardEffect(Card.ID);
+
+            player.OnCardSacrified(card.ID);
+            player.NetworkEventCardEffect(Card.ID);
         }
 
         public override void NetworkEventFunction(PlayerRef player, string data)

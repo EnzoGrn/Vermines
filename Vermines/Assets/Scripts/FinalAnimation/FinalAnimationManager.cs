@@ -53,7 +53,9 @@ public class FinalAnimationManager : MonoBehaviour
 
     public void OnPlayerWin(PlayerRef winnerRef, PlayerRef localPlayerRef)
     {
-        if (GameManager.Instance == null)
+        Debug.LogError($"Refactor TODO: OnPlayerWin()");
+
+        /*if (GameManager.Instance == null)
             return;
 
         // Get the family of the winner
@@ -71,7 +73,7 @@ public class FinalAnimationManager : MonoBehaviour
         {
             // If the family is not mine, I lose
             StartFinalAnimation(false, winnerFamily);
-        }
+        }*/
     }
 
     public void OnPlayableDirectorStopped()
@@ -84,7 +86,8 @@ public class FinalAnimationManager : MonoBehaviour
 
     public async void ReturnToMenu()
     {
-        await GameManager.Instance.ReturnToMenu();
+        Debug.LogError($"Refactor TODO: ReturnToMenu()");
+        // await GameManager.Instance.ReturnToMenu();
     }
 
     public void SkipCinematic()
@@ -96,7 +99,8 @@ public class FinalAnimationManager : MonoBehaviour
 
     public void UnloadSceneForCinematic()
     {
-        if (GameManager.Instance == null)
+        Debug.LogError($"TODO: UnloadSceneForCinematic");
+        /*if (GameManager.Instance == null)
             return;
 
         List<string> sceneToUnload = new() {
@@ -104,7 +108,7 @@ public class FinalAnimationManager : MonoBehaviour
             "GameplayCameraTravelling"
         };
 
-        GameManager.Instance.UnloadSceneForCinematic(sceneToUnload);
+        GameManager.Instance.UnloadSceneForCinematic(sceneToUnload);*/
     }
 
     public void OnPauseRequest()

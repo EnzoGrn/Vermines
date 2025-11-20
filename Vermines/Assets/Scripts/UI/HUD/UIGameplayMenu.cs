@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace Vermines.UI.View {
-    using System.Collections;
+
     using Vermines.Core;
     using Vermines.Extension;
     using Vermines.UI.Core;

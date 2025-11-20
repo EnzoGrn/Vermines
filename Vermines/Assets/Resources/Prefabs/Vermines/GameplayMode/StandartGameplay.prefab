@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4540974150497177839}
   - component: {fileID: 6596212885904025914}
+  - component: {fileID: 2002843721064209688}
   - component: {fileID: 9082486691376895040}
   m_Layer: 0
   m_Name: StandartGameplay
@@ -47,8 +48,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Type: 0
   SoulsLimit: 100
+  MaxEloquence: 20
+  BonusSoulsOnFamily: 5
+  PhaseManager: {fileID: 2002843721064209688}
   _BaseShopData: {fileID: 11400000, guid: da984adf5b7938e4f8143513dfe0b094, type: 2}
+  _PlayerTurnOrder: []
+  _CurrentPlayerIndex: 0
+  _TotalTurnPlayed: 0
   _State: 0
+--- !u!114 &2002843721064209688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6231132991491719529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd71a62a739ffa74cb90c79f0c584fc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _CurrentPhase: 1
+  phaseEntries:
+  - phaseType: 1
+    phaseAsset: {fileID: 11400000, guid: bc7aa5203e724e14d90cea4e8d89882e, type: 2}
+  - phaseType: 2
+    phaseAsset: {fileID: 11400000, guid: 9236617600cc4234a98c920257cc2fcb, type: 2}
+  - phaseType: 3
+    phaseAsset: {fileID: 11400000, guid: 312b28fe26f967b4dbd4dafc3c64c2f8, type: 2}
 --- !u!114 &9082486691376895040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,3 +94,4 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 6596212885904025914}
+  - {fileID: 2002843721064209688}

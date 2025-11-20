@@ -9,6 +9,7 @@ namespace Vermines.Core.Scene {
     using Vermines.Core.UI;
     using Vermines.Menu.CustomLobby;
     using Vermines.Menu.Matchmaking;
+    using Vermines.UI.Card;
 
     [System.Serializable]
     public class SceneContext {
@@ -64,6 +65,8 @@ namespace Vermines.Core.Scene {
 
         [HideInInspector]
         public PlayerRef LocalPlayerRef;
+
+        public HandManager HandManager;
 
         public NetworkGame NetworkGame;
         [HideInInspector]

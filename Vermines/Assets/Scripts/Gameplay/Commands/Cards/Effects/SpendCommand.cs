@@ -4,15 +4,17 @@ using Fusion;
 namespace Vermines.Gameplay.Commands.Cards.Effects {
 
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Core.Player;
     using Vermines.Player;
 
     public class SpendCommand : ICommand {
 
-        private readonly PlayerRef _Player;
+        private PlayerController _Player;
+
         private readonly int       _Amount;
         private readonly DataType  _DataType;
 
-        public SpendCommand(PlayerRef player, int amount, DataType dataType)
+        public SpendCommand(PlayerController player, int amount, DataType dataType)
         {
             _Player   = player;
             _Amount   = amount;
@@ -21,28 +23,28 @@ namespace Vermines.Gameplay.Commands.Cards.Effects {
 
         public CommandResponse Execute()
         {
-            if (!GameDataStorage.Instance.PlayerData.TryGet(_Player, out PlayerData playerData))
-                return new CommandResponse(CommandStatus.Invalid, $"Player {_Player} does not have any data.");
+            PlayerStatistics stats = _Player.Statistics;
+
             if (_DataType == DataType.Eloquence) {
-                if (playerData.Eloquence - _Amount < 0)
-                    return new CommandResponse(CommandStatus.Failure, $"Player {_Player} does not have enough eloquence.");
-                GameDataStorage.Instance.SetEloquence(_Player, playerData.Eloquence - _Amount);
+                if (stats.Eloquence - _Amount < 0)
+                    return new CommandResponse(CommandStatus.Failure, $"Player {_Player.Object.InputAuthority} does not have enough eloquence.");
+                _Player.SetEloquence(_Player.Statistics.Eloquence - _Amount);
             } else if (_DataType == DataType.Soul) {
-                if (playerData.Souls - _Amount < 0)
-                    return new CommandResponse(CommandStatus.Failure, $"Player {_Player} does not have enough souls.");
-                GameDataStorage.Instance.SetSouls(_Player, playerData.Souls - _Amount);
+                if (stats.Souls - _Amount < 0)
+                    return new CommandResponse(CommandStatus.Failure, $"Player {_Player.Object.InputAuthority} does not have enough souls.");
+                _Player.SetSouls(_Player.Statistics.Souls - _Amount);
             }
-            return new CommandResponse(CommandStatus.Success, $"Player {_Player} spend {_Amount} {_DataType}.");
+            return new CommandResponse(CommandStatus.Success, $"Player {_Player.Object.InputAuthority} spend {_Amount} {_DataType}.");
         }
 
         public void Undo()
         {
-            if (!GameDataStorage.Instance.PlayerData.TryGet(_Player, out PlayerData playerData))
-                return;
+            PlayerStatistics stats = _Player.Statistics;
+
             if (_DataType == DataType.Eloquence)
-                GameDataStorage.Instance.SetEloquence(_Player, playerData.Eloquence + _Amount);
+                _Player.SetEloquence(stats.Eloquence + _Amount);
             else if (_DataType == DataType.Soul)
-                GameDataStorage.Instance.SetSouls(_Player, playerData.Souls + _Amount);
+                _Player.SetSouls(stats.Souls + _Amount);
         }
     }
 }

@@ -11,6 +11,7 @@ using Vermines.UI.Card;
 using Vermines.UI.GameTable;
 using Vermines.UI.Popup;
 using Vermines.Player;
+using Vermines.Core.Scene;
 
 namespace Vermines.UI.Screen
 {
@@ -308,9 +309,10 @@ namespace Vermines.UI.Screen
 
         public void UpdateUIForPhase(PhaseType phase)
         {
-            if (phase == PhaseType.Sacrifice && GameManager.Instance.IsMyTurn() == false)
-                return;
+            SceneContext context = PlayerController.Local.Context;
 
+            if (phase == PhaseType.Sacrifice && !context.GameplayMode.IsMyTurn)
+                return;
             string key = phase switch
             {
                 PhaseType.Sacrifice => "table.sacrifice_text",
@@ -359,20 +361,19 @@ namespace Vermines.UI.Screen
 
         public void OnCardClicked(ICard card, int slodId)
         {
-            if (card == null || GameManager.Instance.IsMyTurn() == false) return;
+            SceneContext context = PlayerController.Local.Context;
 
-            Debug.Log($"[TableCardClickHandler] Card clicked: {card.Data.Name}");
-            if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice || UIContextManager.Instance.IsInContext<SacrificeContext>())
-            {
+            if (card == null || !context.GameplayMode.IsMyTurn)
+                return;
+            PhaseManager phaseManager = context.GameplayMode.PhaseManager;
+            if (phaseManager.CurrentPhase == PhaseType.Sacrifice || UIContextManager.Instance.IsInContext<SacrificeContext>())
                 Controller.ShowDualPopup(new SacrificeStrategy(card));
-            }
-
-            if (PhaseManager.Instance.CurrentPhase == PhaseType.Gain)
-            {
-                foreach (AEffect effect in card.Data.Effects)
-                {
-                    if ((effect.Type & EffectType.Activate) == 0) return;
-                    if (card.HasBeenActivatedThisTurn) return;
+            if (phaseManager.CurrentPhase == PhaseType.Gain) {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if ((effect.Type & EffectType.Activate) == 0)
+                        return;
+                    if (card.HasBeenActivatedThisTurn)
+                        return;
                     Controller.ShowDualPopup(new PlayCardEffectStrategy(effect, card));
                 }
             }
@@ -380,7 +381,10 @@ namespace Vermines.UI.Screen
 
         private void OnCardSacrified(ICard card)
         {
-            if (GameManager.Instance.IsMyTurn() == false) return;
+            SceneContext context = PlayerController.Local.Context;
+
+            if (card == null || !context.GameplayMode.IsMyTurn)
+                return;
             Debug.Log($"[TableUI] Card {card.Data.Name} has been sacrificed.");
 
             for (int i = 0; i < partisanSlots.Count; i++)
@@ -398,7 +402,10 @@ namespace Vermines.UI.Screen
 
         private void OnCardReborned(ICard card)
         {
-            if (GameManager.Instance.IsMyTurn() == false) return;
+            SceneContext context = PlayerController.Local.Context;
+
+            if (card == null || !context.GameplayMode.IsMyTurn)
+                return;
             Debug.Log($"[TableUI] Card {card.Data.Name} has been reborned.");
 
             // Find the first empty partisan slot and add the card there

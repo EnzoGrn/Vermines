@@ -8,10 +8,11 @@ namespace Vermines.Gameplay.Commands {
 
     public class RebornCommand : ACommand {
 
-        private readonly PlayerRef _Player;
+        private PlayerController _Player;
+
         private readonly ICard     _CardToReborn;
 
-        public RebornCommand(PlayerRef player, ICard cardToReborn)
+        public RebornCommand(PlayerController player, ICard cardToReborn)
         {
             _Player       = player;
             _CardToReborn = cardToReborn;
@@ -19,7 +20,7 @@ namespace Vermines.Gameplay.Commands {
 
         public override CommandResponse Execute()
         {
-            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
+            PlayerDeck playerDeck =_Player.Deck;
 
             if (!playerDeck.Graveyard.Contains(_CardToReborn))
                 return new CommandResponse(CommandStatus.Invalid, $"Card {_CardToReborn.ID} does not exist in the graveyard.");

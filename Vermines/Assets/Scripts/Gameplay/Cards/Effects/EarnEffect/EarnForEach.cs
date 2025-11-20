@@ -9,6 +9,7 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.CardSystem.Elements;
     using Vermines.Gameplay.Commands.Cards.Effects;
     using OMGG.DesignPattern;
+    using Vermines.Player;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Earn/Earn data for each ...")]
     public class EarnForEachEffect : AEffect {
@@ -106,10 +107,12 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
-        public override void Play(PlayerRef player)
+        public override void Play(PlayerRef playerRef)
         {
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
+
             if (CardType == CardType.Equipment) {
-                List<ICard> equipments = GameDataStorage.Instance.PlayerDeck[player].Equipments;
+                List<ICard> equipments =player.Deck.Equipments;
 
                 foreach (ICard _ in equipments) {
                     ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
@@ -117,7 +120,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                     CommandInvoker.ExecuteCommand(earnCommand);
                 }
             } else if (CardType == CardType.Partisan) {
-                List<ICard> partisans = GameDataStorage.Instance.PlayerDeck[player].PlayedCards;
+                List<ICard> partisans = player.Deck.PlayedCards;
 
                 foreach (ICard _ in partisans) {
                     ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
@@ -126,7 +129,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                 }
             }
 
-            base.Play(player);
+            base.Play(playerRef);
         }
 
         public override List<(string, Sprite)> Draw()

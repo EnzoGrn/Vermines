@@ -48,15 +48,15 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            if (player != PlayerController.Local.PlayerRef)
+            if (player != Context.Runner.LocalPlayer)
                 return;
-
-            if (UIContextManager.Instance)
-            {
+            if (UIContextManager.Instance) {
                 CardSelectedEffectContext cardCopyEffectContext = new(CardType.Tools, Card);
+
                 CopyContext copyContext = new CopyContext(cardCopyEffectContext);
                 UIContextManager.Instance.PushContext(copyContext);
             }
+
             GameEvents.OnEffectSelectCard.AddListener(OnCardCopied);
         }
 
@@ -67,17 +67,19 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             if (card.Data.Type != CardType.Tools)
                 return;
-            PlayerController.Local.NetworkEventCardEffect(Card.ID, card.ID.ToString());
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
+
+            player.NetworkEventCardEffect(Card.ID, card.ID.ToString());
         }
 
-        public override void NetworkEventFunction(PlayerRef player, string data)
+        public override void NetworkEventFunction(PlayerRef playerRef, string data)
         {
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
+
             ICard card = CardSetDatabase.Instance.GetCardByID(data);
 
             foreach (var effect in card.Data.Effects)
-                effect.Play(player);
-            PlayerData pData = GameDataStorage.Instance.PlayerData[player];
-
+                effect.Play(playerRef);
             ChronicleEntry entry = new() {
                 Id           = $"copied-{Card.ID}-{card.ID}",
                 TimestampUtc = DateTime.UtcNow.Ticks,
@@ -87,7 +89,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                 IconKey      = $"Tool_Card_Effect",
                 DescriptionArgs = new string[] {
                     "ST_CardReplaced",
-                    pData.Nickname,
+                    player.Nickname,
                     Card.Data.Name,
                     card.Data.Name
                 }
@@ -106,7 +108,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             entry.PayloadJson = payloadJson;
 
-            PlayerController.Local.AddChronicle(entry);
+            player.AddChronicle(entry);
         }
 
         public override List<(string, Sprite)> Draw()

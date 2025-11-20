@@ -25,6 +25,21 @@ namespace Vermines.Gameplay {
 
         #region Methods
 
+        private List<PlayerRef> InitializePlayerTurnOrder(List<PlayerRef> players)
+        {
+            NetworkGame.Random = new(NetworkGame.Seed);
+
+            for (int i = players.Count - 1; i > 0; i--) {
+                int k = NetworkGame.Random.Next(i + 1);
+
+                (players[i], players[k]) = (players[k], players[i]);
+            }
+
+            Mode.SetPlayerTurnOrder(players);
+
+            return players;
+        }
+
         private void InitializePlayers(List<PlayerRef> players)
         {
             foreach (PlayerRef playerRef in players) {
@@ -33,8 +48,9 @@ namespace Vermines.Gameplay {
                 if (player) {
                     PlayerStatistics stats = player.Statistics;
 
-                    stats.Eloquence = 0;
-                    stats.Souls     = 0;
+                    stats.Eloquence           = 0;
+                    stats.Souls               = 0;
+                    stats.NumberOfSlotInTable = 3;
 
                     player.UpdateStatistics(stats);
                 }
@@ -59,7 +75,7 @@ namespace Vermines.Gameplay {
                 if (player) {
                     PlayerDeck deck = new();
 
-                    deck.Initialize();
+                    deck.Initialize(NetworkGame.Seed);
 
                     for (int i = 0; i < starterDeckLength; i++) {
                         ICard card = starterCards[NetworkGame.Random.Next(starterDeckLength - deck.Deck.Count)];
@@ -67,6 +83,8 @@ namespace Vermines.Gameplay {
                         deck.Deck.Add(card);
                         starterCards.Remove(card);
                     }
+
+                    deck.Deck.Shuffle(NetworkGame.Seed);
 
                     player.RPC_DeckResynchronization(deck.Serialize());
                 }
@@ -83,7 +101,7 @@ namespace Vermines.Gameplay {
 
         private void InitializeCourtyard(List<ICard> cards)
         {
-            CourtyardSection section = (CourtyardSection)Mode.Shop.Sections[ShopType.Courtyard];
+            CourtyardSection section = new(3, 2);
 
             List<ICard> partisan1Cards = cards.Where(card => card.Data.Level == 1).ToList();
             List<ICard> partisan2Cards = cards.Where(card => card.Data.Level == 2).ToList();
@@ -96,17 +114,16 @@ namespace Vermines.Gameplay {
 
             section.Refill();
 
-            Mode.Shop.Sections[ShopType.Courtyard] = section;
-
+            Mode.Shop.AddSection(ShopType.Courtyard, section);
             Mode.RPC_InitializeShop(ShopType.Courtyard, Mode.Shop.SerializeSection(ShopType.Courtyard));
         }
 
         private void InitializeMarket(List<ICard> cards)
         {
-            MarketSection section = (MarketSection)Mode.Shop.Sections[ShopType.Market];
-
             var groupedByName = cards.GroupBy(c => c.Data.Name).ToDictionary(g => g.Key, g => g.ToList());
             int index = 0;
+
+            MarketSection section = new(groupedByName.Count);
 
             cards.Shuffle(NetworkGame.Seed);
 
@@ -116,8 +133,7 @@ namespace Vermines.Gameplay {
                 index++;
             }
 
-            Mode.Shop.Sections[ShopType.Market] = section;
-
+            Mode.Shop.AddSection(ShopType.Market, section);
             Mode.RPC_InitializeShop(ShopType.Market, Mode.Shop.SerializeSection(ShopType.Market));
         }
 
@@ -132,7 +148,7 @@ namespace Vermines.Gameplay {
                 if (player) {
                     int cardsToDraw = isFirst ? baseCardsToDraw - 1 : baseCardsToDraw;
 
-                    player.RPC_DrawCards(baseCardsToDraw);
+                    player.RPC_DrawCards(cardsToDraw);
                 }
 
                 isFirst = false;
@@ -150,11 +166,13 @@ namespace Vermines.Gameplay {
 
             foreach (var kvp in json)
                 playerFamilies[PlayerRef.FromEncoded(kvp.Key)] = kvp.Value;
-            InitializePlayers(playerFamilies.Select(kvp => kvp.Key).ToList());
+            List<PlayerRef> players = InitializePlayerTurnOrder(playerFamilies.Select(kvp => kvp.Key).ToList());
+
+            InitializePlayers(players);
             InitializeCards(playerFamilies.Select(kvp => kvp.Value).ToList());
-            InitializePlayerDecks(playerFamilies.Select(kvp => kvp.Key).ToList());
+            InitializePlayerDecks(players);
             InitializeShop();
-            InitializeDeck(playerFamilies.Select(kvp => kvp.Key).ToList());
+            InitializeDeck(players);
         }
 
         protected override void OnActivate() {}

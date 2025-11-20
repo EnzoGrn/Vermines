@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Fusion;
+using System;
 
 namespace Vermines.Player {
 
@@ -8,11 +9,11 @@ namespace Vermines.Player {
     using Vermines.CardSystem.Enumerations;
     using Vermines.Core;
     using Vermines.Core.Player;
-    using Vermines.Core.Scene;
-    using Vermines.Service;
     using Vermines.ShopSystem.Enumerations;
 
-    public partial class PlayerController : NetworkBehaviour, IPlayer, IContextBehaviour {
+    public partial class PlayerController : ContextBehaviour, IPlayer {
+
+        public static PlayerController Local { get; private set; }
 
         #region Player's value
 
@@ -22,15 +23,13 @@ namespace Vermines.Player {
 
         public bool IsInitialized => _InitCounter <= 0;
 
-        public SceneContext Context { get; set; }
-
         [Networked]
         private NetworkString<_64> NetworkedUserID { get; set; }
 
         [Networked]
-        private NetworkString<_32> NetworkedNickname { get; set; }
+        public NetworkString<_32> NetworkedNickname { get; set; }
 
-        [Networked]
+        [Networked, OnChangedRender(nameof(OnStatisticsChange))]
         public PlayerStatistics Statistics { get; private set; }
 
         public PlayerDeck Deck { get; private set; }
@@ -43,6 +42,40 @@ namespace Vermines.Player {
         private byte _LocalSyncToken;
 
         private bool _PlayerDataSent;
+
+        #endregion
+
+        #region Getters & Setters
+
+        public void SetEloquence(int eloquence)
+        {
+            if (!HasStateAuthority)
+                return;
+            int maxEloquence = Context.GameplayMode.MaxEloquence;
+
+            if (maxEloquence < eloquence)
+                eloquence = maxEloquence;
+            OnEloquenceChanged?.Invoke(Object.InputAuthority, Statistics.Eloquence, eloquence);
+
+            PlayerStatistics stats = Statistics;
+
+            stats.Eloquence = eloquence;
+
+            UpdateStatistics(stats);
+        }
+
+        public void SetSouls(int souls)
+        {
+            if (!HasStateAuthority)
+                return;
+            OnSoulsChanged?.Invoke(Object.InputAuthority, Statistics.Souls, souls);
+
+            PlayerStatistics stats = Statistics;
+
+            stats.Souls = souls;
+
+            UpdateStatistics(stats);
+        }
 
         #endregion
 
@@ -83,8 +116,12 @@ namespace Vermines.Player {
             _PlayerDataSent = false;
             _InitCounter    = 10;
 
-            if (HasInputAuthority)
+            if (HasInputAuthority) {
                 Context.LocalPlayerRef = Object.InputAuthority;
+
+                Local = this;
+            }
+
             UpdateLocalState();
 
             Runner.SetIsSimulated(Object, true);
@@ -99,6 +136,9 @@ namespace Vermines.Player {
             stats.IsConnected = false;
 
             UpdateStatistics(stats);
+
+            if (HasStateAuthority)
+                Local = null;
         }
 
         public override void FixedUpdateNetwork()
@@ -124,6 +164,9 @@ namespace Vermines.Player {
 
         #region Events
 
+        public Action<PlayerRef, int, int> OnSoulsChanged;     // PlayerRef, oldValue, newValue
+        public Action<PlayerRef, int, int> OnEloquenceChanged; // PlayerRef, oldValue, newValue
+
         public void OnReconnect(PlayerController player)
         {
             UserID            = player.UserID;
@@ -133,6 +176,11 @@ namespace Vermines.Player {
             UnityID           = player.UnityID;
 
             RPC_DeckResynchronization(player.Deck.Serialize());
+        }
+
+        private void OnStatisticsChange()
+        {
+            GameEvents.OnPlayerUpdated.Invoke(this);
         }
 
         #endregion
@@ -157,6 +205,12 @@ namespace Vermines.Player {
             NetworkedNickname = nickname;
             Nickname          = nickname;
             UnityID           = unityId;
+
+            PlayerStatistics stats = Statistics;
+
+            stats.Family = family;
+
+            UpdateStatistics(stats);
 
             Context.GameplayMode.OnPlayerDataReceived(playerRef, family);
         }
@@ -245,51 +299,6 @@ namespace Vermines.Player {
         }
 
         #endregion
-
-        #endregion
-
-        #region TODO: Delete
-
-        public static PlayerController Local { get; private set; }
-
-        public PlayerRef PlayerRef => Object.InputAuthority;
-
-        public override void Despawned(NetworkRunner runner, bool hasState)
-        {
-            if (HasInputAuthority && Local == this)
-                Local = null;
-        }
-
-        public void ReturnToMenu()
-        {
-            VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
-
-            if (services.IsCustomGame())
-                RPC_ForceQuitCustomGame(PlayerRef);
-            else
-                RPC_ForceQuit(PlayerRef);
-        }
-
-        [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-        public async void RPC_ForceQuitCustomGame(PlayerRef player)
-        {
-            GameManager manager = FindFirstObjectByType<GameManager>();
-
-            if (!manager)
-                return;
-            await manager.ForceEndCustomGame(player);
-        }
-
-
-        [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-        public async void RPC_ForceQuit(PlayerRef player)
-        {
-            GameManager manager = FindFirstObjectByType<GameManager>();
-
-            if (!manager)
-                return;
-            await manager.ReturnToTavern();
-        }
 
         #endregion
     }

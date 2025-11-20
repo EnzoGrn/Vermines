@@ -74,8 +74,8 @@ namespace Vermines.Service {
             // Those lines are here to ensure everyone has the same screen at the same time.
             if (Object.HasStateAuthority)
                 RPC_Gameplay();
-            else
-                SwitchScreen<VMUI_Gameplay>();
+            // else
+            //    SwitchScreen<VMUI_Gameplay>();
 
             // Get the tavern to access the local player's selected cultist.
             VMUI_Tavern tavern = FindFirstObjectByType<VMUI_Tavern>(FindObjectsInactive.Include);
@@ -250,7 +250,7 @@ namespace Vermines.Service {
 
         public void UpdatePlayerState(PlayerRef player, string username, CardFamily family = CardFamily.None)
         {
-            if (HasStateAuthority) {
+            /*if (HasStateAuthority) {
                 // Update or add the player username in the dictionary.
                 if (_PlayersUsernames.TryGet(player, out NetworkString<_16> _)) // Already exists, update the username.
                     _PlayersUsernames.Set(player, username);
@@ -262,13 +262,13 @@ namespace Vermines.Service {
 
                 if (gameDataStorage)
                     gameDataStorage.AddPlayer(player, username, family);
-            }
+            }*/
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_Gameplay()
         {
-            SwitchScreen<VMUI_Gameplay>();
+            // SwitchScreen<VMUI_Gameplay>();
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

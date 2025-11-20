@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using Fusion;
 
 namespace Vermines.Core {
@@ -11,6 +12,7 @@ namespace Vermines.Core {
 
     public abstract class ContextBehaviour : NetworkBehaviour, IContextBehaviour {
 
+        [IgnoreDataMember]
         public SceneContext Context { get; set; }
     }
 

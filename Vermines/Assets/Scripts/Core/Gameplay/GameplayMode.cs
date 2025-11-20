@@ -8,12 +8,15 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Core {
-
+    using OMGG.Chronicle;
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
     using Vermines.Core.Network;
     using Vermines.Core.Player;
     using Vermines.Gameplay;
+    using Vermines.Gameplay.Chronicle;
+    using Vermines.Gameplay.Phases;
+    using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
     using Vermines.ShopSystem.Data;
     using Vermines.ShopSystem.Enumerations;
@@ -31,9 +34,13 @@ namespace Vermines.Core {
         [SerializeField]
         private GameplayType _Type;
 
-        public int SoulsLimit = 100;
+        public int SoulsLimit         = 100;
+        public int MaxEloquence       = 20;
+        public int BonusSoulsOnFamily = 5;
 
         private DefaultPlayerComparer _PlayerComparer = new();
+
+        public PhaseManager PhaseManager;
 
         public Action<PlayerRef> OnPlayerJoinedGame;
         public Action<string> OnPlayerLeftGame;
@@ -51,6 +58,17 @@ namespace Vermines.Core {
 
         private ShopData _RuntimeShopData;
 
+        [Networked, Capacity(4)]
+        public NetworkArray<PlayerRef> PlayerTurnOrder { get; }
+
+        [Networked]
+        public int CurrentPlayerIndex { get; set; } = 0;
+
+        [Networked]
+        public int TotalTurnPlayed { get; set; } = 0;
+
+        public ChronicleManager Announcer = new();
+
         #endregion
 
         #region Getters & Setters
@@ -61,6 +79,20 @@ namespace Vermines.Core {
         public GameplayType Type => _Type;
 
         public ShopData Shop => _RuntimeShopData;
+
+        public PlayerRef CurrentPlayer => PlayerTurnOrder.Get(CurrentPlayerIndex);
+
+        public PhaseType CurrentPhase => PhaseManager.CurrentPhase;
+
+        public bool IsMyTurn => PlayerTurnOrder.Get(CurrentPlayerIndex) == Runner.LocalPlayer;
+
+        public void SetPlayerTurnOrder(List<PlayerRef> orderedPlayers)
+        {
+            if (!HasStateAuthority)
+                return;
+            for (int i = 0; i < orderedPlayers.Count; i++)
+                PlayerTurnOrder.Set(i, orderedPlayers[i]);
+        }
 
         #endregion
 
@@ -85,6 +117,9 @@ namespace Vermines.Core {
 
                 _RuntimeShopData.Initialize();
             }
+
+            Announcer.OnChronicleAdded   += (entry) => Debug.Log($"[Chronicle]: {entry.Id} - {entry.TitleKey}: {entry.MessageKey} {entry.PayloadJson}"); // Some entry can already have their payload when they are adds.
+            Announcer.OnChronicleUpdated += (entry) => Debug.Log($"[Chronicle]: {entry.Id} - {entry.PayloadJson}");
         }
 
         public override void FixedUpdateNetwork()
@@ -110,8 +145,6 @@ namespace Vermines.Core {
         {
             if (!Runner.IsServer || State != GState.None)
                 return;
-            State = GState.Active;
-
             OnActivate();
         }
 
@@ -121,7 +154,7 @@ namespace Vermines.Core {
 
             _IsInitialized = true;
 
-            OnInitialize();
+            RPC_Initialized();
         }
 
         private void FixedUpdateNetwork_Active() {}
@@ -232,7 +265,15 @@ namespace Vermines.Core {
 
         #region Events
 
-        protected virtual void OnInitialize() {}
+        protected virtual void OnInitialize()
+        {
+            PhaseManager.Initialize();
+
+            State = GState.Active;
+
+            GameEvents.OnGameInitialized.Invoke();
+        }
+
         protected virtual void OnActivate() {}
 
         public void OnPlayerDataReceived(PlayerRef player, CardFamily family)
@@ -248,21 +289,21 @@ namespace Vermines.Core {
 
         #region RPCs Events
 
-        public virtual void OnBuyCard(int playerID, ShopType shopType, int cardID) { }
-        public virtual void OnReplaceCardInShop(int playerID, ShopType shopType, int cardID) { }
+        public virtual void OnBuyCard(PlayerRef player, ShopType shopType, int cardID) { }
+        public virtual void OnReplaceCardInShop(PlayerRef player, ShopType shopType, int cardID) { }
 
-        public virtual void OnCardPlayed(int playerID, int cardID) { }
-        public virtual void OnDiscardCard(int playerID, int cardID, bool hasEffect = true) { }
+        public virtual void OnCardPlayed(PlayerRef player, int cardID) { }
+        public virtual void OnDiscardCard(PlayerRef player, int cardID, bool hasEffect = true) { }
 
-        public virtual void OnCardSacrified(int playerID, int cardID) { }
+        public virtual void OnCardSacrified(PlayerRef player, int cardID) { }
 
-        public virtual void OnCardRecycled(int playerID, int cardID) { }
+        public virtual void OnCardRecycled(PlayerRef player, int cardID) { }
 
-        public virtual void OnActivateEffect(int playerID, int cardID) { }
-        public virtual void OnReducedInSilenced(int playerID, int cardToBeSilenced) { }
-        public virtual void OnRemoveReducedInSilenced(int playerID, int cardID, int originalSouls) { }
-        public virtual void OnNetworkEventCardEffect(int playerID, int cardID, string data) { }
-        public virtual void OnEffectChosen(int playerID, int cardID, int effectIndex) { }
+        public virtual void OnActivateEffect(PlayerRef player, int cardID) { }
+        public virtual void OnReducedInSilenced(PlayerRef player, int cardToBeSilenced) { }
+        public virtual void OnRemoveReducedInSilenced(PlayerRef player, int cardID, int originalSouls) { }
+        public virtual void OnNetworkEventCardEffect(PlayerRef player, int cardID, string data) { }
+        public virtual void OnEffectChosen(PlayerRef player, int cardID, int effectIndex) { }
 
         protected abstract void OnInitializeCards(List<CardFamily> families);
         protected abstract void OnInitializeShop(ShopType shopType, string shopData);
@@ -272,6 +313,12 @@ namespace Vermines.Core {
         #endregion
 
         #region RPCs
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
+        private void RPC_Initialized()
+        {
+            OnInitialize();
+        }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
         private void RPC_PlayerJoinedGame(PlayerRef playerRef)
@@ -295,6 +342,15 @@ namespace Vermines.Core {
         private void RPC_ShowLoadingScreen(bool show)
         {
             StartCoroutine(Global.Networking.ShowLoadingSceneCoroutine(show));
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
+        public void RPC_AskPayload(int playerID, string id)
+        {
+            PlayerController player = Context.NetworkGame.GetPlayer(PlayerRef.FromEncoded(playerID));
+
+            if (ChroniclePayloadStorage.TryGet(id, out string payloadJson))
+                player.RPC_ReceivePayload(id, payloadJson);
         }
 
         #region RPCs Initializer

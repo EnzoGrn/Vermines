@@ -46,7 +46,7 @@ namespace Vermines.Core {
         [Networked, OnChangedRender(nameof(OnSeedChanged))]
         public int Seed { get; set; }
 
-        public System.Random Random { get; private set; }
+        public System.Random Random { get; set; }
 
         #endregion
 
@@ -168,8 +168,8 @@ namespace Vermines.Core {
             
             // _Gameplay.Activate();
 
-            foreach (PlayerRef playerRef in Runner.ActivePlayers)
-                SpawnPlayer(playerRef);
+            // foreach (PlayerRef playerRef in Runner.ActivePlayers)
+            //     SpawnPlayer(playerRef);
         }
 
         private void SpawnPlayer(PlayerRef playerRef)

@@ -12,6 +12,7 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Core.Player;
     using Vermines.Gameplay.Chronicle;
     using Vermines.Gameplay.Commands;
     using Vermines.Player;
@@ -51,14 +52,16 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
-        public override void Play(PlayerRef player)
+        public override void Play(PlayerRef playerRef)
         {
-            if (player != PlayerController.Local.PlayerRef)
+            if (playerRef != Context.Runner.LocalPlayer)
                 return;
-            PlayerData playerData = GameDataStorage.Instance.PlayerData[player];
-            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[player];
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
-            if (playerDeck.PlayedCards.Count >= playerData.NumberOfSlotInTable || playerDeck.Graveyard.Count == 0)
+            PlayerStatistics stat = player.Statistics;
+            PlayerDeck       deck = player.Deck;
+
+            if (deck.PlayedCards.Count >= stat.NumberOfSlotInTable || deck.Graveyard.Count == 0)
                 return;
             if (UIContextManager.Instance) {
                 CardSelectedEffectContext args = new(CardType.Partisan, Card);
@@ -79,22 +82,22 @@ namespace Vermines.Gameplay.Cards.Effect {
                 UIContextManager.Instance.PopContextOfType<CardRebornContext>();
             if (card.Data.Type != CardType.Partisan)
                 return;
-            PlayerController.Local.NetworkEventCardEffect(Card.ID, card.ID.ToString());
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
+
+            player.NetworkEventCardEffect(Card.ID, card.ID.ToString());
         }
 
-        public override void NetworkEventFunction(PlayerRef player, string data)
+        public override void NetworkEventFunction(PlayerRef playerRef, string data)
         {
-            PlayerData pData = GameDataStorage.Instance.PlayerData[player];
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
             ICard    card          = CardSetDatabase.Instance.GetCardByID(data);
             ICommand rebornCommand = new RebornCommand(player, card);
 
             CommandInvoker.ExecuteCommand(rebornCommand);
 
-            if (player == PlayerController.Local.PlayerRef) {
+            if (playerRef == Context.Runner.LocalPlayer)
                 GameEvents.OnCardReborned.Invoke(card);
-            }
-
             ChronicleEntry entry = new() {
                 Id = $"reborned-{Card.ID}-{card.ID}",
                 TimestampUtc = DateTime.UtcNow.Ticks,
@@ -104,7 +107,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                 IconKey = $"Partisan_Card_Effect",
                 DescriptionArgs = new string[] {
                     "ST_CardReborned",
-                    pData.Nickname,
+                    player.Nickname,
                     card.Data.Name,
                     Card.Data.Name
                 }
@@ -123,7 +126,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             entry.PayloadJson = payloadJson;
 
-            PlayerController.Local.AddChronicle(entry);
+            player.AddChronicle(entry);
         }
 
         public override List<(string, Sprite)> Draw()

@@ -22,7 +22,7 @@ namespace Vermines.Menu {
                 if (Global.Networking.ErrorStatus == Networking.STATUS_SERVER_CLOSED)
                     dialog.Description.SetTextSafe($"Server was closed.");
                 else
-                    dialog.Description.SetTextSafe($"Failed to start network game\n\nReason:\n${Global.Networking.ErrorStatus}");
+                    dialog.Description.SetTextSafe($"Failed to start network game\n\nReason:\n{Global.Networking.ErrorStatus}");
                 Global.Networking.ClearErrorStatus();
             }
         }

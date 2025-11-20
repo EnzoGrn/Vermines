@@ -11,14 +11,16 @@ using Fusion;
 
 public static class GameEvents
 {
+    // --- Initialize ---
+    public static TrackedEvent OnGameInitialized = new("OnGameInitialized");
+
     // --- GENERAL ---
     public static TrackedEvent OnAttemptNextPhase = new("OnAttemptNextPhase");
     public static TrackedEvent<ICard> OnCardDrawn = new("OnCardDrawn");
     public static TrackedEvent<PhaseType> OnPhaseChanged = new("OnPhaseChanged");
     public static TrackedEvent<int> OnTurnChanged = new("OnTurnChanged");
     public static TrackedEvent OnPlayerInitialized = new("OnPlayerInitialized");
-    public static TrackedEvent<PlayerData> OnPlayerUpdated = new("OnPlayerUpdated");
-    public static TrackedEvent<NetworkDictionary<PlayerRef, PlayerData>> OnPlayersUpdated = new("OnPlayersUpdated");
+    public static TrackedEvent<PlayerController> OnPlayerUpdated = new("OnPlayerUpdated");
     public static TrackedEvent<PlayerRef, PlayerRef> OnPlayerWin = new("OnPlayerWin");
 
     // --- CARD PLAYING ---
@@ -71,17 +73,6 @@ public static class GameEvents
     public static void InvokeOnDrawCard(ICard card)
     {
         OnCardDrawn.Invoke(card);
-    }
-
-    public static void InvokeOnPlayerUpdated(NetworkDictionary<PlayerRef, PlayerData> playerData)
-    {
-        PlayerRef playerRef = GameManager.Instance.PlayerTurnOrder[GameManager.Instance.CurrentPlayerIndex];
-        if (playerRef == null) return;
-
-        if (playerData.TryGet(playerRef, out PlayerData data))
-        {
-            OnPlayerUpdated.Invoke(data);
-        }
     }
 
     public static void InvokeOnCardPurchaseRequested(ShopType shopType, int cardId)

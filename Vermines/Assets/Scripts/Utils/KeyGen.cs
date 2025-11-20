@@ -14,4 +14,9 @@ public static class KeyGen {
 
         return urlSafe;
     }
+
+    public static string UUID()
+    {
+        return Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Replace("/", "_").Replace("+", "-").Substring(0, 16);
+    }
 }

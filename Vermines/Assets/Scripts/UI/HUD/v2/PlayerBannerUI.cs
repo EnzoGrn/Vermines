@@ -4,6 +4,8 @@ using Vermines.CardSystem.Enumerations;
 using Vermines.Player;
 using Vermines.UI.Utils;
 using UnityEngine.Events;
+using Vermines.Core.Player;
+using Fusion;
 
 namespace Vermines.UI
 {
@@ -77,32 +79,43 @@ namespace Vermines.UI
             TryGetComponent(out _canvasGroup);
         }
 
-        public void Initialize(PlayerData playerData, int playerId)
+        public void OnDestroy()
         {
-            _playerId = playerId;
-            nicknameText.text = playerData.Nickname;
-
-            if (playerData.Family != CardFamily.None)
-            {
-                avatarImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, playerData.Family, "Cultist");
-                backgroundImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, playerData.Family, "Background");
-            }
-            UpdateStats(playerData);
+            GameEvents.OnPlayerUpdated.RemoveListener(UpdateBanner);
         }
 
-        public void UpdateStats(PlayerData playerData)
+        public void Initialize(PlayerController player)
+        {
+            _playerId         = player.Object.InputAuthority.PlayerId;
+            nicknameText.text = player.Nickname;
+
+            GameEvents.OnPlayerUpdated.AddListener(UpdateBanner);
+
+            UpdateBanner(player);
+        }
+
+        private void UpdateBanner(PlayerController player)
+        {
+            if (player.Object.InputAuthority.PlayerId != _playerId)
+                return;
+            if (player.Statistics.Family != CardFamily.None) {
+                avatarImage.sprite     = UISpriteLoader.GetDefaultSprite(CardType.Partisan, player.Statistics.Family, "Cultist");
+                backgroundImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, player.Statistics.Family, "Background");
+            }
+
+            UpdateStats(player.Statistics);
+        }
+
+        public void UpdateStats(PlayerStatistics playerData)
         {
             AnimatedCountingTextNative eloquenceScript = eloquenceText.GetComponent<AnimatedCountingTextNative>();
+
             if (eloquenceScript != null)
-            {
                 eloquenceScript.SetValue(playerData.Eloquence);
-            }
 
             AnimatedCountingTextNative soulsScript = soulsText.GetComponent<AnimatedCountingTextNative>();
             if (soulsScript != null)
-            {
                 soulsScript.SetValue(playerData.Souls);
-            }
         }
 
         public void SetActive(bool isActive)
@@ -112,8 +125,7 @@ namespace Vermines.UI
 
         public void Show()
         {
-            if (_HideCoroutine != null)
-            {
+            if (_HideCoroutine != null) {
                 StopCoroutine(_HideCoroutine);
 
                 if (_animator.gameObject.activeInHierarchy && _animator.HasState(0, ShowAnimHash))

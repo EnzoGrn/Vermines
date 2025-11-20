@@ -7,6 +7,7 @@ using Vermines.CardSystem.Enumerations;
 using Vermines.Gameplay.Phases.Data;
 using Vermines.Player;
 using Vermines.CardSystem.Elements;
+using Vermines.Core.Player;
 
 namespace Vermines.UI.Screen
 {
@@ -114,18 +115,7 @@ namespace Vermines.UI.Screen
 
         public void LoadAndAnnounce()
         {
-            if (_raceName == CardFamily.None)
-            {
-                foreach (var player in GameDataStorage.Instance.PlayerData)
-                {
-                    Debug.Log(player);
-                    if (player.Key == PlayerController.Local.PlayerRef)
-                    {
-                        PlayerData playerData = player.Value;
-                        _raceName = playerData.Family;
-                    }
-                }
-            }
+            _raceName = PlayerController.Local.Statistics.Family;
 
             LocalizedString localized = new LocalizedString("CultistMessages", _raceName.ToString());
 
@@ -150,7 +140,8 @@ namespace Vermines.UI.Screen
         {
             Controller.Hide();
 
-            List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].PlayedCards;
+            List<ICard> playedCards = PlayerController.Local.Deck.PlayedCards;
+
             if (playedCards.Find(c => c.Data.HasEffectOfType(EffectType.Activate)) == null)
             {
                 GameEvents.OnAttemptNextPhase.Invoke();

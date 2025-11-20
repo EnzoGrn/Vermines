@@ -10,6 +10,7 @@ namespace Vermines.Gameplay.Core {
     using Vermines.Extension;
     using Vermines.Core;
     using Vermines.Core.Services;
+    using Vermines.UI.Card;
     using Vermines.Core.UI;
 
     public class Gameplay : Scene {
@@ -55,6 +56,14 @@ namespace Vermines.Gameplay.Core {
                 AddService(uiService);
 
                 uiService.Activate();
+
+                HandManager hand = _UIScene.GetComponent<HandManager>();
+
+                Context.HandManager = hand;
+
+                AddService(hand);
+
+                hand.Activate();
             }
         }
 

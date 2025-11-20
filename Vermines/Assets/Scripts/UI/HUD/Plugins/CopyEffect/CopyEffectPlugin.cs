@@ -75,36 +75,26 @@ public class CopyEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginParam
 
     public virtual List<Vermines.UI.Screen.ShopCardEntry> GetEntries()
     {
-        foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Hand)
-        {
+        PlayerController player = PlayerController.Local;
+
+        foreach (var card in player.Deck.Hand) {
             if (card.Data.Type == CardTypeTrigger)
-            {
                 currentEntries.Add(new ShopCardEntry(card));
-            }
         }
 
-        foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Equipments)
-        {
+        foreach (var card in player.Deck.Equipments) {
             if (card.Data.Type == CardTypeTrigger)
-            {
                 currentEntries.Add(new ShopCardEntry(card));
-            }
         }
 
-        foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].PlayedCards)
-        {
+        foreach (var card in player.Deck.PlayedCards) {
             if (card.Data.Type == CardTypeTrigger)
-            {
                 currentEntries.Add(new ShopCardEntry(card));
-            }
         }
 
-        foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Discard)
-        {
+        foreach (var card in player.Deck.Discard) {
             if (card.Data.Type == CardTypeTrigger)
-            {
                 currentEntries.Add(new ShopCardEntry(card));
-            }
         }
 
         return currentEntries;

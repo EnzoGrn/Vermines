@@ -1,5 +1,6 @@
 ﻿using Fusion;
 using UnityEngine;
+using Vermines.Core.Scene;
 using Vermines.Gameplay.Phases.Enumerations;
 
 namespace Vermines.Gameplay.Phases
@@ -9,7 +10,7 @@ namespace Vermines.Gameplay.Phases
         PhaseType Type { get; }
 
         void Run(PlayerRef player);
-        void Reset();
+        void Deinitialize();
         void OnPhaseEnding(PlayerRef player, bool logic);
     }
 
@@ -23,8 +24,26 @@ namespace Vermines.Gameplay.Phases
 
         public string PhaseNameKey => type.ToString();
 
-        public abstract void Run(PlayerRef player);
-        public virtual void Reset() { }
+        protected PlayerRef _CurrentPlayer = default;
+
+        protected SceneContext _Context;
+        protected PhaseManager _PhaseManager;
+
+        public void Initialize(SceneContext context, PhaseManager manager)
+        {
+            _Context = context;
+            _PhaseManager = manager;
+        }
+
+        public virtual void Run(PlayerRef player)
+        {
+            _CurrentPlayer = player;
+        }
+
+        public virtual void Deinitialize()
+        {
+            _CurrentPlayer = default;
+        }
 
         /// <summary>
         /// Event that end the phase.
@@ -39,13 +58,9 @@ namespace Vermines.Gameplay.Phases
             Debug.Log($"[Server]: ({Type}) OnPhaseEnding by logic {logic} processing");
 
             if (logic)
-            {
-                PhaseManager.Instance.PhaseCompleted();
-            }
+                _PhaseManager.PhaseCompleted();
             else
-            {
                 GameEvents.OnAttemptNextPhase.Invoke();
-            }
         }
     }
 }
