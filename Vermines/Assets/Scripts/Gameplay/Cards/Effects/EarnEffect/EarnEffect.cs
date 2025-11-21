@@ -104,22 +104,27 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        private void Earn(PlayerController player, int amount, DataType earnData)
+        {
+            ICommand earnCommand = new EarnCommand(player, amount, earnData);
+
+            CommandInvoker.ExecuteCommand(earnCommand);
+        }
+
         public override void Play(PlayerRef playerRef)
         {
             PlayerController originPlayer = Context.NetworkGame.GetPlayer(playerRef);
 
-            if (Everyone) {
+            if (Everyone) { // Except you
                 List<PlayerController> players = Context.Runner.GetAllBehaviours<PlayerController>();
 
                 foreach (PlayerController player in players) {
-                    ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
-
-                    CommandInvoker.ExecuteCommand(earnCommand);
+                    if (playerRef == player.Object.InputAuthority)
+                        continue;
+                    Earn(player, Amount, DataToEarn);
                 }
             } else {
-                ICommand earnCommand = new EarnCommand(originPlayer, Amount, DataToEarn);
-
-                CommandInvoker.ExecuteCommand(earnCommand);
+                Earn(originPlayer, Amount, DataToEarn);
             }
 
             base.Play(playerRef);

@@ -35,6 +35,13 @@ namespace Vermines.Gameplay.Core {
             }
         }
 
+        protected override void FixedUpdateNetwork_Active()
+        {
+            base.FixedUpdateNetwork_Active();
+
+            CheckWinCondition();
+        }
+
         #endregion
 
         #region Initializer

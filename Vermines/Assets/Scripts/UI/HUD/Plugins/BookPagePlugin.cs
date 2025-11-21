@@ -1,5 +1,9 @@
 ﻿using Fusion;
+using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
+using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Utilities;
 using Vermines.Player;
 using Vermines.UI.Utils;
 
@@ -161,7 +165,12 @@ namespace Vermines.UI.Plugin
 
         public void ShowDiscardedCards()
         {
-            deckHolder.Show(_Player.Deck.Discard);
+            List<ICard> discardedC = new(_Player.Deck.Discard);
+            List<ICard> discardedT = new(_Player.Deck.ToolDiscard);
+
+            discardedC.Merge(discardedT);
+
+            deckHolder.Show(discardedC);
             deckHolder.SetTitle("Discarded Cards");
         }
 

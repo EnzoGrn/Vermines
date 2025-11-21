@@ -157,9 +157,9 @@ namespace Vermines.Core {
             RPC_Initialized();
         }
 
-        private void FixedUpdateNetwork_Active() {}
+        protected virtual void FixedUpdateNetwork_Active() {}
 
-        private void FixedUpdateNetwork_Finished() {}
+        protected virtual void FixedUpdateNetwork_Finished() {}
 
         public void PlayerJoined(PlayerController player)
         {
@@ -187,7 +187,6 @@ namespace Vermines.Core {
             if (nickname.IsNullOrEmpty())
                 nickname = "Unknown";
             RPC_PlayerLeftGame(player.Object.InputAuthority, nickname);
-            CheckWinCondition();
         }
 
         public void StopGame()

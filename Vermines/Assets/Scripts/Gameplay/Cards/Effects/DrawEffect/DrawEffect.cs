@@ -103,11 +103,14 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             PlayerController originPlayer = Context.NetworkGame.GetPlayer(playerRef);
 
-            if (Everyone) {
+            if (Everyone) { // Except you
                 List<PlayerController> players = Context.Runner.GetAllBehaviours<PlayerController>();
 
-                foreach (PlayerController player in players)
+                foreach (PlayerController player in players) {
+                    if (playerRef == player.Object.InputAuthority)
+                        continue;
                     Draw(player, Amount);
+                }
             } else {
                 Draw(originPlayer, Amount);
             }

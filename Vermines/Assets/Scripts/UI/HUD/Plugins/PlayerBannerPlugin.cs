@@ -1,6 +1,7 @@
 ﻿using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
+using Vermines.Core;
 using Vermines.Core.Player;
 using Vermines.Core.Scene;
 using Vermines.Player;
@@ -65,17 +66,61 @@ namespace Vermines.UI.Plugin
         {
             if (PlayerController.Local == null)
                 return;
+            GameEvents.OnGameInitialized.AddListener(ReorderBanners);
+
             _players.Clear();
 
             SceneContext context = PlayerController.Local.Context;
 
             List<PlayerController> players = context.Runner.GetAllBehaviours<PlayerController>();
 
+            players.Sort((a, b) => {
+                var pa = a.Object.InputAuthority;
+                var pb = b.Object.InputAuthority;
+
+                int ia = IndexInTurnOrder(context.GameplayMode, pa);
+                int ib = IndexInTurnOrder(context.GameplayMode, pb);
+
+                return ia.CompareTo(ib);
+            });
+
             foreach (PlayerController player in players) {
                 _players[player.Object.InputAuthority.PlayerId] = player.Statistics;
 
                 CreateBanner(player);
             }
+        }
+
+        private int IndexInTurnOrder(GameplayMode mode, PlayerRef player)
+        {
+            for (int i = 0; i < mode.PlayerTurnOrder.Length; i++)
+                if (mode.PlayerTurnOrder.Get(i) == player)
+                    return i;
+            return int.MaxValue;
+        }
+
+        private void ReorderBanners()
+        {
+            var context = PlayerController.Local.Context;
+            var mode = context.GameplayMode;
+
+            List<PlayerBannerUI> sorted = new(_banners);
+
+            sorted.Sort((a, b) => {
+                int ia = IndexInTurnOrder(mode, a.GetPlayerRef());
+                int ib = IndexInTurnOrder(mode, b.GetPlayerRef());
+
+                return ia.CompareTo(ib);
+            });
+
+            _banners.Clear();
+            _banners.AddRange(sorted);
+
+            for (int i = 0; i < _banners.Count; i++)
+                _banners[i].transform.SetSiblingIndex(i);
+            for (int i = 0; i < _banners.Count; i++)
+                _banners[i].SetActive(i == 0);
+            GameEvents.OnGameInitialized.RemoveListener(ReorderBanners);
         }
 
         public void CreateBanner(PlayerController player)

@@ -69,6 +69,7 @@ namespace Vermines.UI
         [SerializeField] private float normalScale = 1.1f;
         [SerializeField] private float activeScale = 1.275f;
 
+        private PlayerController _player;
         private int _playerId;
 
         private void Awake()
@@ -86,8 +87,9 @@ namespace Vermines.UI
 
         public void Initialize(PlayerController player)
         {
+            _player           = player;
             _playerId         = player.Object.InputAuthority.PlayerId;
-            nicknameText.text = player.Nickname;
+            nicknameText.text = player.NetworkedNickname.Value;
 
             GameEvents.OnPlayerUpdated.AddListener(UpdateBanner);
 
@@ -102,6 +104,8 @@ namespace Vermines.UI
                 avatarImage.sprite     = UISpriteLoader.GetDefaultSprite(CardType.Partisan, player.Statistics.Family, "Cultist");
                 backgroundImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, player.Statistics.Family, "Background");
             }
+
+            nicknameText.text = player.NetworkedNickname.Value;
 
             UpdateStats(player.Statistics);
         }
@@ -157,6 +161,8 @@ namespace Vermines.UI
         }
 
         public int GetPlayerId() => _playerId;
+
+        public PlayerRef GetPlayerRef() => _player.Object.InputAuthority;
 
         #region Animation Coroutines
 

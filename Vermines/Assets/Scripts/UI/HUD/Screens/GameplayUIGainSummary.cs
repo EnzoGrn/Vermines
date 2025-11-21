@@ -117,7 +117,7 @@ namespace Vermines.UI.Screen
         {
             _raceName = PlayerController.Local.Statistics.Family;
 
-            LocalizedString localized = new LocalizedString("CultistMessages", _raceName.ToString());
+            LocalizedString localized = new("CultistMessages", _raceName.ToString());
 
             string msg = localized.GetLocalizedString();
 

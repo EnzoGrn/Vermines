@@ -69,6 +69,8 @@ namespace Vermines.Core {
 
             Runner.GetAllBehaviours<PlayerController>(_AllPlayers);
 
+            if (_AllPlayers == null || _AllPlayers.Count == 0)
+                return;
             foreach (PlayerController player in _AllPlayers) {
                 PlayerRef input = player.Object.InputAuthority;
 
