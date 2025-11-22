@@ -143,6 +143,20 @@ namespace Vermines.Menu  {
             }
         }
 
+        public void TeleportToTavern()
+        {
+            _IsPlaying = false;
+
+            // Positionne la caméra au dernier point du spline
+            if (_SplineDolly != null) {
+                _SplineDolly.CameraPosition        = 1f;
+                _SplineDolly.LookAtTarget.position = _FinalTarget.position;
+            }
+
+            // On considère que la cinématique est "terminée"
+            _PassedKnots.Clear();
+        }
+
         public void SetEndLookAt()
         {
             _SplineDolly.LookAtTarget.position = _FinalTarget.position;

@@ -85,7 +85,7 @@ namespace Vermines.Core.Settings {
         {
             _Options.Initialize(settings.DefaultOptions, true, "Options.V3.");
 
-            Windowed        = Screen.fullScreen == false;
+            Windowed = Screen.fullScreen == false;
             GraphicsQuality = QualitySettings.GetQualityLevel();
             Resolution      = GetCurrentResolutionIndex();
 

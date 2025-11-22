@@ -10,6 +10,9 @@ namespace Vermines.Menu.CustomLobby {
     using Vermines.Core;
     using Vermines.Core.Network;
     using Vermines.Utils;
+    using System.Linq;
+    using Vermines.Gameplay.Core;
+    using Vermines.Player;
 
     public sealed class NetworkLobby : ContextBehaviour, IPlayerJoined, IPlayerLeft {
 
@@ -80,12 +83,20 @@ namespace Vermines.Menu.CustomLobby {
         {
             _IsActive = true;
 
+            if (!HasStateAuthority)
+                return;
+            ResyncExistingPlayers();
+
+            DespawnAllNetworkObjectsInScene();
+
+            /*if (HasStateAuthority)
+                ResyncExistingPlayers();
             foreach (PlayerRef player in Runner.ActivePlayers) {
                 LobbyPlayerController controller = GetPlayer(player);
 
                 if (controller != null)
                     controller.UpdateContext(Context);
-            }
+            }*/
         }
 
         private void SpawnPlayer(PlayerRef playerRef)
@@ -105,6 +116,80 @@ namespace Vermines.Menu.CustomLobby {
             #endif
         }
 
+        private void DespawnAllNetworkObjectsInScene()
+        {
+            if (Runner == null)
+                return;
+            List<NetworkObject> netObjects = Runner.GetAllNetworkObjects();
+
+            for (int i = 0; i < netObjects.Count; i++) {
+                NetworkObject no = netObjects[i];
+
+                if (no == null || no.gameObject == null)
+                    continue;
+                if (no.gameObject.TryGetComponent<LobbyPlayerController>(out var _) || no.gameObject.TryGetComponent<NetworkLobby>(out var _) || no.gameObject.TryGetComponent<LobbyManager>(out var lobbyManager) || no.gameObject.TryGetComponent<SceneChangeController>(out var _))
+                    continue;
+                if (_LobbyManager == lobbyManager)
+                    continue;
+                try {
+                    Runner.Despawn(no);
+                } catch (System.Exception ex) {
+                    Debug.LogWarning($"Failed to despawn NetworkObject {no.name}: {ex.Message}");
+                }
+            }
+
+            netObjects.Clear();
+        }
+
+        private void ResyncExistingPlayers()
+        {
+            _SpawnedPlayers.Clear();
+
+            Runner.GetAllBehaviours<LobbyPlayerController>(_SpawnedPlayers);
+
+            Dictionary<PlayerRef, LobbyPlayerController> existing = new();
+
+            foreach (LobbyPlayerController player in _SpawnedPlayers) {
+                if (player.Object == null)
+                    continue;
+                PlayerRef input = player.Object.InputAuthority;
+
+                if (input.IsRealPlayer)
+                    existing[input] = player;
+            }
+
+            foreach (PlayerRef playerRef in Runner.ActivePlayers)
+            {
+                if (!playerRef.IsRealPlayer)
+                    continue;
+                if (existing.TryGetValue(playerRef, out LobbyPlayerController playerController))
+                {
+                    if (Runner.GetPlayerObject(playerRef) == null)
+                        Runner.SetPlayerObject(playerRef, playerController.Object);
+                    if (!ActivePlayers.Contains(playerController))
+                        ActivePlayers.Add(playerController);
+                    playerController.Refresh();
+
+                    #if UNITY_EDITOR
+                        playerController.gameObject.name = $"Player {playerController.Nickname}";
+                    #endif
+
+                    _LobbyManager.PlayerJoined(playerController);
+
+                    continue;
+                }
+
+                SpawnPlayer(playerRef);
+            }
+
+            foreach (LobbyPlayerController player in _SpawnedPlayers) {
+                PlayerRef input = player.Object.InputAuthority;
+
+                if (!Runner.ActivePlayers.Contains(input))
+                    Runner.Despawn(player.Object);
+            }
+        }
+
         public override void FixedUpdateNetwork()
         {
             if (Runner == null)
@@ -113,17 +198,20 @@ namespace Vermines.Menu.CustomLobby {
 
             Runner.GetAllBehaviours<LobbyPlayerController>(_AllPlayers);
 
-            foreach (LobbyPlayerController player in _AllPlayers) {
-                PlayerRef inputAuthority = player.Object.InputAuthority;
+            if (_AllPlayers == null || _AllPlayers.Count == 0)
+                return;
+            for (int i = _AllPlayers.Count - 1; i >= 0; i--) {
+                LobbyPlayerController player = _AllPlayers[i];
+                PlayerRef     inputAuthority = player.Object.InputAuthority;
 
                 if (inputAuthority.IsRealPlayer) {
                     if (HasInputAuthority && !Runner.IsPlayerValid(inputAuthority)) {
-                        _AllPlayers.Remove(player);
+                        _AllPlayers.RemoveAt(i);
 
                         OnPlayerLeft(player);
                     }
                 } else {
-                    _AllPlayers.Remove(player);
+                    _AllPlayers.RemoveAt(i);
                 }
             }
 

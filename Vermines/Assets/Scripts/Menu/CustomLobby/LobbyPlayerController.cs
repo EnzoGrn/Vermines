@@ -122,6 +122,10 @@ namespace Vermines.Menu.CustomLobby {
                 if (!_PlayerDataSent && Runner.IsForward && Context.PlayerData != null) {
                     string unityID = Context.PlayerData.UnityID ?? string.Empty;
 
+                    if (Context.PeerUserID == null)
+                        Debug.LogError($"PeerUserID null");
+                    if (Context.PlayerData.Nickname == null)
+                        Debug.LogError($"Nickname is null");
                     RPC_SendPlayerData(Context.PeerUserID, Context.PlayerData.Nickname, unityID);
 
                     _PlayerDataSent = true;

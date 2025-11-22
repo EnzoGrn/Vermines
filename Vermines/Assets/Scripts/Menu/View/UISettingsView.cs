@@ -150,6 +150,8 @@ namespace Vermines.UI {
         {
             base.OnInitialize();
 
+            LoadValues();
+
             _Content?.SetActive(gameObject.activeSelf);
 
             foreach (BookCategories category in _Categories)

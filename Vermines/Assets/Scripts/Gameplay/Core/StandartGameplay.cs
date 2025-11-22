@@ -24,11 +24,13 @@ namespace Vermines.Gameplay.Core {
 
         protected override void CheckWinCondition()
         {
+            if (Context.NetworkGame == null || Context.NetworkGame.ActivePlayers == null)
+                return;
             foreach (PlayerController player in Context.NetworkGame.ActivePlayers) {
                 if (player == null)
                     continue;
                 if (player.Statistics.Souls >= SoulsLimit) {
-                    FinishGameplay();
+                    FinishGameplay(player);
 
                     return;
                 }

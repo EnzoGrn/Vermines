@@ -108,14 +108,17 @@ namespace Vermines.UI.View {
             dialog.Description.SetTextSafe("Are you sure you want to leave current match?");
 
             dialog.HasClosed += (result) => {
-                if (result) {
-                    if (Context != null && Context.GameplayMode != null) {
-                        Context.GameplayMode.StopGame();
-                    } else {
-                        Global.Networking.StopGame();
-                    }
-                }
+                if (result)
+                    OnLeave();
             };
+        }
+
+        public void OnLeave()
+        {
+            if (Context != null && Context.GameplayMode != null)
+                Context.GameplayMode.StopGame();
+            else
+                Global.Networking.StopGame();
         }
 
         private void OnSettingsButton()

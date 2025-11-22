@@ -17,6 +17,8 @@ namespace Vermines.Core.Network {
     using Vermines.Menu.CustomLobby;
     using Vermines.Core.Services;
     using Vermines.Menu.Matchmaking;
+    using Vermines.Menu.View;
+    using static PlasticGui.PlasticTableColumn;
 
     public class Networking : MonoBehaviour {
 
@@ -296,7 +298,6 @@ namespace Vermines.Core.Network {
                 SceneManager                = peer.SceneManager,
                 EnableClientSessionCreation = true
             };
-
             if (peer.Request.MaxPlayers > 0)
                 startGameArgs.PlayerCount = peer.Request.MaxPlayers;
             if (peer.GameMode == GameMode.Server || peer.GameMode == GameMode.Host)
@@ -306,7 +307,7 @@ namespace Vermines.Core.Network {
             else if (peer.Request.Port > 0)
                 startGameArgs.Address = NetAddress.Any(peer.Request.Port);
             Log($"NetworkRunner.StartGame().");
-
+            
             var startGameTask = runner.StartGame(startGameArgs);
 
             while (!startGameTask.IsCompleted) {
@@ -646,7 +647,7 @@ namespace Vermines.Core.Network {
 
         #endregion
 
-        public IEnumerator ApplySceneChangeLocalCoroutine(string peerID, string scenePath, bool isCustom, bool isGameSession, GameplayType gameplayType, string data, System.Action onComplete = null)
+        public IEnumerator ApplySceneChangeLocalCoroutine(string peerID, string scenePath, string oldScene, bool isCustom, bool isGameSession, GameplayType gameplayType, string data, System.Action onComplete = null)
         {
             GamePeer peer = GetGamePeer(peerID);
 
@@ -659,7 +660,7 @@ namespace Vermines.Core.Network {
             List<UnityScene> scenesToUnload = GetScenesToUnload();
 
             foreach (var s in scenesToUnload) {
-                if (s.name == scenePath)
+                if (s.name == scenePath || s.name == oldScene)
                     continue;
                 Scene currentScene = s.GetComponent<Scene>();
 
@@ -668,7 +669,6 @@ namespace Vermines.Core.Network {
 
                     currentScene.Deinitialize();
                 }
-
                 Log($"Unloading scene {s.name}");
 
                 yield return PersistentSceneService.Instance.UnloadScene(s.name);
@@ -792,6 +792,8 @@ namespace Vermines.Core.Network {
             yield return null;
             yield return PersistentSceneService.Instance.LoadSceneAdditive(menuSceneName);
             yield return ShowLoadingSceneCoroutine(false);
+
+            FindFirstObjectByType<UIMainMenuView>().GoDirectlyToTavern();
 
             _Coroutine = null;
         }

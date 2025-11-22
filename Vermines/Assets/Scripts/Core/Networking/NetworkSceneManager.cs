@@ -9,6 +9,7 @@ namespace Vermines.Core.Network {
     using Vermines.Core.Scene;
     using Vermines.Extension;
     using Vermines.Core.Services;
+    using System.Linq;
 
     public class NetworkSceneManager : NetworkSceneManagerDefault {
 

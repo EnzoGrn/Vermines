@@ -99,12 +99,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (player != Context.Runner.LocalPlayer)
                 return;
             if (UIContextManager.Instance) {
-                SpendEffectContext spendEffectContext = new(
-                            Spend,
-                            _DataToSpend,
-                            _DataToEarn,
-                            _Multiplicator
-                );
+                SpendEffectContext spendEffectContext = new(Spend, _DataToSpend, _DataToEarn, _Multiplicator);
 
                 UIContextManager.Instance.PushContext(spendEffectContext);
             }
@@ -112,12 +107,17 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         private void Spend(int amount)
         {
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
+
+            if (_DataToSpend == DataType.Eloquence && player.Statistics.Eloquence < amount)
+                return;
+            else if (_DataToEarn == DataType.Soul && player.Statistics.Souls < amount)
+                return;
+
             if (UIContextManager.Instance)
                 UIContextManager.Instance.PopContextOfType<SpendEffectContext>();
             if (amount <= 0 || (_DataToSpend == DataType.Eloquence && amount > Context.GameplayMode.MaxEloquence) || (_DataToSpend == DataType.Soul && amount > Context.GameplayMode.SoulsLimit))
                 return;
-            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
-
             player.NetworkEventCardEffect(Card.ID, amount.ToString());
         }
 

@@ -54,14 +54,13 @@ namespace Vermines.Menu.View {
             Open<UITavernView>();
         }
 
-        private void OnKnotPassed(int knotIndex)
+        public void GoDirectlyToTavern()
         {
             MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
 
-            if (camera) {
-                if (camera.GetKnotsCount() / 2 == knotIndex)
-                    camera.SetEndLookAt();
-            }
+            if (camera)
+                camera.TeleportToTavern();
+            Open<UITavernView>();
         }
 
         #endregion
@@ -140,6 +139,16 @@ namespace Vermines.Menu.View {
                 if (result)
                     SceneUI.Scene.Quit();
             };
+        }
+
+        private void OnKnotPassed(int knotIndex)
+        {
+            MainMenuCamera camera = FindFirstObjectByType<MainMenuCamera>();
+
+            if (camera) {
+                if (camera.GetKnotsCount() / 2 == knotIndex)
+                    camera.SetEndLookAt();
+            }
         }
 
         #endregion

@@ -25,7 +25,7 @@ namespace Vermines.Gameplay.Phases {
         #region Phases
 
         [Networked]
-        public PhaseType CurrentPhase { get; set; }
+        public PhaseType CurrentPhase { get; set; } = PhaseType.None;
 
         [SerializeField]
         private List<PhaseEntry> phaseEntries;
@@ -83,6 +83,8 @@ namespace Vermines.Gameplay.Phases {
 
         public void OnGameStart()
         {
+            CurrentPhase = _Phases.Keys.First();
+
             if (HasStateAuthority)
                 RPC_ProcessPhase(CurrentPhase, Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex));
             GameEvents.OnGameInitialized.RemoveListener(OnGameStart);
@@ -108,7 +110,7 @@ namespace Vermines.Gameplay.Phases {
                 return;
             CurrentPhase = _Phases.Keys.First();
 
-            Context.GameplayMode.CurrentPlayerIndex = (Context.GameplayMode.CurrentPlayerIndex + 1) % Context.NetworkGame.ActivePlayers.Count;
+            Context.GameplayMode.CurrentPlayerIndex = (Context.GameplayMode.CurrentPlayerIndex + 1) % Context.Runner.ActivePlayers.Count();
 
             if (Context.GameplayMode.CurrentPlayerIndex == 0)
                 Context.GameplayMode.TotalTurnPlayed++;
@@ -146,6 +148,8 @@ namespace Vermines.Gameplay.Phases {
 
         public void ProcessPhase(PhaseType currentPhase, PlayerRef playerRef)
         {
+            if (currentPhase == PhaseType.None)
+                return;
             _Phases[currentPhase].Run(playerRef);
         }
 

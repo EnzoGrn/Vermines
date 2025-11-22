@@ -71,17 +71,18 @@ namespace Vermines.Core {
 
             if (_AllPlayers == null || _AllPlayers.Count == 0)
                 return;
-            foreach (PlayerController player in _AllPlayers) {
-                PlayerRef input = player.Object.InputAuthority;
+            for (int i = _AllPlayers.Count - 1; i >= 0; i--) {
+                PlayerController player = _AllPlayers[i];
+                PlayerRef         input = player.Object.InputAuthority;
 
-                if (input.IsRealPlayer) {
+                if (!input.IsRealPlayer) {
                     if (HasStateAuthority && !Runner.IsPlayerValid(input)) {
-                        _AllPlayers.Remove(player);
+                        _AllPlayers.RemoveAt(i);
 
                         OnPlayerLeft(player);
                     }
                 } else {
-                    _AllPlayers.Remove(player);
+                    _AllPlayers.RemoveAt(i);
                 }
             }
 

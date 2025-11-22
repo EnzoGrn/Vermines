@@ -56,7 +56,7 @@ namespace Vermines.Core.Network {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
         public void RPC_ApplySceneChange(string scenePath, bool isCustom, bool isGameSession, GameplayType gameplay, string oldScene, int playerConnected, string data)
         {
-            StartCoroutine(Global.Networking.ApplySceneChangeLocalCoroutine(Context.PeerUserID, scenePath, isCustom, isGameSession, gameplay, data,
+            StartCoroutine(Global.Networking.ApplySceneChangeLocalCoroutine(Context.PeerUserID, scenePath, oldScene, isCustom, isGameSession, gameplay, data,
                 () => RPC_SceneLoadedAck(oldScene, playerConnected)
             ));
         }

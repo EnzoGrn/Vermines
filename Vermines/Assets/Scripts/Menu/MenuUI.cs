@@ -14,7 +14,9 @@ namespace Vermines.Menu {
         {
             base.OnActivate();
 
-            if (!Global.Networking.ErrorStatus.IsNullOrEmpty()) {
+            // Enable this code if you want to show an error popup when someone is kick of a game by the host.
+            // I think we will enabled this code when the host migration will be here.
+            /*if (!Global.Networking.ErrorStatus.IsNullOrEmpty()) {
                 var dialog = Open<UIErrorDialogView>();
 
                 dialog.Title.SetTextSafe("Connection Issue");
@@ -24,7 +26,7 @@ namespace Vermines.Menu {
                 else
                     dialog.Description.SetTextSafe($"Failed to start network game\n\nReason:\n{Global.Networking.ErrorStatus}");
                 Global.Networking.ClearErrorStatus();
-            }
+            }*/
         }
     }
 }

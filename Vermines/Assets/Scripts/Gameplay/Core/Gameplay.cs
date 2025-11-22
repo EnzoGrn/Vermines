@@ -1,5 +1,6 @@
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using System.Collections.Generic;
 using System.Collections;
 
 namespace Vermines.Gameplay.Core {
@@ -21,7 +22,7 @@ namespace Vermines.Gameplay.Core {
         #region Attributes
 
         [SerializeField]
-        private string _SceneToLoad;
+        private List<string> _SceneToLoads;
 
         private UnityScene _UIScene;
 
@@ -33,8 +34,8 @@ namespace Vermines.Gameplay.Core {
         {
             base.OnInitialize();
 
-            StartCoroutine(PersistentSceneService.Instance.LoadSceneAdditive(_SceneToLoad));
-
+            foreach (string scene in _SceneToLoads)
+                StartCoroutine(PersistentSceneService.Instance.LoadSceneAdditive(scene));
             var contextBehaviours = Context.Runner.SimulationUnityScene.GetComponents<IContextBehaviour>(true);
 
             foreach (IContextBehaviour behaviour in contextBehaviours)

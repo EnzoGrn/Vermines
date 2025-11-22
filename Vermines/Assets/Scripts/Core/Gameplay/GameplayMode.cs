@@ -69,6 +69,8 @@ namespace Vermines.Core {
 
         public ChronicleManager Announcer = new();
 
+        private RoutineManager _RoutineManager;
+
         #endregion
 
         #region Getters & Setters
@@ -155,11 +157,21 @@ namespace Vermines.Core {
             _IsInitialized = true;
 
             RPC_Initialized();
+
+            Activate();
         }
 
-        protected virtual void FixedUpdateNetwork_Active() {}
+        protected virtual void FixedUpdateNetwork_Active()
+        {
+            if (PhaseManager.CurrentPhase == PhaseType.None)
+                PhaseManager.OnGameStart();
+        }
 
-        protected virtual void FixedUpdateNetwork_Finished() {}
+        protected virtual void FixedUpdateNetwork_Finished()
+        {
+            if (_RoutineManager)
+                _RoutineManager.StopRoutine();
+        }
 
         public void PlayerJoined(PlayerController player)
         {
@@ -178,7 +190,10 @@ namespace Vermines.Core {
         {
             if (!Runner.IsServer || State == GState.Finished)
                 return;
-            player.Despawn();
+            StopGame();
+
+            // Enable this code when Host migration and reconnexion will be available...
+            /*player.Despawn();
 
             string nickname = player.Nickname;
 
@@ -186,13 +201,15 @@ namespace Vermines.Core {
 
             if (nickname.IsNullOrEmpty())
                 nickname = "Unknown";
-            RPC_PlayerLeftGame(player.Object.InputAuthority, nickname);
+            RPC_PlayerLeftGame(player.Object.InputAuthority, nickname);*/
         }
 
         public void StopGame()
         {
             bool isCustom = Context.NetworkGame.IsCustomGame();
 
+            if (_RoutineManager)
+                _RoutineManager.StopRoutine();
             if (isCustom) {
                 StopCustomGame();
             } else {
@@ -206,11 +223,13 @@ namespace Vermines.Core {
             }
         }
 
-        protected void FinishGameplay()
+        protected void FinishGameplay(PlayerController player)
         {
             if (State != GState.Active || !Runner.IsServer)
                 return;
             State = GState.Finished;
+
+            RPC_SomeoneWin(player.Object.InputAuthority);
         }
 
         private void CheckAllPlayersInitialized()
@@ -222,7 +241,6 @@ namespace Vermines.Core {
             ));
 
             Initialize(data);
-            Activate();
         }
 
         #endregion
@@ -266,6 +284,10 @@ namespace Vermines.Core {
 
         protected virtual void OnInitialize()
         {
+            _RoutineManager = FindFirstObjectByType<RoutineManager>();
+
+            if (_RoutineManager)
+                _RoutineManager.StartRoutine();
             PhaseManager.Initialize();
 
             State = GState.Active;
@@ -331,7 +353,13 @@ namespace Vermines.Core {
             OnPlayerLeftGame?.Invoke(nickname);
         }
 
-        [Rpc(RpcSources.StateAuthority, RpcTargets.Proxies, Channel = RpcChannel.Reliable)]
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
+        private void RPC_SomeoneWin(PlayerRef player)
+        {
+            GameEvents.InvokeOnPlayerWin(player, Runner.LocalPlayer);
+        }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.Proxies, Channel = RpcChannel.Reliable)]
         private void RPC_StopPublicGame()
         {
             Global.Networking.StopGame(Networking.STATUS_SERVER_CLOSED);

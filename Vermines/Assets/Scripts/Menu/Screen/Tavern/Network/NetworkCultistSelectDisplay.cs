@@ -180,6 +180,9 @@ namespace Vermines.Menu.CustomLobby {
             } else
                 ReadyButton.interactable = false;
 
+            Global.PlayerService.PlayerData.CultistID = cultistID;
+            _Context.PlayerData.CultistID             = cultistID;
+
             manager.RPC_Select(_Context.LocalPlayerRef, cultistID, force);
         }
 
@@ -211,6 +214,10 @@ namespace Vermines.Menu.CustomLobby {
                 ReadyButton.interactable = true;
             } else
                 ReadyButton.interactable = false;
+
+            Global.PlayerService.PlayerData.CultistID = cultist.ID;
+            _Context.PlayerData.CultistID = cultist.ID;
+
             manager.RPC_Select(_Context.LocalPlayerRef, cultist.ID, force);
         }
 

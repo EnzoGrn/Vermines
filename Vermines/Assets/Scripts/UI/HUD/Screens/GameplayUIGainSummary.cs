@@ -142,14 +142,13 @@ namespace Vermines.UI.Screen
 
             List<ICard> playedCards = PlayerController.Local.Deck.PlayedCards;
 
-            if (playedCards.Find(c => c.Data.HasEffectOfType(EffectType.Activate)) == null)
-            {
+            if (playedCards.Find(c => c.Data.HasEffectOfType(EffectType.Activate)) == null) {
                 GameEvents.OnAttemptNextPhase.Invoke();
+
+                Controller.Hide<GameplayUIGainSummary>();
             }
             else
-            {
                 Controller.Show<GameplayUITable>();
-            }
         }
 
         #endregion

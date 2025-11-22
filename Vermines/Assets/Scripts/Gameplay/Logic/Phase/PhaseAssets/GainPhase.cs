@@ -30,8 +30,14 @@ namespace Vermines.Gameplay.Phases {
 
         public override void Run(PlayerRef playerRef)
         {
-            if (_Context.GameplayMode.State != Vermines.Core.GameplayMode.GState.Active)
+            GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
+            
+            if (_Context.GameplayMode.State != Vermines.Core.GameplayMode.GState.Active || gameplayUIController == null) {
+                _Context.GameplayMode.PhaseManager.CurrentPhase = Enumerations.PhaseType.None;
+
                 return;
+            }
+
             base.Run(playerRef);
 
             PlayerController player = _Context.NetworkGame.GetPlayer(playerRef);
@@ -48,12 +54,8 @@ namespace Vermines.Gameplay.Phases {
             GameEvents.OnPlayerUpdated.Invoke(player);
 
             if (_CurrentPlayer == _Context.Runner.LocalPlayer) {
-                GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
-
-                if (gameplayUIController != null) {
-                    gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
-                    gameplayUIController.ShowWithParams<GameplayUIGainSummary, GainSummaryData>(_gainSummary, lastScreen);
-                }
+                gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
+                gameplayUIController.ShowWithParams<GameplayUIGainSummary, GainSummaryData>(_gainSummary, lastScreen);
             }
         }
 

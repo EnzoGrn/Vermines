@@ -61,7 +61,8 @@ namespace Vermines.Core.Network {
 
             if (instance == null)
                 return;
-            if (!instance.NetworkTypeId.IsSceneObject && !runner.IsShutdown) {
+            // Not Compatible with Network Scene changement.
+            /*if (!instance.NetworkTypeId.IsSceneObject && !runner.IsShutdown) {
                 if (_Borrowed.TryGetValue(instance, out NetworkPrefabId prefabId)) {
                     _Borrowed.Remove(instance);
 
@@ -76,7 +77,9 @@ namespace Vermines.Core.Network {
                 }
             } else {
                 Object.Destroy(instance.gameObject);
-            }
+            }*/
+
+            Object.Destroy(instance.gameObject);
         }
 
         public NetworkPrefabId GetPrefabId(NetworkRunner runner, NetworkObjectGuid prefabGuid)

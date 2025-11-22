@@ -1,4 +1,5 @@
 using UnityEngine;
+using Fusion;
 
 namespace Vermines.Menu {
 
@@ -21,6 +22,16 @@ namespace Vermines.Menu {
             base.OnInitialize();
 
             StartCoroutine(PersistentSceneService.Instance.LoadSceneAdditive(_SceneToLoad));
+
+            NetworkObject[] noArray = FindObjectsByType<NetworkObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+            if (noArray == null || noArray.Length == 0)
+                return;
+            for (int i = 0; i < noArray.Length; i++)
+            {
+                if (noArray[i] != null)
+                    Destroy(noArray[i]);
+            }
         }
 
         #endregion

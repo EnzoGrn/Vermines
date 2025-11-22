@@ -115,7 +115,7 @@ namespace Vermines.Menu.CustomLobby {
 
             string data = JsonConvert.SerializeObject(families);
 
-            Context.SceneChangeController.RPC_RequestSceneChange(Context.GameScenePath, true, true, GameplayType.Standart, Context.CustomGameScenePath, players.Count, data);
+            Context.SceneChangeController.RPC_RequestSceneChange(Context.GameScenePath, true, true, GameplayType.Standart, Context.CustomGameScenePath, players.Count/*, data*/);
         }
 
         #endregion

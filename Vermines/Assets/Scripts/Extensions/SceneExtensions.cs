@@ -11,6 +11,8 @@ namespace Vermines.Extension {
 
         public static T GetComponent<T>(this UnityScene scene, bool includeInactive = false) where T : class
         {
+            if (!scene.IsValid() || !scene.isLoaded)
+                return default;
             List<GameObject> roots = ListPool<GameObject>.Shared.Get(16);
 
             scene.GetRootGameObjects(roots);
