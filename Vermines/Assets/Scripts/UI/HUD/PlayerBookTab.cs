@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Vermines.Core.Player;
 using Vermines.Player;
 using Vermines.UI.Utils;
 
@@ -115,25 +116,21 @@ namespace Vermines.UI
             }
         }
 
-        public void UpdateTab(PlayerData player, bool force = false)
+        public void UpdateTab(PlayerStatistics stat, bool force = false)
         {
-            if (force || player.PlayerRef != _playerRef)
-            {
-                _playerRef = player.PlayerRef;
-                UpdateVisuals(player);
+            if (force || stat.PlayerRef != _playerRef) {
+                _playerRef = stat.PlayerRef;
+
+                UpdateVisuals(stat);
             }
         }
 
-        private void UpdateVisuals(PlayerData player)
+        private void UpdateVisuals(PlayerStatistics stat)
         {
             if (_cultistImage != null)
-            {
-                _cultistImage.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Family, "Cultist");
-            }
+                _cultistImage.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, stat.Family, "Cultist");
             if (_cultistBgImage != null)
-            {
-                _cultistBgImage.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Family, "Background");
-            }
+                _cultistBgImage.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, stat.Family, "Background");
         }
 
         /// <summary>

@@ -74,9 +74,9 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            GameDataStorage.Instance.Shop.Sections[_ShopTarget].SetFree(true);
+            Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(true);
 
-            if (player == PlayerController.Local.PlayerRef) {
+            if (player == PlayerController.Local.Object.InputAuthority) {
                 if (UIContextManager.Instance != null)
                     UIContextManager.Instance.PushContext(new FreeCardContext(_ShopTarget));
             }
@@ -91,7 +91,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             _CurrentBuy++;
 
             if (_CurrentBuy == _Amount) {
-                GameDataStorage.Instance.Shop.Sections[_ShopTarget].SetFree(false);
+                Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(false);
 
                 UIContextManager.Instance.PopContext();
                 GameEvents.OnCardPurchased.RemoveListener(OnBuy);
@@ -100,7 +100,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Stop(PlayerRef player)
         {
-            GameDataStorage.Instance.Shop.Sections[_ShopTarget].SetFree(false);
+            Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(false);
         }
 
         public override List<(string, Sprite)> Draw()

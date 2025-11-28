@@ -1,69 +1,59 @@
 ﻿using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
-using Vermines.CardSystem.Elements;
-using Vermines.Gameplay.Phases.Enumerations;
-using Vermines.Player;
 
-namespace Vermines.Gameplay.Phases
-{
+namespace Vermines.Gameplay.Phases {
+
+    using Vermines.CardSystem.Elements;
+    using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.Player;
+
     [CreateAssetMenu(menuName = "Vermines/Phases/SacrificePhase")]
-    public class SacrificePhaseAsset : PhaseAsset
-    {
+    public class SacrificePhaseAsset : PhaseAsset {
+
         #region Properties
 
-        private int _NumberOfCardSacrified = 0;
-        private PlayerRef _CurrentPlayer;
+        public int MaxSacrifice = 1;
 
-        private Coroutine _sacrificeCoroutine;
+        private int _NumberOfCardSacrified = 0;
 
         #endregion
 
         #region Override Methods
 
-        public override void Run(PlayerRef player)
+        public override void Run(PlayerRef playerRef)
         {
-            // Check if the game is currently initialized
-            if (player == PlayerRef.None || PlayerController.Local == null || GameDataStorage.Instance.PlayerDeck == null || GameDataStorage.Instance.PlayerDeck.TryGetValue(player, out PlayerDeck _) == false)
+            if (_Context.GameplayMode.State != Vermines.Core.GameplayMode.GState.Active)
                 return;
-            Reset();
+            base.Run(playerRef);
 
-            _CurrentPlayer = player;
-
-            List<ICard> playedCards = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards;
+            PlayerController player  = _Context.NetworkGame.GetPlayer(_CurrentPlayer);
+            List <ICard> playedCards = player.Deck.PlayedCards;
 
             GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
 
-            if (playedCards.Count > 0 && _CurrentPlayer == PlayerController.Local.PlayerRef)
-            {
+            if (playedCards.Count > 0 && _CurrentPlayer == _Context.Runner.LocalPlayer) {
                 CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
 
                 if (camera != null)
                     camera.GoOnSacrificeLocation();
-            }
-            else if (playedCards.Count == 0)
-            {
+            } else if (playedCards.Count == 0) {
                 OnPhaseEnding(_CurrentPlayer, true);
 
                 GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
             }
         }
 
-        public override void Reset()
+        public override void Deinitialize()
         {
             _NumberOfCardSacrified = 0;
-            _CurrentPlayer = PlayerRef.None;
+
+            base.Deinitialize();
         }
 
         public override void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
             base.OnPhaseEnding(player, logic);
-
-            if (_sacrificeCoroutine != null && PlayerController.Local != null)
-            {
-                PlayerController.Local.StopCoroutine(_sacrificeCoroutine);
-                _sacrificeCoroutine = null;
-            }
 
             GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
         }
@@ -76,24 +66,22 @@ namespace Vermines.Gameplay.Phases
         {
             if (Type != PhaseType.Sacrifice)
                 return;
-            if (_CurrentPlayer != PlayerController.Local.PlayerRef)
+            if (_CurrentPlayer != _Context.Runner.LocalPlayer)
                 return;
-            if (_NumberOfCardSacrified >= GameManager.Instance.SettingsData.MaxSacrificesPerTurn)
+            if (_NumberOfCardSacrified >= MaxSacrifice)
                 return;
-
-            Debug.Log("[Client]: Card Sacrified");
+            PlayerController player = _Context.NetworkGame.GetPlayer(_CurrentPlayer);
 
             int cardId = cardSacrified.ID;
-            ICard card = GameDataStorage.Instance.PlayerDeck[_CurrentPlayer].PlayedCards.Find(c => c.ID == cardId);
+            ICard card = player.Deck.PlayedCards.Find(c => c.ID == cardId);
 
-            if (card != null)
-            {
-                PlayerController.Local.OnCardSacrified(card.ID);
+            if (card != null) {
+                player.OnCardSacrified(card.ID);
+
                 _NumberOfCardSacrified++;
-            }
-            else
-            {
+            } else {
                 Debug.LogWarning($"[Client]: Card {cardId} not found in played cards.");
+
                 GameEvents.OnCardSacrifiedRefused.Invoke(cardSacrified);
             }
         }

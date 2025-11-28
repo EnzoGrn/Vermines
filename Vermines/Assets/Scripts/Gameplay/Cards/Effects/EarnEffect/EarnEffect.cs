@@ -8,6 +8,7 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Cards.Effects;
+    using Vermines.Player;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Earn/Earn data.")]
     public class EarnEffect : AEffect {
@@ -103,21 +104,30 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
-        public override void Play(PlayerRef player)
+        private void Earn(PlayerController player, int amount, DataType earnData)
         {
-            if (Everyone) {
-                foreach (var pData in GameDataStorage.Instance.PlayerData) {
-                    ICommand earnCommand = new EarnCommand(pData.Key, Amount, DataToEarn);
+            ICommand earnCommand = new EarnCommand(player, amount, earnData);
 
-                    CommandInvoker.ExecuteCommand(earnCommand);
+            CommandInvoker.ExecuteCommand(earnCommand);
+        }
+
+        public override void Play(PlayerRef playerRef)
+        {
+            PlayerController originPlayer = Context.NetworkGame.GetPlayer(playerRef);
+
+            if (Everyone) { // Except you
+                List<PlayerController> players = Context.Runner.GetAllBehaviours<PlayerController>();
+
+                foreach (PlayerController player in players) {
+                    if (playerRef == player.Object.InputAuthority)
+                        continue;
+                    Earn(player, Amount, DataToEarn);
                 }
             } else {
-                ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
-
-                CommandInvoker.ExecuteCommand(earnCommand);
+                Earn(originPlayer, Amount, DataToEarn);
             }
 
-            base.Play(player);
+            base.Play(playerRef);
         }
 
         public override List<(string, Sprite)> Draw()

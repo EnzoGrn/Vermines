@@ -6,6 +6,7 @@ namespace Vermines.CardSystem.Data.Effect {
     using System;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Core.Scene;
 
     public interface IEffect {
 
@@ -32,7 +33,7 @@ namespace Vermines.CardSystem.Data.Effect {
         /// Initialize the effect with the card.
         /// </summary>
         /// <param name="card">The card to link to the effect</param>
-        void Initialize(ICard card);
+        void Initialize(SceneContext context, ICard card);
 
         /// <summary>
         /// Function for played the effect.
@@ -62,6 +63,8 @@ namespace Vermines.CardSystem.Data.Effect {
     [System.Serializable]
     public abstract class AEffect : ScriptableObject, IEffect {
 
+        public SceneContext Context;
+
         /// <summary>
         /// The reference of the card.
         /// </summary>
@@ -84,12 +87,13 @@ namespace Vermines.CardSystem.Data.Effect {
 
         #region Methods
 
-        public void Initialize(ICard card)
+        public void Initialize(SceneContext context, ICard card)
         {
-            Card = card;
+            Context = context;
+            Card    = card;
 
             if (SubEffect != null)
-                SubEffect.Initialize(card);
+                SubEffect.Initialize(context, card);
             UpdateDescription();
         }
 

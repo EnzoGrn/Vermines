@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections;
 using Newtonsoft.Json;
-using UnityEngine;
 
 namespace Vermines.ShopSystem.Data {
 
@@ -135,7 +134,7 @@ namespace Vermines.ShopSystem.Data {
         public override ICard ChangeCard(ICard card)
         {
             int slotIndex = -1;
- 
+
             foreach (var kvp in AvailableCards) {
                 if (kvp.Value != null && kvp.Value.ID == card.ID) {
                     slotIndex = kvp.Key;
@@ -171,7 +170,7 @@ namespace Vermines.ShopSystem.Data {
 
                 return Deck1.Draw();
             }
-            
+
             if (Deck2.Count == 0) {
                 Discard2.Reverse();
                 Deck2.Merge(Discard2);

@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.UI;
 using Vermines.CardSystem.Enumerations;
+using Vermines.Core.Player;
+using Vermines.Core.Scene;
 using Vermines.Player;
 using Vermines.UI.Utils;
 
@@ -47,14 +49,17 @@ namespace Vermines.UI.Screen
 
         public override void Show()
         {
-            PlayerRef currentPlayer = GameManager.Instance.GetCurrentPlayer();
-            GameDataStorage.Instance.PlayerData.TryGet(currentPlayer, out PlayerData playerData);
-            _CultistImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, playerData.Family, "Cultist");
+            SceneContext    context = PlayerController.Local.Context;
+            PlayerRef currentPlayer = context.GameplayMode.CurrentPlayer;
+            PlayerController player = context.NetworkGame.GetPlayer(currentPlayer);
+            PlayerStatistics stat   = player.Statistics;
 
-             if (PlayerController.Local != null && currentPlayer == PlayerController.Local.PlayerRef)
+            _CultistImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, stat.Family, "Cultist");
+
+             if (currentPlayer == context.Runner.LocalPlayer)
                 LocalizeMessage("Turn.your");
             else
-                LocalizeMessage("Turn.text", playerData.Nickname);
+                LocalizeMessage("Turn.text", player.Nickname);
 
             base.Show();
             ShowUser();

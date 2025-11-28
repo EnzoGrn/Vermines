@@ -5,21 +5,15 @@ using Fusion;
 
 namespace Vermines.Player {
 
+    using Vermines.Core;
+    using Vermines.Core.Player;
     using Vermines.Gameplay.Chronicle;
 
-    public partial class PlayerController : NetworkBehaviour {
+    public partial class PlayerController : ContextBehaviour, IPlayer {
 
         public void AddChronicle(ChronicleEntry entry)
         {
-            GameManager manager = FindFirstObjectByType<GameManager>();
-
-            if (!manager) {
-                Debug.LogError("[CLIENT]: GameManager not found. Cannot add event to chronicle.");
-
-                return;
-            }
-
-            manager.ChronicleManager.AddEvent(entry);
+            Context.GameplayMode.Announcer.AddEvent(entry);
 
             AskPayload(entry.Id);
         }
@@ -35,20 +29,12 @@ namespace Vermines.Player {
                 return;
             }*/
 
-            GameManager.Instance.RPC_AskPayload(entryId);
+            Context.GameplayMode.RPC_AskPayload(Object.InputAuthority.RawEncoded, entryId);
         }
 
         private void ReceivePayload(string id, string payload)
         {
-            GameManager manager = FindFirstObjectByType<GameManager>();
-
-            if (!manager) {
-                Debug.LogError("[CLIENT]: GameManager not found. Cannot receive event payload.");
-
-                return;
-            }
-
-            ChronicleEntry entry = manager.ChronicleManager.GetHistory().FirstOrDefault(e => e.Id == id);
+            ChronicleEntry entry = Context.GameplayMode.Announcer.GetHistory().FirstOrDefault(e => e.Id == id);
 
             if (entry == null) {
                 Debug.LogWarning($"[CLIENT]: Chronicle entry with ID {id} not found. Cannot receive payload.");
@@ -61,7 +47,7 @@ namespace Vermines.Player {
             entry.DescriptionArgs = ChroniclePayloadHelper.GetDescriptionArgs(payload);
             entry.PayloadJson     = payload;
 
-            manager.ChronicleManager.UpdateEvent(entry);
+            Context.GameplayMode.Announcer.UpdateEvent(entry);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

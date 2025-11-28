@@ -87,31 +87,35 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
-        private void Draw(PlayerRef player, int amount)
+        private void Draw(PlayerController player, int amount)
         {
             for (int i = 0; i < amount; i++) {
                 ICommand drawCommand = new DrawCommand(player);
 
                 CommandResponse command = CommandInvoker.ExecuteCommand(drawCommand);
 
-                if (command.Status == CommandStatus.Success && PlayerController.Local.PlayerRef == player) {
-                    PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
-
-                    GameEvents.InvokeOnDrawCard(deck.Hand.Last());
-                }
+                if (command.Status == CommandStatus.Success && Context.Runner.LocalPlayer == player.Object.InputAuthority)
+                    GameEvents.InvokeOnDrawCard(player.Deck.Hand.Last());
             }
         }
 
-        public override void Play(PlayerRef player)
+        public override void Play(PlayerRef playerRef)
         {
-            if (Everyone) {
-                foreach (var pData in GameDataStorage.Instance.PlayerData)
-                    Draw(pData.Key, Amount);
+            PlayerController originPlayer = Context.NetworkGame.GetPlayer(playerRef);
+
+            if (Everyone) { // Except you
+                List<PlayerController> players = Context.Runner.GetAllBehaviours<PlayerController>();
+
+                foreach (PlayerController player in players) {
+                    if (playerRef == player.Object.InputAuthority)
+                        continue;
+                    Draw(player, Amount);
+                }
             } else {
-                Draw(player, Amount);
+                Draw(originPlayer, Amount);
             }
 
-            base.Play(player);
+            base.Play(playerRef);
         }
 
         public override List<(string, Sprite)> Draw()

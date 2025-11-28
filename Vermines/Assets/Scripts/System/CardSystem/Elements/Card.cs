@@ -2,6 +2,7 @@
 
     using Fusion;
     using Vermines.CardSystem.Data;
+    using Vermines.Core.Scene;
 
     /// <summary>
     /// Interface for a card.
@@ -21,6 +22,8 @@
         public CardData Data { get; set; }
 
         public PlayerRef Owner { get; set; }
+
+        public SceneContext Context { get; set; }
     }
 
     /// <summary>
@@ -44,5 +47,7 @@
         public bool HasBeenActivatedThisTurn { get; set; }
 
         public PlayerRef Owner { get; set; }
+
+        public SceneContext Context { get; set; }
     }
 }

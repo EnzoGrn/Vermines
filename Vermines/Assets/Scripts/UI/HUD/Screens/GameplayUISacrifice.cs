@@ -6,6 +6,7 @@ using Vermines.CardSystem.Enumerations;
 using Vermines.UI.Card;
 using System.Collections.Generic;
 using Vermines.Player;
+using Vermines.Core.Scene;
 
 namespace Vermines.UI.Screen
 {
@@ -183,39 +184,29 @@ namespace Vermines.UI.Screen
 
         protected void GetCardFromType(CardType type)
         {
+            PlayerController player = PlayerController.Local;
+
             currentEntries.Clear();
             currentPage = 0;
 
-            foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Hand)
-            {
+            foreach (var card in player.Deck.Hand) {
                 if (card.Data.Type == type)
-                {
                     currentEntries.Add(new ShopCardEntry(card));
-                }
             }
 
-            foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Equipments)
-            {
+            foreach (var card in player.Deck.Equipments) {
                 if (card.Data.Type == type)
-                {
                     currentEntries.Add(new ShopCardEntry(card));
-                }
             }
 
-            foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].PlayedCards)
-            {
+            foreach (var card in player.Deck.PlayedCards) {
                 if (card.Data.Type == type)
-                {
                     currentEntries.Add(new ShopCardEntry(card));
-                }
             }
 
-            foreach (var card in GameDataStorage.Instance.PlayerDeck[PlayerController.Local.PlayerRef].Discard)
-            {
+            foreach (var card in player.Deck.Discard) {
                 if (card.Data.Type == type)
-                {
                     currentEntries.Add(new ShopCardEntry(card));
-                }
             }
         }
 
@@ -233,10 +224,12 @@ namespace Vermines.UI.Screen
 
         public void OnCardClicked(ICard card, int slodId)
         {
-            if (card == null || GameManager.Instance.IsMyTurn() == false || card.Data.Type != _deckType)
-                return;
+            SceneContext context = PlayerController.Local.Context;
 
+            if (card == null || !context.GameplayMode.IsMyTurn || card.Data.Type != _deckType)
+                return;
             RemovePopupPlugin plugin = Get<RemovePopupPlugin>();
+
             if (plugin == null)
             {
                 Debug.LogErrorFormat(

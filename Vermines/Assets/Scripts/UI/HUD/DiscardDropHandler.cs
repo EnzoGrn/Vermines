@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
+using Vermines.Core.Scene;
 using Vermines.Gameplay.Phases;
 using Vermines.Player;
 using Vermines.UI.GameTable;
@@ -29,7 +30,7 @@ namespace Vermines.UI.Card
             DraggableCard drag = eventData.pointerDrag?.GetComponent<DraggableCard>();
             if (drag == null || slot == null) return;
 
-            if (GameManager.Instance.IsMyTurn() == false)
+            if (!PlayerController.Local.Context.GameplayMode.IsMyTurn)
             {
                 Debug.Log("[DiscardDropHandler] Not your turn, cannot discard card.");
                 drag.ReturnToOriginalPosition();
@@ -49,20 +50,21 @@ namespace Vermines.UI.Card
             {
                 slot.ResetSlot();
                 slot.SetCard(card);
-                GameObject go = HandManager.Instance.GetCardDisplayGO(card);
+                GameObject go = PlayerController.Local.Context.HandManager.GetCardDisplayGO(card);
                 if (go != null)
                 {
                     go.SetActive(false);
                 }
 
-                if (PhaseManager.Instance.Phases.TryGetValue(GameManager.Instance.GetCurrentPhase(), out var phase) && phase is ActionPhaseAsset actionPhase)
-                {
+                PhaseManager phaseManager = PlayerController.Local.Context.GameplayMode.PhaseManager;
+
+                if (phaseManager.Phases.TryGetValue(phaseManager.CurrentPhase, out var phase) && phase is ActionPhaseAsset actionPhase)
                     actionPhase.OnDiscard(card);
-                }
-                else
-                {
+                else {
                     Debug.LogWarning("[DiscardDropHandler] Cannot discard card outside of Action Phase.");
+
                     drag.ReturnToOriginalPosition();
+
                     slot.ResetSlot();
                 }
             }
@@ -75,9 +77,12 @@ namespace Vermines.UI.Card
 
         private void OnDiscardRefused(ICard card)
         {
+            SceneContext context = PlayerController.Local.Context;
+
             // Handle the discard refusal event here if needed
             Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} discard refused.");
-            GameObject go = HandManager.Instance.GetCardDisplayGO(card);
+            GameObject go = context.HandManager.GetCardDisplayGO(card);
+
             if (go != null)
             {
                 go.SetActive(true);
@@ -90,10 +95,11 @@ namespace Vermines.UI.Card
 
             // Reset the slot to the previous card or empty state
             slot.ResetSlot();
-            PlayerRef player = GameManager.Instance.Runner.LocalPlayer;
-            PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
+
+            PlayerDeck deck = PlayerController.Local.Deck;
 
             ICard previousCard = deck.Discard.LastOrDefault();
+
             if (previousCard != null)
             {
                 Debug.Log($"[DiscardDropHandler] Restoring card {previousCard.Data.Name} to discard slot.");

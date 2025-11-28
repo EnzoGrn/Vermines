@@ -89,7 +89,8 @@ namespace Vermines.ShopSystem.Data {
             foreach (var kvp in CardPiles) {
                 var pile = kvp.Value;
 
-                if (pile.Count > 0 && pile[^1].ID == cardId) {
+                if (pile.Count > 0 && pile[^1].ID == cardId)
+                {
                     ICard card = pile[^1];
 
                     pile.RemoveAt(pile.Count - 1);

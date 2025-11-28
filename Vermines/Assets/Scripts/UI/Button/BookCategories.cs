@@ -1,19 +1,19 @@
-using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
-using OMGG.Menu.Screen;
-using Vermines.Menu.Screen;
 
 namespace Vermines.UI {
 
-    public class BookCategories : MenuScreenPlugin {
+    using Vermines.Extension;
+    using Vermines.Core.UI;
+
+    public class BookCategories : UIView {
 
         #region Fields
 
         [Header("Button")]
 
         [SerializeField]
-        private Button _Button;
+        private UIButton _Button;
 
         [Header("Properties")]
 
@@ -23,7 +23,7 @@ namespace Vermines.UI {
         public string CategoryName => _CategoryName;
 
         [SerializeField]
-        private TMP_Text _Label;
+        private TextMeshProUGUI _Label;
 
         [SerializeField]
         private GameObject _ButtonBorder;
@@ -37,28 +37,29 @@ namespace Vermines.UI {
         [Header("Linked Page")]
 
         [SerializeField]
-        private MenuScreenPlugin _LinkedPage;
+        private MonoBehaviour _LinkedPage;
 
-        public MenuScreenPlugin LinkedPage => _LinkedPage;
+        public MonoBehaviour LinkedPage => _LinkedPage;
 
         #endregion
 
-        private MenuUIScreen _SettingsScreen;
-
         #region Override Methods
 
-        public override void Init(MenuUIScreen screen)
+        protected override void OnInitialize()
         {
-            base.Init(screen);
+            base.OnInitialize();
 
-            _SettingsScreen = screen;
+            _Label.SetTextSafe(_CategoryName);
 
-            if (_Label != null)
-                _Label.text = _CategoryName;
             if (_Button != null)
                 _Button.onClick.AddListener(OnCategoryClicked);
-            if (LinkedPage != null)
-                LinkedPage.Init(screen);
+        }
+
+        protected override void OnDeinitialize()
+        {
+            if (_Button != null)
+                _Button.onClick.RemoveListener(OnCategoryClicked);
+            base.OnDeinitialize();
         }
 
         #endregion
@@ -71,9 +72,6 @@ namespace Vermines.UI {
             _Cursor?.SetActive(isActive);
             _Toggle?.SetActive(isActive);
             _LinkedPage?.gameObject.SetActive(isActive);
-
-            if (isActive)
-                _LinkedPage?.Show(_SettingsScreen);
         }
 
         #endregion
@@ -82,7 +80,10 @@ namespace Vermines.UI {
 
         private void OnCategoryClicked()
         {
-            (_SettingsScreen as VMUI_Settings)?.SelectCategory(this);
+            
+            UISettingsView settings = SceneUI.Get<UISettingsView>();
+
+            settings?.SelectCategory(this);
         }
 
         #endregion

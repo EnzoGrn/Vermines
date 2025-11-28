@@ -9,6 +9,7 @@ namespace Vermines.ShopSystem.Commands {
     using Vermines.CardSystem.Elements;
     using Vermines.Player;
     using Vermines.CardSystem.Data;
+    using Vermines.Core.Player;
 
     /// <summary>
     /// This buy command is simulate on all clients but not on the authority object client.
@@ -16,10 +17,10 @@ namespace Vermines.ShopSystem.Commands {
     /// </summary>
     public class CLIENT_BuyCommand : ACommand {
 
-        private readonly PlayerRef _Player;
+        private PlayerController _Player;
         private ShopArgs _Args;
 
-        public CLIENT_BuyCommand(PlayerRef player, ShopArgs shopInfo)
+        public CLIENT_BuyCommand(PlayerController player, ShopArgs shopInfo)
         {
             _Player = player;
             _Args   = shopInfo;
@@ -27,14 +28,13 @@ namespace Vermines.ShopSystem.Commands {
 
         public override CommandResponse Execute()
         {
-            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
-            ICard      card       = _Args.Shop.BuyCard(_Args.ShopType, _Args.CardId);
+            ICard card = _Args.Shop.BuyCard(_Args.ShopType, _Args.CardId);
 
             if (card.Data.Type == CardType.Equipment)
-                playerDeck.Equipments.Add(card);
+                _Player.Deck.Equipments.Add(card);
             else
-                playerDeck.Discard.Add(card);
-            card.Owner = _Player;
+                _Player.Deck.Discard.Add(card);
+            card.Owner = _Player.Object.InputAuthority;
 
             return new CommandResponse(CommandStatus.Success, $"Player {_Player} bought the card {card.Data.Name}.");
         }
@@ -48,12 +48,13 @@ namespace Vermines.ShopSystem.Commands {
     /// </summary>
     public class ADMIN_CheckBuyCommand : ACommand {
 
-        private readonly PlayerRef _Player;
+        private PlayerController _Player;
+
         private readonly PhaseType _CurrentPhase;
 
         private ShopArgs _Parameters;
 
-        public ADMIN_CheckBuyCommand(PlayerRef player, PhaseType phase, ShopArgs parameters)
+        public ADMIN_CheckBuyCommand(PlayerController player, PhaseType phase, ShopArgs parameters)
         {
             _Player       = player;
             _CurrentPhase = phase;
@@ -62,7 +63,7 @@ namespace Vermines.ShopSystem.Commands {
 
         public override CommandResponse Execute()
         {
-            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
+            PlayerDeck playerDeck = _Player.Deck;
 
             // 0. Check if the shop exist
             if (_Parameters.Shop == null)
@@ -88,7 +89,7 @@ namespace Vermines.ShopSystem.Commands {
             ICard card = CardSetDatabase.Instance.GetCardByID(_Parameters.CardId);
 
             // 4. Check if player has enough eloquence
-            int canPay = CanPurchase(GameDataStorage.Instance.PlayerData[_Player], card);
+            int canPay = CanPurchase(_Player.Statistics, card);
 
             if (canPay < 0)
                 return new CommandResponse(CommandStatus.Failure, "Shop_Buy_NotEnoughEloquence", card.Data.Name, (-canPay).ToString());
@@ -107,7 +108,7 @@ namespace Vermines.ShopSystem.Commands {
         /// <summary>
         /// Return the difference between player eloquence and card cost.
         /// </summary>
-        private int CanPurchase(PlayerData playerData, ICard card)
+        private int CanPurchase(PlayerStatistics playerData, ICard card)
         {
             int playerEloquence = playerData.Eloquence;
             int cardCost        = card.Data.CurrentEloquence;
@@ -125,10 +126,10 @@ namespace Vermines.ShopSystem.Commands {
     /// </summary>
     public class ADMIN_BuyCommand : ACommand {
 
-        private readonly PlayerRef _Player;
+        private PlayerController _Player;
         private ShopArgs _Parameters;
 
-        public ADMIN_BuyCommand(PlayerRef player, ShopArgs parameters)
+        public ADMIN_BuyCommand(PlayerController player, ShopArgs parameters)
         {
             _Player     = player;
             _Parameters = parameters;
@@ -136,21 +137,19 @@ namespace Vermines.ShopSystem.Commands {
 
         public override CommandResponse Execute()
         {
-            PlayerData playerData = GameDataStorage.Instance.PlayerData[_Player];
-            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
-            ICard      card       = _Parameters.Shop.BuyCard(_Parameters.ShopType, _Parameters.CardId);
+            ICard card = _Parameters.Shop.BuyCard(_Parameters.ShopType, _Parameters.CardId);
 
             // 1. Process the purchase
-            int remainingE = Purchase(_Player, playerData, card);
+            int remainingE = Purchase(_Player, _Player.Statistics, card);
 
             // 2. Move the card to the player's deck
             if (card.Data.Type == CardType.Equipment)
-                playerDeck.Equipments.Add(card);
+                _Player.Deck.Equipments.Add(card);
             else
-                playerDeck.Discard.Add(card);
+                _Player.Deck.Discard.Add(card);
 
             // 3. Attribute the owner of the card
-            card.Owner = _Player;
+            card.Owner = _Player.Object.InputAuthority;
 
             return new CommandResponse(CommandStatus.Success, $"Player {_Player} bought the card {card.Data.Name}.", remainingE.ToString());
         }
@@ -160,13 +159,13 @@ namespace Vermines.ShopSystem.Commands {
         /// <summary>
         /// Process the purchase and return the new eloquence of the player.
         /// </summary>
-        private int Purchase(PlayerRef player, PlayerData playerData, ICard card)
+        private int Purchase(PlayerController player, PlayerStatistics stats, ICard card)
         {
             if (card.Data.IsFree)
-                return playerData.Eloquence;
-            int newEloquence = playerData.Eloquence - card.Data.CurrentEloquence;
+                return stats.Eloquence;
+            int newEloquence = stats.Eloquence - card.Data.CurrentEloquence;
 
-            GameDataStorage.Instance.SetEloquence(player, newEloquence);
+            player.SetEloquence(newEloquence);
 
             return newEloquence;
         }

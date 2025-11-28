@@ -42,7 +42,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            if (player == PlayerController.Local.PlayerRef) {
+            if (player == Context.Runner.LocalPlayer) {
                 var context = new ReplaceEffectContext(dict => {
                     ReplaceCard(dict);
                 });
@@ -62,9 +62,10 @@ namespace Vermines.Gameplay.Cards.Effect {
                 return;
             }
 
-            foreach (var shopSlot in dictShopSlot) {
-                PlayerController.Local.OnShopReplaceCard(shopSlot.Key, shopSlot.Value);
-            }
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
+
+            foreach (var shopSlot in dictShopSlot)
+                player.OnShopReplaceCard(shopSlot.Key, shopSlot.Value);
         }
 
         public override List<(string, Sprite)> Draw()

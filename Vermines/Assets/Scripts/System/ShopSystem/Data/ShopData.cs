@@ -14,7 +14,7 @@ namespace Vermines.ShopSystem.Data {
         #region Properties
 
         [JsonProperty]
-        public Dictionary<ShopType, ShopSectionBase> Sections;
+        public Dictionary<ShopType, ShopSectionBase> Sections = new();
 
         #endregion
 
@@ -22,7 +22,7 @@ namespace Vermines.ShopSystem.Data {
 
         public void Initialize()
         {
-            Sections ??= new Dictionary<ShopType, ShopSectionBase>();
+            Sections ??= new();
         }
 
         public void AddSection(ShopType type, ShopSectionBase section)

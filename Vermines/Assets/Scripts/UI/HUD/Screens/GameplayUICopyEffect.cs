@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
+using Vermines.Core.Scene;
+using Vermines.Player;
 using Vermines.UI.Card;
 using Vermines.UI.Plugin;
 
@@ -229,9 +231,10 @@ namespace Vermines.UI.Screen
 
         public void OnCardClicked(ICard card, int slodId)
         {
-            if (card == null || GameManager.Instance.IsMyTurn() == false || card.Data.Type != _deckType)
-                return;
+            SceneContext context = PlayerController.Local.Context;
 
+            if (card == null || !context.GameplayMode.IsMyTurn || card.Data.Type != _deckType)
+                return;
             CopyPopupPlugin plugin = Get<CopyPopupPlugin>();
             if (plugin == null)
             {

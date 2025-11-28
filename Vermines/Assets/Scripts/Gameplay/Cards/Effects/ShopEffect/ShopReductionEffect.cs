@@ -74,14 +74,14 @@ namespace Vermines.Gameplay.Cards.Effect {
         public override void Play(PlayerRef player)
         {
             foreach (var shopTarget in _ShopTarget)
-                GameDataStorage.Instance.Shop.ApplyReduction(shopTarget, _Amount);
+                Context.GameplayMode.Shop.ApplyReduction(shopTarget, _Amount);
             base.Play(player);
         }
 
         public override void Stop(PlayerRef player)
         {
             foreach (var shopTarget in _ShopTarget)
-                GameDataStorage.Instance.Shop.RemoveReduction(shopTarget, _Amount);
+                Context.GameplayMode.Shop.RemoveReduction(shopTarget, _Amount);
             base.Stop(player);
         }
 

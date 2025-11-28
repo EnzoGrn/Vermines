@@ -46,16 +46,18 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            if (player != PlayerController.Local.PlayerRef)
+            if (player != Context.Runner.LocalPlayer)
                 return;
             // TODO: Subscribe to the function for reduced in silence the partisan's effect
         }
 
-        public override void Stop(PlayerRef player)
+        public override void Stop(PlayerRef playerRef)
         {
-            if (player != PlayerController.Local.PlayerRef)
+            if (playerRef != Context.Runner.LocalPlayer)
                 return;
-            PlayerController.Local.RemoveReducedInSilenced(_CardToReduced, _SoulsOfTheCardReducedBeforeReduction);
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
+
+            player.RemoveReducedInSilenced(_CardToReduced, _SoulsOfTheCardReducedBeforeReduction);
         }
 
         private void ReducedInSilenced(ICard card)
@@ -65,9 +67,11 @@ namespace Vermines.Gameplay.Cards.Effect {
             _CardToReduced = card;
             _SoulsOfTheCardReducedBeforeReduction = _CardToReduced.Data.CurrentSouls;
 
-            RoundEventDispatcher.RegisterEvent(PlayerController.Local.PlayerRef, Stop);
+            RoundEventDispatcher.RegisterEvent(PlayerController.Local.Object.InputAuthority, Stop);
 
-            PlayerController.Local.OnReducedInSilenced(_CardToReduced);
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
+
+            player.OnReducedInSilenced(_CardToReduced);
         }
 
         public override List<(string, Sprite)> Draw()

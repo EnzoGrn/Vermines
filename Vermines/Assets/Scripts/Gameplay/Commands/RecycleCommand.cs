@@ -12,13 +12,14 @@ namespace Vermines.Gameplay.Commands {
 
     public class ADMIN_CheckRecycleCommand : ACommand {
 
-        private readonly PlayerRef _Player;
+        private PlayerController _Player;
+
         private readonly PhaseType _CurrentPhase;
 
         private readonly ICard _Card;
         private readonly int _CardId;
 
-        public ADMIN_CheckRecycleCommand(PlayerRef player, PhaseType currentPhase, int cardId)
+        public ADMIN_CheckRecycleCommand(PlayerController player, PhaseType currentPhase, int cardId)
         {
             _Player       = player;
             _CurrentPhase = currentPhase;
@@ -41,9 +42,7 @@ namespace Vermines.Gameplay.Commands {
                 return new CommandResponse(CommandStatus.CriticalError, "Recycle_WrongCardType", _CardId.ToString());
 
             // 3. Check if the card is in the player hand.
-            PlayerDeck playerDeck = GameDataStorage.Instance.PlayerDeck[_Player];
-
-            if (!playerDeck.Hand.Contains(_Card))
+            if (!_Player.Deck.Hand.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Recycle_CardNotInHand", _CardId.ToString(), _Card.Data.Name);
             return new CommandResponse(CommandStatus.Success, "", _Card.Data.Name);
         }
@@ -52,14 +51,14 @@ namespace Vermines.Gameplay.Commands {
     public class CLIENT_CardRecycleCommand : ACommand
     {
 
-        private readonly PlayerRef _Player;
+        private PlayerController _Player;
 
         private readonly ICard _Card;
         private readonly int   _CardId;
 
         private ShopSectionBase _Shop;
 
-        public CLIENT_CardRecycleCommand(PlayerRef player, int cardID, ShopSectionBase section)
+        public CLIENT_CardRecycleCommand(PlayerController player, int cardID, ShopSectionBase section)
         {
             _Player = player;
             _Card   = CardSetDatabase.Instance.GetCardByID(cardID);
@@ -69,17 +68,13 @@ namespace Vermines.Gameplay.Commands {
 
         public override CommandResponse Execute()
         {
-            PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[_Player];
+            PlayerDeck deck = _Player.Deck;
 
             deck.Hand.Remove(_Card);
 
-            GameDataStorage.Instance.PlayerDeck[_Player] = deck;
-
+            _Player.UpdateDeck(deck);
             _Shop.ReturnCard(_Card);
-
-            PlayerData playerData = GameDataStorage.Instance.PlayerData[_Player];
-
-            GameDataStorage.Instance.SetEloquence(_Player, playerData.Eloquence + _Card.Data.RecycleEloquence);
+            _Player.SetEloquence(_Player.Statistics.Eloquence + _Card.Data.RecycleEloquence);
 
             return new CommandResponse(CommandStatus.Success, "");
         }

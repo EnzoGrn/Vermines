@@ -87,19 +87,23 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
-        public override void Play(PlayerRef player)
+        public override void Play(PlayerRef playerRef)
         {
-            if (PlayerController.Local.PlayerRef == player)
-                PlayerController.Local.NetworkEventCardEffect(Card.ID);
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
+
+            if (Context.Runner.LocalPlayer == playerRef)
+                player.NetworkEventCardEffect(Card.ID);
         }
 
-        public override void NetworkEventFunction(PlayerRef player, string data)
+        public override void NetworkEventFunction(PlayerRef playerRef, string data)
         {
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
+
             ICommand spendCommand = new SpendCommand(player, Amount, DataToSpend);
 
             CommandInvoker.ExecuteCommand(spendCommand);
 
-            base.Play(player);
+            base.Play(playerRef);
         }
 
         public override List<(string, Sprite)> Draw()

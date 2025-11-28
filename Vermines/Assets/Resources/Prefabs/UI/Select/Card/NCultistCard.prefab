@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7722621568776783408}
   - component: {fileID: 1974461806740580742}
   - component: {fileID: -8807116727590889341}
-  - component: {fileID: 5880726315976728513}
+  - component: {fileID: 4750420578289362002}
   m_Layer: 5
   m_Name: NCultistCard
   m_TagString: Untagged
@@ -98,10 +98,9 @@ MonoBehaviour:
   _IconImage: {fileID: 884364517779219129}
   _CultistImage: {fileID: 5734766317172536430}
   _CultistNameText: {fileID: 3345855972281955184}
-  _DisabledOverlay: {fileID: 0}
   _SelectedOverlay: {fileID: 4745163012348274030}
-  _Button: {fileID: 5880726315976728513}
---- !u!114 &5880726315976728513
+  _Button: {fileID: 4750420578289362002}
+--- !u!114 &4750420578289362002
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -110,7 +109,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2534786246442862420}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 083be555c9e0f534da3d4766038029ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -144,20 +143,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1974461806740580742}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: -8807116727590889341}
-        m_TargetAssemblyTypeName: Vermines.Menu.Screen.Tavern.Network.NetworkCultistSelectButton,
-          Vermines
-        m_MethodName: SelectCharacter
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
+  _PlayClickSound: 1
+  _CustomClickSound:
+    Clips: []
+    Volume: 1
+    PitchShift: 0
+    MaxPitchChange: 0
+    Delay: 0
+    Loop: 0
+    FadeIn: 0
+    FadeOut: 0
+    Repeat: 0
+    RepeatPlayCount: 0
+    RepeatDelay: 0
 --- !u!1 &3039067715527533125
 GameObject:
   m_ObjectHideFlags: 0
