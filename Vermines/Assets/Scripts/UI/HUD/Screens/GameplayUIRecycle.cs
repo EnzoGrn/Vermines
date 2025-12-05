@@ -29,6 +29,7 @@ namespace Vermines.UI.Screen
 
         // Merchant Image depends on the player faction
         [SerializeField] private Image merchantImage;
+        private bool _merchantImageInitialized = false;
 
         #endregion
 
@@ -49,7 +50,6 @@ namespace Vermines.UI.Screen
         {
             base.Init();
 
-            GameEvents.OnGameInitialized.AddListener(RefreshUI);
         }
 
         /// <summary>
@@ -89,11 +89,12 @@ namespace Vermines.UI.Screen
 
         private void RefreshUI()
         {
-            if (merchantImage != null && merchantImage.sprite == null)
+            if (!_merchantImageInitialized)
             {
                 CardFamily family = PlayerController.Local.Statistics.Family;
                 Debug.Log("[GameplayUIRecycle] Setting merchant image for family: " + family);
                 merchantImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, family, "Merchant");
+                _merchantImageInitialized = true;
             }
 
             // Update totals
@@ -104,8 +105,6 @@ namespace Vermines.UI.Screen
             cardCountText.text = cardCount.ToString();
             eloquenceText.text = totalEloquence.ToString();
             soulsText.text = totalSouls.ToString();
-
-            GameEvents.OnGameInitialized.RemoveListener(RefreshUI);
         }
 
         private void CleanupAndClose()
