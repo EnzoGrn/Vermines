@@ -7,6 +7,7 @@ using Vermines.CardSystem.Data.Effect;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Player;
+using Vermines.UI.Card;
 using Vermines.UI.Utils;
 
 namespace Vermines.UI.Screen
@@ -49,7 +50,6 @@ namespace Vermines.UI.Screen
         public override void Init()
         {
             base.Init();
-
         }
 
         /// <summary>
@@ -59,12 +59,23 @@ namespace Vermines.UI.Screen
         {
             base.Show();
 
-            //_previousClickHandler = GameplayController.Instance.Table.CurrentClickHandler;
-
             _recycleHandler = new RecycleClickHandler();
             _recycleHandler.OnSelectionChanged += RefreshUI;
 
-            //GameplayController.Instance.Table.SetClickHandler(_recycleHandler);
+            List<GameObject> playerCards = PlayerController.Local.Context.HandManager.HandCards;
+
+            // Get the previous click handler to restore it later
+            _previousClickHandler = playerCards[0].GetComponent<CardDisplay>().GetClickHandler();
+
+            foreach (var cardGO in playerCards)
+            {
+                if (!cardGO.TryGetComponent<CardDisplay>(out var card)) continue;
+
+                if (card.Card?.Data.Type == CardType.Tools)
+                    card.SetClickHandler(_recycleHandler);
+                else
+                    card.SetClickHandler(null);
+            }
 
             validateButton.onClick.AddListener(OnButtonValidate);
             cancelButton.onClick.AddListener(OnButtonCancel);
@@ -79,8 +90,8 @@ namespace Vermines.UI.Screen
         {
             base.Hide();
 
-            //validateButton.onClick.RemoveListener(OnValidate);
-            //cancelButton.onClick.RemoveListener(OnCancel);
+            validateButton.onClick.RemoveListener(OnButtonValidate);
+            cancelButton.onClick.RemoveListener(OnButtonCancel);
         }
 
         #endregion
@@ -109,8 +120,13 @@ namespace Vermines.UI.Screen
 
         private void CleanupAndClose()
         {
-            //GameplayController.Instance.Table.SetClickHandler(_previousClickHandler);
-
+            List<GameObject> playerCards = PlayerController.Local.Context.HandManager.HandCards;
+            foreach (var cardGO in playerCards)
+            {
+                CardDisplay card = cardGO.GetComponent<CardDisplay>();
+                card.SetSelected(false);
+                card.SetClickHandler(_previousClickHandler);
+            }
             _recycleHandler.OnSelectionChanged -= RefreshUI;
             Controller.Hide();
         }
@@ -124,6 +140,7 @@ namespace Vermines.UI.Screen
             foreach (var card in _recycleHandler.SelectedCards)
             {
                 PlayerController.Local.OnRecycle(card.ID);
+                PlayerController.Local.Context.HandManager.RemoveCard(card);
             }
 
             CleanupAndClose();

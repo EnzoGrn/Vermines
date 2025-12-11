@@ -31,6 +31,8 @@ namespace Vermines.UI.Card
 
         public bool HasCards() => handCards.Count > 0;
 
+        public List<GameObject> HandCards => handCards;
+
         #endregion
 
         #region Events
