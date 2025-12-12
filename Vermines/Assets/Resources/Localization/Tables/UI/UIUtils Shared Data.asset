@@ -83,6 +83,18 @@ MonoBehaviour:
     m_Key: Turn.your
     m_Metadata:
       m_Items: []
+  - m_Id: 72180418989416448
+    m_Key: Recycle.dialogue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72500224695361536
+    m_Key: Recycle.validate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72500278587973632
+    m_Key: Recycle.cancel
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -74,7 +74,6 @@ namespace Vermines.Gameplay.Commands {
 
             _Player.UpdateDeck(deck);
             _Shop.ReturnCard(_Card);
-            _Player.SetEloquence(_Player.Statistics.Eloquence + _Card.Data.RecycleEloquence);
 
             return new CommandResponse(CommandStatus.Success, "");
         }

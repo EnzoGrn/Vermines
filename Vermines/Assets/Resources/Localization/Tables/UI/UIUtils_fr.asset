@@ -87,6 +87,19 @@ MonoBehaviour:
     m_Localized: C'est ton tour
     m_Metadata:
       m_Items: []
+  - m_Id: 72180418989416448
+    m_Localized: "Vous n'\xEAtes pas satisfait de vos cartes-outils ? Donnez-les-moi,
+      je vous les \xE9changerai contre un peu d'\xE9loquence."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72500224695361536
+    m_Localized: Echanger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72500278587973632
+    m_Localized: Annuler
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

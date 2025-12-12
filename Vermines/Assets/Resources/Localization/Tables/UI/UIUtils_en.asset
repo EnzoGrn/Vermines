@@ -87,6 +87,19 @@ MonoBehaviour:
     m_Localized: It's your turn
     m_Metadata:
       m_Items: []
+  - m_Id: 72180418989416448
+    m_Localized: Not satisfied with your tool cards? Give them to me so I can exchange
+      them for a little eloquence.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72500224695361536
+    m_Localized: Validate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72500278587973632
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
