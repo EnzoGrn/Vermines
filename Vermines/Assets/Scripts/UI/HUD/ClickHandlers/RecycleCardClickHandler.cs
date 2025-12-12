@@ -32,7 +32,7 @@ public class RecycleClickHandler : ICardClickHandler
     {
         int total = 0;
         foreach (var card in _selectedCards)
-            total += card.Data.Eloquence;
+            total += card.Data.RecycleEloquence;
         return total;
     }
 
