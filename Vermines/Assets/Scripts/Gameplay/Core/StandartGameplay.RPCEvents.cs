@@ -453,6 +453,8 @@ namespace Vermines.Gameplay.Core {
 
             ICard cardToRecycle = CardSetDatabase.Instance.GetCardByID(cardID);
 
+            player.SetEloquence(player.Statistics.Eloquence + cardToRecycle.Data.RecycleEloquence);
+
             ChronicleEntry entry = new() {
                 Id = KeyGen.UUID(),
                 TimestampUtc = DateTime.UtcNow.Ticks,

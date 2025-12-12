@@ -37,6 +37,13 @@ namespace Vermines.UI.Screen
         [InlineHelp, SerializeField]
         protected UnityEngine.UI.Button _BookButton;
 
+        /// <summary>
+        /// The recycle button.
+        /// Can't be null, but can be disabled.
+        /// </summary>
+        [InlineHelp, SerializeField]
+        protected UnityEngine.UI.Button _RecycleButton;
+
         #endregion
 
         partial void AwakeUser();
@@ -203,6 +210,22 @@ namespace Vermines.UI.Screen
                     return;
             }
             Controller.Show<GameplayUIBook>(lastScreen);
+        }
+
+        /// <summary>
+        /// Is called when the <see cref="_RecycleButton"/> is pressed using SendMessage() from the UI object.
+        /// Intitiates the connection and expects the connection object to set further screen states.
+        /// </summary>
+        protected virtual void OnRecycleButtonPressed()
+        {
+            Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
+            if (lastScreen != null)
+            {
+                // If we are already on the recycle, do nothing.
+                if (lastScreen is GameplayUIRecycle)
+                    return;
+            }
+            Controller.Show<GameplayUIRecycle>(lastScreen);
         }
 
         protected virtual void OnCardButtonPressed(ICard card, int slotId)
