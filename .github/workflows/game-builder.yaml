@@ -26,7 +26,7 @@ env:
 
   # The version of Unity to use.
   # NOTE: Update this version if the company update his environment.
-  unityVersion: '6000.0.25f1'
+  unityVersion: '6000.2.15f1'
 
 jobs:
 
