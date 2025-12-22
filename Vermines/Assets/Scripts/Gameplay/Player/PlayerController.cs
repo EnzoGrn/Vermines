@@ -153,7 +153,13 @@ namespace Vermines.Player {
                 if (!_PlayerDataSent && Runner.IsForward && Context.PlayerData != null) {
                     string unityId = Context.PlayerData.UnityID ?? string.Empty;
 
-                    RPC_SendPlayerData(Object.InputAuthority, Context.PeerUserID, Context.PlayerData.Nickname, Context.PlayerData.Cultist != null ? Context.PlayerData.Cultist.family : CardFamily.None, unityId);
+                    RPC_SendPlayerData(
+                        Object.InputAuthority,
+                        Context.PeerUserID ?? string.Empty,
+                        Context.PlayerData.Nickname ?? string.Empty,
+                        Context.PlayerData.Cultist != null ? Context.PlayerData.Cultist.family : CardFamily.None,
+                        unityId ?? string.Empty
+                    );
 
                     _PlayerDataSent = true;
                 }
