@@ -15,4 +15,11 @@ namespace OMGG.DesignPattern {
          */
         void Undo();
     }
+
+    public abstract class ACommand : ICommand {
+
+        public abstract CommandResponse Execute();
+
+        public virtual void Undo() { }
+    }
 }

@@ -21,11 +21,19 @@ namespace Vermines.UI.Card
         [SerializeField] private Image _backgroundImage;
         [SerializeField] private Image _descriptionImage;
 
-        private ICardClickHandler _clickHandler = null;
+        [Header("Selection Visual")]
+        [SerializeField] private float liftHeight = 30f;
 
-        // TODO: add the card type (partisan, object, etc.)
+        private ICardClickHandler _clickHandler = null;
+        private Vector3 _originalPosition;
+        private bool _isSelected = false;
 
         public ICard Card { get; private set; }
+
+        private void Awake()
+        {
+            _originalPosition = transform.localPosition;
+        }
 
         public void Display(ICard card, ICardClickHandler clickHandler = null)
         {
@@ -77,19 +85,16 @@ namespace Vermines.UI.Card
                 _ => "Unknown"
             };
 
-            LoadVisuals(data.Name, family, type);
-
-            // --- Effects
-            //RefreshEffects(data.Draw());
+            LoadVisuals(data.Sprite, data.SpriteName, family, type);
         }
 
-        private void LoadVisuals(string characterName, string family, string cardType)
+        private void LoadVisuals(Sprite sprite, string characterName, string family, string cardType)
         {
             string basePath = $"Sprites/Card/{family}";
             string characterPath = $"{basePath}/{characterName}";
             string backgroundPath = $"{basePath}/Background";
 
-            _characterImage.sprite = Resources.Load<Sprite>(characterPath);
+            _characterImage.sprite = sprite == null ? Resources.Load<Sprite>(characterPath) : sprite;
             _backgroundImage.sprite = Resources.Load<Sprite>(backgroundPath);
 
             if (!_characterImage.sprite)
@@ -125,6 +130,27 @@ namespace Vermines.UI.Card
         public void SetClickHandler(ICardClickHandler clickHandler)
         {
             _clickHandler = clickHandler;
+        }
+
+        public ICardClickHandler GetClickHandler()
+        {
+            return _clickHandler;
+        }
+
+        public void SetSelected(bool selected)
+        {
+            if (_isSelected == selected) return;
+
+            _isSelected = selected;
+
+            if (selected)
+            {
+                transform.localPosition = _originalPosition + Vector3.up * liftHeight;
+            }
+            else
+            {
+                transform.localPosition = _originalPosition;
+            }
         }
     }
 }

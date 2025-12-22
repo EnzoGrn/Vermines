@@ -8,6 +8,7 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Cards.Effects;
+    using Vermines.Player;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Earn/Earn data.")]
     public class EarnEffect : AEffect {
@@ -17,6 +18,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         private static readonly string eloquenceTemplate   = "<b><color=purple>{0}E</color></b>";
         private static readonly string soulTemplate        = "<b><color=red>{0}A</color></b>";
         private static readonly string descriptionTemplate = "Earn ";
+        private static readonly string descriptionEveryoneTemplate = "Everyone earns ";
         private static readonly string linkerTemplate      = " then ";
 
         #endregion
@@ -64,6 +66,20 @@ namespace Vermines.Gameplay.Cards.Effect {
         }
 
         [SerializeField]
+        private bool _Everyone = false;
+
+        public bool Everyone
+        {
+            get => _Everyone;
+            set
+            {
+                _Everyone = value;
+
+                UpdateDescription();
+            }
+        }
+
+        [SerializeField]
         private AEffect _SubEffect = null;
 
         public override AEffect SubEffect
@@ -83,23 +99,43 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public Sprite EloquenceIcon = null;
         public Sprite SoulIcon      = null;
+        public Sprite EveryoneIcon  = null;
         public Sprite ThenIcon      = null;
 
         #endregion
 
-        public override void Play(PlayerRef player)
+        private void Earn(PlayerController player, int amount, DataType earnData)
         {
-            ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
+            ICommand earnCommand = new EarnCommand(player, amount, earnData);
 
             CommandInvoker.ExecuteCommand(earnCommand);
+        }
 
-            base.Play(player);
+        public override void Play(PlayerRef playerRef)
+        {
+            PlayerController originPlayer = Context.NetworkGame.GetPlayer(playerRef);
+
+            if (Everyone) { // Except you
+                List<PlayerController> players = Context.Runner.GetAllBehaviours<PlayerController>();
+
+                foreach (PlayerController player in players) {
+                    if (playerRef == player.Object.InputAuthority)
+                        continue;
+                    Earn(player, Amount, DataToEarn);
+                }
+            } else {
+                Earn(originPlayer, Amount, DataToEarn);
+            }
+
+            base.Play(playerRef);
         }
 
         public override List<(string, Sprite)> Draw()
         {
             List<(string, Sprite)> elements = new();
 
+            if (Everyone)
+                elements.Add((null, EveryoneIcon));
             if (DataToEarn == DataType.Eloquence) {
                 elements.Add(($"+{Amount}E", null));
                 elements.Add((null, EloquenceIcon));
@@ -118,10 +154,12 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         protected override void UpdateDescription()
         {
+            string description = Everyone ? descriptionEveryoneTemplate : descriptionTemplate;
+
             if (DataToEarn == DataType.Eloquence)
-                Description = $"{descriptionTemplate}{string.Format(eloquenceTemplate, Amount)}";
+                Description = $"{description}{string.Format(eloquenceTemplate, Amount)}";
             else if (DataToEarn == DataType.Soul)
-                Description = $"{descriptionTemplate}{string.Format(soulTemplate, Amount)}";
+                Description = $"{description}{string.Format(soulTemplate, Amount)}";
             if (SubEffect != null) {
                 string subDescription = SubEffect.Description;
 
@@ -139,6 +177,8 @@ namespace Vermines.Gameplay.Cards.Effect {
                 EloquenceIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Eloquence");
             if (SoulIcon == null)
                 SoulIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Souls");
+            if (EveryoneIcon == null)
+                EveryoneIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Everyone");
             if (ThenIcon == null)
                 ThenIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Then");
         }

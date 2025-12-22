@@ -11,14 +11,16 @@ using Fusion;
 
 public static class GameEvents
 {
+    // --- Initialize ---
+    public static TrackedEvent OnGameInitialized = new("OnGameInitialized");
+
     // --- GENERAL ---
     public static TrackedEvent OnAttemptNextPhase = new("OnAttemptNextPhase");
     public static TrackedEvent<ICard> OnCardDrawn = new("OnCardDrawn");
     public static TrackedEvent<PhaseType> OnPhaseChanged = new("OnPhaseChanged");
     public static TrackedEvent<int> OnTurnChanged = new("OnTurnChanged");
     public static TrackedEvent OnPlayerInitialized = new("OnPlayerInitialized");
-    public static TrackedEvent<PlayerData> OnPlayerUpdated = new("OnPlayerUpdated");
-    public static TrackedEvent<NetworkDictionary<PlayerRef, PlayerData>> OnPlayersUpdated = new("OnPlayersUpdated");
+    public static TrackedEvent<PlayerController> OnPlayerUpdated = new("OnPlayerUpdated");
     public static TrackedEvent<PlayerRef, PlayerRef> OnPlayerWin = new("OnPlayerWin");
 
     // --- CARD PLAYING ---
@@ -31,9 +33,10 @@ public static class GameEvents
     public static TrackedEvent<ICard> OnCardSacrifiedRefused = new("OnCardSacrifiedRefused");
     public static TrackedEvent<ICard> OnCardSacrified = new("OnCardSacrified");
 
+    // --- CARD RECYCLING ---
+    public static TrackedEvent<ICard> OnCardRecycled = new("OnCardRecycled");
+
     // --- CARD DISCARD ---
-    public static TrackedEvent<ICard> OnCardDiscardedRequested = new("OnCardDiscardedRequested");
-    public static TrackedEvent<ICard> OnCardDiscardedRequestedNoEffect = new("OnCardDiscardedRequestedNoEffect");
     public static TrackedEvent<ICard> OnCardDiscardedRefused = new("OnCardDiscardedRefused");
     public static TrackedEvent<ICard> OnCardDiscarded = new("OnCardDiscarded");
 
@@ -45,13 +48,14 @@ public static class GameEvents
     public static Dictionary<ShopType, TrackedEvent<int, ICard>> OnShopsEvents = new();
     public static TrackedEvent<ShopType, int> OnCardPurchaseRequested = new("OnCardPurchaseRequested");
     public static TrackedEvent<ShopType, int> OnCardPurchased = new("OnCardPurchased");
-    public static TrackedEvent<ICard, int> OnEquipmentCardPurchased = new("OnEquipmentCardPurchased");
+    public static TrackedEvent<ICard> OnEquipmentCardPurchased = new("OnEquipmentCardPurchased");
     public static TrackedEvent<ShopType, int> OnShopCardReplaced = new("OnShopCardReplaced");
     public static TrackedEvent<ShopType, List<ShopCardEntry>> OnShopUpdated = new("OnShopUpdated");
     public static TrackedEvent<ShopType, Dictionary<int, ICard>> OnShopRefilled = new("OnShopRefilled");
 
     // --- CARD EFFECTS ---
-    public static TrackedEvent<ICard> OnCardCopiedEffect = new("OnCardCopiedEffect");
+    public static TrackedEvent<ICard> OnEffectSelectCard = new("OnEffectSelectCard");
+    public static TrackedEvent<ICard> OnCardReborned = new("OnCardReborned");
 
     // --- DISCARD PILE ---
     public static TrackedEvent OnDiscardShuffled = new("OnDiscardShuffled");
@@ -71,21 +75,9 @@ public static class GameEvents
         OnCardDrawn.Invoke(card);
     }
 
-    public static void InvokeOnPlayerUpdated(NetworkDictionary<PlayerRef, PlayerData> playerData)
+    public static void InvokeOnCardPurchaseRequested(ShopType shopType, int cardId)
     {
-        PlayerRef playerRef = GameManager.Instance.PlayerTurnOrder[GameManager.Instance.CurrentPlayerIndex];
-        if (playerRef == null) return;
-
-        if (playerData.TryGet(playerRef, out PlayerData data))
-        {
-            OnPlayerUpdated.Invoke(data);
-        }
-    }
-
-    public static void InvokeOnCardPurchaseRequested(ShopType shopType, int slotIndex)
-    {
-        Debug.Log($"[GameEvents] InvokeOnCardPurchaseRequested: {shopType}, Slot: {slotIndex}");
-        OnCardPurchaseRequested.Invoke(shopType, slotIndex);
+        OnCardPurchaseRequested.Invoke(shopType, cardId);
     }
 
     public static void InvokeOnPlayerWin(PlayerRef winnerRef, PlayerRef localPlayerRef)

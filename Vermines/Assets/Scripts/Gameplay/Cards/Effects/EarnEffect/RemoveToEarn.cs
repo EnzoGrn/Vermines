@@ -73,14 +73,10 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            if (player != PlayerController.Local.PlayerRef)
+            if (player != Context.Runner.LocalPlayer)
                 return;
-
             if (UIContextManager.Instance != null)
-            {
                 UIContextManager.Instance.PushContext(new RemoveToEarnContext(_CardType));
-            }
-
             GameEvents.OnCardSacrificedRequested.AddListener(CardToRemove);
         }
 
@@ -91,13 +87,15 @@ namespace Vermines.Gameplay.Cards.Effect {
 
                 return;
             }
+
             if (UIContextManager.Instance != null)
-            {
                 UIContextManager.Instance.PopContextOfType<RemoveToEarnContext>();
-            }
             GameEvents.OnCardSacrificedRequested.RemoveListener(CardToRemove);
-            PlayerController.Local.OnCardSacrified(card.ID);
-            PlayerController.Local.NetworkEventCardEffect(Card.ID);
+
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
+
+            player.OnCardSacrified(card.ID);
+            player.NetworkEventCardEffect(Card.ID);
         }
 
         public override void NetworkEventFunction(PlayerRef player, string data)

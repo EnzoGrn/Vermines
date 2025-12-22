@@ -57,7 +57,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            if (player == PlayerController.Local.PlayerRef) {
+            if (player == Context.Runner.LocalPlayer) {
                 var context = new ForceDiscardContext(OnDiscarded);
                 UIContextManager.Instance.PushContext(context);
             }
@@ -65,9 +65,12 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public void OnDiscarded(ICard card)
         {
-            PlayerController.Local.OnDiscard(card.ID);
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
-            base.Play(PlayerController.Local.PlayerRef);
+            player.OnDiscard(card.ID);
+
+            base.Play(player.Object.InputAuthority);
+
             UIContextManager.Instance.PopContext();
         }
 

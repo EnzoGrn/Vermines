@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.UI;
-using Vermines;
 using Vermines.CardSystem.Enumerations;
+using Vermines.Core;
+using Vermines.Core.Scene;
+using Vermines.Core.Services;
+using Vermines.Player;
 
 public class FinalAnimationManager : MonoBehaviour
 {
@@ -21,7 +24,12 @@ public class FinalAnimationManager : MonoBehaviour
     #endregion
 
     #region Private Properties
+
     private bool _isWinner = false;
+
+    [SerializeField]
+    private List<string> _SceneToUnload;
+
     #endregion
 
     private void Start()
@@ -53,22 +61,18 @@ public class FinalAnimationManager : MonoBehaviour
 
     public void OnPlayerWin(PlayerRef winnerRef, PlayerRef localPlayerRef)
     {
-        if (GameManager.Instance == null)
-            return;
+        SceneContext context = PlayerController.Local.Context;
 
         // Get the family of the winner
-        CardFamily winnerFamily = GameDataStorage.Instance.PlayerData[winnerRef].Family;
+        CardFamily winnerFamily = context.NetworkGame.GetPlayer(winnerRef).Statistics.Family;
 
         // TODO: Set the image of the god from playerData
         // _godImg.texture = GameDataStorage.Instance.PlayerData[winnerRef].GodImage;
 
-        if (winnerRef == localPlayerRef)
-        {
+        if (winnerRef == localPlayerRef) {
             // If the family is mine, I win
             StartFinalAnimation(true, winnerFamily);
-        }
-        else
-        {
+        } else {
             // If the family is not mine, I lose
             StartFinalAnimation(false, winnerFamily);
         }
@@ -82,9 +86,14 @@ public class FinalAnimationManager : MonoBehaviour
             _winText.text = "You lose!";
     }
 
-    public async void ReturnToMenu()
+    public void ReturnToMenu()
     {
-        await GameManager.Instance.ReturnToMenu();
+        SceneContext context = PlayerController.Local.Context;
+
+        if (context != null && context.GameplayMode != null)
+            context.GameplayMode.StopGame();
+        else
+            Global.Networking.StopGame();
     }
 
     public void SkipCinematic()
@@ -96,15 +105,8 @@ public class FinalAnimationManager : MonoBehaviour
 
     public void UnloadSceneForCinematic()
     {
-        if (GameManager.Instance == null)
-            return;
-
-        List<string> sceneToUnload = new() {
-            "UI",
-            "GameplayCameraTravelling"
-        };
-
-        GameManager.Instance.UnloadSceneForCinematic(sceneToUnload);
+        foreach (string scene in _SceneToUnload)
+            StartCoroutine(PersistentSceneService.Instance.UnloadScene(scene));
     }
 
     public void OnPauseRequest()

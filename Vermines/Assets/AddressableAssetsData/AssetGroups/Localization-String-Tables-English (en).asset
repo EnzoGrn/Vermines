@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 143c084fafd9c7245a9f235b9bfffefe
+    m_Address: VerminesChronicle_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 25497d18ce301ec48b40cc9f9bfb731f
     m_Address: CultistMessages_en
     m_ReadOnly: 1
@@ -40,8 +46,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 41d3c7e94cc7162488cf5c89ef43a358
+    m_Address: Back-end Error_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 433f28c505af5e64a822da93a2755136
     m_Address: Final Animation Dialog_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6ed25c5af84d09e4d9aa07ec14aa600d
+    m_Address: CardName_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
@@ -58,6 +76,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3be3276ef0ca914bb2eb129f2bdedf4
+    m_Address: ServerStatus_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e191a84da19e8a143ac4fcd66ba8e5bb
     m_Address: WaitingRoomTable_en

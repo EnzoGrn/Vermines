@@ -13,6 +13,7 @@ public class SacrificeContext : IUIContext
         {
             tableScreen = gameplayUIController.Get<GameplayUITable>();
             tableScreen.UpdateUIForPhase(Vermines.Gameplay.Phases.Enumerations.PhaseType.Sacrifice);
+            gameplayUIController.Show(tableScreen);
         }
     }
 

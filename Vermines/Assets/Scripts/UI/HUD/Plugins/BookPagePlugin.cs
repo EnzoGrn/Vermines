@@ -1,5 +1,9 @@
 ﻿using Fusion;
+using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
+using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Utilities;
 using Vermines.Player;
 using Vermines.UI.Utils;
 
@@ -40,7 +44,7 @@ namespace Vermines.UI.Plugin
         [SerializeField] private Image cultistImage;
         [SerializeField] private Image cultistBgImage;
 
-        private PlayerRef _playerRef;
+        private PlayerController _Player;
 
         [Header("Card Decks Buttons")]
 
@@ -128,54 +132,57 @@ namespace Vermines.UI.Plugin
             base.Hide();
         }
 
-        public void ShowPlayerInfo(PlayerData player)
+        public void ShowPlayerInfo(PlayerController player)
         {
-            playerNameText.text = player.PlayerRef == PlayerController.Local.PlayerRef ? "You" : player.Nickname;
-            eloquenceText.text = $"{player.Eloquence} / 20";
-            soulsText.text = $"{player.Souls} / 100";
-            familyText.text = $"{player.Family}";
-            familyIcon.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Family, "Icon");
-            cultistImage.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Family, "Cultist");
-            cultistBgImage.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Family, "Background");
+            _Player = player;
+
+            playerNameText.text = player.Object.InputAuthority == player.Context.Runner.LocalPlayer ? "You" : player.Nickname;
+            eloquenceText.text  = $"{player.Statistics.Eloquence} / {player.Context.GameplayMode.MaxEloquence}";
+            soulsText.text      = $"{player.Statistics.Souls} / {player.Context.GameplayMode.SoulsLimit}";
+            familyText.text     = $"{player.Statistics.Family}";
+
+            familyIcon.sprite     = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Statistics.Family, "Icon");
+            cultistImage.sprite   = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Statistics.Family, "Cultist");
+            cultistBgImage.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Statistics.Family, "Background");
 
             EquipmentBookSection equipmentSection = GetComponentInChildren<EquipmentBookSection>();
-            if (equipmentSection != null)
-            {
-                equipmentSection.UpdateEquipment(GameDataStorage.Instance.PlayerDeck[player.PlayerRef].Equipments);
-            }
 
-            if (leftPage.TryGetComponent<CanvasGroup>(out var canvasGroup))
-            {
+            if (equipmentSection != null)
+                equipmentSection.UpdateEquipment(player.Deck.Equipments);
+
+            if (leftPage.TryGetComponent<CanvasGroup>(out var canvasGroup)) {
                 canvasGroup.alpha = 1f;
                 canvasGroup.interactable = true;
                 canvasGroup.blocksRaycasts = true;
             }
 
-            if (rightPage.TryGetComponent<CanvasGroup>(out var canvasGroupRight))
-            {
+            if (rightPage.TryGetComponent<CanvasGroup>(out var canvasGroupRight)) {
                 canvasGroupRight.alpha = 1f;
                 canvasGroupRight.interactable = true;
                 canvasGroupRight.blocksRaycasts = true;
             }
-
-            _playerRef = player.PlayerRef;
         }
 
         public void ShowDiscardedCards()
         {
-            deckHolder.Show(GameDataStorage.Instance.PlayerDeck[_playerRef].Discard);
+            List<ICard> discardedC = new(_Player.Deck.Discard);
+            List<ICard> discardedT = new(_Player.Deck.ToolDiscard);
+
+            discardedC.Merge(discardedT);
+
+            deckHolder.Show(discardedC);
             deckHolder.SetTitle("Discarded Cards");
         }
 
         public void ShowPlayedCards()
         {
-            deckHolder.Show(GameDataStorage.Instance.PlayerDeck[_playerRef].PlayedCards);
+            deckHolder.Show(_Player.Deck.PlayedCards);
             deckHolder.SetTitle("Played Cards");
         }
 
         public void ShowSacrificedCards()
         {
-            deckHolder.Show(GameDataStorage.Instance.PlayerDeck[_playerRef].Graveyard);
+            deckHolder.Show(_Player.Deck.Graveyard);
             deckHolder.SetTitle("Sacrificed Cards");
         }
     }

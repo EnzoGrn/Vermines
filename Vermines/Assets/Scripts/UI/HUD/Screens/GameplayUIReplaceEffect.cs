@@ -143,23 +143,21 @@ namespace Vermines.UI.Screen
         public void OnDoneButtonPressed()
         {
             onDoneCallback?.Invoke(shopReplacements);
-            UIContextManager.Instance.PopContext();
             GameEvents.OnCardClickedInShopWithSlotIndex.RemoveListener(OnShopCardClicked);
             Controller.Hide();
         }
 
-        public void OnShopCardClicked(ShopType shopType, int slotId)
+        public void OnShopCardClicked(ShopType shopType, int cardId)
         {
-            Debug.Log($"[ReplaceEffect] Card clicked in shop: {shopType} at slot {slotId}");
-            if (shopReplacements == null)
-                shopReplacements = new Dictionary<ShopType, int>();
-            if (shopReplacements.ContainsKey(shopType))
-            {
-                Debug.Log($"[ReplaceEffect] Already have a replacement stored for {shopType} at slot {shopReplacements[shopType]}");
+            shopReplacements ??= new();
+
+            if (shopReplacements.ContainsKey(shopType)) {
+                Debug.Log($"[ReplaceEffect] Already have a replacement stored for {shopType}: {shopReplacements[shopType]}");
+
                 return;
             }
-            Debug.Log($"[ReplaceEffect] Replacing {shopType} at slot {slotId}");
-            shopReplacements.Add(shopType, slotId);
+            shopReplacements.Add(shopType, cardId);
+
             SetShopDone(shopType);
         }
 

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1897c79de7e4e414ea43f5adf2b902e6, type: 3}
+  m_Name: SacrificeAPartisan
+  m_EditorClassIdentifier: 
+  _Description: Sacrifice a <b>Partisan</b>
+  _SubEffect: {fileID: 0}
+  SacrificedIcon: {fileID: 21300000, guid: 156c42c3701633942bcfe423ce840169, type: 3}
+  SoulIcon: {fileID: 21300000, guid: a3c4b0860b11f9145b70a7d40201e163, type: 3}
+  Then: {fileID: 21300000, guid: 24a76bff2862f8a4fbc25bf2c54630fa, type: 3}

@@ -6,6 +6,7 @@ using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.UI.Card;
 using Vermines.Player;
 using Vermines.CardSystem.Elements;
+using Vermines.Core.Scene;
 
 namespace Vermines.UI.Screen
 {
@@ -35,6 +36,13 @@ namespace Vermines.UI.Screen
         /// </summary>
         [InlineHelp, SerializeField]
         protected UnityEngine.UI.Button _BookButton;
+
+        /// <summary>
+        /// The recycle button.
+        /// Can't be null, but can be disabled.
+        /// </summary>
+        [InlineHelp, SerializeField]
+        protected UnityEngine.UI.Button _RecycleButton;
 
         #endregion
 
@@ -112,21 +120,15 @@ namespace Vermines.UI.Screen
 
         protected void UpdateTurnButton(PhaseType phase)
         {
-            if (_TurnButton == null) return;
-
-            if (GameManager.Instance == null)
-            {
-                _TurnButton.interactable = false;
-                _TurnButton.GetComponentInChildren<Text>().text = Translate("ui.button.wait_your_turn");
+            if (_TurnButton == null || !PlayerController.Local)
                 return;
-            }
+            SceneContext context = PlayerController.Local.Context;
 
-            bool isMyTurn = GameManager.Instance.IsMyTurn();
+            bool isMyTurn = context.GameplayMode.IsMyTurn;
+
             _TurnButton.interactable = isMyTurn;
 
-            var labelKey = isMyTurn
-                ? GetButtonTranslationKey(PhaseManager.Instance.CurrentPhase)
-                : "ui.button.wait_your_turn";
+            var labelKey = isMyTurn ? GetButtonTranslationKey(context.GameplayMode.PhaseManager.CurrentPhase) : "ui.button.wait_your_turn";
 
             _TurnButton.GetComponentInChildren<Text>().text = Translate(labelKey);
         }
@@ -160,19 +162,22 @@ namespace Vermines.UI.Screen
         {
             //UIContextManager.Instance.ClearContext();
 
-            if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice)
-            {
+            SceneContext context      = PlayerController.Local.Context;
+            PhaseManager phaseManager = context.GameplayMode.PhaseManager;
+
+            if (phaseManager.CurrentPhase == PhaseType.Sacrifice) {
                 Controller.ShowDualPopup(new SacrificeSkipStrategy());
+
                 return;
             }
 
-            if (HandManager.Instance.HasCards() && PhaseManager.Instance.CurrentPhase == PhaseType.Action)
-            {
+            if (context.HandManager.HasCards() && phaseManager.CurrentPhase == PhaseType.Action) {
                 Controller.ShowDualPopup(new DefaultDiscardStrategy());
+
                 return;
             }
 
-            PhaseManager.Instance.Phases[PhaseManager.Instance.CurrentPhase].OnPhaseEnding(PlayerController.Local.PlayerRef, false);
+            phaseManager.Phases[phaseManager.CurrentPhase].OnPhaseEnding(context.Runner.LocalPlayer, false);
         }
 
         /// <summary>
@@ -205,6 +210,22 @@ namespace Vermines.UI.Screen
                     return;
             }
             Controller.Show<GameplayUIBook>(lastScreen);
+        }
+
+        /// <summary>
+        /// Is called when the <see cref="_RecycleButton"/> is pressed using SendMessage() from the UI object.
+        /// Intitiates the connection and expects the connection object to set further screen states.
+        /// </summary>
+        protected virtual void OnRecycleButtonPressed()
+        {
+            Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
+            if (lastScreen != null)
+            {
+                // If we are already on the recycle, do nothing.
+                if (lastScreen is GameplayUIRecycle)
+                    return;
+            }
+            Controller.Show<GameplayUIRecycle>(lastScreen);
         }
 
         protected virtual void OnCardButtonPressed(ICard card, int slotId)

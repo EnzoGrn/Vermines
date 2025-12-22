@@ -74,12 +74,9 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            Debug.Log($"FreeCardEffect.Play() - Player: {player} - Amount: {_Amount} - ShopTarget: {_ShopTarget}");
-            GameDataStorage.Instance.Shop.Sections[_ShopTarget].SetFree(true);
+            Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(true);
 
-            // TODO: Link this to a shop event OnBuy that is link to a specific shop!!!
-            if (player == PlayerController.Local.PlayerRef)
-            {
+            if (player == PlayerController.Local.Object.InputAuthority) {
                 if (UIContextManager.Instance != null)
                     UIContextManager.Instance.PushContext(new FreeCardContext(_ShopTarget));
             }
@@ -87,14 +84,14 @@ namespace Vermines.Gameplay.Cards.Effect {
             GameEvents.OnCardPurchased.AddListener(OnBuy);
         }
 
-        public void OnBuy(ShopType shopType, int slotId)
+        public void OnBuy(ShopType shopType, int cardId)
         {
             if (_ShopTarget != shopType)
                 return;
             _CurrentBuy++;
 
             if (_CurrentBuy == _Amount) {
-                GameDataStorage.Instance.Shop.Sections[_ShopTarget].SetFree(false);
+                Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(false);
 
                 UIContextManager.Instance.PopContext();
                 GameEvents.OnCardPurchased.RemoveListener(OnBuy);
@@ -103,7 +100,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Stop(PlayerRef player)
         {
-            GameDataStorage.Instance.Shop.Sections[_ShopTarget].SetFree(false);
+            Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(false);
         }
 
         public override List<(string, Sprite)> Draw()

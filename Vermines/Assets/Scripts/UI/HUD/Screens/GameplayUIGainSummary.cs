@@ -1,14 +1,19 @@
 ﻿using Fusion;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Localization;
-using Vermines.Player;
 using Vermines.CardSystem.Enumerations;
+using Vermines.Gameplay.Phases.Data;
+using Vermines.Player;
+using Vermines.CardSystem.Elements;
+using Vermines.Core.Player;
 
 namespace Vermines.UI.Screen
 {
     using Text = TMPro.TMP_Text;
 
-    public partial class GameplayUIGainSummary : GameplayUIScreen
+    public partial class GameplayUIGainSummary : GameplayUIScreen, IParamReceiver<GainSummaryData>
     {
         #region Attributes
 
@@ -35,6 +40,8 @@ namespace Vermines.UI.Screen
         /// </summary>
         [InlineHelp, SerializeField]
         protected Text _MessageText;
+
+        private GainSummaryData _summary;
 
         #endregion
 
@@ -76,6 +83,11 @@ namespace Vermines.UI.Screen
         {
             base.Show();
 
+            if (Controller.GetLastScreen(out GameplayUIScreen turnScreen) && turnScreen is GameplayUITurn)
+            {
+                Controller.RemoveLastScreen();
+            }
+
             ShowUser();
 
             LoadAndAnnounce();
@@ -96,32 +108,23 @@ namespace Vermines.UI.Screen
 
         #region Methods
 
+        public void SetParam(GainSummaryData param)
+        {
+            _summary = param;
+        }
+
         public void LoadAndAnnounce()
         {
-            if (_raceName == CardFamily.None)
-            {
-                foreach (var player in GameDataStorage.Instance.PlayerData)
-                {
-                    Debug.Log(player);
-                    if (player.Key == PlayerController.Local.PlayerRef)
-                    {
-                        PlayerData playerData = player.Value;
-                        _raceName = playerData.Family;
-                    }
-                }
-            }
+            _raceName = PlayerController.Local.Statistics.Family;
 
-            int baseValue = 2;
-            int followerValue = 0;
-            int equipmentValue = 0;
-            int total = baseValue + followerValue + equipmentValue;
-            LocalizedString localized = new LocalizedString("CultistMessages", _raceName.ToString());
+            LocalizedString localized = new("CultistMessages", _raceName.ToString());
+
             string msg = localized.GetLocalizedString();
+
             msg = msg
-                .Replace("{baseValue}", baseValue.ToString())
-                .Replace("{followerValue}", followerValue.ToString())
-                .Replace("{equipmentValue}", equipmentValue.ToString())
-                .Replace("{total}", total.ToString());
+                .Replace("{baseValue}", _summary.BaseValue.ToString())
+                .Replace("{followerValue}", _summary.FollowerValue.ToString())
+                .Replace("{total}", _summary.Total.ToString());
 
             _MessageText.text = msg;
         }
@@ -136,6 +139,16 @@ namespace Vermines.UI.Screen
         protected virtual void OnCloseButtonPressed()
         {
             Controller.Hide();
+
+            List<ICard> playedCards = PlayerController.Local.Deck.PlayedCards;
+
+            if (playedCards.Find(c => c.Data.HasEffectOfType(EffectType.Activate)) == null) {
+                GameEvents.OnAttemptNextPhase.Invoke();
+
+                Controller.Hide<GameplayUIGainSummary>();
+            }
+            else
+                Controller.Show<GameplayUITable>();
         }
 
         #endregion

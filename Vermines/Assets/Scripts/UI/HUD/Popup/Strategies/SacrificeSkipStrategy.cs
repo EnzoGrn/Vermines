@@ -1,4 +1,5 @@
-﻿using Vermines.Gameplay.Phases;
+﻿using Vermines.Core.Scene;
+using Vermines.Gameplay.Phases;
 using Vermines.Player;
 
 public class SacrificeSkipStrategy : IDiscardPopupStrategy
@@ -11,7 +12,10 @@ public class SacrificeSkipStrategy : IDiscardPopupStrategy
 
     public void OnConfirm()
     {
-        PhaseManager.Instance.Phases[PhaseManager.Instance.CurrentPhase].OnPhaseEnding(PlayerController.Local.PlayerRef, false);
+        SceneContext context      = PlayerController.Local.Context;
+        PhaseManager phaseManager = context.GameplayMode.PhaseManager;
+
+        phaseManager.Phases[phaseManager.CurrentPhase].OnPhaseEnding(context.Runner.LocalPlayer, false);
     }
 
     public void OnCancel()

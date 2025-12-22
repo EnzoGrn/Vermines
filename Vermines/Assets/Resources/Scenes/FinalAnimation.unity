@@ -173,6 +173,9 @@ MonoBehaviour:
   _narrationDialog: {fileID: 1484241894}
   _playableDirector: {fileID: 1016808696}
   _skipButton: {fileID: 1981965644}
+  _SceneToUnload:
+  - UI
+  - GameplayCameraTravelling
 --- !u!114 &32697544
 MonoBehaviour:
   m_ObjectHideFlags: 0

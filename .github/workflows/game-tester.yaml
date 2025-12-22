@@ -21,20 +21,20 @@ env:
 
   # -- Variables --
 
-  # ! The expiration date is 2025-09-23 so when it's expired, the build will fail, and it will need an update of license.
+  # ! The expiration date is 2026-09-21 so when it's expired, the build will fail, and it will need an update of license.
   # NOTE: When the UNITY_LICENSE will be update, please add the new expiration date here.
-  stopDate: '2025-09-23T16:18:03'
+  stopDate: '2026-09-21T09:42:02'
 
   # Path of the project in the repository.
   projectPath: 'Vermines'
 
   # The version of Unity to use.
   # NOTE: Update this version if the company update his environment.
-  unityVersion: '6000.0.25f1'
+  unityVersion: '6000.2.15f1'
 
   # ! If the version of Unity change, know that the docker image may need an update.
   # You can found other version: https://hub.docker.com/r/unityci/editor/tags
-  dockerImage: 'unityci/editor:windows-6000.0.25f1-windows-il2cpp-3.1.0'
+  dockerImage: 'unityci/editor:windows-6000.2.15f1-windows-il2cpp-3.2.1'
 
 jobs:
 

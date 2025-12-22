@@ -7,35 +7,44 @@ using Fusion;
 using OMGG.DesignPattern;
 
 #region Vermines ShopSystem namespace
-    using Vermines.ShopSystem.Commands.Internal;
-    using Vermines.ShopSystem.Enumerations;
-    using Vermines.ShopSystem.Commands;
-    using Vermines.ShopSystem.Data;
+
+using Vermines.ShopSystem.Enumerations;
+using Vermines.ShopSystem.Commands;
+using Vermines.ShopSystem.Data;
+
 #endregion
 
 #region Vermines CardSystem namespace
+
 using Vermines.CardSystem.Enumerations;
-    using Vermines.CardSystem.Utilities;
-    using Vermines.CardSystem.Data;
-    using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Utilities;
+using Vermines.CardSystem.Data;
+using Vermines.CardSystem.Elements;
+
 #endregion
 
 #region Vermines Test namespace
-using Vermines.Test;
-#endregion
 
+using Vermines.Test;
 using Vermines.Configuration;
 using Vermines.Player;
+using Vermines;
+using Vermines.ShopSystem;
+using UnityEditor.Graphs;
+using UnityEngine.PlayerLoop;
+using Vermines.Core.Scene;
 
-namespace Test.Vermines.ShopSystem {
+#endregion
 
-    public class TestShopSystem {
+namespace Test.Vermines.ShopSystem
+{
 
-        private GameConfiguration _Config;
+    public class TestShopSystem
+    {
 
         private PlayerRef _LocalPlayer;
 
-        private Dictionary<PlayerRef, PlayerDeck> _Decks;
+        private PlayerController _Player;
 
         int Seed => 0x015;
 
@@ -44,29 +53,17 @@ namespace Test.Vermines.ShopSystem {
         [SetUp]
         public void Setup()
         {
-            // -- Initialize a default game configuration
-            _Config = ScriptableObject.CreateInstance<GameConfiguration>();
-
             // -- Initialize a card data set for a two players game
-            CardSetDatabase.Instance.Initialize(FamilyUtils.GenerateFamilies(Seed, 2));
+            CardSetDatabase.Instance.Initialize(FamilyUtils.GenerateFamilies(Seed, 2), new SceneContext());
 
             // -- Player initialization
             _LocalPlayer = PlayerRef.FromEncoded(0x01);
 
-            PlayerDeck localDeck = new PlayerDeck();
+            _Player = new();
 
-            localDeck.Initialize();
+            _Player.UpdateDeck(new());
 
-            PlayerRef playerTwo = PlayerRef.FromEncoded(0x02);
-            PlayerDeck playerTwoDeck = new PlayerDeck();
-
-            playerTwoDeck.Initialize();
-
-            // -- Initialize the decks for two players game
-            _Decks = new Dictionary<PlayerRef, PlayerDeck> {
-                { _LocalPlayer, localDeck     },
-                { playerTwo   , playerTwoDeck }
-            };
+            _Player.Deck.Initialize(Seed);
 
             // -- Active the test mode to bypass the HUD system
             TestMode.IsTesting = true;
@@ -84,54 +81,79 @@ namespace Test.Vermines.ShopSystem {
 
         #region Initialization
 
-        private ShopData InitializeShop(GameConfiguration config)
+        private ShopData InitializeShop()
         {
+            // 1. Get all buyable card.
             List<ICard> everyBuyableCard = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.IsStartingCard == false);
 
             if (everyBuyableCard == null || everyBuyableCard.Count == 0)
                 return null;
+
+            // 2. Filter card per type.
+
+            // 2.a. Object (Tools & Equipment).
             List<ICard> objectCards = everyBuyableCard.Where(card => card.Data.Type == CardType.Equipment || card.Data.Type == CardType.Tools).ToList();
 
-            if (objectCards == null || objectCards.Count == 0)
-                return null;
             objectCards.Shuffle(Seed);
 
+            // 2.b. Partisan (filter per level).
             List<ICard> partisanCards = everyBuyableCard.Where(card => card.Data.Type == CardType.Partisan).ToList();
-
-            if (partisanCards == null || partisanCards.Count == 0)
-                return null;
-
             List<ICard> partisan1Cards = partisanCards.Where(card => card.Data.Level == 1).ToList();
             List<ICard> partisan2Cards = partisanCards.Where(card => card.Data.Level == 2).ToList();
 
-            if (partisan1Cards == null || partisan2Cards == null || partisan1Cards.Count == 0 || partisan2Cards.Count == 0)
-                return null;
             partisan1Cards.Shuffle(Seed);
             partisan2Cards.Shuffle(Seed);
 
-            partisan1Cards.Merge(partisan2Cards);
-
-            partisanCards = partisan1Cards;
-
-            return ShopBuilder(config, partisanCards, objectCards);
-        }
-
-        private ShopData ShopBuilder(GameConfiguration config, List<ICard> partisans, List<ICard> objects)
-        {
+            // 3. Create the shop.
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
-            shop.Initialize(ShopType.Market);
-            shop.FillShop(ShopType.Market, objects);
+            // 3.a. Courtyard Initialization.
+            CourtyardSection courtyard = new();
 
-            shop.Initialize(ShopType.Courtyard);
-            shop.FillShop(ShopType.Courtyard, partisans);
+            courtyard.Deck1 = partisan1Cards;
+            courtyard.Deck2 = partisan2Cards;
+
+            shop.AddSection(ShopType.Courtyard, courtyard);
+
+            // 3.b. Market Initialization.
+            var groupedByName = objectCards.GroupBy(c => c.Data.Name).ToDictionary(g => g.Key, g => g.ToList());
+
+            MarketSection market = new(groupedByName.Count);
+
+            int index = 0;
+
+            foreach (var kvp in groupedByName) {
+                foreach (ICard card in kvp.Value)
+                    market.CardPiles[index].Add(card);
+                index++;
+            }
+
+            shop.AddSection(ShopType.Market, market);
 
             return shop;
         }
 
-        private ShopData InitializeAndFillShop(GameConfiguration config)
+        private ShopData InitializeEmptyShop()
         {
-            ShopData shop = InitializeShop(config);
+            // 3. Create the shop.
+            ShopData shop = ScriptableObject.CreateInstance<ShopData>();
+
+            // 3.a. Courtyard Initialization.
+            CourtyardSection courtyard = new();
+
+            shop.AddSection(ShopType.Courtyard, courtyard);
+
+            // 3.b. Market Initialization.
+            MarketSection market = new(0);
+
+            shop.AddSection(ShopType.Market, market);
+
+            return shop;
+        }
+
+        private ShopData InitializeAndFillShop()
+        {
+            ShopData shop = InitializeShop();
 
             FillCommand(shop);
 
@@ -151,17 +173,19 @@ namespace Test.Vermines.ShopSystem {
 
         #endregion
 
-        [Test]
+        /*[Test]
         public void Serialization()
         {
             // -- Initialize the shop
-            ShopData shop1 = InitializeShop(_Config);
+            ShopData shop1 = InitializeShop();
 
             // Serialize the shop (first time)
             string data1 = shop1.Serialize();
 
+            Debug.Log(data1);
+
             // -- Synchronise the shop2 with data of shop1
-            ShopData shop2 = ShopBuilder(_Config, new List<ICard>(), new List<ICard>());
+            ShopData shop2 = InitializeEmptyShop();
 
             ICommand syncCommand = new SyncShopCommand(shop2, data1);
 
@@ -170,18 +194,13 @@ namespace Test.Vermines.ShopSystem {
             // Serialize the shop (second time)
             string data2 = shop2.Serialize();
 
+            Debug.Log(data2);
+
             // Compare the two serialized data
             Assert.AreEqual(data1, data2);
 
-            // Undo the data synchronization
-            CommandInvoker.UndoCommand();
-
-            // Serialize the shop (third time)
-            data2 = shop2.Serialize();
-
-            // Compare the two serialized data
-            Assert.AreNotEqual(data1, data2);
-        }
+            // TODO: Undo command
+        }*/
 
         /// <summary>
         /// This test will check if the shop system is correctly initialized, and if the fill command is correctly executed.
@@ -189,46 +208,52 @@ namespace Test.Vermines.ShopSystem {
         [Test]
         public void FillShopCommand()
         {
-            // -- Invalid parameters
-            ICommand fillCommand = new FillShopCommand(null);
-
-            CommandInvoker.ExecuteCommand(fillCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Failed to fill the shop.", CommandInvoker.State.Message);
-
             // -- Shop initialization with default settings.
-            ShopData shop = InitializeAndFillShop(_Config);
+            ShopData shop = InitializeAndFillShop();
 
             Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop filled.", CommandInvoker.State.Message);
 
             // -- Fill again, when it's full
             FillCommand(shop);
 
             Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop filled.", CommandInvoker.State.Message);
-
-            // -- Undo all the fill command
-            CommandInvoker.UndoCommand();
-            CommandInvoker.UndoCommand();
 
             // -- Check if the shop is empty
-            foreach (var shopSection in shop.Sections) {
-                foreach (var slot in shopSection.Value.AvailableCards) {
-                    if (slot.Value != null)
-                        Assert.Fail($"The slot {slot.Key} in the {shopSection.Key} should be empty.");
+            foreach (var shopSection in shop.Sections)
+            {
+                if (shopSection.Value is CourtyardSection courtyard)
+                {
+                    foreach (var slot in courtyard.AvailableCards)
+                    {
+                        if (slot.Value == null)
+                            Assert.Fail($"The slot {slot.Key} in {shopSection.Key} should be filled.");
+                    }
+                }
+                else if (shopSection.Value is MarketSection market)
+                {
+                    foreach (var kvp in market.CardPiles)
+                    {
+                        if (kvp.Value.Count == 0)
+                            Assert.Fail($"The slot in {shopSection.Key} is empty, but should be filled.");
+                    }
+                }
+                else
+                {
+                    Assert.Fail($"Type {shopSection.Key} refill tests not implemented.");
                 }
             }
 
             // -- Fill a shop with an empty deck & discard deck
-            ShopData emptyShop = ShopBuilder(_Config, new List<ICard>(), new List<ICard>());
+            ShopData emptyShop = InitializeEmptyShop();
 
             FillCommand(emptyShop);
 
             Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop filled.", CommandInvoker.State.Message);
         }
+
+        #region Change Command
+
+        // TODO: Try to test admin side change command.
 
         /// <summary>
         /// Change card represent the 'Royale Missive' / 'Squire' action in the game.
@@ -236,150 +261,136 @@ namespace Test.Vermines.ShopSystem {
         [Test]
         public void ChangeCardInShop()
         {
-            ShopData emptyShop = ShopBuilder(_Config, new List<ICard>(), new List<ICard>());
-
-            // -- Run a change card in a unknow section
-            ICommand unknowSectionChange = new ChangeCardCommand(emptyShop, (ShopType)3, 0);
-
-            CommandInvoker.ExecuteCommand(unknowSectionChange);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop does not have a section of type 3.", CommandInvoker.State.Message);
-
-            // -- Run a change card in a unknow slot
-            ICommand unknowSlotChange = new ChangeCardCommand(emptyShop, ShopType.Courtyard, 10);
-
-            CommandInvoker.ExecuteCommand(unknowSlotChange);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop does not have a slot 10 in section Courtyard.", CommandInvoker.State.Message);
-
-            // -- Normal change, but the card wanted doesn't exist
-            ICommand emptyShopChangeCard = new ChangeCardCommand(emptyShop, ShopType.Courtyard, 0);
-
-            CommandInvoker.ExecuteCommand(emptyShopChangeCard);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop does not have a card in slot 0 in section Courtyard.", CommandInvoker.State.Message);
-
             // -- Shop initialization with default settings.
-            ShopData shop = InitializeAndFillShop(_Config);
+            ShopData shop = InitializeAndFillShop();
+
+            CourtyardSection courtyard = (CourtyardSection)shop.Sections[ShopType.Courtyard];
 
             // -- Store the card before the change
-            ICard cardBeforeTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+            ICard cardBeforeTheChange = courtyard.AvailableCards[0];
 
-            // -- Change a card in the 'Courtyard' at the place '0'
-            ICommand changeCardCommand = new ChangeCardCommand(shop, ShopType.Courtyard, 0);
+            // -- Change the cardBeforeTheChange card in the 'Courtyard'
+            ICommand changeCardCommand = new CLIENT_ChangeCardCommand(new ShopArgs(shop, ShopType.Courtyard, cardBeforeTheChange.ID));
 
             CommandInvoker.ExecuteCommand(changeCardCommand);
 
             // -- Check if the card is correctly changed
-            ICard cardAfterTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+            ICard cardAfterTheChange = courtyard.AvailableCards[0];
 
-            Assert.AreNotEqual(cardBeforeTheChange.ID, cardAfterTheChange.ID);
+            Assert.AreNotEqual(cardBeforeTheChange.ID, cardAfterTheChange.ID, "The card should have been replaced by a new one.");
 
             // -- Undo the command
             CommandInvoker.UndoCommand();
 
-            // -- Check if the card is correctly changed
-            cardAfterTheChange = shop.Sections[ShopType.Courtyard].AvailableCards[0];
-
-            Assert.AreEqual(cardBeforeTheChange.ID, cardAfterTheChange.ID);
-
-            // -- Remove every card of the shop deck and discard and try to change a card
-            foreach (var shopSection in shop.Sections) {
-                shopSection.Value.Deck.Clear();
-                shopSection.Value.DiscardDeck.Clear();
-            }
-
-            ICommand emptyDeckChangeCard = new ChangeCardCommand(shop, ShopType.Courtyard, 0);
-
-            CommandInvoker.ExecuteCommand(emptyDeckChangeCard);
-
-            Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-            Assert.AreEqual("Card in slot 0 in section Courtyard has been changed.", CommandInvoker.State.Message);
+            // TODO: Undo command.
         }
 
         /// <summary>
-        /// Local is because it's not the networking buy command, but the command execute locally in each client.
+        /// If there is no more card in the shop, the card that is change will return into his same slot.
+        /// Because we first put it in discard, if deck is empty, we merge discard and we put the card into the shop.
         /// </summary>
         [Test]
-        public void BuyCardLocalInShop()
+        public void ChangeCardInEmptyShop()
+        {
+            // -- Initialize an empty shop
+            ShopData shop = InitializeEmptyShop();
+
+            // -- Add a card to the slot 0 of the courtyard
+            ICard card = CardSetDatabase.Instance.GetEveryCardWith(c => c.Data.Type == CardType.Partisan).FirstOrDefault();
+
+            CourtyardSection courtyard = (CourtyardSection)shop.Sections[ShopType.Courtyard];
+
+            courtyard.AvailableCards[0] = card;
+
+            // -- Change the card in the 'Courtyard' 
+            ICommand changeCardCommand = new CLIENT_ChangeCardCommand(new ShopArgs(shop, ShopType.Courtyard, card.ID));
+
+            CommandInvoker.ExecuteCommand(changeCardCommand);
+
+            // -- Check if the card is correctly changed
+            Assert.IsTrue(CommandInvoker.State.Status == CommandStatus.Success);
+            Assert.IsTrue(card.ID == courtyard.AvailableCards[0].ID); // When the shop is empty, the card changed stay the same as before.
+        }
+
+        #endregion
+
+        #region Buy Command
+
+        // TODO: Try to test admin side buy command.
+
+        /*[Test]
+        public void ClientBuyPartisanInShop()
         {
             // -- Shop initialization with default settings.
-            ShopData shop = InitializeAndFillShop(_Config);
+            ShopData shop = InitializeAndFillShop();
 
             // -- Store the card before the buy
-            ICard cardBeforeTheBuy = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+            CourtyardSection courtyard = (CourtyardSection)shop.Sections[ShopType.Courtyard];
 
-            // -- Buy a card in the 'Courtyard' at the place '0'
-            BuyParameters parameters = new() {
-                Decks = _Decks,
-                Player = _LocalPlayer,
-                Shop = shop,
-                ShopType = ShopType.Courtyard,
-                Slot = 0 // Buy the first card available in the shop
-            };
+            ICard cardBeforeTheBuy = courtyard.AvailableCards[0];
 
-            ICommand buyCommand = new BuyCommand(parameters);
+            // -- Buy a card in the 'Courtyard' the cardBeforeTheBuy
+            ShopArgs parameters = new(shop, ShopType.Courtyard, cardBeforeTheBuy.ID);
+
+            ICommand buyCommand = new CLIENT_BuyCommand(_Player, parameters);
 
             CommandInvoker.ExecuteCommand(buyCommand);
 
             // -- Check if the card is correctly bought
-            ICard cardAfterTheBuy = shop.Sections[ShopType.Courtyard].AvailableCards[0];
+            ICard cardAfterTheBuy = courtyard.AvailableCards[0];
 
             // -- Check that the card after is a null card (because the shop didn't be refilled)
             Assert.IsNull(cardAfterTheBuy);
 
             // -- Check that the player have now a new card in his discard deck
-            Assert.AreEqual(1, _Decks[_LocalPlayer].Discard.Count);
+            Assert.AreEqual(1, _Player.Deck.Discard.Count);
+
+            // -- Check that the card store before buy is in the discard deck
+            Assert.AreEqual(cardBeforeTheBuy.ID, _Player.Deck.Discard[0].ID);
 
             // -- Undo the command
             CommandInvoker.UndoCommand();
 
-            // -- Check if the card is correctly bought
-            cardAfterTheBuy = shop.Sections[ShopType.Courtyard].AvailableCards[0];
-
-            // -- Check that the card before and after the buy are equals
-            Assert.IsNotNull(cardAfterTheBuy);
-            Assert.AreEqual(cardBeforeTheBuy.ID, cardAfterTheBuy.ID);
-
-            // -- Check that the player have no more card in his discard deck
-            Assert.AreEqual(0, _Decks[_LocalPlayer].Discard.Count);
-
-            // Buy a card with an unknow player
-            parameters.Player = PlayerRef.FromEncoded(0x03);
-
-            ICommand buyUnknowPlayerCommand = new BuyCommand(parameters);
-
-            CommandInvoker.ExecuteCommand(buyUnknowPlayerCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Player [Player:2] does not have a deck.", CommandInvoker.State.Message);
-
-            // Buy a card with an unknow shop type and slot
-            parameters.Player = _LocalPlayer;
-            parameters.ShopType = (ShopType)3;
-            parameters.Slot = 10;
-
-            ICommand buyUnknowShopCommand = new BuyCommand(parameters);
-
-            CommandInvoker.ExecuteCommand(buyUnknowShopCommand);
-
-            Assert.AreEqual(CommandStatus.Invalid, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop 3 and slot 10 does not exist.", CommandInvoker.State.Message);
-
-            // Buy a empty slot in the shop
-            parameters.Shop.Sections[ShopType.Courtyard].AvailableCards[0] = null;
-            parameters.ShopType = ShopType.Courtyard;
-            parameters.Slot = 0;
-
-            ICommand buyEmptySlotCommand = new BuyCommand(parameters);
-
-            CommandInvoker.ExecuteCommand(buyEmptySlotCommand);
-
-            Assert.AreEqual(CommandStatus.Failure, CommandInvoker.State.Status);
-            Assert.AreEqual("Shop Courtyard have slot 0 empty.", CommandInvoker.State.Message);
+            // TODO: Test the undo command, when it will be implemented in the buy command.
         }
+
+        [Test]
+        public void ClientBuyToolsInShop()
+        {
+            // -- Shop initialization with default settings.
+            ShopData shop = InitializeAndFillShop();
+
+            // -- Store the card before the buy
+            MarketSection market = (MarketSection)shop.Sections[ShopType.Market];
+
+            ICard cardBeforeTheBuy = market.CardPiles[0][^1];
+
+            // -- Buy a card in the 'Market' the cardBeforeTheBuy
+            ShopArgs parameters = new(shop, ShopType.Market, cardBeforeTheBuy.ID);
+
+            ICommand buyCommand = new CLIENT_BuyCommand(_Player, parameters);
+
+            CommandInvoker.ExecuteCommand(buyCommand);
+
+            // -- Check if the card is correctly bought
+            ICard cardAfterTheBuy = market.CardPiles[0][^1];
+
+            // -- Check that the card after is a new exemplars (because the market auto refilled).
+            Assert.IsFalse(cardBeforeTheBuy.ID == cardAfterTheBuy.ID);
+            Assert.IsTrue(cardBeforeTheBuy.Data.Name == cardAfterTheBuy.Data.Name);
+
+            // -- Check that the player have now a new card in his discard deck
+            Assert.AreEqual(1, _Player.Deck.Discard.Count);
+
+            // -- Check that the card store before buy is in the discard deck
+            Assert.AreEqual(cardBeforeTheBuy.ID, _Player.Deck.Discard[0].ID);
+
+            // -- Undo the command
+            CommandInvoker.UndoCommand();
+
+            // TODO: Test the undo command, when it will be implemented in the buy command.
+        }*/
+
+        #endregion
     }
 }

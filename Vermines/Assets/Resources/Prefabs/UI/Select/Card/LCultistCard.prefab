@@ -185,7 +185,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -80}
+  m_SizeDelta: {x: 0, y: -100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6524121353811253162
 CanvasRenderer:
@@ -262,7 +262,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -80, y: -80}
+  m_SizeDelta: {x: -100, y: -100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3827805901076826614
 CanvasRenderer:
@@ -327,7 +327,7 @@ GameObject:
   - component: {fileID: 1450455623755950496}
   - component: {fileID: 7587440673801315570}
   - component: {fileID: 6781445080321768587}
-  - component: {fileID: 7667849148007131141}
+  - component: {fileID: 76938085474518148}
   m_Layer: 5
   m_Name: LCultistCard
   m_TagString: Untagged
@@ -413,9 +413,9 @@ MonoBehaviour:
   _IconImage: {fileID: 780330475619471451}
   _CultistImage: {fileID: 8271783328515107476}
   _CultistNameText: {fileID: 1816385653482925702}
-  _Button: {fileID: 7667849148007131141}
+  _Button: {fileID: 76938085474518148}
   _SelectedOverlay: {fileID: 1851170528089129614}
---- !u!114 &7667849148007131141
+--- !u!114 &76938085474518148
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -424,7 +424,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6529350941335323467}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 083be555c9e0f534da3d4766038029ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -458,20 +458,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7587440673801315570}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6781445080321768587}
-        m_TargetAssemblyTypeName: Vermines.Menu.Screen.Tavern.CultistSelectButton,
-          Vermines
-        m_MethodName: SelectCharacter
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
+  _PlayClickSound: 1
+  _CustomClickSound:
+    Clips: []
+    Volume: 1
+    PitchShift: 0
+    MaxPitchChange: 0
+    Delay: 0
+    Loop: 0
+    FadeIn: 0
+    FadeOut: 0
+    Repeat: 0
+    RepeatPlayCount: 0
+    RepeatDelay: 0
 --- !u!1 &6891978100851869022
 GameObject:
   m_ObjectHideFlags: 0
@@ -614,8 +614,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Scarab
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5cf5085483edcdf4592c6fb0c477eb20, type: 2}
+  m_sharedMaterial: {fileID: -506840285428784428, guid: 5cf5085483edcdf4592c6fb0c477eb20, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -639,8 +639,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

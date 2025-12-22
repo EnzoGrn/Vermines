@@ -21,7 +21,7 @@ namespace Vermines.UI.Plugin
 
         protected override void OnConfirm()
         {
-            GameEvents.OnCardCopiedEffect.Invoke(_cardData);
+            GameEvents.OnEffectSelectCard.Invoke(_cardData);
             Hide();
         }
 

@@ -35,7 +35,8 @@ public class PlayCardEffectStrategy : IDiscardPopupStrategy
     public void OnConfirm()
     {
         card.HasBeenActivatedThisTurn = true;
-        effect.Play(PlayerController.Local.PlayerRef);
+
+        effect.Play(PlayerController.Local.Context.Runner.LocalPlayer);
     }
 
     public void OnCancel()

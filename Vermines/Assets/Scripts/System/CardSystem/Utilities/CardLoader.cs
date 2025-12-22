@@ -7,10 +7,13 @@ namespace Vermines.CardSystem.Utilities {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
+    using Vermines.Core.Scene;
 
     public class CardLoader {
 
         private int _NumberOfPlayerToLoad;
+
+        private SceneContext Context;
 
         private List<CardFamily> _FamiliesToLoad;
 
@@ -19,8 +22,10 @@ namespace Vermines.CardSystem.Utilities {
         /// For that we need every family that will be used in the game.
         /// </summary>
         /// <param name="families">Families used in the current game</param>
-        public void Initialize(List<CardFamily> families)
+        public void Initialize(List<CardFamily> families, SceneContext context)
         {
+            Context = context;
+
             _NumberOfPlayerToLoad = families.Count;
             _FamiliesToLoad       = families;
         }
@@ -33,65 +38,88 @@ namespace Vermines.CardSystem.Utilities {
         {
             if (_FamiliesToLoad == null || _NumberOfPlayerToLoad == 0)
                 return null;
-            List<ICard> cards = null;
-            
-            for (int i = 0; i < _NumberOfPlayerToLoad; i++)
-                cards = Merge(cards, LoadFromPath("ScriptableObject/Cards/StartingCards"));
-            cards = Merge(cards, LoadFromPath("ScriptableObject/Cards/Partisans/Bee"));
-            cards = Merge(cards, LoadFromPath("ScriptableObject/Cards/Partisans/Firefly"));
-            cards = Merge(cards, LoadFromPath("ScriptableObject/Cards/Partisans/Mosquito"));
+            List<ICard>       cards       = new();
+            List<List<ICard>> playerDecks = new();
+
+            for (int p = 0; p < _NumberOfPlayerToLoad; p++)
+                playerDecks.Add(new List<ICard>());
+            cards = Merge(cards, LoadFromPath("ScriptableObject/Cards/Partisans/Bee"     , playerDecks));
+            cards = Merge(cards, LoadFromPath("ScriptableObject/Cards/Partisans/Firefly" , playerDecks));
+            cards = Merge(cards, LoadFromPath("ScriptableObject/Cards/Partisans/Mosquito", playerDecks));
 
             foreach (CardFamily family in _FamiliesToLoad)
-                cards = Merge(cards, LoadFamilyFromPath("ScriptableObject/Cards/Partisans/Family", family));
-            cards = Merge(cards, LoadFromPath("ScriptableObject/Cards/Items/Tools"));
-            cards = Merge(cards, LoadFromPath("ScriptableObject/Cards/Items/Equipment"));
+                cards = Merge(cards, LoadFamilyFromPath("ScriptableObject/Cards/Partisans/Family", family, playerDecks));
+            cards = Merge(cards, LoadFromPath("ScriptableObject/Cards/Items/Tools"    , playerDecks));
+            cards = Merge(cards, LoadFromPath("ScriptableObject/Cards/Items/Equipment", playerDecks));
 
+            foreach (List<ICard> deck in playerDecks)
+                cards.AddRange(deck);
             return cards;
         }
 
-        private List<ICard> LoadFromPath(string path)
+        #region Loading Functions
+
+        private List<ICard> LoadFromPath(string path, List<List<ICard>> playerDecks)
         {
+            if (!System.IO.Directory.Exists($"Assets/Resources/{path}"))
+                return null;
+            List<ICard> cards = new();
+            CardData[] cardDataArray = Resources.LoadAll<CardData>(path);
+
+            if (cardDataArray == null || cardDataArray.Length == 0)
+                return null;
+            foreach (CardData data in cardDataArray)
+                HandleCardData(data, CardFamily.None, null, cards, playerDecks);
+            return cards;
+        }
+
+        private List<ICard> LoadFamilyFromPath(string path, CardFamily family, List<List<ICard>> playerDecks)
+        {
+            if (!System.IO.Directory.Exists($"Assets/Resources/{path}"))
+                return null;
             List<ICard> cards = new();
             CardData[] cardDataArray = Resources.LoadAll<CardData>(path);
 
             if (cardDataArray == null || cardDataArray.Length == 0)
                 return null;
             foreach (CardData data in cardDataArray) {
-                int nbExemplar = data.Exemplars;
+                Sprite sprite = Resources.Load<Sprite>($"Sprites/Card/{family.ToString()}/{data.SpriteName}.png");
 
-                for (int i = 0; i < nbExemplar; i++) {
-                    CardData copy = CreateCopy(data);
-                    ICard    card = CardFactory.CreateCard(copy);
-
-                    card = SetIdentity(card);
-
-                    cards.Add(card);
-                }
+                HandleCardData(data, family, sprite, cards, playerDecks);
             }
+
             return cards;
         }
 
-        private List<ICard> LoadFamilyFromPath(string path, CardFamily family)
+        #endregion
+
+        #region Helpers
+
+        private void HandleCardData(CardData data, CardFamily family, Sprite sprite, List<ICard> shopCards, List<List<ICard>> playerDecks)
         {
-            List<ICard> cards = new();
-            CardData[] cardDataArray = Resources.LoadAll<CardData>(path);
+            // -- Exemplars
+            for (int i = 0; i < data.Exemplars; i++) {
+                CardData copy = CreateCopy(data, family, sprite);
 
-            if (cardDataArray == null || cardDataArray.Length == 0)
-                return null;
-            foreach (CardData data in cardDataArray) {
-                int nbExemplar = data.Exemplars;
-                Sprite  sprite = Resources.Load<Sprite>($"Sprites/Card/{family.ToString()}/{data.SpriteName}.png");
+                copy.IsStartingCard = false;
 
-                for (int i = 0; i < nbExemplar; i++) {
-                    CardData copy = CreateCopy(data, family, sprite);
-                    ICard card    = CardFactory.CreateCard(copy);
+                ICard card = SetIdentity(CardFactory.CreateCard(copy));
 
-                    card = SetIdentity(card);
+                shopCards.Add(card);
+            }
 
-                    cards.Add(card);
+            // -- Starting Cards
+            if (data.IsStartingCard && data.DeckExemplars > 0) {
+                for (int p = 0; p < _NumberOfPlayerToLoad; p++) {
+                    for (int i = 0; i < data.DeckExemplars; i++) {
+                        CardData copy = CreateCopy(data, family, sprite);
+
+                        ICard card = SetIdentity(CardFactory.CreateCard(copy));
+
+                        playerDecks[p].Add(card);
+                    }
                 }
             }
-            return cards;
         }
 
         private CardData CreateCopy(CardData data, CardFamily family = CardFamily.None, Sprite sprite = null)
@@ -105,9 +133,11 @@ namespace Vermines.CardSystem.Utilities {
             for (int i = 0; i < copy.Effects.Count; i++) {
                 AEffect effect = Object.Instantiate(copy.Effects[i]);
 
-                effect.Initialize(null);
+                effect.Initialize(Context, null);
+
                 copy.Effects[i] = effect;
             }
+
             return copy;
         }
 
@@ -119,7 +149,7 @@ namespace Vermines.CardSystem.Utilities {
             card.IsAnonyme = false;
 
             foreach (AEffect effect in card.Data.Effects)
-                effect.Initialize(card);
+                effect.Initialize(Context, card);
             return card;
         }
 
@@ -127,9 +157,13 @@ namespace Vermines.CardSystem.Utilities {
         {
             cards ??= new List<ICard>();
 
-            foreach (ICard card in newCards)
-                cards.Add(card);
+            if (newCards == null)
+                return cards;
+            cards.AddRange(newCards);
+
             return cards;
         }
+
+        #endregion
     }
 }

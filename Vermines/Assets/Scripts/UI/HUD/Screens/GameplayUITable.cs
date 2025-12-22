@@ -11,6 +11,7 @@ using Vermines.UI.Card;
 using Vermines.UI.GameTable;
 using Vermines.UI.Popup;
 using Vermines.Player;
+using Vermines.Core.Scene;
 
 namespace Vermines.UI.Screen
 {
@@ -44,7 +45,7 @@ namespace Vermines.UI.Screen
         [SerializeField] protected GameTableCardSlotPool _Pool;
         protected List<TableCardSlot> partisanSlots = new();
         protected List<TableCardSlot> equipmentSlots = new();
-        [SerializeField] protected DiscardCardSlot discardSlot;
+        [SerializeField] protected CardSlotBase discardSlot;
 
         [Header("Texts")]
         [InlineHelp, SerializeField]
@@ -80,7 +81,7 @@ namespace Vermines.UI.Screen
             {
                 Debug.LogErrorFormat(
                     gameObject,
-                    "GameplayUITable Critical Error: Missing 'DiscardCardSlot' reference on GameObject '{0}'. This component is required to render the discard zone. Please assign a valid DiscardCardSlot in the Inspector.",
+                    "GameplayUITable Critical Error: Missing 'CardSlotBase' reference on GameObject '{0}'. This component is required to render the discard zone. Please assign a valid DiscardCardSlot in the Inspector.",
                     gameObject.name
                 );
                 return;
@@ -129,6 +130,7 @@ namespace Vermines.UI.Screen
             #endregion
 
             GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
+            GameEvents.OnCardReborned.AddListener(OnCardReborned);
         }
 
         /// <summary>
@@ -307,9 +309,10 @@ namespace Vermines.UI.Screen
 
         public void UpdateUIForPhase(PhaseType phase)
         {
-            if (phase == PhaseType.Sacrifice && GameManager.Instance.IsMyTurn() == false)
-                return;
+            SceneContext context = PlayerController.Local.Context;
 
+            if (phase == PhaseType.Sacrifice && !context.GameplayMode.IsMyTurn)
+                return;
             string key = phase switch
             {
                 PhaseType.Sacrifice => "table.sacrifice_text",
@@ -331,7 +334,7 @@ namespace Vermines.UI.Screen
         /// <summary>
         /// Add 
         /// </summary>
-        private void AddEquipment(ICard card, int slotIndex)
+        private void AddEquipment(ICard card)
         {
             // Get the first free slot in the equipment slots, don't use the slotIndex parameter
             for (int i = 0; i < equipmentSlots.Count; i++)
@@ -358,20 +361,19 @@ namespace Vermines.UI.Screen
 
         public void OnCardClicked(ICard card, int slodId)
         {
-            if (card == null || GameManager.Instance.IsMyTurn() == false) return;
+            SceneContext context = PlayerController.Local.Context;
 
-            Debug.Log($"[TableCardClickHandler] Card clicked: {card.Data.Name}");
-            if (PhaseManager.Instance.CurrentPhase == PhaseType.Sacrifice || UIContextManager.Instance.IsInContext<SacrificeContext>())
-            {
+            if (card == null || !context.GameplayMode.IsMyTurn)
+                return;
+            PhaseManager phaseManager = context.GameplayMode.PhaseManager;
+            if (phaseManager.CurrentPhase == PhaseType.Sacrifice || UIContextManager.Instance.IsInContext<SacrificeContext>())
                 Controller.ShowDualPopup(new SacrificeStrategy(card));
-            }
-
-            if (PhaseManager.Instance.CurrentPhase == PhaseType.Gain)
-            {
-                foreach (AEffect effect in card.Data.Effects)
-                {
-                    if (effect.Type != EffectType.Activate) return;
-                    if (card.HasBeenActivatedThisTurn) return;
+            if (phaseManager.CurrentPhase == PhaseType.Gain) {
+                foreach (AEffect effect in card.Data.Effects) {
+                    if ((effect.Type & EffectType.Activate) == 0)
+                        return;
+                    if (card.HasBeenActivatedThisTurn)
+                        return;
                     Controller.ShowDualPopup(new PlayCardEffectStrategy(effect, card));
                 }
             }
@@ -379,7 +381,10 @@ namespace Vermines.UI.Screen
 
         private void OnCardSacrified(ICard card)
         {
-            if (GameManager.Instance.IsMyTurn() == false) return;
+            SceneContext context = PlayerController.Local.Context;
+
+            if (card == null || !context.GameplayMode.IsMyTurn)
+                return;
             Debug.Log($"[TableUI] Card {card.Data.Name} has been sacrificed.");
 
             for (int i = 0; i < partisanSlots.Count; i++)
@@ -393,6 +398,27 @@ namespace Vermines.UI.Screen
             }
 
             Debug.LogWarning($"[TableUI] Could not find slot containing card {card.Data.Name}.");
+        }
+
+        private void OnCardReborned(ICard card)
+        {
+            SceneContext context = PlayerController.Local.Context;
+
+            if (card == null || !context.GameplayMode.IsMyTurn)
+                return;
+            Debug.Log($"[TableUI] Card {card.Data.Name} has been reborned.");
+
+            // Find the first empty partisan slot and add the card there
+            for (int i = 0; i < partisanSlots.Count; i++)
+            {
+                var slot = partisanSlots[i];
+                if (slot.CardDisplay == null)
+                {
+                    slot.Init(card, true);
+                    return;
+                }
+            }
+            Debug.LogWarning($"[TableUI] No empty partisan slot available for card {card.Data.Name}.");
         }
 
         #endregion

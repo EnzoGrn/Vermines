@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.CardSystem.Data {
@@ -17,18 +17,32 @@ namespace Vermines.CardSystem.Data {
         public string Name;
 
         /// <summary>
-        /// Number of exemplars of the card.
-        /// (Use in Editing mode and when the cards are loading)
+        /// Number of exemplars of the card in the shop.
         /// </summary>
-        /// <note>
-        /// This value must be superior to 0.
-        /// </note>
         public int Exemplars = 1;
 
         /// <summary>
         /// Is the card in the default deck of players?
         /// </summary>
         public bool IsStartingCard = false;
+
+        /// <summary>
+        /// Number of exemplars in each player starting deck.
+        /// </summary>
+        [SerializeField]
+        private int _DeckExemplars = 0;
+
+        public int DeckExemplars
+        {
+            get => IsStartingCard ? _DeckExemplars : 0;
+            set
+            {
+                if (IsStartingCard)
+                    _DeckExemplars = value;
+                else
+                    _DeckExemplars = 0;
+            }
+        }
 
         #endregion
 
@@ -91,9 +105,9 @@ namespace Vermines.CardSystem.Data {
 
         #region Effects
 
-        public List<AEffect> Effects;
+        public List<AEffect> Effects = new();
 
-        private List<AEffect> _OriginalEffect = null;
+        private List<AEffect> _OriginalEffect;
 
         public void CopyEffect(List<AEffect> effects)
         {
@@ -104,14 +118,74 @@ namespace Vermines.CardSystem.Data {
 
         public void RemoveEffectCopied()
         {
+            _OriginalEffect ??= new List<AEffect>(Effects); // If the _Original effect not exists.
+
             Effects = new List<AEffect>(_OriginalEffect);
         }
 
         public bool ReduceInSilence = false;
 
+        public bool HasEffectOfType(EffectType type)
+        {
+            foreach (AEffect effect in Effects) {
+                if ((effect.Type & type) != 0)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Return true if their is at least two effects of different types.
+        /// </summary>
+        public bool HasChoiceEffect()
+        {
+            HashSet<EffectType> types = new();
+
+            foreach (AEffect effect in Effects) {
+                if (types.Contains(effect.Type))
+                    return true;
+                types.Add(effect.Type);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Return true if their is at least two effects (given) of the same type.
+        /// </summary>
+        public bool HasChoiceEffect(EffectType type)
+        {
+            HashSet<EffectType> types = new();
+
+            foreach (AEffect effect in Effects) {
+                if ((effect.Type & type) != 0) {
+                    if (types.Contains(effect.Type))
+                        return true;
+                    types.Add(effect.Type);
+                }
+            }
+
+            return false;
+        }
+
         #endregion
 
         #region Stats
+
+            [SerializeField]
+        private int _RecycleEloquence = 0;
+
+        public int RecycleEloquence
+        {
+            get => Type == CardType.Tools ? _RecycleEloquence : 0;
+            set
+            {
+                if (Type == CardType.Tools)
+                    _RecycleEloquence = value;
+                else
+                    _RecycleEloquence = 0;
+            }
+        }
 
         /// <summary>
         /// The cost of the card (with Eloquence as the currency).
@@ -124,10 +198,10 @@ namespace Vermines.CardSystem.Data {
         /// </summary>
         public int Eloquence
         {
-            get => IsStartingCard ? 0 : _Eloquence;
+            get => (Type == CardType.Partisan && IsStartingCard) ? 0 : _Eloquence;
             set
             {
-                if (IsStartingCard)
+                if (Type == CardType.Partisan && IsStartingCard)
                     _Eloquence = 0;
                 else
                     _Eloquence = value;
@@ -154,12 +228,14 @@ namespace Vermines.CardSystem.Data {
         public void EloquenceReduction(int amount)
         {
             if (CurrentEloquence - amount < 1) {
-                _ExcessiveEloquence = Mathf.Abs(CurrentEloquence - 1);
+                _ExcessiveEloquence += (1 - (CurrentEloquence - amount));
 
                 CurrentEloquence = 1;
             } else {
                 CurrentEloquence -= amount;
             }
+
+            CurrentEloquence = Mathf.Clamp(CurrentEloquence, 1, _Eloquence);
         }
 
         /// <summary>
@@ -172,11 +248,14 @@ namespace Vermines.CardSystem.Data {
             } else if (_ExcessiveEloquence > 0) {
                 amount -= _ExcessiveEloquence;
 
-                CurrentEloquence   += amount;
                 _ExcessiveEloquence = 0;
+
+                CurrentEloquence += amount;
             } else {
                 CurrentEloquence += amount;
             }
+
+            CurrentEloquence = Mathf.Clamp(CurrentEloquence, 1, _Eloquence);
         }
 
         /// <summary>
@@ -290,6 +369,8 @@ namespace Vermines.CardSystem.Data {
             Sprite                 separator = Resources.Load<Sprite>("Sprites/UI/Effects/separator");
 
             for (int i = 0; i < Effects.Count; i++) {
+                if (Effects[i] == null)
+                    continue;
                 elements.AddRange(Effects[i].Draw());
 
                 if (i < Effects.Count - 1)

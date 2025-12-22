@@ -1,0 +1,132 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: VerminesChronicle_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: 5fa2ddfd24e455443893d9318ea464a5, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7133454336
+    m_Localized: "Achat effectu\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 833121935360
+    m_Localized: "Sous les cris des marchands et le tumulte de la foule, une nouvelle
+      transaction attire l\u2019attention."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 860133253120
+    m_Localized: "Des mots enflamm\xE9s ont convaincu de nouveaux fid\xE8les de rejoindre
+      une cause."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 246168138276864
+    m_Localized: "{0} a obtenu <b>{1}</b> au march\xE9."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 246725653553152
+    m_Localized: "{0} a obtenu <b>{1}</b> \xE0 la cour."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 248552730124288
+    m_Localized: "Id\xE9e \xE9cart\xE9e"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 248612964524032
+    m_Localized: "Parmi les d\xE9bats anim\xE9s, une ancienne proposition perd de
+      sa force et une nouvelle prend sa place."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 249107259056128
+    m_Localized: "{0} a remplac\xE9 <b>{1}</b> par <b>{2}</b> dans la cour."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 320342512885760
+    m_Localized: Sacrifice consenti
+    m_Metadata:
+      m_Items: []
+  - m_Id: 320348905005056
+    m_Localized: "Dans un silence solennel, un fid\xE8le s\u2019est offert en offrande.
+      Les flammes s\u2019\xE9l\xE8vent, et avec elles une \xE2me s\u2019envole."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 321894778658816
+    m_Localized: "{0} a sacrifi\xE9 <b>{1}</b>, et obtenu <b><color=red>{2} \xE2mes</color></b>."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701381143945216
+    m_Localized: "M\xE9tamorphose accomplie"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701421140828160
+    m_Localized: "Un pouvoir ancien tord la r\xE9alit\xE9, et une silhouette prend
+      l\u2019apparence de son reflet."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701437565722624
+    m_Localized: "{0} a utilis\xE9 <b>{1}</b> pour copier l\u2019effet de <b>{2}</b>."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508114417934336
+    m_Localized: "Rite de R\xE9animation"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508155731828736
+    m_Localized: "Sous les murmures des \xE2mes perdues, un corps se rel\xE8ve, arrach\xE9
+      \xE0 l\u2019oubli par la volont\xE9 d\u2019un ma\xEEtre des morts."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508168344100864
+    m_Localized: "{0} a ramen\xE9 <b>{1}</b> des limbes gr\xE2ce au pouvoir du <br>{2}</br>."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899131646337024
+    m_Localized: "March\xE9 des ombres"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899134087421952
+    m_Localized: "Dans les ruelles obscures, un contrat discret s\u2019est conclu
+      \u2014 la vie contre l\u2019or, les \xE2mes contre le silence."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899636791533568
+    m_Localized: <color="purple">{0}E</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899638519586816
+    m_Localized: <color="red">{0}A</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899135601565696
+    m_Localized: "Une transaction scell\xE9e : {0} investit <b>{1}</b> et obtient
+      <b>{2}</b>."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270582543048704
+    m_Localized: "Retour \xE0 l'\xE9tal"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270584900247552
+    m_Localized: "Les marchands se r\xE9jouissent : un ancien outil revient sur leurs
+      \xE9tals, pr\xEAt \xE0 s\xE9duire un nouveau client."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270586733158400
+    m_Localized: "{0} a remis <b>{1}</b> au march\xE9 et r\xE9cup\xE9r\xE9 <b><color=\"purple\">{2}E</color></b>."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

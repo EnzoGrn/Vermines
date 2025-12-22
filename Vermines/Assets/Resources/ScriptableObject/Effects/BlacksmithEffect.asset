@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c266d1a9b5b782e41bb2f387658168af, type: 3}
   m_Name: BlacksmithEffect
   m_EditorClassIdentifier: 
-  _Type: 4
+  _Type: 16
   _Description: Once per turn, you can buy 1 card for free in the Market..
   _SubEffect: {fileID: 11400000, guid: 57418152ce97f28489277ce5070ad64c, type: 2}

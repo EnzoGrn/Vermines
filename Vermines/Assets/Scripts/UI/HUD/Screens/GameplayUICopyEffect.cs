@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
+using Vermines.Core.Scene;
+using Vermines.Player;
 using Vermines.UI.Card;
 using Vermines.UI.Plugin;
 
@@ -10,7 +12,7 @@ namespace Vermines.UI.Screen
 {
     using Button = UnityEngine.UI.Button;
 
-    public partial class GameplayUICopyEffect : GameplayUIScreen, IParamReceiver<CardCopyEffectContext>, ICardClickReceiver
+    public partial class GameplayUICopyEffect : GameplayUIScreen, IParamReceiver<CardSelectedEffectContext>, ICardClickReceiver
     {
         #region Attributes
 
@@ -132,7 +134,7 @@ namespace Vermines.UI.Screen
         /// Set the callback to be called when the effect is done.
         /// </summary>
         /// <param name="onDone">The callback to be called when the effect is done.</param>
-        public void SetParam(CardCopyEffectContext cardContext)
+        public void SetParam(CardSelectedEffectContext cardContext)
         {
             _deckType = cardContext.Type;
             activeCard = cardContext.Card;
@@ -229,9 +231,10 @@ namespace Vermines.UI.Screen
 
         public void OnCardClicked(ICard card, int slodId)
         {
-            if (card == null || GameManager.Instance.IsMyTurn() == false || card.Data.Type != _deckType)
-                return;
+            SceneContext context = PlayerController.Local.Context;
 
+            if (card == null || !context.GameplayMode.IsMyTurn || card.Data.Type != _deckType)
+                return;
             CopyPopupPlugin plugin = Get<CopyPopupPlugin>();
             if (plugin == null)
             {

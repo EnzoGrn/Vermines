@@ -53,7 +53,6 @@ namespace Vermines.UI.Plugin
                 );
                 return;
             }
-            SetPhase(PhaseType.Sacrifice);
         }
 
         public void SetPhase(PhaseType newPhase = PhaseType.Sacrifice)

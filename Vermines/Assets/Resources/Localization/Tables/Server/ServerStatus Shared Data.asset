@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: ServerStatus Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: ServerStatus
+  m_TableCollectionNameGuidString: 3f7a6877c30107b478586fbb2caab49f
+  m_Entries:
+  - m_Id: 7020208128
+    m_Key: server_closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9738117120
+    m_Key: starting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 433622867968
+    m_Key: reconnecting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 567576354816
+    m_Key: quitting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 577533632512
+    m_Key: connexion_lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 861718700032
+    m_Key: unloading_current_scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 946674327552
+    m_Key: starting_network_connection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16424121655296
+    m_Key: waiting_server_connection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16781925146624
+    m_Key: loading_gameplay_scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16963920191488
+    m_Key: waiting_gameplay_scene_load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17286034350080
+    m_Key: waiting_networked_game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17533800275968
+    m_Key: waiting_gameplay_load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17776335904768
+    m_Key: activating_scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17977469558784
+    m_Key: activating_network_game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18119350280192
+    m_Key: disconnect_server
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18374917611520
+    m_Key: unloading_gameplay_scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18506966884352
+    m_Key: loading_menu_scene
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1807216000651755667
+  references:
+    version: 2
+    RefIds:
+    - rid: 1807216000651755667
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1760779998566

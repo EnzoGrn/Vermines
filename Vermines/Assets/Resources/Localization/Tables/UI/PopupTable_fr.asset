@@ -35,6 +35,14 @@ MonoBehaviour:
     m_Localized: "\xCAtes-vous s\xFBr de vouloir jouer cette carte ?"
     m_Metadata:
       m_Items: []
+  - m_Id: 56830783346696192
+    m_Localized: Annuler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56830731509293056
+    m_Localized: Confirmer
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

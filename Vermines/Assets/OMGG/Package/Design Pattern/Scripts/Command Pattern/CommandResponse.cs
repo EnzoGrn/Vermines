@@ -51,10 +51,13 @@
 
         public string Message { get; }
 
-        public CommandResponse(CommandStatus status, string message = "")
+        public string[] Args { get; }
+
+        public CommandResponse(CommandStatus status, string message = "", params string[] args) : this()
         {
             Status  = status;
             Message = message;
+            Args    = args;
         }
     }
 }

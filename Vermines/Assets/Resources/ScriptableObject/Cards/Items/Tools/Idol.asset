@@ -12,17 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
   m_Name: Idol
   m_EditorClassIdentifier: 
-  Name: Idol
-  Exemplars: 5
+  Name: idol
+  Exemplars: 6
   IsStartingCard: 0
+  _DeckExemplars: 0
   Type: 2
   IsFamilyCard: 0
   _Family: -1
   _Level: 0
   Effects:
   - {fileID: 11400000, guid: cfcf90146cff5c04cbcfdef1b70eaf91, type: 2}
-  _Eloquence: 5
-  CurrentEloquence: 5
+  - {fileID: 11400000, guid: 6809021d174830641ab7bfc71b5e068a, type: 2}
+  ReduceInSilence: 0
+  _RecycleEloquence: 7
+  _Eloquence: 7
+  IsFree: 0
+  CurrentEloquence: 7
   _Souls: 0
   CurrentSouls: 0
   _SpriteName: 

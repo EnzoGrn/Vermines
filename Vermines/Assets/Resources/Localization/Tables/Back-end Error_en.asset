@@ -1,0 +1,135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Back-end Error_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: cd28d771d5b12ba4180efd2bed0aef56, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 208522960896
+    m_Localized: You cannot buy a card when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18102967328768
+    m_Localized: You cannot buy a card outside of the action phase.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19083562049536
+    m_Localized: Shop section {0} does not exist.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20911913689088
+    m_Localized: The {0} has no card in this slot.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21240851980288
+    m_Localized: You doesn't have enough eloquence to buy {0}. Missing {1} eloquence.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21937446182912
+    m_Localized: You already has the {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 215561349881856
+    m_Localized: You cannot replace a card when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 225365833277440
+    m_Localized: The {0} is now empty.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 276526279942144
+    m_Localized: You cannot play a card when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 278631019438080
+    m_Localized: You cannot play a card outside of the action phase.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 279314103787520
+    m_Localized: The {0} card doesn't exist.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 279751842324480
+    m_Localized: You cannot play the {1}, you must have it in your hand.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1659401487245312
+    m_Localized: You cannot discard a card when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1661783445069824
+    m_Localized: You cannot discard a card outside of the action phase.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1662226560704512
+    m_Localized: You cannot discard the {1}, you must have it in your hand.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1667934047952896
+    m_Localized: You cannot sacrifice a card when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1671701384388608
+    m_Localized: You cannot sacrifice a non-partisan card.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1672017521664000
+    m_Localized: You cannot sacrifice the {0}, you must have it on your table.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1675471052857344
+    m_Localized: You cannot play a card effect when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1700752530595840
+    m_Localized: You are not the owner of {0} card.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7507090221293568
+    m_Localized: You cannot recycle a card when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7507868038193152
+    m_Localized: You cannot recycle a card outside of the action phase.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7508156933464064
+    m_Localized: You cannot recycle the {1}, you must have it in your hand.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7546112767418368
+    m_Localized: You cannot recycle a card that is not a tool.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9236123669749760
+    m_Localized: The effect of the chosen card does not exist.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9237089961893888
+    m_Localized: The selected card does not have a choice effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9275802486038528
+    m_Localized: You cannot change the cards from this shop.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9276500577607680
+    m_Localized: The selected card does not exist in the shop.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

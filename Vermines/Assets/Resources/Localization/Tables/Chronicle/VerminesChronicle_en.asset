@@ -1,0 +1,130 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: VerminesChronicle_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 5fa2ddfd24e455443893d9318ea464a5, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7133454336
+    m_Localized: Purchase completed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 833121935360
+    m_Localized: Amidst the cries of the merchants and the tumult of the crowd, a
+      new transaction attracts attention.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 860133253120
+    m_Localized: Passionate words convinced new believers to join a cause.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 246168138276864
+    m_Localized: '{0} obtained <b>{1}</b> at the market.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 246725653553152
+    m_Localized: '{0} obtained <b>{1}</b> in the courtyard.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 248552730124288
+    m_Localized: Idea rejected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 248612964524032
+    m_Localized: Amidst heated debates, an old proposal loses momentum and a new
+      one takes its place.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 249107259056128
+    m_Localized: '{0} replaced <b>{1}</b> with <b>{2}</b> in the courtyard.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 320342512885760
+    m_Localized: Consented sacrifice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 320348905005056
+    m_Localized: In solemn silence, a worshipper offered himself as a sacrifice.
+      Flames rose, and with them a soul flew away.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 321894778658816
+    m_Localized: '{0} sacrificed <b>{1}</b>, and obtained <b><color="red">{2} souls</color></b>.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701381143945216
+    m_Localized: Metamorphosis complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701421140828160
+    m_Localized: An ancient power distorts reality, and a silhouette takes on the
+      appearance of its reflection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701437565722624
+    m_Localized: '{0} used <b>{1}</b> to copy the effect of <b>{2}</b>.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508114417934336
+    m_Localized: Rite of Resurrection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508155731828736
+    m_Localized: Amidst the murmurs of lost souls, a body rises, torn from oblivion
+      by the will of a master of the dead.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508168344100864
+    m_Localized: '{0} brought <b>{1}</b> back from limbo thanks to the power of <br>{2}</br>.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899636791533568
+    m_Localized: <color="purple">{0}E</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899638519586816
+    m_Localized: <color="red">{0}S</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899135601565696
+    m_Localized: 'A sealed deal: {0} invests <b>{1}</b> and gets <b>{2}</b>.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899134087421952
+    m_Localized: "In the dark alleys, a discreet deal was struck \u2014 life for
+      gold, souls for silence."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899131646337024
+    m_Localized: Black market
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270582543048704
+    m_Localized: Back to the stall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270584900247552
+    m_Localized: 'The merchants rejoice: an old tool returns to their stalls, ready
+      to attract new customers.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270586733158400
+    m_Localized: '{0} has returned <b>{1}</b> to the market and recovered <b><color="purple">{2}</color></b>.'
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

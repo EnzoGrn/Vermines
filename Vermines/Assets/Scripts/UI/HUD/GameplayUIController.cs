@@ -1,11 +1,12 @@
 ﻿using Fusion;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Vermines.UI
 {
+    using System.Collections;
     using Vermines.UI.Screen;
 
     public class GameplayUIController : MonoBehaviour
@@ -209,11 +210,33 @@ namespace Vermines.UI
         {
             if (_ActiveScreen != null)
             {
-                Debug.Log($"Hiding screen: {_ActiveScreen.GetType().Name}");
                 _ActiveScreen.Hide();
                 _ActiveScreen = null;
             }
             ShowLast();
+        }
+
+        public virtual void Hide<S>() where S : GameplayUIScreen
+        {
+            if (_ScreenLookup.TryGetValue(typeof(S), out var result))
+            {
+                if (_ActiveScreen == result)
+                {
+                    Debug.Log($"Hiding screen: {_ActiveScreen.GetType().Name}");
+                    _ActiveScreen.Hide();
+                    _ActiveScreen = null;
+                    ShowLast();
+                }
+            }
+            else
+            {
+                Debug.LogError($"Hide() - Screen type '{typeof(S).Name}' not found.");
+            }
+        }
+
+        public virtual void RemoveLastScreen()
+        {
+            _LastScreen = null;
         }
 
         /// <summary>
@@ -315,6 +338,27 @@ namespace Vermines.UI
             }
 
             return _DualPopupHandler.OpenDualButtonPopupAsync(message, header, leftButtonLabel, rightButtonLabel);
+        }
+
+        public static void StartTurnUIRoutine()
+        {
+            GameplayUIController controller = GameObject.FindAnyObjectByType<GameplayUIController>(FindObjectsInactive.Include);
+            if (controller != null)
+                controller.StartCoroutine(controller.SacrificeRoutine());
+        }
+
+        private IEnumerator SacrificeRoutine()
+        {
+            GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>(FindObjectsInactive.Include);
+
+            if (gameplayUIController != null)
+                gameplayUIController.Show<GameplayUITurn>();
+
+            yield return new WaitForSeconds(3f);
+
+            if (gameplayUIController != null && gameplayUIController.GetActiveScreen(out GameplayUIScreen activescreen) &&
+                activescreen is GameplayUITurn)
+                gameplayUIController.Hide();
         }
 
         #endregion

@@ -13,7 +13,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #region Constants
 
-        private static readonly string replaceTemplate = "You can replace a card in the courtyard and/or in the market.";
+        private static readonly string replaceTemplate = "You can replace a card in the courtyard.";
 
         #endregion
 
@@ -36,18 +36,14 @@ namespace Vermines.Gameplay.Cards.Effect {
         #region UI Elements
 
         public Sprite CourtyardIcon = null;
-        public Sprite MarketIcon = null;
-        public Sprite CardReplace = null;
+        public Sprite CardReplace   = null;
 
         #endregion
 
         public override void Play(PlayerRef player)
         {
-            if (player == PlayerController.Local.PlayerRef)
-            {
-                var context = new ReplaceEffectContext(dict =>
-                {
-                    Debug.Log("[ReplaceEffect] Replace effect completed.");
+            if (player == Context.Runner.LocalPlayer) {
+                var context = new ReplaceEffectContext(dict => {
                     ReplaceCard(dict);
                 });
 
@@ -57,35 +53,28 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         private void ReplaceCard(Dictionary<ShopType, int> dictShopSlot)
         {
+            if (UIContextManager.Instance)
+                UIContextManager.Instance.PopContextOfType<ReplaceEffectContext>();
             // Check if the dictionary is null or empty
-            if (dictShopSlot == null || dictShopSlot.Count == 0)
-            {
+            if (dictShopSlot == null || dictShopSlot.Count == 0) {
                 Debug.LogWarning("[ReplaceEffect] dictShopSlot is null or empty, nothing to replace.");
+
                 return;
             }
 
-            // Check if PlayerController.Local exists
-            if (PlayerController.Local == null)
-            {
-                Debug.LogError("[ReplaceEffect] PlayerController.Local is null! Cannot replace cards.");
-                return;
-            }
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
-            Debug.Log("[ReplaceEffect] Replacing cards in shops:");
             foreach (var shopSlot in dictShopSlot)
-            {
-                Debug.Log($"[ReplaceEffect] Replacing {shopSlot.Key} at slot {shopSlot.Value}");
-                PlayerController.Local.OnShopReplaceCard(shopSlot.Key, shopSlot.Value);
-            }
+                player.OnShopReplaceCard(shopSlot.Key, shopSlot.Value);
         }
 
         public override List<(string, Sprite)> Draw()
         {
             List<(string, Sprite)> elements = new() {
-                { (null, CardReplace) },
-                { (null, MarketIcon) },
+                { (null, CardReplace  ) },
                 { (null, CourtyardIcon) }
             };
+
             return elements;
         }
 
@@ -100,8 +89,6 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             if (CourtyardIcon == null)
                 CourtyardIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Courtyard");
-            if (MarketIcon == null)
-                MarketIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Market");
             if (CardReplace == null)
                 CardReplace = Resources.Load<Sprite>("Sprites/UI/Effects/Replace_Card");
         }

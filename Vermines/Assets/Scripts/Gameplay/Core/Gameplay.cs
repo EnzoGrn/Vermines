@@ -1,0 +1,73 @@
+using UnityEngine.SceneManagement;
+using UnityEngine;
+using System.Collections.Generic;
+using System.Collections;
+
+namespace Vermines.Gameplay.Core {
+
+    using UnityScene = UnityEngine.SceneManagement.Scene;
+
+    using Vermines.Core.Scene;
+    using Vermines.Extension;
+    using Vermines.Core;
+    using Vermines.Core.Services;
+    using Vermines.UI.Card;
+    using Vermines.Core.UI;
+
+    public class Gameplay : Scene {
+
+        [SerializeField]
+        private string UI_SCENE_NAME = "UI";
+
+        #region Attributes
+
+        [SerializeField]
+        private List<string> _SceneToLoads;
+
+        private UnityScene _UIScene;
+
+        #endregion
+
+        #region Events
+
+        protected override void OnInitialize()
+        {
+            base.OnInitialize();
+
+            foreach (string scene in _SceneToLoads)
+                StartCoroutine(PersistentSceneService.Instance.LoadSceneAdditive(scene));
+            var contextBehaviours = Context.Runner.SimulationUnityScene.GetComponents<IContextBehaviour>(true);
+
+            foreach (IContextBehaviour behaviour in contextBehaviours)
+                behaviour.Context = Context;
+        }
+
+        protected override IEnumerator OnActivate()
+        {
+            yield return base.OnActivate();
+            yield return PersistentSceneService.Instance.LoadSceneAdditive(UI_SCENE_NAME);
+
+            _UIScene = SceneManager.GetSceneByName(UI_SCENE_NAME);
+
+            if (_UIScene != null) {
+                SceneUI uiService = _UIScene.GetComponent<SceneUI>(true);
+
+                Context.UI = uiService;
+
+                AddService(uiService);
+
+                uiService.Activate();
+
+                HandManager hand = _UIScene.GetComponent<HandManager>();
+
+                Context.HandManager = hand;
+
+                AddService(hand);
+
+                hand.Activate();
+            }
+        }
+
+        #endregion
+    }
+}

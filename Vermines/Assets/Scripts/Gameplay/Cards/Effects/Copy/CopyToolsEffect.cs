@@ -3,11 +3,14 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
-
+    using Newtonsoft.Json;
+    using OMGG.Chronicle;
+    using System;
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Chronicle;
     using Vermines.Player;
     using Vermines.UI.Screen;
 
@@ -45,35 +48,67 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef player)
         {
-            if (player != PlayerController.Local.PlayerRef)
+            if (player != Context.Runner.LocalPlayer)
                 return;
+            if (UIContextManager.Instance) {
+                CardSelectedEffectContext cardCopyEffectContext = new(CardType.Tools, Card);
 
-            if (UIContextManager.Instance)
-            {
-                CardCopyEffectContext cardCopyEffectContext = new CardCopyEffectContext(CardType.Tools, Card);
                 CopyContext copyContext = new CopyContext(cardCopyEffectContext);
                 UIContextManager.Instance.PushContext(copyContext);
             }
-            GameEvents.OnCardCopiedEffect.AddListener(OnCardCopied);
+
+            GameEvents.OnEffectSelectCard.AddListener(OnCardCopied);
         }
 
         private void OnCardCopied(ICard card)
         {
-            GameEvents.OnCardCopiedEffect.RemoveListener(OnCardCopied);
-            Debug.Log($"[CopyPartisanEffect] {card.Data.Name} effect copied by {Card.Data.Name}.");
+            GameEvents.OnEffectSelectCard.RemoveListener(OnCardCopied);
             UIContextManager.Instance.PopContext();
+
             if (card.Data.Type != CardType.Tools)
                 return;
-            PlayerController.Local.NetworkEventCardEffect(Card.ID, card.ID.ToString());
+            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
+
+            player.NetworkEventCardEffect(Card.ID, card.ID.ToString());
         }
 
-        public override void NetworkEventFunction(PlayerRef player, string data)
+        public override void NetworkEventFunction(PlayerRef playerRef, string data)
         {
-            // Here the data is equal to the id of the card copied
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
+
             ICard card = CardSetDatabase.Instance.GetCardByID(data);
 
             foreach (var effect in card.Data.Effects)
-                effect.Play(player);
+                effect.Play(playerRef);
+            ChronicleEntry entry = new() {
+                Id           = $"copied-{Card.ID}-{card.ID}",
+                TimestampUtc = DateTime.UtcNow.Ticks,
+                EventType    = new VerminesLogEventType(VerminesLogsType.CopiedEffect),
+                TitleKey     = $"T_CardReplaced",
+                MessageKey   = $"D_CardReplaced",
+                IconKey      = $"Tool_Card_Effect",
+                DescriptionArgs = new string[] {
+                    "ST_CardReplaced",
+                    player.Nickname,
+                    Card.Data.Name,
+                    card.Data.Name
+                }
+            };
+
+            var payloadObject = new {
+                DescriptionArgs = entry.DescriptionArgs,
+                CardId          = Card.ID,
+                copiedCardId    = card.ID,
+                // ...
+            };
+
+            string payloadJson = JsonConvert.SerializeObject(payloadObject);
+
+            ChroniclePayloadStorage.Add(entry.Id, payloadJson);
+
+            entry.PayloadJson = payloadJson;
+
+            player.AddChronicle(entry);
         }
 
         public override List<(string, Sprite)> Draw()

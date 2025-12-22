@@ -1,15 +1,11 @@
+using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
-using System.IO;
 
 namespace Vermines.CardSystem.Data {
-    using NUnit.Framework;
-    using System.Collections.Generic;
-    using System.Xml.Linq;
-    using UnityEngine.TextCore.Text;
-    using Vermines.CardSystem.Data.Effect;
+
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Gameplay.Cards.Effect;
 
     [CustomEditor(typeof(CardData))]
     public class CardDataEditor : UnityEditor.Editor {
@@ -32,15 +28,17 @@ namespace Vermines.CardSystem.Data {
             EditorGUILayout.LabelField("Card Information", EditorStyles.boldLabel);
 
             // [Tooltip("The name of the card.")]
-            cardData.Name = EditorGUILayout.TextField(new GUIContent("Card Name", "The name of the card."), cardData.Name);
+            cardData.Name = EditorGUILayout.TextField(new GUIContent("Card Name", "The localization key of the name of the card."), cardData.Name);
 
             // [Tooltip("The description of every action that the card can perform.")]
             string description = string.Empty;
 
-            for (int i = 0; i <  cardData.Effects.Count; i++) {
-                if (cardData.Effects[i] == null)
-                    continue;
-                description += cardData.Effects[i].Description + (i + 1 == cardData.Effects.Count ? "" : "\n");
+            if (cardData.Effects != null) {
+                for (int i = 0; i < cardData.Effects.Count; i++) {
+                    if (cardData.Effects[i] == null)
+                        continue;
+                    description += cardData.Effects[i].Description + (i + 1 == cardData.Effects.Count ? "" : "\n");
+                }
             }
 
             GUILayout.Space(5);
@@ -58,11 +56,17 @@ namespace Vermines.CardSystem.Data {
                 GUILayout.Space(5);
             }
 
-            // [Tooltip("Number of exemplars of the card. (Use in Editing mode and when the cards are loading)")]
-            cardData.Exemplars = EditorGUILayout.IntField(new GUIContent("Exemplars", "Number of exemplars of the card. (Use in Editing mode and when the cards are loading).\nThis value must be superior to 0."), cardData.Exemplars);
+            // [Tooltip("Number of exemplars of the card in shop.")]
+            cardData.Exemplars = EditorGUILayout.IntField(new GUIContent("Exemplars", "Number of exemplars of the card in shop."), cardData.Exemplars);
 
             // [Tooltip("Is the card in the default deck of players?")]
             cardData.IsStartingCard = EditorGUILayout.Toggle(new GUIContent("Is Starting Card", "Is the card in the default deck of players?"), cardData.IsStartingCard);
+
+            if (cardData.IsStartingCard) {
+                // [Tooltip("Number of exemplars of the card in the starting deck of players.")]
+                cardData.DeckExemplars = EditorGUILayout.IntField(new GUIContent("Deck Exemplars", "Number of exemplars of the card in the starting deck of players."), cardData.DeckExemplars);
+            } else
+                cardData.DeckExemplars = 0;
 
             GUILayout.EndVertical();
             GUILayout.Space(10);
@@ -76,7 +80,6 @@ namespace Vermines.CardSystem.Data {
 
                 // [Tooltip("The type of the card.")]
                 cardData.Type = (CardType)EditorGUILayout.EnumPopup(new GUIContent("Type", "The type of the card."), cardData.Type);
-
 
                 if (cardData.IsStartingCard == false && cardData.Type == CardType.Partisan) {
                     // [Tooltip("Did the card belongs to a family of a player?")]
@@ -123,29 +126,30 @@ namespace Vermines.CardSystem.Data {
             // -- EOF --
 
             // -- [Header("Card Stats")]
-            if (cardData.IsStartingCard == false || cardData.Type == CardType.Partisan) {
-                _ShowStats = EditorGUILayout.Foldout(_ShowStats, "Card Stats", true);
+            _ShowStats = EditorGUILayout.Foldout(_ShowStats, "Card Stats", true);
 
-                if (_ShowStats) {
-                    GUILayout.BeginVertical(EditorStyles.helpBox);
+            if (_ShowStats) {
+                GUILayout.BeginVertical(EditorStyles.helpBox);
 
-                    if (cardData.IsStartingCard == false) {
-                        // [Tooltip("The cost of the card (with Eloquence as the currency).")]
-                        cardData.Eloquence = EditorGUILayout.IntField(new GUIContent("Eloquence (cost)", "The cost of the card (with Eloquence as the currency)."), cardData.Eloquence);
-                    } else {
-                        cardData.Eloquence = 0;
-                    }
+                if (cardData.IsStartingCard && cardData.Type == CardType.Partisan)
+                    cardData.Eloquence = 0;
+                else
+                    cardData.Eloquence = EditorGUILayout.IntField(new GUIContent("Eloquence (cost)", "The cost of the card (with Eloquence as the currency)."), cardData.Eloquence);
 
-                    if (cardData.Type == CardType.Partisan) {
-                        // [Tooltip("The souls of the card (souls represent the points system of the game).")]
-                        cardData.Souls = EditorGUILayout.IntField(new GUIContent("Souls", "The souls of the card (souls represent the points system of the game)."), cardData.Souls);
-                    } else {
-                        cardData.Souls = 0;
-                    }
+                if (cardData.Type == CardType.Partisan) {
+                    // [Tooltip("The souls of the card (souls represent the points system of the game).")]
+                    cardData.Souls = EditorGUILayout.IntField(new GUIContent("Souls", "The souls of the card (souls represent the points system of the game)."), cardData.Souls);
+                } else
+                    cardData.Souls = 0;
 
-                    GUILayout.EndVertical();
-                }
+                if (cardData.Type == CardType.Tools) {
+                    // [Tooltip("The amount of eloquence gained when the card is recycled.")]
+                    cardData.RecycleEloquence = EditorGUILayout.IntField(new GUIContent("Recycle Eloquence", "The amount of eloquence gained when the card is recycled."), cardData.RecycleEloquence);
+                } else
+                    cardData.RecycleEloquence = 0;
+                GUILayout.EndVertical();
             }
+
             // -- EOF --
 
             // -- [Header("UI Elements")]

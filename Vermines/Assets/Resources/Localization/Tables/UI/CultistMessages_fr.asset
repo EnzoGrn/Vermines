@@ -22,8 +22,7 @@ MonoBehaviour:
     m_Localized: "Fr\xE8re au regard fuyant, m\xEAme dans le silence, ta voix s\u2019impose.
       Voici le poids de ton \xE9loquence ce tour-ci :\r\n\r\n\u25AA <b><color=purple>+{baseValue}</color></b>
       \u2014 Accord\xE9s \xE0 ta seule persistance.\r\n\u25AA <b><color=purple>+{followerValue}</color></b>
-      \u2014 Pour les murmures de ceux que tu influences.\r\n\u25AA <b><color=purple>+{equipmentValue}</color></b>
-      \u2014 Pour les objets \xE9tranges qui t\u2019entourent.\r\n\r\nTotal : <b><color=purple>{total}</color></b>
+      \u2014 Pour les murmures de ceux que tu influences.\r\n\nTotal : <b><color=purple>{total}</color></b>
       \xC9loquence.\r\nQue ta voix s\u2019infiltre dans les interstices de l\u2019esprit."
     m_Metadata:
       m_Items: []
@@ -31,27 +30,24 @@ MonoBehaviour:
     m_Localized: "S\u0153ur aux ailes par\xE9es, ta voix a dans\xE9 parmi les pens\xE9es.
       Voici le poids de ton \xE9loquence ce tour-ci :\r\n\r\n\u25AA <b><color=purple>+{baseValue}</color></b>
       \u2014 Accord\xE9s pour ton \xE9l\xE9gante constance.\r\n\u25AA <b><color=purple>+{followerValue}</color></b>
-      \u2014 Inspir\xE9s par le z\xE8le raffin\xE9 de tes partisans.\r\n\u25AA <b><color=purple>+{equipmentValue}</color></b>
-      \u2014 Pour la gr\xE2ce des reliques que tu portes.\r\n\r\nTotal : <b><color=purple>{total}</color></b>
-      \xC9loquence.\r\nQue ta voix charme les c\u0153urs comme elle trouble les esprits."
+      \u2014 Inspir\xE9s par le z\xE8le raffin\xE9 de tes partisans.\r\n\nTotal :
+      <b><color=purple>{total}</color></b> \xC9loquence.\r\nQue ta voix charme les
+      c\u0153urs comme elle trouble les esprits."
     m_Metadata:
       m_Items: []
   - m_Id: 16545701888
     m_Localized: "Fr\xE8re aux chants cach\xE9s, ta voix s\u2019est \xE9lev\xE9e.
       Voici le poids de ton \xE9loquence ce tour-ci :\r\n\r\n\u25AA <b><color=purple>+{baseValue}</color></b>
       \u2014 Pour avoir fredonn\xE9 ton engagement.\r\n\u25AA <b><color=purple>+{followerValue}</color></b>
-      \u2014 Pour l\u2019\xE9cho que reprennent tes suivants.\r\n\u25AA <b><color=purple>+{equipmentValue}</color></b>
-      \u2014 Amplifi\xE9s par les harmonies discr\xE8tes de ton \xE9quipement.\r\n\r\nTotal
-      : <b><color=purple>{total}</color></b> \xC9loquence.\r\nQue ton chant devienne
-      proph\xE9tie."
+      \u2014 Pour l\u2019\xE9cho que reprennent tes suivants.\r\n\nTotal : <b><color=purple>{total}</color></b>
+      \xC9loquence.\r\nQue ton chant devienne proph\xE9tie."
     m_Metadata:
       m_Items: []
   - m_Id: 68936753152
     m_Localized: "Fr\xE8re \xE0 la carapace solide, tu as parl\xE9 avec force. Voici
       le poids de ton \xE9loquence ce tour-ci :\n\n\u25AA <b><color=purple>+{baseValue}</color></b>
       \u2014 Pour ta pr\xE9sence in\xE9branlable.\r\n\u25AA <b><color=purple>+{followerValue}</color></b>
-      \u2014 For the ardor of those who follow you.\r\n\u25AA <b><color=purple>+{equipmentValue}</color></b>
-      \u2014 Pour la puissance contenue dans tes armes.\r\n\r\nTotal : <b><color=purple>{total}</color></b>
+      \u2014 For the ardor of those who follow you.\r\n\nTotal : <b><color=purple>{total}</color></b>
       \xC9loquence.\r\nQue ta voix reste tranchante."
     m_Metadata:
       m_Items: []

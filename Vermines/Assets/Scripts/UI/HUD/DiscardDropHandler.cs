@@ -1,8 +1,12 @@
-﻿using UnityEngine;
+﻿using Fusion;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
+using Vermines.Core.Scene;
+using Vermines.Gameplay.Phases;
+using Vermines.Player;
 using Vermines.UI.GameTable;
-using DG.Tweening;
 
 namespace Vermines.UI.Card
 {
@@ -12,7 +16,6 @@ namespace Vermines.UI.Card
         {
             // Initialize any necessary components or variables here
             GameEvents.OnCardDiscardedRefused.AddListener(OnDiscardRefused);
-            GameEvents.OnCardDiscarded.AddListener(OnCardDiscarded);
             slot = GetComponent<CardSlotBase>();
         }
 
@@ -20,7 +23,6 @@ namespace Vermines.UI.Card
         {
             // Clean up event listeners to avoid memory leaks
             GameEvents.OnCardDiscardedRefused.RemoveListener(OnDiscardRefused);
-            GameEvents.OnCardDiscarded.RemoveListener(OnCardDiscarded);
         }
 
         public override void OnDrop(PointerEventData eventData)
@@ -28,7 +30,7 @@ namespace Vermines.UI.Card
             DraggableCard drag = eventData.pointerDrag?.GetComponent<DraggableCard>();
             if (drag == null || slot == null) return;
 
-            if (GameManager.Instance.IsMyTurn() == false)
+            if (!PlayerController.Local.Context.GameplayMode.IsMyTurn)
             {
                 Debug.Log("[DiscardDropHandler] Not your turn, cannot discard card.");
                 drag.ReturnToOriginalPosition();
@@ -46,8 +48,25 @@ namespace Vermines.UI.Card
 
             if (slot.CanAcceptCard(card))
             {
-                GameEvents.OnCardDiscardedRequested.Invoke(card);
-                //drag.gameObject.SetActive(false);
+                slot.ResetSlot();
+                slot.SetCard(card);
+                GameObject go = PlayerController.Local.Context.HandManager.GetCardDisplayGO(card);
+                if (go != null)
+                {
+                    go.SetActive(false);
+                }
+
+                PhaseManager phaseManager = PlayerController.Local.Context.GameplayMode.PhaseManager;
+
+                if (phaseManager.Phases.TryGetValue(phaseManager.CurrentPhase, out var phase) && phase is ActionPhaseAsset actionPhase)
+                    actionPhase.OnDiscard(card);
+                else {
+                    Debug.LogWarning("[DiscardDropHandler] Cannot discard card outside of Action Phase.");
+
+                    drag.ReturnToOriginalPosition();
+
+                    slot.ResetSlot();
+                }
             }
             else
             {
@@ -56,27 +75,43 @@ namespace Vermines.UI.Card
             }
         }
 
-        private void OnCardDiscarded(ICard card)
-        {
-            // Handle the card discard event here if needed
-            Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} has been discarded.");
-            slot.ResetSlot();
-            slot.SetCard(card);
-        }
-
         private void OnDiscardRefused(ICard card)
         {
+            SceneContext context = PlayerController.Local.Context;
+
             // Handle the discard refusal event here if needed
             Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} discard refused.");
-            GameObject go = HandManager.Instance.GetCardDisplayGO(card);
+            GameObject go = context.HandManager.GetCardDisplayGO(card);
+
             if (go != null)
             {
+                go.SetActive(true);
                 if (go.TryGetComponent<DraggableCard>(out var drag))
                 {
                     drag.ReturnToOriginalPosition();
                     drag.gameObject.SetActive(true);
                 }
             }
+
+            // Reset the slot to the previous card or empty state
+            slot.ResetSlot();
+
+            PlayerDeck deck = PlayerController.Local.Deck;
+
+            ICard previousCard = deck.Discard.LastOrDefault();
+
+            if (previousCard != null)
+            {
+                Debug.Log($"[DiscardDropHandler] Restoring card {previousCard.Data.Name} to discard slot.");
+                slot.SetCard(previousCard);
+            }
+        }
+
+        public void SetLatestDiscardedCard(ICard card)
+        {
+            if (slot == null) return;
+            slot.ResetSlot();
+            slot.SetCard(card);
         }
     }
 }

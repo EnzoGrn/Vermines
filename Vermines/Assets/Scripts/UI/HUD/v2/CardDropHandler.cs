@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
+using Vermines.Player;
 using Vermines.UI.GameTable;
 
 namespace Vermines.UI.Card
@@ -24,7 +25,7 @@ namespace Vermines.UI.Card
             DraggableCard drag = eventData.pointerDrag?.GetComponent<DraggableCard>();
             if (drag == null || slot == null) return;
 
-            if (GameManager.Instance.IsMyTurn() == false)
+            if (!PlayerController.Local.Context.GameplayMode.IsMyTurn)
             {
                 Debug.Log("[DiscardDropHandler] Not your turn, cannot discard card.");
                 drag.ReturnToOriginalPosition();
@@ -55,11 +56,11 @@ namespace Vermines.UI.Card
         {
             // Handle the card discard event here if needed
             Debug.Log($"[CardDropHandler] Card {card.Data.Name} has been played.");
-            GameObject go = HandManager.Instance.GetCardDisplayGO(card);
+            GameObject go = PlayerController.Local.Context.HandManager.GetCardDisplayGO(card);
             if (go != null)
             {
                 // Remove the card from the hand and destroy it
-                HandManager.Instance.RemoveCard(go);
+                PlayerController.Local.Context.HandManager.RemoveCard(go);
                 go.transform.DOKill(true);
                 Destroy(go);
 
@@ -71,7 +72,7 @@ namespace Vermines.UI.Card
 
         private void OnPlayRefused(ICard card)
         {
-            GameObject go = HandManager.Instance.GetCardDisplayGO(card);
+            GameObject go = PlayerController.Local.Context.HandManager.GetCardDisplayGO(card);
             if (go != null)
             {
                 if (go.TryGetComponent<DraggableCard>(out var drag))

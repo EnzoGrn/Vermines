@@ -16,6 +16,8 @@ namespace Vermines.Menu  {
 
         [Header("Camera")]
 
+        public CinemachineSplineDolly SpineDolly => _SplineDolly;
+
         [SerializeField]
         private CinemachineSplineDolly _SplineDolly;
 
@@ -82,13 +84,14 @@ namespace Vermines.Menu  {
 
         public void OnSplineReseted()
         {
-            _IsPlaying                         = false;
-            _SplineDolly.CameraPosition        = 0f;
+            _IsPlaying = false;
 
-            _SplineDolly.LookAtTarget.position = _InitialTarget.position;
+            if (_SplineDolly != null) {
+                _SplineDolly.CameraPosition        = 0f;
+                _SplineDolly.LookAtTarget.position = _InitialTarget.position;
+            }
 
             _PassedKnots.Clear();
-
             OnSplineReset?.Invoke();
         }
 
@@ -138,6 +141,20 @@ namespace Vermines.Menu  {
                     OnSplineEnded();
                 }
             }
+        }
+
+        public void TeleportToTavern()
+        {
+            _IsPlaying = false;
+
+            // Positionne la caméra au dernier point du spline
+            if (_SplineDolly != null) {
+                _SplineDolly.CameraPosition        = 1f;
+                _SplineDolly.LookAtTarget.position = _FinalTarget.position;
+            }
+
+            // On considère que la cinématique est "terminée"
+            _PassedKnots.Clear();
         }
 
         public void SetEndLookAt()

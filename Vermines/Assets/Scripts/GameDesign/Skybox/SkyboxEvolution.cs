@@ -1,7 +1,9 @@
 using Fusion;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Vermines;
+using Vermines.Core.Player;
 using Vermines.Player;
 
 public class SkyboxEvolution : MonoBehaviour
@@ -31,6 +33,9 @@ public class SkyboxEvolution : MonoBehaviour
     private int _actualMaxSouls = 0;
     private float _currentValue = 0.01f;
     private Coroutine _skyboxTransitionCoroutine;
+
+    private Dictionary<PlayerRef, PlayerStatistics> _playersData = new();
+
     #endregion
 
     #region methods
@@ -50,7 +55,7 @@ public class SkyboxEvolution : MonoBehaviour
         //RenderSettings.skybox = new Material(OriginalSkyboxMaterial);
 
         GameEvents.OnPlayerWin.RemoveListener(OnPlayerWin);
-        GameEvents.OnPlayersUpdated.RemoveListener(UpdateSkybox);
+        GameEvents.OnPlayerUpdated.RemoveListener(UpdateSkybox);
     }
 
     /// <summary>
@@ -77,7 +82,7 @@ public class SkyboxEvolution : MonoBehaviour
         _originalDLCOlor = DirectionalLight.color;
         _originalIntensity = DirectionalLight.intensity;
 
-        GameEvents.OnPlayersUpdated.AddListener(UpdateSkybox);
+        GameEvents.OnPlayerUpdated.AddListener(UpdateSkybox);
         GameEvents.OnPlayerWin.AddListener(OnPlayerWin);
 
         DynamicGI.UpdateEnvironment();
@@ -91,12 +96,11 @@ public class SkyboxEvolution : MonoBehaviour
     /// </summary>
     /// <param name="playerData"></param>
     /// <returns></returns>
-    private int GetMaxSoulsValue(NetworkDictionary<PlayerRef, PlayerData> playerData)
+    private int GetMaxSoulsValue()
     {
         int maxSouls = 0;
 
-        foreach (var key in playerData)
-        {
+        foreach (var key in _playersData) {
             maxSouls = Mathf.Max(maxSouls, key.Value.Souls);
         }
 
@@ -142,7 +146,7 @@ public class SkyboxEvolution : MonoBehaviour
     public void OnPlayerWin(PlayerRef winnerRef, PlayerRef localPlayerRef)
     {
         GameEvents.OnPlayerWin.RemoveListener(OnPlayerWin);
-        GameEvents.OnPlayersUpdated.RemoveListener(UpdateSkybox);
+        GameEvents.OnPlayerUpdated.RemoveListener(UpdateSkybox);
         
         StopAllCoroutines();
 
@@ -162,15 +166,18 @@ public class SkyboxEvolution : MonoBehaviour
     /// UpdateSkybox change the look of the skybox depending on the actual higher souls value from 
     /// max souls player value to max require souls value to win
     /// </summary>
-    public void UpdateSkybox(NetworkDictionary<PlayerRef, PlayerData> playerData)
+    public void UpdateSkybox(PlayerController player)
     {
-        int maxSouls = GetMaxSoulsValue(playerData);
+        _playersData[player.Object.InputAuthority] = player.Statistics;
+
+        int maxSouls = GetMaxSoulsValue();
         
         if (maxSouls == _actualMaxSouls)
             return;
 
         _actualMaxSouls = maxSouls;
-        float value = Mathf.Clamp01((float)_actualMaxSouls / (float)GameManager.Instance.Configuration.MaxSoul);
+
+        float value = Mathf.Clamp01((float)_actualMaxSouls / (float)player.Context.GameplayMode.SoulsLimit);
 
         if (_skyboxTransitionCoroutine != null)
             StopCoroutine(_skyboxTransitionCoroutine);

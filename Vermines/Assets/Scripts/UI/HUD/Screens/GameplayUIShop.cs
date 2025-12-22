@@ -1,9 +1,12 @@
 ﻿using Fusion;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Vermines.CardSystem.Data;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
+using Vermines.Core.Scene;
 using Vermines.Player;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Plugin;
@@ -47,7 +50,7 @@ namespace Vermines.UI.Screen
         public List<ShopUIConfigEntry> shopConfigEntries;
 
         protected Dictionary<ShopType, ShopUIConfig> shopConfigs = new();
-        protected Dictionary<ShopType, Dictionary<int, ICard>> previousShopStates = new();
+        protected Dictionary<ShopType, List<ICard>> previousShopStates = new();
 
         protected override bool ShouldHidePlugins => false;
 
@@ -121,8 +124,17 @@ namespace Vermines.UI.Screen
             }
 
             GameEvents.OnShopRefilled.AddListener(ReceiveFullShopList);
-
             GameEvents.OnCardPurchased.AddListener(OnCardPurchased);
+
+            Resync();
+        }
+
+        private void Resync()
+        {
+            SceneContext context = PlayerController.Local.Context;
+
+            foreach (var section in context.GameplayMode.Shop.Sections)
+                GameEvents.OnShopRefilled.Invoke(section.Key, context.GameplayMode.Shop.GetDisplayCards(section.Key));
         }
 
         /// <summary>
@@ -133,6 +145,8 @@ namespace Vermines.UI.Screen
         public override void Show()
         {
             base.Show();
+
+            Resync();
 
             // Get the ShopUIController in the plugin list.
             ShopUIController shopUIController = Get<ShopUIController>();
@@ -183,14 +197,14 @@ namespace Vermines.UI.Screen
             _shopType = shopType;
         }
 
-        public List<Vermines.UI.Screen.ShopCardEntry> GetEntries(ShopType type)
+        public List<ShopCardEntry> GetEntries(ShopType type)
         {
             if (previousShopStates.TryGetValue(type, out var shopList))
             {
                 List<ShopCardEntry> entries = new();
-                foreach (var kvp in shopList)
+                foreach (var card in shopList)
                 {
-                    entries.Add(new ShopCardEntry(kvp.Value));
+                    entries.Add(new ShopCardEntry(card));
                 }
                 return entries;
             }
@@ -201,26 +215,23 @@ namespace Vermines.UI.Screen
         {
             List<ShopCardEntry> entries = new();
 
-            // Check if there's an old list for this shop type
-            Dictionary<int, ICard> oldList = previousShopStates.ContainsKey(type)
+            // Get old list as List<ICard>
+            List<ICard> oldList = previousShopStates.ContainsKey(type)
                 ? previousShopStates[type]
-                : new Dictionary<int, ICard>();
+                : new List<ICard>();
 
-            foreach (var kvp in newList)
+            // Sort new list by slot index for consistency
+            var sortedNewList = newList.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value).ToList();
+
+            for (int i = 0; i < sortedNewList.Count; i++)
             {
-                int slotIndex = kvp.Key;
-                ICard newCard = kvp.Value;
-
-                // Check if the card is new or has changed in the slot
-                bool isNew = !oldList.TryGetValue(slotIndex, out var oldCard) || oldCard?.ID != newCard?.ID;
-
+                ICard newCard = sortedNewList[i];
+                bool isNew = i >= oldList.Count || oldList[i]?.ID != newCard?.ID;
                 entries.Add(new ShopCardEntry(newCard, isNew));
             }
 
-            // Update the previous shop list
-            previousShopStates[type] = new Dictionary<int, ICard>(newList);
+            previousShopStates[type] = sortedNewList;
 
-            // Notification
             GameEvents.OnShopUpdated.Invoke(type, entries);
         }
 
@@ -228,81 +239,64 @@ namespace Vermines.UI.Screen
 
         #region Events
 
-        public void OnCardPurchased(ShopType shopType, int slotIndex)
+        public void OnCardPurchased(ShopType shopType, int cardId)
         {
             if (!previousShopStates.TryGetValue(shopType, out var shopList))
             {
-                Debug.LogWarning($"[ShopManager] No shop list found for type {shopType}");
+                Debug.LogWarning($"[ShopManager] No shop list found for type {shopType}.");
                 return;
             }
 
-            if (!shopList.ContainsKey(slotIndex))
+            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+            if (!shopList.Contains(card))
             {
-                Debug.LogWarning($"[ShopManager] Slot index {slotIndex} not found in shop {shopType}");
+                Debug.LogWarning($"[ShopManager] Card {cardId} not found in shop {shopType}.");
                 return;
             }
+
+            SceneContext context = PlayerController.Local.Context;
 
             // If the card bought is an equipment card, invoke the specific event
-            if (PlayerController.Local.PlayerRef == GameManager.Instance.PlayerTurnOrder[GameManager.Instance.CurrentPlayerIndex])
-            {
-                if (shopList[slotIndex].Data.Type == CardType.Equipment)
-                {
-                    ICard equipmentCard = shopList[slotIndex];
-                    GameEvents.OnEquipmentCardPurchased.Invoke(equipmentCard, slotIndex);
-                }
-                else
-                {
-                    ICard card = shopList[slotIndex];
-                    GameEvents.OnCardDiscarded.Invoke(card);
-                }
+            if (context.GameplayMode.IsMyTurn) {
+                if (card.Data.Type == CardType.Equipment)
+                    GameEvents.OnEquipmentCardPurchased.Invoke(card);
             }
 
-            Debug.Log($"[ShopManager] Card purchased from {shopType} shop at slot {slotIndex}");
+            // Remove the card from the list
+            int index = shopList.FindIndex(c => c != null && c.ID == card.ID);
+            if (index >= 0)
+                shopList[index] = null;
 
-            shopList[slotIndex] = null;
-
-            ReceiveFullShopList(shopType, shopList);
+            // Update the shop UI
+            ReceiveFullShopList(shopType, context.GameplayMode.Shop.GetDisplayCards(shopType));
         }
+
 
         public void OnCardClicked(ICard card, int slodId)
         {
-            Debug.Log($"[ShopCardClickHandler] Card clicked: {card.Data.Name}");
-
             if (card == null)
                 return;
-
             ShopPopupPlugin plugin = Get<ShopPopupPlugin>();
 
-            if (plugin == null)
-            {
-                Debug.LogErrorFormat(
-                    gameObject,
-                    "[{0}] Critical Error: Missing 'ShopPopupPlugin' reference on GameObject '{1}'. This component is required to render the card list. Please assign a valid GameObject in the Inspector.",
-                    nameof(GameplayUISacrifice),
-                    gameObject.name
-                );
+            if (plugin == null) {
+                Debug.LogErrorFormat(gameObject, "[{0}] Critical Error: Missing 'ShopPopupPlugin' reference on GameObject '{1}'. This component is required to render the card list. Please assign a valid GameObject in the Inspector.", nameof(GameplayUIShop), gameObject.name);
+
                 return;
             }
 
             plugin.SetParam(card);
 
-            if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
-            {
-                plugin.Setup((c) =>
-                {
-                    GameEvents.OnCardClickedInShopWithSlotIndex.Invoke(_shopType, slodId);
+            if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>()) {
+                plugin.Setup((c) => {
+                    GameEvents.OnCardClickedInShopWithSlotIndex.Invoke(_shopType, card.ID);
                     GameplayUIController controller = GameObject.FindAnyObjectByType<GameplayUIController>();
+
                     if (controller != null)
-                    {
                         controller.ShowLast();
-                    }
                 }, isReplace: true, _shopType);
-            }
-            else
-            {
-                plugin.Setup((c) =>
-                {
-                    GameEvents.InvokeOnCardPurchaseRequested(_shopType, slodId);
+            } else {
+                plugin.Setup((c) => {
+                    GameEvents.InvokeOnCardPurchaseRequested(_shopType, card.ID);
                 }, isReplace: false, _shopType);
             }
 

@@ -36,9 +36,25 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3f7a6877c30107b478586fbb2caab49f
+    m_Address: Assets/Resources/Localization/Tables/Server/ServerStatus Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 558b806d900de704c9aec117efd14098
     m_Address: Assets/Resources/Localization/Tables/Scriptable Objects/Settings/Settings
       Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5fa2ddfd24e455443893d9318ea464a5
+    m_Address: Assets/Resources/Localization/Tables/Chronicle/VerminesChronicle Shared
+      Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8dc13a3a49b1d5645ac9b152670ef3c9
+    m_Address: Assets/Resources/Localization/Tables/Card/CardName Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -56,6 +72,11 @@ MonoBehaviour:
   - m_GUID: bb7330e770dcd3047b4cc464c079113a
     m_Address: Assets/Resources/Localization/Tables/Scenes/LanguageSettings/LanguageSettings
       Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cd28d771d5b12ba4180efd2bed0aef56
+    m_Address: Assets/Resources/Localization/Tables/Back-end Error Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

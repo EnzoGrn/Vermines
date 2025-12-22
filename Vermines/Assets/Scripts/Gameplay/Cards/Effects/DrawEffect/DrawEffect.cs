@@ -16,6 +16,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         #region Constants
 
         private static readonly string drawTemplate = "Draw {0} card";
+        private static readonly string everyoneDrawTemplate = "Everyone draws {0} card";
         private static readonly string linkerTemplate = " then ";
 
         #endregion
@@ -47,7 +48,21 @@ namespace Vermines.Gameplay.Cards.Effect {
                 UpdateDescription();
             }
         }
-        
+
+        [SerializeField]
+        private bool _Everyone = false;
+
+        public bool Everyone
+        {
+            get => _Everyone;
+            set
+            {
+                _Everyone = value;
+
+                UpdateDescription();
+            }
+        }
+
         [SerializeField]
         private AEffect _SubEffect = null;
 
@@ -67,35 +82,50 @@ namespace Vermines.Gameplay.Cards.Effect {
         #region UI Elements
 
         public Sprite DrawIcon = null;
+        public Sprite EveryoneIcon = null;
         public Sprite Then = null;
 
         #endregion
 
-        public override void Play(PlayerRef player)
+        private void Draw(PlayerController player, int amount)
         {
-            for (int i = 0; i < Amount; i++) {
+            for (int i = 0; i < amount; i++) {
                 ICommand drawCommand = new DrawCommand(player);
 
                 CommandResponse command = CommandInvoker.ExecuteCommand(drawCommand);
 
-                if (command.Status == CommandStatus.Success && PlayerController.Local.PlayerRef == player) {
-                    PlayerDeck deck = GameDataStorage.Instance.PlayerDeck[player];
+                if (command.Status == CommandStatus.Success && Context.Runner.LocalPlayer == player.Object.InputAuthority)
+                    GameEvents.InvokeOnDrawCard(player.Deck.Hand.Last());
+            }
+        }
 
-                    GameEvents.InvokeOnDrawCard(deck.Hand.Last());
+        public override void Play(PlayerRef playerRef)
+        {
+            PlayerController originPlayer = Context.NetworkGame.GetPlayer(playerRef);
 
-                    Debug.Log($"[DrawEffect] Player {player} drew a card from his deck. He drew {deck.Hand.Last().Data.Name}.");
+            if (Everyone) { // Except you
+                List<PlayerController> players = Context.Runner.GetAllBehaviours<PlayerController>();
+
+                foreach (PlayerController player in players) {
+                    if (playerRef == player.Object.InputAuthority)
+                        continue;
+                    Draw(player, Amount);
                 }
+            } else {
+                Draw(originPlayer, Amount);
             }
 
-            base.Play(player);
+            base.Play(playerRef);
         }
 
         public override List<(string, Sprite)> Draw()
         {
-            List<(string, Sprite)> elements = new() {
-                { (null       , DrawIcon) },
-                { ($"{Amount}", null) }
-            };
+            List<(string, Sprite)> elements = new();
+
+            if (Everyone)
+                elements.Add((null, EveryoneIcon));
+            elements.Add((null, DrawIcon));
+            elements.Add(($"{Amount}", null));
 
             if (SubEffect != null) {
                 elements.Add((null, Then));
@@ -107,7 +137,10 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         protected override void UpdateDescription()
         {
-            Description = $"{string.Format(drawTemplate, Amount)}";
+            if (Everyone)
+                Description = $"{string.Format(everyoneDrawTemplate, Amount)}";
+            else
+                Description = $"{string.Format(drawTemplate, Amount)}";
 
             if (Amount > 1)
                 Description += "s";
@@ -126,6 +159,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             if (DrawIcon == null)
                 DrawIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Draw");
+            if (EveryoneIcon == null)
+                EveryoneIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Everyone");
             if (Then == null)
                 Then = Resources.Load<Sprite>("Sprites/UI/Effects/Then");
         }

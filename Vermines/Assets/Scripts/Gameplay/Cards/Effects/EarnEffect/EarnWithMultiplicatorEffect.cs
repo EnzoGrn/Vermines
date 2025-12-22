@@ -10,11 +10,12 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Cards.Effects;
+    using Vermines.Player;
 
     [System.Serializable]
     public struct EarnWithMultiplicatorCondition {
 
-        public Func<PlayerRef, int> Condition;
+        public Func<PlayerController, int> Condition;
         public Func<List<(string, Sprite)>> Icons;
         public string Description;
     }
@@ -134,15 +135,17 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
-        public override void Play(PlayerRef player)
+        public override void Play(PlayerRef playerRef)
         {
+            PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
+
             int amount = Amount * Condition.Condition.Invoke(player);
 
             ICommand earnCommand = new EarnCommand(player, amount, DataToEarn);
 
             CommandInvoker.ExecuteCommand(earnCommand);
 
-            base.Play(player);
+            base.Play(playerRef);
         }
 
         public override List<(string, Sprite)> Draw()
@@ -234,9 +237,9 @@ namespace Vermines.Gameplay.Cards.Effect {
             Description = "for each additional bee sacrificed",
         };
 
-        static public int ScaleOnBeeSacrificedCondition(PlayerRef player)
+        static public int ScaleOnBeeSacrificedCondition(PlayerController player)
         {
-            List<ICard> sacrificed = GameDataStorage.Instance.PlayerDeck[player].Graveyard;
+            List<ICard> sacrificed = player.Deck.Graveyard;
             int count = 0;
 
             foreach (ICard card in sacrificed) {

@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: VerminesChronicle Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: VerminesChronicle
+  m_TableCollectionNameGuidString: 5fa2ddfd24e455443893d9318ea464a5
+  m_Entries:
+  - m_Id: 7133454336
+    m_Key: T_CardPurchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 833121935360
+    m_Key: D_Market_CardPurchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 860133253120
+    m_Key: D_Courtyard_CardPurchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 246168138276864
+    m_Key: ST_Market_CardPurchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 246725653553152
+    m_Key: ST_Courtyard_CardPurchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 248552730124288
+    m_Key: T_CardReplaced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 248612964524032
+    m_Key: D_CardReplaced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 249107259056128
+    m_Key: ST_CardReplaced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 320342512885760
+    m_Key: T_CardSacrified
+    m_Metadata:
+      m_Items: []
+  - m_Id: 320348905005056
+    m_Key: D_CardSacrified
+    m_Metadata:
+      m_Items: []
+  - m_Id: 321894778658816
+    m_Key: ST_CardSacrified
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701381143945216
+    m_Key: T_EffectCopied
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701421140828160
+    m_Key: D_EffectCopied
+    m_Metadata:
+      m_Items: []
+  - m_Id: 701437565722624
+    m_Key: ST_EffectCopied
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508114417934336
+    m_Key: T_CardReborned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508155731828736
+    m_Key: D_CardReborned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2508168344100864
+    m_Key: ST_CardReborned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899131646337024
+    m_Key: T_ContractSigned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899134087421952
+    m_Key: D_ContractSigned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899135601565696
+    m_Key: ST_ContractSigned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899636791533568
+    m_Key: ST_Eloquence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2899638519586816
+    m_Key: ST_Soul
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270582543048704
+    m_Key: T_CardRecycled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270584900247552
+    m_Key: D_CardRecycled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3270586733158400
+    m_Key: ST_CardRecycled
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1807215638542024805
+  references:
+    version: 2
+    RefIds:
+    - rid: 1807215638542024805
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1759416379175

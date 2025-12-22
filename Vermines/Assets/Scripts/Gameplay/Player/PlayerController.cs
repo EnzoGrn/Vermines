@@ -1,453 +1,304 @@
-﻿using OMGG.DesignPattern;
+﻿using UnityEngine;
 using Fusion;
-using UnityEngine;
+using System;
 
 namespace Vermines.Player {
-    using OMGG.Menu.Screen;
-    using Vermines.CardSystem.Data;
+
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Gameplay.Cards;
-    using Vermines.Gameplay.Commands.Cards.Effects;
-    using Vermines.Gameplay.Commands.Deck;
-    using Vermines.Menu.Screen;
-    using Vermines.Network.Utilities;
-    using Vermines.Service;
-    using Vermines.ShopSystem.Commands;
+    using Vermines.Core;
+    using Vermines.Core.Player;
     using Vermines.ShopSystem.Enumerations;
 
-    public class PlayerController : NetworkBehaviour {
+    public partial class PlayerController : ContextBehaviour, IPlayer {
 
         public static PlayerController Local { get; private set; }
 
-        public PlayerRef PlayerRef => Object.InputAuthority;
+        #region Player's value
 
-        #region Cards Tracker
+        public string UserID { get; private set; }
+        public string UnityID { get; private set; }
+        public string Nickname { get; private set; }
 
-        private CardTracker _DiscardedCardTrackerPerTurn = new();
+        public bool IsInitialized => _InitCounter <= 0;
+
+        [Networked]
+        private NetworkString<_64> NetworkedUserID { get; set; }
+
+        [Networked]
+        public NetworkString<_32> NetworkedNickname { get; set; }
+
+        [Networked, OnChangedRender(nameof(OnStatisticsChange))]
+        public PlayerStatistics Statistics { get; private set; }
+
+        public PlayerDeck Deck { get; private set; }
+
+        private int _InitCounter;
+
+        [Networked]
+        private byte _SyncToken { get; set; }
+
+        private byte _LocalSyncToken;
+
+        private bool _PlayerDataSent;
 
         #endregion
 
-        #region Override Methods
+        #region Getters & Setters
 
-        public override void Spawned()
+        public void SetEloquence(int eloquence)
         {
-            name = NetworkNameTools.GiveNetworkingObjectName(Object.InputAuthority, HasInputAuthority, HasStateAuthority);
+            if (!HasStateAuthority)
+                return;
+            int maxEloquence = Context.GameplayMode.MaxEloquence;
 
-            if (HasInputAuthority)
-                Local = this;
+            if (maxEloquence < eloquence)
+                eloquence = maxEloquence;
+            OnEloquenceChanged?.Invoke(Object.InputAuthority, Statistics.Eloquence, eloquence);
+
+            PlayerStatistics stats = Statistics;
+
+            stats.Eloquence = eloquence;
+
+            UpdateStatistics(stats);
         }
 
-        public override void Despawned(NetworkRunner runner, bool hasState)
+        public void SetSouls(int souls)
         {
-            if (HasInputAuthority && Local == this)
-                Local = null;
+            if (!HasStateAuthority)
+                return;
+            OnSoulsChanged?.Invoke(Object.InputAuthority, Statistics.Souls, souls);
+
+            PlayerStatistics stats = Statistics;
+
+            stats.Souls = souls;
+
+            UpdateStatistics(stats);
         }
 
         #endregion
 
         #region Methods
 
-        public void Update()
+        public void UpdateStatistics(PlayerStatistics statistics)
         {
-            if (!HasInputAuthority)
-                return;
-            if (Input.GetKeyDown(KeyCode.Escape)) {
-                VMUI_Gameplay gameplay = FindFirstObjectByType<VMUI_Gameplay>();
-                
-                if (gameplay)
-                    gameplay.TogglePauseMenu();
+            Statistics = statistics;
+        }
+
+        public void UpdateDeck(PlayerDeck deck)
+        {
+            Deck = deck;
+        }
+
+        public void Refresh()
+        {
+            PlayerStatistics statistics = Statistics;
+
+            statistics.PlayerRef = Object.InputAuthority;
+
+            Statistics = statistics;
+
+            RPC_DeckResynchronization(Deck.Serialize());
+        }
+
+        private void UpdateLocalState()
+        {
+            if (_LocalSyncToken != _SyncToken) {
+                UserID   = NetworkedUserID.Value;
+                Nickname = NetworkedNickname.Value;
             }
         }
 
-        public void ReturnToMenu()
+        public override void Spawned()
         {
-            VerminesPlayerService services = FindFirstObjectByType<VerminesPlayerService>(FindObjectsInactive.Include);
+            _LocalSyncToken = default;
+            _PlayerDataSent = false;
+            _InitCounter    = 10;
 
-            if (services.IsCustomGame())
-                RPC_ForceQuitCustomGame(PlayerRef);
-            else
-                RPC_ForceQuit(PlayerRef);
+            if (HasInputAuthority) {
+                Context.LocalPlayerRef = Object.InputAuthority;
+
+                Local = this;
+            }
+
+            UpdateLocalState();
+
+            Runner.SetIsSimulated(Object, true);
         }
 
-        [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-        public async void RPC_ForceQuitCustomGame(PlayerRef player)
+        public void Despawn()
         {
-            GameManager manager = FindFirstObjectByType<GameManager>();
-
-            if (!manager)
+            if (!Runner.IsServer)
                 return;
-            await manager.ForceEndCustomGame(player);
+            PlayerStatistics stats = Statistics;
+
+            stats.IsConnected = false;
+
+            UpdateStatistics(stats);
+
+            if (HasStateAuthority)
+                Local = null;
         }
 
-
-        [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-        public async void RPC_ForceQuit(PlayerRef player)
+        public override void FixedUpdateNetwork()
         {
-            GameManager manager = FindFirstObjectByType<GameManager>();
-
-            if (!manager)
+            if (_LocalSyncToken != default && Runner.IsForward)
+                _InitCounter = Mathf.Max(0, _LocalSyncToken);
+            if (IsProxy)
                 return;
-            await manager.ReturnToTavern();
+            if (HasInputAuthority) {
+                Context.LocalPlayerRef = Object.InputAuthority;
+
+                if (!_PlayerDataSent && Runner.IsForward && Context.PlayerData != null) {
+                    string unityId = Context.PlayerData.UnityID ?? string.Empty;
+
+                    RPC_SendPlayerData(Object.InputAuthority, Context.PeerUserID, Context.PlayerData.Nickname, Context.PlayerData.Cultist != null ? Context.PlayerData.Cultist.family : CardFamily.None, unityId);
+
+                    _PlayerDataSent = true;
+                }
+            }
         }
 
-        public void ClearTracker()
+        #endregion
+
+        #region Events
+
+        public Action<PlayerRef, int, int> OnSoulsChanged;     // PlayerRef, oldValue, newValue
+        public Action<PlayerRef, int, int> OnEloquenceChanged; // PlayerRef, oldValue, newValue
+
+        public void OnReconnect(PlayerController player)
         {
-            _DiscardedCardTrackerPerTurn.Reset();
+            UserID            = player.UserID;
+            Nickname          = player.Nickname;
+            NetworkedUserID   = player.NetworkedUserID;
+            NetworkedNickname = player.NetworkedNickname;
+            UnityID           = player.UnityID;
+
+            RPC_DeckResynchronization(player.Deck.Serialize());
         }
 
-        public void AddCardInTracker(int cardId)
+        private void OnStatisticsChange()
         {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
-            if (card != null)
-                _DiscardedCardTrackerPerTurn.AddCard(card);
+            GameEvents.OnPlayerUpdated.Invoke(this);
         }
+
+        #endregion
+
+        #region RPCs
+
+        [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
+        private void RPC_SendPlayerData(PlayerRef playerRef, string userId, string nickname, CardFamily family, string unityId)
+        {
+            #if UNITY_EDITOR
+                nickname += $" {Object.InputAuthority}";
+            #endif
+
+            _SyncToken++;
+
+            if (_SyncToken == default)
+                _SyncToken = 1;
+            _LocalSyncToken = _SyncToken;
+
+            NetworkedUserID   = userId;
+            UserID            = userId;
+            NetworkedNickname = nickname;
+            Nickname          = nickname;
+            UnityID           = unityId;
+
+            PlayerStatistics stats = Statistics;
+
+            stats.Family = family;
+
+            UpdateStatistics(stats);
+
+            Context.GameplayMode.OnPlayerDataReceived(playerRef, family);
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
+        public void RPC_DeckResynchronization(string data)
+        {
+            Deck = PlayerDeck.Deserialize(data);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.All, Channel = RpcChannel.Reliable)]
+        public void RPC_DrawCards(int cardsToDraw)
+        {
+            for (int i = 0; i < cardsToDraw; i++) {
+                ICard drawnCard = Deck.Draw();
+
+                if (drawnCard != null && Object.InputAuthority == Runner.LocalPlayer)
+                    GameEvents.InvokeOnDrawCard(drawnCard);
+            }
+        }
+
+        #region RPCs Ask to Server
 
         public void OnCardSacrified(int cardId)
         {
-            GameManager.Instance.RPC_CardSacrified(Object.InputAuthority.RawEncoded, cardId);
+            Context.NetworkGame.RPC_CardSacrified(Object.InputAuthority.RawEncoded, cardId);
+        }
+
+        public void OnEffectChoice(ICard card, AEffect effect)
+        {
+            int index = card.Data.Effects.IndexOf(effect);
+
+            if (index < 0)
+                return;
+            Context.NetworkGame.RPC_EffectChosen(Object.InputAuthority.RawEncoded, card.ID, index);
         }
 
         public void OnPlay(int cardId)
         {
-            GameManager.Instance.RPC_CardPlayed(Object.InputAuthority.RawEncoded, cardId);
+            Context.NetworkGame.RPC_CardPlayed(Object.InputAuthority.RawEncoded, cardId);
         }
 
         public void OnDiscard(int cardId)
         {
-            GameManager.Instance.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId);
+            Context.NetworkGame.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, true);
+        }
+
+        public void OnRecycle(int cardId)
+        {
+            Context.NetworkGame.RPC_CardRecycled(Object.InputAuthority.RawEncoded, cardId);
         }
 
         public void OnDiscardNoEffect(int cardId)
         {
-            GameManager.Instance.RPC_DiscardCardNoEffect(Object.InputAuthority.RawEncoded, cardId);
+            Context.NetworkGame.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, false);
         }
 
-        public void OnBuy(ShopType shopType, int slot)
+        public void OnBuy(ShopType shopType, int cardId)
         {
-            GameManager.Instance.RPC_BuyCard(shopType, slot, Object.InputAuthority.RawEncoded);
+            Context.NetworkGame.RPC_BuyCard(Object.InputAuthority.RawEncoded, shopType, cardId);
         }
 
         public void OnActiveEffectActivated(int cardID)
         {
-            GameManager.Instance.RPC_ActivateEffect(Object.InputAuthority.RawEncoded, cardID);
+            Context.NetworkGame.RPC_ActivateEffect(Object.InputAuthority.RawEncoded, cardID);
         }
 
-        public void OnShopReplaceCard(ShopType shopType, int slot)
+        public void OnShopReplaceCard(ShopType shopType, int cardId)
         {
-            GameManager.Instance.RPC_ReplaceCardInShop(Object.InputAuthority.RawEncoded, shopType, slot);
+            Context.NetworkGame.RPC_ReplaceCardInShop(Object.InputAuthority.RawEncoded, shopType, cardId);
         }
 
         public void OnReducedInSilenced(ICard cardToBeSilenced)
         {
-            GameManager.Instance.RPC_ReducedInSilenced(Object.InputAuthority.RawEncoded, cardToBeSilenced.ID);
+            Context.NetworkGame.RPC_ReducedInSilenced(Object.InputAuthority.RawEncoded, cardToBeSilenced.ID);
         }
 
         public void RemoveReducedInSilenced(ICard card, int originalSouls)
         {
-            GameManager.Instance.RPC_RemoveReducedInSilenced(Object.InputAuthority.RawEncoded, card.ID, originalSouls);
-        }
-
-        public void CopiedEffect(ICard card, ICard cardCopied)
-        {
-            GameManager.Instance.RPC_CopiedEffect(Object.InputAuthority.RawEncoded, card.ID, cardCopied.ID);
-        }
-
-        public void RemoveCopiedEffect(ICard card)
-        {
-            GameManager.Instance.RPC_RemoveCopiedEffect(Object.InputAuthority.RawEncoded, card.ID);
+            Context.NetworkGame.RPC_RemoveReducedInSilenced(Object.InputAuthority.RawEncoded, card.ID, originalSouls);
         }
 
         public void NetworkEventCardEffect(int cardID, string data = "")
         {
-            GameManager.Instance.RPC_NetworkEventCardEffect(Object.InputAuthority.RawEncoded, cardID, data);
+            Context.NetworkGame.RPC_NetworkEventCardEffect(Object.InputAuthority.RawEncoded, cardID, data);
         }
 
         #endregion
-
-        #region Player's Commands
-
-        #region Shop Commands
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_BuyCard(int playerRef, ShopType shopType, int slot)
-        {
-            BuyParameters parameters = new() {
-                Decks = GameDataStorage.Instance.PlayerDeck,
-                Player = PlayerRef.FromEncoded(playerRef),
-                Shop = GameDataStorage.Instance.Shop,
-                ShopType = shopType,
-                Slot = slot
-            };
-
-            if (parameters.Shop == null)
-            {
-                Debug.LogError("Shop is null");
-            }
-
-            ICommand buyCommand = new BuyCommand(parameters);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(buyCommand);
-
-            if (response.Status == CommandStatus.Success) {
-                GameEvents.OnCardPurchased.Invoke(shopType, slot);
-
-                Debug.Log($"[SERVER]: Player {parameters.Player} deck after bought a card : {GameDataStorage.Instance.PlayerDeck[parameters.Player].Serialize()}");
-            }
-        }
-
-        #endregion
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_DiscardCard(int playerId, int cardId)
-        {
-            PlayerRef player = PlayerRef.FromEncoded(playerId);
-            ICommand discardCommand = new DiscardCommand(player, cardId);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
-
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
-            if (response.Status == CommandStatus.Success) {
-
-                GameEvents.OnCardDiscarded.Invoke(card);
-
-                if (_DiscardedCardTrackerPerTurn.HasCard(card) && card.Data.Type == CardType.Tools && !card.Data.IsStartingCard)
-                    return;
-                _DiscardedCardTrackerPerTurn.AddCard(card);
-
-                foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Discard)
-                        effect.Play(player);
-                }
-            } else {
-                Debug.LogWarning($"[SERVER]: {response.Message}");
-                GameEvents.OnCardDiscardedRefused.Invoke(card);
-            }
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_DiscardCardNoEffect(int playerId, int cardId)
-        {
-            PlayerRef player = PlayerRef.FromEncoded(playerId);
-            ICommand discardCommand = new DiscardCommand(player, cardId);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(discardCommand);
-
-            if (response.Status == CommandStatus.Success)
-            {
-                Debug.Log($"[SERVER]: {response.Message}");
-
-                ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
-                GameEvents.OnCardDiscarded.Invoke(card);
-                GameEvents.OnPlayerUpdated.Invoke(GameDataStorage.Instance.PlayerData[player]);
-            }
-            else
-            {
-                Debug.LogWarning($"[SERVER]: {response.Message}");
-            }
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_CardPlayed(int playerId, int cardId)
-        {
-            PlayerRef player = PlayerRef.FromEncoded(playerId);
-
-            ICommand cardPlayedCommand = new CardPlayedCommand(player, cardId);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(cardPlayedCommand);
-
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
-            if (response.Status == CommandStatus.Invalid)
-            {
-
-                Debug.LogWarning($"[SERVER]: {response.Message}");
-                GameEvents.OnCardPlayedRefused.Invoke(card);
-            }
-            if (response.Status == CommandStatus.Success) {
-                GameEvents.OnCardPlayed.Invoke(card);
-
-                foreach (AEffect effect in card.Data.Effects)
-                    effect.OnAction("Play", player, card);
-            }
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_CardSacrified(int playerId, int cardId)
-        {
-            PlayerRef player = PlayerRef.FromEncoded(playerId);
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
-            if (card == null) {
-                Debug.LogError($"[SERVER]: Player {player} tried to sacrify a card that doesn't exist.");
-                GameEvents.OnCardSacrifiedRefused.Invoke(card);
-                return;
-            }
-
-            ICommand cardSacrifiedCommand = new CardSacrifiedCommand(player, cardId);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
-
-            if (response.Status == CommandStatus.Success) {
-                foreach (AEffect effect in card.Data.Effects) {
-                    if (effect.Type == EffectType.Sacrifice)
-                        effect.Play(player);
-                    else if (effect.Type == EffectType.Passive)
-                        effect.Stop(player);
-                }
-
-                foreach (ICard playedCard in GameDataStorage.Instance.PlayerDeck[player].PlayedCards) {
-                    if (playedCard.Data.Effects != null) {
-                        foreach (AEffect effect in playedCard.Data.Effects) {
-                            if (effect.Type == EffectType.OnOtherSacrifice)
-                                effect.Play(player);
-                        }
-                    }
-                }
-
-                int soulToEarn = card.Data.Souls;
-
-                if (card.Data.Type == CardType.Partisan && card.Data.Family == GameDataStorage.Instance.PlayerData[player].Family)
-                    soulToEarn += GameManager.Instance.SettingsData.BonusSoulInFamilySacrifice;
-                ICommand earnCommand = new EarnCommand(player, soulToEarn, DataType.Soul);
-
-                response = CommandInvoker.ExecuteCommand(earnCommand);
-
-                if (response.Status == CommandStatus.Success) {
-                    GameEvents.OnCardSacrified.Invoke(card);
-                }
-            } else {
-                Debug.LogWarning($"[SERVER]: {response.Message}");
-                GameEvents.OnCardSacrifiedRefused.Invoke(card);
-            }
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_ActivateEffect(int playerID, int cardID)
-        {
-            PlayerRef player = PlayerRef.FromEncoded(playerID);
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
-
-            if (card == null) {
-                Debug.LogError($"[SERVER]: Player {player} tried to activate an effect that doesn't exist.");
-
-                return;
-            }
-
-            foreach (AEffect effect in card.Data.Effects) {
-                if (effect.Type == EffectType.Activate)
-                    effect.Play(player);
-            }
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_ReplaceCardInShop(int playerID, ShopType shopType, int slot)
-        {
-            ICommand replaceCommand = new ChangeCardCommand(GameDataStorage.Instance.Shop, shopType, slot);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(replaceCommand);
-
-            if (response.Status == CommandStatus.Success)
-            {
-                //ShopManager.Instance.ReceiveFullShopList(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
-                GameEvents.OnShopRefilled.Invoke(shopType, GameDataStorage.Instance.Shop.Sections[shopType].AvailableCards);
-            }
-            else
-            {
-                Debug.LogWarning($"[SERVER]: {response.Message}");
-            }
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_ReducedInSilenced(int playerId, int cardId)
-        {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
-            if (card == null) {
-                Debug.LogError($"[SERVER]: Player {playerId} tried to reduce in silence a card that doesn't exist.");
-
-                return;
-            }
-            ICommand command = new ReducedInSilenceCommand(card);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(command);
-
-            // TODO: Maybe update the card UI ?
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_RemoveReducedInSilenced(int playerId, int cardID, int originalSouls)
-        {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
-
-            if (card == null) {
-                Debug.LogError($"[SERVER]: Player {playerId} tried to remove the reduction in silence of a card that doesn't exist.");
-
-                return;
-            }
-            ICommand command = new RemoveReducedInSilenceCommand(card, originalSouls);
-
-            CommandResponse response = CommandInvoker.ExecuteCommand(command);
-
-            // TODO: Maybe update the card UI ?
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_CopiedEffect(int playerId, int cardID, int cardToCopiedID)
-        {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
-            ICard cardToCopied = CardSetDatabase.Instance.GetCardByID(cardToCopiedID);
-
-            if (card == null || cardToCopied == null) {
-                Debug.LogError($"[SERVER]: Player {playerId} tried to copy an effect of a card that doesn't exist.");
-
-                return;
-            }
-
-            card.Data.CopyEffect(cardToCopied.Data.Effects);
-
-            foreach (AEffect effect in card.Data.Effects) {
-                if (effect.Type == EffectType.Sacrifice || effect.Type == EffectType.OnOtherSacrifice)
-                    return;
-                effect.Play(PlayerRef.FromEncoded(playerId));
-            }
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_RemoveCopiedEffect(int playerId, int cardID)
-        {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
-
-            if (card == null) {
-                Debug.LogError($"[SERVER]: Player {playerId} tried to removed a copied effect of a card that doesn't exist.");
-
-                return;
-            }
-
-            card.Data.RemoveEffectCopied();
-
-            // TODO: Maybe update the card UI, of the card (effect)
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_NetworkEventCardEffect(int playerID, int cardID, string data)
-        {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
-            PlayerRef player = PlayerRef.FromEncoded(playerID);
-
-            if (card == null) {
-                Debug.LogError($"[SERVER]: Player {playerID} tried to called an network event for a card that doesn't exist.");
-
-                return;
-            }
-
-            foreach (AEffect effect in card.Data.Effects)
-                effect.NetworkEventFunction(player, data);
-        }
 
         #endregion
     }
