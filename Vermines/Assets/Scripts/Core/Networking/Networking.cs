@@ -18,7 +18,6 @@ namespace Vermines.Core.Network {
     using Vermines.Core.Services;
     using Vermines.Menu.Matchmaking;
     using Vermines.Menu.View;
-    using static PlasticGui.PlasticTableColumn;
 
     public class Networking : MonoBehaviour {
 
