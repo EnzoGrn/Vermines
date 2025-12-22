@@ -60,7 +60,7 @@ namespace Vermines.Configuration.Network {
             );
         }
 
-        public readonly string ToString()
+        public override readonly string ToString()
         {
             return (
                 $"GameSettingsData(Seed: {Seed}, " +
