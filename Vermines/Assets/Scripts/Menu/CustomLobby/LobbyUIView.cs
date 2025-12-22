@@ -10,7 +10,6 @@ namespace Vermines.Menu.CustomLobby {
     using Vermines.Extension;
     using Vermines.Core;
     using Fusion;
-    using static PlasticGui.PlasticTableColumn;
 
     public class LobbyUIView : UIView {
 
