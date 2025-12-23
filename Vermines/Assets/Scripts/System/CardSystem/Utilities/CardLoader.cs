@@ -61,9 +61,8 @@ namespace Vermines.CardSystem.Utilities {
 
         private List<ICard> LoadFromPath(string path, List<List<ICard>> playerDecks)
         {
-            if (!System.IO.Directory.Exists($"Assets/Resources/{path}"))
-                return null;
             List<ICard> cards = new();
+
             CardData[] cardDataArray = Resources.LoadAll<CardData>(path);
 
             if (cardDataArray == null || cardDataArray.Length == 0)
@@ -75,9 +74,8 @@ namespace Vermines.CardSystem.Utilities {
 
         private List<ICard> LoadFamilyFromPath(string path, CardFamily family, List<List<ICard>> playerDecks)
         {
-            if (!System.IO.Directory.Exists($"Assets/Resources/{path}"))
-                return null;
             List<ICard> cards = new();
+
             CardData[] cardDataArray = Resources.LoadAll<CardData>(path);
 
             if (cardDataArray == null || cardDataArray.Length == 0)
