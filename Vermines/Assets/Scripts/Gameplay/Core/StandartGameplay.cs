@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using OMGG.DesignPattern;
 
 namespace Vermines.Gameplay.Core {
-
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Core;
@@ -24,14 +23,15 @@ namespace Vermines.Gameplay.Core {
 
         protected override void CheckWinCondition()
         {
-            if (Context.NetworkGame == null || Context.NetworkGame.ActivePlayers == null)
+            List<PlayerController> PlayersControllers = Context.Runner.GetAllBehaviours<PlayerController>();
+
+            if (Context.NetworkGame == null || PlayersControllers == null)
                 return;
-            foreach (PlayerController player in Context.NetworkGame.ActivePlayers) {
+            foreach (PlayerController player in PlayersControllers) {
                 if (player == null)
                     continue;
                 if (player.Statistics.Souls >= SoulsLimit) {
                     FinishGameplay(player);
-
                     return;
                 }
             }
