@@ -96,7 +96,7 @@ namespace Vermines.Player {
         {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
-            if (!HasInputAuthority) {
+            if (!HasStateAuthority) {
                 ICommand cardSacrifiedCommand = new CLIENT_CardRecycleCommand(this, cardId, Context.GameplayMode.Shop.Sections[ShopType.Market]);
 
                 CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
