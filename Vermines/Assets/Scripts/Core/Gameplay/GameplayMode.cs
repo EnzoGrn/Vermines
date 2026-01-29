@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using System;
 using Newtonsoft.Json;
-using WebSocketSharp;
 using UnityEngine;
 using Fusion;
 
