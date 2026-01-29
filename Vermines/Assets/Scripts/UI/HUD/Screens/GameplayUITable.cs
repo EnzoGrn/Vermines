@@ -412,9 +412,9 @@ namespace Vermines.UI.Screen
             for (int i = 0; i < partisanSlots.Count; i++)
             {
                 var slot = partisanSlots[i];
-                if (slot.CardDisplay == null)
+                if (slot.CardDisplay == null || !slot.CardDisplay.gameObject.activeSelf)
                 {
-                    slot.Init(card, true);
+                    slot.Init(card, true, new TableCardClickHandler(slot.GetIndex()));
                     return;
                 }
             }
