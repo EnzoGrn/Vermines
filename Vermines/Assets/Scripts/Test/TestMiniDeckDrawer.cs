@@ -22,12 +22,6 @@ public class DeckTestController : MonoBehaviour
 
         _deck.Initialize(0x0005);
 
-        List<ICard> cards = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data != null);
-
-        _deck.Deck.AddRange(cards.GetRange(0, 5));
-
-        drawer.OnPlayersDeckUpdate(_deck);
-
         StartCoroutine(TestRoutine());
     }
 
