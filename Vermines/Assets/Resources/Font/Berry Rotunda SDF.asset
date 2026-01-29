@@ -1914,10 +1914,6 @@ MonoBehaviour:
     m_Y: 712
     m_Width: 1023
     m_Height: 311
-  - m_X: 974
-    m_Y: 576
-    m_Width: 49
-    m_Height: 447
   - m_X: 937
     m_Y: 540
     m_Width: 21
