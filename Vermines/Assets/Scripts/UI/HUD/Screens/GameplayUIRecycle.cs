@@ -129,13 +129,10 @@ namespace Vermines.UI.Screen
                 card.SetSelected(false);
                 card.SetClickHandler(_previousClickHandler);
             }
+            _recycleHandler.ClearSelection();
             _recycleHandler.OnSelectionChanged -= RefreshUI;
 
             Controller.Hide();
-
-            cardCountText.text = "0";
-            eloquenceText.text = "0";
-            soulsText.text = "0";
         }
 
         #endregion
