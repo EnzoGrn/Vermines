@@ -50,6 +50,8 @@ namespace Vermines.UI.Screen
         public override void Init()
         {
             base.Init();
+
+            _recycleHandler = new RecycleClickHandler();
         }
 
         /// <summary>
@@ -59,13 +61,13 @@ namespace Vermines.UI.Screen
         {
             base.Show();
 
-            _recycleHandler = new RecycleClickHandler();
             _recycleHandler.OnSelectionChanged += RefreshUI;
 
             List<GameObject> playerCards = PlayerController.Local.Context.HandManager.HandCards;
 
             // Get the previous click handler to restore it later
-            _previousClickHandler = playerCards[0].GetComponent<CardDisplay>().GetClickHandler();
+            if (playerCards.Count > 0)
+                _previousClickHandler = playerCards[0].GetComponent<CardDisplay>().GetClickHandler();
 
             foreach (var cardGO in playerCards)
             {
@@ -127,7 +129,9 @@ namespace Vermines.UI.Screen
                 card.SetSelected(false);
                 card.SetClickHandler(_previousClickHandler);
             }
+            _recycleHandler.ClearSelection();
             _recycleHandler.OnSelectionChanged -= RefreshUI;
+
             Controller.Hide();
         }
 

@@ -59,7 +59,7 @@ namespace Vermines.UI.Screen
              if (currentPlayer == context.Runner.LocalPlayer)
                 LocalizeMessage("Turn.your");
             else
-                LocalizeMessage("Turn.text", player.Nickname);
+                LocalizeMessage("Turn.text", player.Statistics.Family.ToString());
 
             base.Show();
             ShowUser();
