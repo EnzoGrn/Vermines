@@ -1,12 +1,13 @@
-﻿using Fusion ;
+﻿using Fusion;
 using OMGG.Network.Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
 using System.Linq;
 
-namespace Vermines.Gameplay.Phases {
-    
+namespace Vermines.Gameplay.Phases
+{
+
     using Vermines.CardSystem.Elements;
     using Vermines.Core;
     using Vermines.Gameplay.Phases.Enumerations;
@@ -15,12 +16,14 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.UI.Screen;
 
     [System.Serializable]
-    public class PhaseEntry {
+    public class PhaseEntry
+    {
         public PhaseType phaseType;
         public PhaseAsset phaseAsset;
     }
 
-    public class PhaseManager : ContextBehaviour {
+    public class PhaseManager : ContextBehaviour
+    {
 
         #region Phases
 
@@ -61,7 +64,8 @@ namespace Vermines.Gameplay.Phases {
         {
             GameEvents.OnAttemptNextPhase.RemoveListener(OnPhaseCompleted);
 
-            if (_Phases != null) {
+            if (_Phases != null)
+            {
                 foreach (var kvp in _Phases)
                     kvp.Value.Deinitialize();
             }
@@ -71,7 +75,8 @@ namespace Vermines.Gameplay.Phases {
         {
             _Phases = new();
 
-            foreach (var entry in phaseEntries) {
+            foreach (var entry in phaseEntries)
+            {
                 entry.phaseAsset.Initialize(Context, this);
 
                 _Phases[entry.phaseType] = entry.phaseAsset;
@@ -104,7 +109,7 @@ namespace Vermines.Gameplay.Phases {
 
         public void NextTurn()
         {
-            ResetCardActivations();
+            RPC_ResetCardActivations();
 
             if (!Runner.IsServer)
                 return;
@@ -159,11 +164,14 @@ namespace Vermines.Gameplay.Phases {
                 return;
 
             // Check if the player did every phases.
-            if (CurrentPhase == PhaseType.Resolution) {
+            if (CurrentPhase == PhaseType.Resolution)
+            {
                 NextTurn();
 
                 RPC_TurnAnnounced();
-            } else {
+            }
+            else
+            {
                 CurrentPhase++;
 
                 Debug.Log($"[SERVER]: Next phase is {CurrentPhase}.");
@@ -208,6 +216,12 @@ namespace Vermines.Gameplay.Phases {
         public void RPC_TurnAnnounced()
         {
             StartCoroutine(SacrificeRoutine());
+        }
+
+        [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
+        public void RPC_ResetCardActivations()
+        {
+            ResetCardActivations();
         }
 
         #endregion
