@@ -33,6 +33,6 @@ MonoBehaviour:
     Lobby: {fileID: 0}
     NetworkMatchmaking: {fileID: 0}
     Matchmaking: {fileID: 0}
-  _Type: 16
+  _Type: 8
   _Description: Once per turn, you can buy 1 card for free in the Courtyard..
   _SubEffect: {fileID: 11400000, guid: 67511acf30642bc47bf2de96e9c58c83, type: 2}

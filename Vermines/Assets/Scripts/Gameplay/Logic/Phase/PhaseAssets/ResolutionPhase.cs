@@ -66,6 +66,8 @@ namespace Vermines.Gameplay.Phases {
                 foreach (AEffect effect in card.Data.Effects) {
                     if ((effect.Type & EffectType.Passive) != 0)
                         effect.Stop(player.Object.InputAuthority);
+                    if ((effect.Type & EffectType.Activate) != 0)
+                        effect.Stop(player.Object.InputAuthority);
                 }
             }
 

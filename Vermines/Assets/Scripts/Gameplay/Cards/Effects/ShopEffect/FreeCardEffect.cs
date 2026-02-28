@@ -81,8 +81,14 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (player == PlayerController.Local.Object.InputAuthority) {
                 if (UIContextManager.Instance != null)
                     UIContextManager.Instance.PushContext(new FreeCardContext(_ShopTarget));
+                GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
                 GameEvents.OnCardPurchased.AddListener(OnBuy);
             }
+        }
+
+        private void OnCardPurchaseRequested(ShopType type, int id)
+        {
+            PlayerController.Local.OnBuy(type, id);
         }
 
         public void OnBuy(ShopType shopType, int cardId)
@@ -101,6 +107,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
                 if (player == PlayerController.Local.Object.InputAuthority) {
                     UIContextManager.Instance.PopContext();
+
+                    GameEvents.OnCardPurchaseRequested.RemoveListener(OnCardPurchaseRequested);
                     GameEvents.OnCardPurchased.RemoveListener(OnBuy);
                 }
             }
