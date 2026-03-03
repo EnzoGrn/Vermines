@@ -55,7 +55,7 @@ namespace Vermines.Gameplay.Phases
         /// <param name="player">The player that end the phase.</param>
         public virtual void OnPhaseEnding(PlayerRef player, bool logic = false)
         {
-            Debug.Log($"[Server]: ({Type}) OnPhaseEnding by logic {logic} processing");
+            Deinitialize();
 
             if (logic)
                 _PhaseManager.PhaseCompleted();

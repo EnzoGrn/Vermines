@@ -15,13 +15,15 @@ MonoBehaviour:
   Name: knight
   Exemplars: 1
   IsStartingCard: 0
+  _DeckExemplars: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 0
   _Level: 2
   Effects:
-  - {fileID: 11400000, guid: 67511acf30642bc47bf2de96e9c58c83, type: 2}
+  - {fileID: 11400000, guid: c05f27dd41681c34cafcbd3b34f8b9d5, type: 2}
   ReduceInSilence: 0
+  _RecycleEloquence: 0
   _Eloquence: 15
   IsFree: 0
   CurrentEloquence: 15
