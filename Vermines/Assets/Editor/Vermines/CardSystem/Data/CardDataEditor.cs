@@ -136,7 +136,7 @@ namespace Vermines.CardSystem.Data {
                 } else
                     cardData.Souls = 0;
 
-                if (cardData.Type == CardType.Tools) {
+                if (cardData.Type == CardType.Tools && cardData.Exemplars > 0) {
                     // [Tooltip("The amount of eloquence gained when the card is recycled.")]
                     cardData.RecycleEloquence = EditorGUILayout.IntField(new GUIContent("Recycle Eloquence", "The amount of eloquence gained when the card is recycled."), cardData.RecycleEloquence);
                 } else

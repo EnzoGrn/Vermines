@@ -31,6 +31,20 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
         }
 
+        [SerializeField]
+        private AEffect _SubEffect = null;
+
+        public override AEffect SubEffect
+        {
+            get => _SubEffect;
+            set
+            {
+                _SubEffect = value;
+
+                UpdateDescription();
+            }
+        }
+
         #endregion
 
         #region UI Elements

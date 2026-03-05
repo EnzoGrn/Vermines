@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Demented scroll
+  m_Name: Scriptum Insanum
   m_EditorClassIdentifier: 
-  Name: demented_scroll
-  Exemplars: 8
+  Name: Scriptum Insanum
+  Exemplars: 6
   IsStartingCard: 0
   _DeckExemplars: 0
   Type: 2
@@ -23,7 +23,7 @@ MonoBehaviour:
   Effects:
   - {fileID: 11400000, guid: c7cf38ad0e80f9e46a952811807bb34d, type: 2}
   ReduceInSilence: 0
-  _RecycleEloquence: 4
+  _RecycleEloquence: 3
   _Eloquence: 4
   IsFree: 0
   CurrentEloquence: 4

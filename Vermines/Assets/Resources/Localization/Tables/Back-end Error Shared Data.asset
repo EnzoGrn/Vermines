@@ -127,6 +127,10 @@ MonoBehaviour:
     m_Key: Courtyard_Add_NotYourTurn
     m_Metadata:
       m_Items: []
+  - m_Id: 60091037064880128
+    m_Key: Recycle_CardNotRecyclable
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
