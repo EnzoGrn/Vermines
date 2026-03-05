@@ -66,6 +66,12 @@ namespace Vermines.Core {
         [Networked]
         public int TotalTurnPlayed { get; set; } = 0;
 
+        [Networked]
+        public PlayerRef EndGameTriggerPlayer { get; set; } = PlayerRef.None;
+
+        [Networked]
+        public int EndGameTriggerTurn { get; set; }
+
         public ChronicleManager Announcer = new();
 
         private RoutineManager _RoutineManager;
