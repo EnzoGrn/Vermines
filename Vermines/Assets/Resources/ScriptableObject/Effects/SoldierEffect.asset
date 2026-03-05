@@ -9,10 +9,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c266d1a9b5b782e41bb2f387658168af, type: 3}
+  m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
   m_Name: SoldierEffect
-  m_EditorClassIdentifier: 
-  _Type: 16
-  _Description: Your purchases at the Market  cost <b><color=purple>2E</color></b>
-    less.
-  _SubEffect: {fileID: 11400000, guid: b76f616b7af626543b66ea6173e7f9da, type: 2}
+  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Cards.Effect.PlayedEffect
+  Context:
+    PeerUserID: 
+    Audio: {fileID: 0}
+    UI: {fileID: 0}
+    ObjectCache: {fileID: 0}
+    SceneInput: {fileID: 0}
+    Settings: {fileID: 0}
+    CustomGameScenePath: 
+    MatchmakingScenePath: 
+    GameScenePath: 
+    IsVisible: 0
+    HasInput: 0
+    Runner: {fileID: 0}
+    SceneChangeController: {fileID: 0}
+    HandManager: {fileID: 0}
+    NetworkGame: {fileID: 0}
+    GameplayMode: {fileID: 0}
+    NetworkLobby: {fileID: 0}
+    Lobby: {fileID: 0}
+    NetworkMatchmaking: {fileID: 0}
+    Matchmaking: {fileID: 0}
+  _Type: 1
+  _Description: Earn <b><color=purple>2E</color></b> then you can add a card in the
+    courtyard..
+  _SubEffect: {fileID: 11400000, guid: 3e6b4481da948c743b2a2047b9a383aa, type: 2}

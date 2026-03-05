@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e048bfe3d262d64598cb222f1601034, type: 3}
-  m_Name: SquireEffect
+  m_Script: {fileID: 11500000, guid: 3bb757b4499f6c1429a162d44d6a92ad, type: 3}
+  m_Name: Earn2E&AddCardInShop
   m_EditorClassIdentifier: 
   Context:
     PeerUserID: 
@@ -33,8 +33,13 @@ MonoBehaviour:
     Lobby: {fileID: 0}
     NetworkMatchmaking: {fileID: 0}
     Matchmaking: {fileID: 0}
-  _Type: 2
-  _Description: Discard the <b>{card_name}</b> to earn <b><color=purple>2E</color></b>
-    then you can add a card in the courtyard..
-  _SubEffect: {fileID: 11400000, guid: 3e6b4481da948c743b2a2047b9a383aa, type: 2}
-  DiscardThisCardIcon: {fileID: 21300000, guid: e2c1b4b34178c27429f3f4c6a74ece94, type: 3}
+  _Description: Earn <b><color=purple>2E</color></b> then you can add a card in the
+    courtyard.
+  _Amount: 2
+  _DataToEarn: 0
+  _Everyone: 0
+  _SubEffect: {fileID: 11400000, guid: 56f7bced98be6d9458fad00a743b7056, type: 2}
+  EloquenceIcon: {fileID: 21300000, guid: 4bfc719361e4f1f49a3001672b1d6bca, type: 3}
+  SoulIcon: {fileID: 21300000, guid: a3c4b0860b11f9145b70a7d40201e163, type: 3}
+  EveryoneIcon: {fileID: 21300000, guid: 8742c3f464831354f8480d90dbea50d3, type: 3}
+  ThenIcon: {fileID: 21300000, guid: 24a76bff2862f8a4fbc25bf2c54630fa, type: 3}
