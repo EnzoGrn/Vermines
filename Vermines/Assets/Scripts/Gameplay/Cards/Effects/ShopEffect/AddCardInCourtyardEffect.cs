@@ -63,8 +63,12 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
             player.OnRequestNewCardInCourtyard(level);
+            player.NetworkEventCardEffect(Card.ID, level.ToString());
+        }
 
-            base.Play(Context.Runner.LocalPlayer);
+        public override void NetworkEventFunction(PlayerRef playerRef, string data)
+        {
+            base.Play(playerRef);
         }
 
         public override List<(string, Sprite)> Draw()

@@ -10,22 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Soldier
+  m_Name: Cruce Signatus
   m_EditorClassIdentifier: 
-  Name: soldier
+  Name: Cruce Signatus
   Exemplars: 1
   IsStartingCard: 0
+  _DeckExemplars: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 2
-  _Level: 1
+  _Level: 2
   Effects:
-  - {fileID: 11400000, guid: ac7db2863828589459fad89d97dd2582, type: 2}
+  - {fileID: 11400000, guid: e15e289a0faf39e4a8266a4d1919938a, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 6
+  _RecycleEloquence: 0
+  _Eloquence: 10
   IsFree: 0
-  CurrentEloquence: 6
-  _Souls: 10
-  CurrentSouls: 10
+  CurrentEloquence: 10
+  _Souls: 15
+  CurrentSouls: 15
   _SpriteName: 
-  _Sprite: {fileID: 21300000, guid: 8bce8bf429c1bd140a1733a46a4b5c8b, type: 3}
+  _Sprite: {fileID: 21300000, guid: 3e0224f59d4e74045a70ac31b5f9d430, type: 3}

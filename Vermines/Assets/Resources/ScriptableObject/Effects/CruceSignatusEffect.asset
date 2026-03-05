@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
-  m_Name: SoldierEffect
-  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Cards.Effect.PlayedEffect
+  m_Script: {fileID: 11500000, guid: 69b7909b99c434d4a9b58baae8ce33d1, type: 3}
+  m_Name: CruceSignatusEffect
+  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Cards.Effect.CardAddedToCourtyardEffect
   Context:
     PeerUserID: 
     Audio: {fileID: 0}
@@ -33,7 +33,10 @@ MonoBehaviour:
     Lobby: {fileID: 0}
     NetworkMatchmaking: {fileID: 0}
     Matchmaking: {fileID: 0}
-  _Type: 1
-  _Description: Earn <b><color=purple>2E</color></b> then you can add a card in the
-    courtyard..
-  _SubEffect: {fileID: 11400000, guid: 3e6b4481da948c743b2a2047b9a383aa, type: 2}
+  _Type: 512
+  _Description: As long as this card is placed in the partisan area, then each time
+    a new card is added to the courtyard, earn <b><color=red>5A</color></b>.
+  _SubEffect: {fileID: 11400000, guid: 38f64e1ff1a84e646be1db2ff96c7bdd, type: 2}
+  PlayIcon: {fileID: 21300000, guid: c32f68352779d084da18d83965696ce3, type: 3}
+  CardAddedIcon: {fileID: 21300000, guid: 6003f0078f708bd4ca748d53e04cdb92, type: 3}
+  CourtyardIcon: {fileID: 21300000, guid: a0c85b41ad73ba5478aedecfa4ed7dc8, type: 3}

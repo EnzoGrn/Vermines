@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Bandit
+  m_Name: Latro
   m_EditorClassIdentifier: 
-  Name: bandit
+  Name: Latro
   Exemplars: 2
   IsStartingCard: 0
+  _DeckExemplars: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 5
@@ -22,6 +23,7 @@ MonoBehaviour:
   Effects:
   - {fileID: 11400000, guid: 60ac13ad10bc8b649ad9c2d69f412551, type: 2}
   ReduceInSilence: 0
+  _RecycleEloquence: 0
   _Eloquence: 4
   IsFree: 0
   CurrentEloquence: 4

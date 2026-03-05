@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: High Cleric
+  m_Name: Archiepiscopus
   m_EditorClassIdentifier: 
-  Name: high_cleric
+  Name: Archiepiscopus
   Exemplars: 1
   IsStartingCard: 0
+  _DeckExemplars: 0
   Type: 0
   IsFamilyCard: 1
   _Family: -1
@@ -22,10 +23,11 @@ MonoBehaviour:
   Effects:
   - {fileID: 11400000, guid: 19ea749eb0e80834f984c4196ee7f658, type: 2}
   ReduceInSilence: 0
+  _RecycleEloquence: 0
   _Eloquence: 8
   IsFree: 0
   CurrentEloquence: 8
-  _Souls: 13
-  CurrentSouls: 13
+  _Souls: 12
+  CurrentSouls: 12
   _SpriteName: High Cleric
   _Sprite: {fileID: 0}

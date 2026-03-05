@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ecdf1e4e12545ba4a8005b7ed64d7646, type: 3}
-  m_Name: AssassinEffect
-  m_EditorClassIdentifier: 
+  m_Name: MilitiaEffect
+  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Cards.Effect.ActivableEffect
   Context:
     PeerUserID: 
     Audio: {fileID: 0}
@@ -34,6 +34,6 @@ MonoBehaviour:
     NetworkMatchmaking: {fileID: 0}
     Matchmaking: {fileID: 0}
   _Type: 8
-  _Description: Spend <b><color=purple>xE</color></b> to earn <b><color=red>1xA</color></b>
-    then earn <b><color=red>5A</color></b>.
-  _SubEffect: {fileID: 11400000, guid: 79fb4d5b15f7ee644985fde882753e3a, type: 2}
+  _Description: Earn <b><color=purple>2E</color></b> then you can add a card in the
+    courtyard.
+  _SubEffect: {fileID: 11400000, guid: 3e6b4481da948c743b2a2047b9a383aa, type: 2}

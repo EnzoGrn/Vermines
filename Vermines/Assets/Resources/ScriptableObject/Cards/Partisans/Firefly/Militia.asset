@@ -10,22 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Squire
+  m_Name: Militia
   m_EditorClassIdentifier: 
-  Name: squire
-  Exemplars: 2
+  Name: Militia
+  Exemplars: 1
   IsStartingCard: 0
+  _DeckExemplars: 0
   Type: 0
   IsFamilyCard: 0
   _Family: 2
   _Level: 1
   Effects:
-  - {fileID: 11400000, guid: 06e012b9ff14b90469dfc184b7f44939, type: 2}
+  - {fileID: 11400000, guid: 406f23c9125db0d45bc2b4320973e954, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 4
+  _RecycleEloquence: 0
+  _Eloquence: 7
   IsFree: 0
-  CurrentEloquence: 4
-  _Souls: 6
-  CurrentSouls: 6
+  CurrentEloquence: 7
+  _Souls: 10
+  CurrentSouls: 10
   _SpriteName: 
-  _Sprite: {fileID: 21300000, guid: e42a1b344ea278547a495fd82da598ad, type: 3}
+  _Sprite: {fileID: 21300000, guid: 8bce8bf429c1bd140a1733a46a4b5c8b, type: 3}

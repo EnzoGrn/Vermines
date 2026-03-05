@@ -10,22 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Priest
+  m_Name: Mercator
   m_EditorClassIdentifier: 
-  Name: priest
+  Name: Mercator
   Exemplars: 1
   IsStartingCard: 0
+  _DeckExemplars: 0
   Type: 0
   IsFamilyCard: 1
   _Family: -1
   _Level: 1
   Effects:
-  - {fileID: 11400000, guid: a39c30c992c0a2d45a6099d2a1db54ca, type: 2}
+  - {fileID: 11400000, guid: c0caba12c8c29d14bb3b4e17285ffe02, type: 2}
   ReduceInSilence: 0
+  _RecycleEloquence: 0
   _Eloquence: 5
   IsFree: 0
   CurrentEloquence: 5
   _Souls: 8
   CurrentSouls: 8
-  _SpriteName: Priest
+  _SpriteName: Merchant
   _Sprite: {fileID: 0}

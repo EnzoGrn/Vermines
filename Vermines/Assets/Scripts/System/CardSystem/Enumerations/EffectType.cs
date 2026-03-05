@@ -52,5 +52,10 @@ namespace Vermines.CardSystem.Enumerations {
         /// Effect that is handle when another card is discarded.
         /// </summary>
         OnOtherDiscard = 1 << 8, // 100000000
+
+        /// <summary>
+        /// Effect that is handle when a new card is added to the Courtyard.
+        /// </summary>
+        OnCardAddedToCourtyard = 1 << 9,
     }
 }

@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecdf1e4e12545ba4a8005b7ed64d7646, type: 3}
-  m_Name: AssassinEffect
+  m_Script: {fileID: 11500000, guid: 3bb757b4499f6c1429a162d44d6a92ad, type: 3}
+  m_Name: Earn3A
   m_EditorClassIdentifier: 
   Context:
     PeerUserID: 
@@ -33,7 +33,12 @@ MonoBehaviour:
     Lobby: {fileID: 0}
     NetworkMatchmaking: {fileID: 0}
     Matchmaking: {fileID: 0}
-  _Type: 8
-  _Description: Spend <b><color=purple>xE</color></b> to earn <b><color=red>1xA</color></b>
-    then earn <b><color=red>5A</color></b>.
-  _SubEffect: {fileID: 11400000, guid: 79fb4d5b15f7ee644985fde882753e3a, type: 2}
+  _Description: Earn <b><color=red>3A</color></b>
+  _Amount: 3
+  _DataToEarn: 1
+  _Everyone: 0
+  _SubEffect: {fileID: 0}
+  EloquenceIcon: {fileID: 21300000, guid: 4bfc719361e4f1f49a3001672b1d6bca, type: 3}
+  SoulIcon: {fileID: 21300000, guid: a3c4b0860b11f9145b70a7d40201e163, type: 3}
+  EveryoneIcon: {fileID: 21300000, guid: 8742c3f464831354f8480d90dbea50d3, type: 3}
+  ThenIcon: {fileID: 21300000, guid: 24a76bff2862f8a4fbc25bf2c54630fa, type: 3}

@@ -10,22 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Villagers
+  m_Name: Apothecarius
   m_EditorClassIdentifier: 
-  Name: villager
-  Exemplars: 3
+  Name: Apothecarius
+  Exemplars: 1
   IsStartingCard: 0
+  _DeckExemplars: 0
   Type: 0
   IsFamilyCard: 1
   _Family: -1
-  _Level: 1
+  _Level: 2
   Effects:
-  - {fileID: 11400000, guid: d9211d323b393e14b95463cb72c961d5, type: 2}
+  - {fileID: 11400000, guid: e2da36245f92dc445b5e545f2e6ba819, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 2
+  _RecycleEloquence: 0
+  _Eloquence: 8
   IsFree: 0
-  CurrentEloquence: 2
-  _Souls: 4
-  CurrentSouls: 4
-  _SpriteName: Villager
+  CurrentEloquence: 8
+  _Souls: 12
+  CurrentSouls: 12
+  _SpriteName: Apothecary
   _Sprite: {fileID: 0}

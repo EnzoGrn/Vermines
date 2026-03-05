@@ -10,22 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
-  m_Name: Crusader
+  m_Name: Vicanus
   m_EditorClassIdentifier: 
-  Name: crusader
-  Exemplars: 1
-  IsStartingCard: 0
+  Name: Vicanus
+  Exemplars: 2
+  IsStartingCard: 1
+  _DeckExemplars: 1
   Type: 0
-  IsFamilyCard: 0
-  _Family: 2
-  _Level: 2
+  IsFamilyCard: 1
+  _Family: -1
+  _Level: 1
   Effects:
-  - {fileID: 11400000, guid: 3bf17b65b3f444c429d407822ca4348d, type: 2}
+  - {fileID: 11400000, guid: d9211d323b393e14b95463cb72c961d5, type: 2}
   ReduceInSilence: 0
-  _Eloquence: 8
+  _RecycleEloquence: 0
+  _Eloquence: 2
   IsFree: 0
-  CurrentEloquence: 8
-  _Souls: 15
-  CurrentSouls: 15
-  _SpriteName: 
-  _Sprite: {fileID: 21300000, guid: 3e0224f59d4e74045a70ac31b5f9d430, type: 3}
+  CurrentEloquence: 2
+  _Souls: 4
+  CurrentSouls: 4
+  _SpriteName: Villager
+  _Sprite: {fileID: 0}
