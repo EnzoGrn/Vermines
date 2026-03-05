@@ -15,9 +15,9 @@ namespace Vermines.Core {
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
-        public void RPC_ReplaceCardInShop(int playerID, ShopType shopType, int cardID)
+        public void RPC_AddCardInCourtyard(int playerID, int level)
         {
-            _Gameplay.OnReplaceCardInShop(PlayerRef.FromEncoded(playerID), shopType, cardID);
+            _Gameplay.OnCardAddInCourtyard(PlayerRef.FromEncoded(playerID), level);
         }
 
         #endregion

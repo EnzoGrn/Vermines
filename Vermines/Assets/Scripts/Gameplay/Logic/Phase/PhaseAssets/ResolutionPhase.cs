@@ -32,12 +32,6 @@ namespace Vermines.Gameplay.Phases {
 
             PlayerController player = _Context.NetworkGame.GetPlayer(playerRef);
 
-            ICommand refillShopCommand = new FillShopCommand(_Context.GameplayMode.Shop);
-
-            CommandInvoker.ExecuteCommand(refillShopCommand);
-
-            foreach (var shopSection in _Context.GameplayMode.Shop.Sections)
-                GameEvents.OnShopRefilled.Invoke(shopSection.Key, _Context.GameplayMode.Shop.GetDisplayCards(shopSection.Key));
             player.Deck.MergeToolDiscard(_Context.NetworkGame.Seed);
 
             for (int i = 0; i < NumberOfCardsToDrawAtEndOfTurn; i++) {

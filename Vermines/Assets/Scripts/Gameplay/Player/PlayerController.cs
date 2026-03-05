@@ -284,9 +284,9 @@ namespace Vermines.Player {
             Context.NetworkGame.RPC_ActivateEffect(Object.InputAuthority.RawEncoded, cardID);
         }
 
-        public void OnShopReplaceCard(ShopType shopType, int cardId)
+        public void OnRequestNewCardInCourtyard(int level)
         {
-            Context.NetworkGame.RPC_ReplaceCardInShop(Object.InputAuthority.RawEncoded, shopType, cardId);
+            Context.NetworkGame.RPC_AddCardInCourtyard(Object.InputAuthority.RawEncoded, level);
         }
 
         public void OnReducedInSilenced(ICard cardToBeSilenced)

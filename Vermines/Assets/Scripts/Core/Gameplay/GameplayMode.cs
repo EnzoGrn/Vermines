@@ -310,7 +310,7 @@ namespace Vermines.Core {
         #region RPCs Events
 
         public virtual void OnBuyCard(PlayerRef player, ShopType shopType, int cardID) { }
-        public virtual void OnReplaceCardInShop(PlayerRef player, ShopType shopType, int cardID) { }
+        public virtual void OnCardAddInCourtyard(PlayerRef player, int level) { }
 
         public virtual void OnCardPlayed(PlayerRef player, int cardID) { }
         public virtual void OnDiscardCard(PlayerRef player, int cardID, bool hasEffect = true) { }
