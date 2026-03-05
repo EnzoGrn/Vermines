@@ -149,6 +149,15 @@ namespace Vermines.Player {
                 return;
             }
 
+            foreach (ICard playedCard in Deck.PlayedCards) {
+                if (playedCard.Data.Effects != null) {
+                    foreach (AEffect effect in playedCard.Data.Effects) {
+                        if ((effect.Type & EffectType.OnOtherDiscard) != 0)
+                            effect.Play(Object.InputAuthority);
+                    }
+                }
+            }
+
             if (card.Data.HasChoiceEffect(EffectType.Discard)) {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {
                     GameplayUIController uiController = FindFirstObjectByType<GameplayUIController>();

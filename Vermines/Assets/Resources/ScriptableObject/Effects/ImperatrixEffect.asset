@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
-  m_Name: RoyalMessengerEffect
-  m_EditorClassIdentifier: 
+  m_Script: {fileID: 11500000, guid: 2edef2e0f32dbb94494b922ebb05dbcd, type: 3}
+  m_Name: ImperatrixEffect
+  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Cards.Effect.OtherDiscardEffect
   Context:
     PeerUserID: 
     Audio: {fileID: 0}
@@ -33,6 +33,11 @@ MonoBehaviour:
     Lobby: {fileID: 0}
     NetworkMatchmaking: {fileID: 0}
     Matchmaking: {fileID: 0}
-  _Type: 1
-  _Description: Earn <b><color=red>3A</color></b> then draw 1 card.
-  _SubEffect: {fileID: 11400000, guid: ed00aa7b0e7d9ff4295cc74ffe3f70d8, type: 2}
+  _Type: 256
+  _TargetType: 0
+  _Description: As long as this card is placed in the partisan zone, then each time
+    another partisan card is discarded, earn <b><color=red>4A</color></b>.
+  _SubEffect: {fileID: 11400000, guid: 422b2a80103935f4e9ae9857657cb8fe, type: 2}
+  PlayIcon: {fileID: 21300000, guid: c32f68352779d084da18d83965696ce3, type: 3}
+  PartisanDiscardIcon: {fileID: 21300000, guid: 13c1dea4e2e80c144aacd148bb620132, type: 3}
+  ToolsDiscardIcon: {fileID: 21300000, guid: 0c05d2e6b9f065f4a8ba50a4bb647d9d, type: 3}

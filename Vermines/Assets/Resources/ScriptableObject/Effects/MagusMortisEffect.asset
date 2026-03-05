@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
-  m_Name: RoyalMessengerEffect
-  m_EditorClassIdentifier: 
+  m_Name: MagusMortisEffect
+  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Cards.Effect.PlayedEffect
   Context:
     PeerUserID: 
     Audio: {fileID: 0}
@@ -34,5 +34,6 @@ MonoBehaviour:
     NetworkMatchmaking: {fileID: 0}
     Matchmaking: {fileID: 0}
   _Type: 1
-  _Description: Earn <b><color=red>3A</color></b> then draw 1 card.
-  _SubEffect: {fileID: 11400000, guid: ed00aa7b0e7d9ff4295cc74ffe3f70d8, type: 2}
+  _Description: Earn <b><color=red>2A</color></b> for each <b>Partisan</b> card in
+    the graveyard.
+  _SubEffect: {fileID: 11400000, guid: 8d88dbf8488c0d744a4127568028540e, type: 2}

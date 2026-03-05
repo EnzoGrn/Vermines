@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
-  m_Name: RoyalMessengerEffect
+  m_Script: {fileID: 11500000, guid: 3bb757b4499f6c1429a162d44d6a92ad, type: 3}
+  m_Name: Earn3ADraw1
   m_EditorClassIdentifier: 
   Context:
     PeerUserID: 
@@ -33,6 +33,12 @@ MonoBehaviour:
     Lobby: {fileID: 0}
     NetworkMatchmaking: {fileID: 0}
     Matchmaking: {fileID: 0}
-  _Type: 1
-  _Description: Earn <b><color=red>3A</color></b> then draw 1 card.
-  _SubEffect: {fileID: 11400000, guid: ed00aa7b0e7d9ff4295cc74ffe3f70d8, type: 2}
+  _Description: Earn <b><color=red>3A</color></b> then draw 1 card
+  _Amount: 3
+  _DataToEarn: 1
+  _Everyone: 0
+  _SubEffect: {fileID: 11400000, guid: 918d05dd08e941440a9f71870faede1b, type: 2}
+  EloquenceIcon: {fileID: 21300000, guid: 4bfc719361e4f1f49a3001672b1d6bca, type: 3}
+  SoulIcon: {fileID: 21300000, guid: a3c4b0860b11f9145b70a7d40201e163, type: 3}
+  EveryoneIcon: {fileID: 21300000, guid: 8742c3f464831354f8480d90dbea50d3, type: 3}
+  ThenIcon: {fileID: 21300000, guid: 24a76bff2862f8a4fbc25bf2c54630fa, type: 3}
