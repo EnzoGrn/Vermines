@@ -142,6 +142,11 @@ MonoBehaviour:
     m_Localized: Vous ne pouvez pas recycler cette carte.
     m_Metadata:
       m_Items: []
+  - m_Id: 60183981075718144
+    m_Localized: "Vous ne pouvez pas d\xE9fausser une carte partisane sans effet
+      de d\xE9fausse."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

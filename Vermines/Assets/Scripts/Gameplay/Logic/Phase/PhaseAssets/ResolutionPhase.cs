@@ -18,7 +18,7 @@ namespace Vermines.Gameplay.Phases {
 
         #region Attributes
 
-        public int NumberOfCardsToDrawAtEndOfTurn = 3;
+        public int NumberOfCardsToHaveInHand = 3;
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace Vermines.Gameplay.Phases {
 
             player.Deck.MergeToolDiscard(_Context.NetworkGame.Seed);
 
-            for (int i = 0; i < NumberOfCardsToDrawAtEndOfTurn; i++) {
+            for (int i = player.Deck.Hand.Count; i < NumberOfCardsToHaveInHand; i++) {
                 ICommand drawCardCommand = new DrawCommand(player);
 
                 CommandResponse command = CommandInvoker.ExecuteCommand(drawCardCommand);

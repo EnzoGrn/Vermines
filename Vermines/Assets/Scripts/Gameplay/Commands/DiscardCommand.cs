@@ -37,6 +37,10 @@ namespace Vermines.Gameplay.Commands {
             // 2. Check if the card is in the player hand.
             if (!_Player.Deck.Hand.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Table_Discard_CardNotInHand", _CardId.ToString(), _Card.Data.Name);
+
+            // 3. Check if the card is discardable.
+            if (!_Card.Data.CanBeDiscard())
+                return new CommandResponse(CommandStatus.Invalid, "Table_Discard_CardNotDiscardable", _CardId.ToString(), _Card.Data.Name);
             return new CommandResponse(CommandStatus.Success, "", _Card.Data.Name);
         }
     }

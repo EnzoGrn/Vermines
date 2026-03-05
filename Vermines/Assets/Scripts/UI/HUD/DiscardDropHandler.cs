@@ -46,6 +46,14 @@ namespace Vermines.UI.Card
 
             Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} discard requested.");
 
+            if (!card.Data.CanBeDiscard()) {
+                Debug.LogWarning("[DiscardDropHandler] This card cannot be discarded.");
+
+                drag.ReturnToOriginalPosition();
+
+                return;
+            }
+
             if (slot.CanAcceptCard(card))
             {
                 slot.ResetSlot();
@@ -58,9 +66,9 @@ namespace Vermines.UI.Card
 
                 PhaseManager phaseManager = PlayerController.Local.Context.GameplayMode.PhaseManager;
 
-                if (phaseManager.Phases.TryGetValue(phaseManager.CurrentPhase, out var phase) && phase is ActionPhaseAsset actionPhase)
+                if (phaseManager.Phases.TryGetValue(phaseManager.CurrentPhase, out var phase) && phase is ActionPhaseAsset actionPhase) {
                     actionPhase.OnDiscard(card);
-                else {
+                } else {
                     Debug.LogWarning("[DiscardDropHandler] Cannot discard card outside of Action Phase.");
 
                     drag.ReturnToOriginalPosition();

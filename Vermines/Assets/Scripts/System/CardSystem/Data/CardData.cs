@@ -390,5 +390,21 @@ namespace Vermines.CardSystem.Data {
         }
 
         #endregion
+
+        #region Helpers
+
+        public bool CanBeDiscard()
+        {
+            if (Type != CardType.Partisan)
+                return true;
+            foreach (var effect in Effects) {
+                if ((effect.Type & EffectType.Discard) != 0)
+                    return true;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }
