@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c266d1a9b5b782e41bb2f387658168af, type: 3}
-  m_Name: KnightEffect
+  m_Script: {fileID: 11500000, guid: 3bb757b4499f6c1429a162d44d6a92ad, type: 3}
+  m_Name: Earn2E&AddCardInShop
   m_EditorClassIdentifier: 
   Context:
     PeerUserID: 
@@ -33,6 +33,13 @@ MonoBehaviour:
     Lobby: {fileID: 0}
     NetworkMatchmaking: {fileID: 0}
     Matchmaking: {fileID: 0}
-  _Type: 8
-  _Description: Once per turn, you can buy 1 card for free in the Courtyard..
-  _SubEffect: {fileID: 11400000, guid: 67511acf30642bc47bf2de96e9c58c83, type: 2}
+  _Description: Earn <b><color=purple>2E</color></b> then you can add a card in the
+    courtyard.
+  _Amount: 2
+  _DataToEarn: 0
+  _Everyone: 0
+  _SubEffect: {fileID: 11400000, guid: 56f7bced98be6d9458fad00a743b7056, type: 2}
+  EloquenceIcon: {fileID: 21300000, guid: 4bfc719361e4f1f49a3001672b1d6bca, type: 3}
+  SoulIcon: {fileID: 21300000, guid: a3c4b0860b11f9145b70a7d40201e163, type: 3}
+  EveryoneIcon: {fileID: 21300000, guid: 8742c3f464831354f8480d90dbea50d3, type: 3}
+  ThenIcon: {fileID: 21300000, guid: 24a76bff2862f8a4fbc25bf2c54630fa, type: 3}

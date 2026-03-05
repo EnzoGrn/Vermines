@@ -18,6 +18,7 @@ namespace Vermines.Player {
     using Vermines.UI.Screen;
     using Vermines.Core.Player;
     using Vermines.Core;
+    using Vermines.ShopSystem.Data;
 
     public partial class PlayerController : ContextBehaviour, IPlayer {
 
@@ -40,13 +41,14 @@ namespace Vermines.Player {
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_ReplaceCardInShop(NetworkChronicleEntry nEntry, ShopType shopType, int cardId)
+        public void RPC_AddCardInCourtyard(NetworkChronicleEntry nEntry, int level)
         {
-            ICommand replaceCommand = new CLIENT_ChangeCardCommand(new ShopArgs(Context.GameplayMode.Shop, shopType, cardId));
+            ShopData              shop = Context.GameplayMode.Shop;
+            CourtyardSection courtyard = shop.Sections[ShopType.Courtyard] as CourtyardSection;
 
-            CommandInvoker.ExecuteCommand(replaceCommand);
+            courtyard.AddCard(level);
 
-            GameEvents.OnShopRefilled.Invoke(shopType, Context.GameplayMode.Shop.GetDisplayCards(shopType));
+            GameEvents.OnShopRefilled.Invoke(ShopType.Courtyard, shop.GetDisplayCards(ShopType.Courtyard));
 
             AddChronicle(nEntry.ToChronicleEntry());
         }

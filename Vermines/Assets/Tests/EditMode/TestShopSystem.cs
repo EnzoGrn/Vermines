@@ -33,6 +33,8 @@ using Vermines.ShopSystem;
 using UnityEditor.Graphs;
 using UnityEngine.PlayerLoop;
 using Vermines.Core.Scene;
+using Vermines.Core;
+using static System.Collections.Specialized.BitVector32;
 
 #endregion
 
@@ -108,11 +110,18 @@ namespace Test.Vermines.ShopSystem
             ShopData shop = ScriptableObject.CreateInstance<ShopData>();
 
             // 3.a. Courtyard Initialization.
-            CourtyardSection courtyard = new();
+            int level1Slot = 3;
+            int level2Slot = 2;
+
+            CourtyardSection courtyard = new(level1Slot, level2Slot);
 
             courtyard.Deck1 = partisan1Cards;
             courtyard.Deck2 = partisan2Cards;
 
+            for (int i = 0; i < level1Slot; i++)
+                courtyard.AddCard(1);
+            for (int i = 0; i < level2Slot; i++)
+                courtyard.AddCard(2);
             shop.AddSection(ShopType.Courtyard, courtyard);
 
             // 3.b. Market Initialization.
@@ -151,26 +160,6 @@ namespace Test.Vermines.ShopSystem
             return shop;
         }
 
-        private ShopData InitializeAndFillShop()
-        {
-            ShopData shop = InitializeShop();
-
-            FillCommand(shop);
-
-            return shop;
-        }
-
-        #endregion
-
-        #region Commands
-
-        public void FillCommand(ShopData shop)
-        {
-            ICommand fillCommand = new FillShopCommand(shop);
-
-            CommandInvoker.ExecuteCommand(fillCommand);
-        }
-
         #endregion
 
         /*[Test]
@@ -201,118 +190,6 @@ namespace Test.Vermines.ShopSystem
 
             // TODO: Undo command
         }*/
-
-        /// <summary>
-        /// This test will check if the shop system is correctly initialized, and if the fill command is correctly executed.
-        /// </summary>
-        [Test]
-        public void FillShopCommand()
-        {
-            // -- Shop initialization with default settings.
-            ShopData shop = InitializeAndFillShop();
-
-            Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-
-            // -- Fill again, when it's full
-            FillCommand(shop);
-
-            Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-
-            // -- Check if the shop is empty
-            foreach (var shopSection in shop.Sections)
-            {
-                if (shopSection.Value is CourtyardSection courtyard)
-                {
-                    foreach (var slot in courtyard.AvailableCards)
-                    {
-                        if (slot.Value == null)
-                            Assert.Fail($"The slot {slot.Key} in {shopSection.Key} should be filled.");
-                    }
-                }
-                else if (shopSection.Value is MarketSection market)
-                {
-                    foreach (var kvp in market.CardPiles)
-                    {
-                        if (kvp.Value.Count == 0)
-                            Assert.Fail($"The slot in {shopSection.Key} is empty, but should be filled.");
-                    }
-                }
-                else
-                {
-                    Assert.Fail($"Type {shopSection.Key} refill tests not implemented.");
-                }
-            }
-
-            // -- Fill a shop with an empty deck & discard deck
-            ShopData emptyShop = InitializeEmptyShop();
-
-            FillCommand(emptyShop);
-
-            Assert.AreEqual(CommandStatus.Success, CommandInvoker.State.Status);
-        }
-
-        #region Change Command
-
-        // TODO: Try to test admin side change command.
-
-        /// <summary>
-        /// Change card represent the 'Royale Missive' / 'Squire' action in the game.
-        /// </summary>
-        [Test]
-        public void ChangeCardInShop()
-        {
-            // -- Shop initialization with default settings.
-            ShopData shop = InitializeAndFillShop();
-
-            CourtyardSection courtyard = (CourtyardSection)shop.Sections[ShopType.Courtyard];
-
-            // -- Store the card before the change
-            ICard cardBeforeTheChange = courtyard.AvailableCards[0];
-
-            // -- Change the cardBeforeTheChange card in the 'Courtyard'
-            ICommand changeCardCommand = new CLIENT_ChangeCardCommand(new ShopArgs(shop, ShopType.Courtyard, cardBeforeTheChange.ID));
-
-            CommandInvoker.ExecuteCommand(changeCardCommand);
-
-            // -- Check if the card is correctly changed
-            ICard cardAfterTheChange = courtyard.AvailableCards[0];
-
-            Assert.AreNotEqual(cardBeforeTheChange.ID, cardAfterTheChange.ID, "The card should have been replaced by a new one.");
-
-            // -- Undo the command
-            CommandInvoker.UndoCommand();
-
-            // TODO: Undo command.
-        }
-
-        /// <summary>
-        /// If there is no more card in the shop, the card that is change will return into his same slot.
-        /// Because we first put it in discard, if deck is empty, we merge discard and we put the card into the shop.
-        /// </summary>
-        [Test]
-        public void ChangeCardInEmptyShop()
-        {
-            // -- Initialize an empty shop
-            ShopData shop = InitializeEmptyShop();
-
-            // -- Add a card to the slot 0 of the courtyard
-            ICard card = CardSetDatabase.Instance.GetEveryCardWith(c => c.Data.Type == CardType.Partisan).FirstOrDefault();
-
-            CourtyardSection courtyard = (CourtyardSection)shop.Sections[ShopType.Courtyard];
-
-            courtyard.AvailableCards[0] = card;
-
-            // -- Change the card in the 'Courtyard' 
-            ICommand changeCardCommand = new CLIENT_ChangeCardCommand(new ShopArgs(shop, ShopType.Courtyard, card.ID));
-
-            CommandInvoker.ExecuteCommand(changeCardCommand);
-
-            // -- Check if the card is correctly changed
-            Assert.IsTrue(CommandInvoker.State.Status == CommandStatus.Success);
-            Assert.IsTrue(card.ID == courtyard.AvailableCards[0].ID); // When the shop is empty, the card changed stay the same as before.
-        }
-
-        #endregion
 
         #region Buy Command
 

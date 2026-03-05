@@ -5,6 +5,8 @@ using Fusion;
 namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
+    using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
     using Vermines.ShopSystem.Enumerations;
 
@@ -79,22 +81,36 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (player == PlayerController.Local.Object.InputAuthority) {
                 if (UIContextManager.Instance != null)
                     UIContextManager.Instance.PushContext(new FreeCardContext(_ShopTarget));
+                GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
+                GameEvents.OnCardPurchased.AddListener(OnBuy);
             }
+        }
 
-            GameEvents.OnCardPurchased.AddListener(OnBuy);
+        private void OnCardPurchaseRequested(ShopType type, int id)
+        {
+            PlayerController.Local.OnBuy(type, id);
         }
 
         public void OnBuy(ShopType shopType, int cardId)
         {
             if (_ShopTarget != shopType)
                 return;
+            PlayerController.Local.NetworkEventCardEffect(Card.ID);
+        }
+
+        public override void NetworkEventFunction(PlayerRef player, string data)
+        {
             _CurrentBuy++;
 
             if (_CurrentBuy == _Amount) {
-                Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(false);
+                Stop(player);
 
-                UIContextManager.Instance.PopContext();
-                GameEvents.OnCardPurchased.RemoveListener(OnBuy);
+                if (player == PlayerController.Local.Object.InputAuthority) {
+                    UIContextManager.Instance.PopContext();
+
+                    GameEvents.OnCardPurchaseRequested.RemoveListener(OnCardPurchaseRequested);
+                    GameEvents.OnCardPurchased.RemoveListener(OnBuy);
+                }
             }
         }
 

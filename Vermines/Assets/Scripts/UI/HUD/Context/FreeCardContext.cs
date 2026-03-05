@@ -1,4 +1,7 @@
-﻿using Vermines.ShopSystem.Enumerations;
+﻿using UnityEngine;
+using Vermines.ShopSystem.Enumerations;
+using Vermines.UI.Screen;
+using Vermines.UI;
 
 public class FreeCardContext : IUIContext
 {
@@ -16,13 +19,12 @@ public class FreeCardContext : IUIContext
 
     public void Enter()
     {
-        //var gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
-        //if (gameplayUIController == null) return;
+        var gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
 
-        //if (gameplayUIController.GetActiveScreen(out var lastScreen))
-        //{
-        //    gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(_shopType, lastScreen);
-        //}
+        if (gameplayUIController == null)
+            return;
+        if (gameplayUIController.GetActiveScreen(out var lastScreen))
+            gameplayUIController.ShowWithParams<GameplayUIShop, ShopType>(_shopType, lastScreen);
     }
 
     public void Exit()

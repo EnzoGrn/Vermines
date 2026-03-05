@@ -4,8 +4,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.Editor.Gameplay.Cards.Effect;
 
-    [CustomEditor(typeof(ReplaceShopEffect))]
-    public class ReplaceShopEffectEditor : AEffectEditor {
+    [CustomEditor(typeof(AddCardInCourtyardEffect))]
+    public class AddCardInCourtyardEffectEditor : AEffectEditor {
 
         protected override void DrawCustomProperties() {}
     }

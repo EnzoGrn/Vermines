@@ -76,8 +76,8 @@ namespace Vermines.Player {
         public readonly void MergeToolDiscard(int seed)
         {
             if (ToolDiscard.Count > 0) {
-                Deck.Merge(ToolDiscard);
-                Deck.Shuffle(seed);
+                Discard.Merge(ToolDiscard);
+                Discard.Shuffle(seed);
             }
         }
 

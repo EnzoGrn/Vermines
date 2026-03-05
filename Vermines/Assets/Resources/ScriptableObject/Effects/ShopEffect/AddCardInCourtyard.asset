@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c266d1a9b5b782e41bb2f387658168af, type: 3}
-  m_Name: KnightEffect
-  m_EditorClassIdentifier: 
+  m_Script: {fileID: 11500000, guid: fa491ecbc7f31b74a945d1700416c4ac, type: 3}
+  m_Name: AddCardInCourtyard
+  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Cards.Effect.AddCardInCourtyardEffect
   Context:
     PeerUserID: 
     Audio: {fileID: 0}
@@ -33,6 +33,6 @@ MonoBehaviour:
     Lobby: {fileID: 0}
     NetworkMatchmaking: {fileID: 0}
     Matchmaking: {fileID: 0}
-  _Type: 8
-  _Description: Once per turn, you can buy 1 card for free in the Courtyard..
-  _SubEffect: {fileID: 11400000, guid: 67511acf30642bc47bf2de96e9c58c83, type: 2}
+  _Description: You can add a card in the courtyard.
+  AddCardIcon: {fileID: 21300000, guid: 6003f0078f708bd4ca748d53e04cdb92, type: 3}
+  CourtyardIcon: {fileID: 21300000, guid: a0c85b41ad73ba5478aedecfa4ed7dc8, type: 3}

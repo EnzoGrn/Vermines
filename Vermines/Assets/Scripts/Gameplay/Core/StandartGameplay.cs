@@ -8,6 +8,7 @@ namespace Vermines.Gameplay.Core {
     using Vermines.Player;
     using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
+    using static System.Collections.Specialized.BitVector32;
 
     public partial class StandartGameplay : GameplayMode {
 
@@ -55,11 +56,9 @@ namespace Vermines.Gameplay.Core {
 
         protected override void OnInitializeShop(ShopType shopType, string shopData)
         {
-            ICommand fillCommand = new FillShopCommand(Shop);
-
             Shop.DeserializeSection(shopType, shopData);
 
-            CommandInvoker.ExecuteCommand(fillCommand);
+            GameEvents.OnShopRefilled.Invoke(shopType, Shop.GetDisplayCards(shopType));
         }
 
         #endregion

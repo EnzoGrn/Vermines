@@ -102,7 +102,10 @@ namespace Vermines.Gameplay {
 
         private void InitializeCourtyard(List<ICard> cards)
         {
-            CourtyardSection section = new(3, 2);
+            int level1Slot = 3;
+            int level2Slot = 2;
+
+            CourtyardSection section = new(level1Slot, level2Slot);
 
             List<ICard> partisan1Cards = cards.Where(card => card.Data.Level == 1).ToList();
             List<ICard> partisan2Cards = cards.Where(card => card.Data.Level == 2).ToList();
@@ -113,7 +116,10 @@ namespace Vermines.Gameplay {
             section.Deck1 = partisan1Cards;
             section.Deck2 = partisan2Cards;
 
-            section.Refill();
+            for (int i = 0; i < level1Slot; i++)
+                section.AddCard(1);
+            for (int i = 0; i < level2Slot; i++)
+                section.AddCard(2);
 
             Mode.Shop.AddSection(ShopType.Courtyard, section);
             Mode.RPC_InitializeShop(ShopType.Courtyard, Mode.Shop.SerializeSection(ShopType.Courtyard));
