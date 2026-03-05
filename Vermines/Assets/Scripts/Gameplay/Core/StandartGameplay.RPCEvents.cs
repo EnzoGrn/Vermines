@@ -155,30 +155,32 @@ namespace Vermines.Gameplay.Core {
 
             ICard cardAdded = courtyard.NextCard(level);
 
-            ChronicleEntry entry = new() {
-                Id = KeyGen.UUID(),
-                TimestampUtc = DateTime.UtcNow.Ticks,
-                EventType = new VerminesLogEventType(VerminesLogsType.ChangeCard),
-                TitleKey = $"T_CardAdded",
-                MessageKey = $"D_CardAdded",
-                IconKey = $"{ShopType.Courtyard}"
-            };
+            if (cardAdded != null) {
+                ChronicleEntry entry = new() {
+                    Id = KeyGen.UUID(),
+                    TimestampUtc = DateTime.UtcNow.Ticks,
+                    EventType = new VerminesLogEventType(VerminesLogsType.ChangeCard),
+                    TitleKey = $"T_CardAdded",
+                    MessageKey = $"D_CardAdded",
+                    IconKey = $"{ShopType.Courtyard}"
+                };
 
-            var payloadObject = new {
-                DescriptionArgs = new string[] {
+                var payloadObject = new {
+                    DescriptionArgs = new string[] {
                     $"ST_{ShopType.Courtyard}_CardAdd",
                     player.NetworkedNickname.Value,
                     cardAdded?.Data.Name
-                },
-                newCardId = cardAdded.ID
-                // ...
-            };
+                  },
+                  newCardId = cardAdded.ID
+                  // ...
+                };
 
-            string payloadJson = JsonConvert.SerializeObject(payloadObject);
+                string payloadJson = JsonConvert.SerializeObject(payloadObject);
 
-            ChroniclePayloadStorage.Add(entry.Id, payloadJson);
+                ChroniclePayloadStorage.Add(entry.Id, payloadJson);
 
-            player.RPC_AddCardInCourtyard(NetworkChronicleEntry.FromChronicleEntry(entry), level);
+                player.RPC_AddCardInCourtyard(NetworkChronicleEntry.FromChronicleEntry(entry), level);
+            }
         }
 
         #endregion

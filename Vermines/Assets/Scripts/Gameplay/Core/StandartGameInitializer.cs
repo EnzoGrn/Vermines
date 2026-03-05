@@ -68,7 +68,7 @@ namespace Vermines.Gameplay {
         private void InitializePlayerDecks(List<PlayerRef> players)
         {
             List<ICard> starterCards = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.IsStartingCard);
-            int    starterDeckLength = starterCards.Count / players.Count;
+            Dictionary<PlayerRef, PlayerDeck> decks = new();
 
             foreach (PlayerRef playerRef in players) {
                 PlayerController player = NetworkGame.GetPlayer(playerRef);
@@ -77,6 +77,33 @@ namespace Vermines.Gameplay {
                     PlayerDeck deck = new();
 
                     deck.Initialize(NetworkGame.Seed);
+
+                    decks[playerRef] = deck;
+                }
+            }
+
+            foreach (ICard card in starterCards.ToList()) {
+                if (card.Data.IsFamilyCard) {
+                    foreach (PlayerRef playerRef in players) {
+                        PlayerController player = NetworkGame.GetPlayer(playerRef);
+
+                        if (player && player.Statistics.Family == card.Data.Family) {
+                            decks[playerRef].Deck.Add(card);
+                            starterCards.Remove(card);
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            int starterDeckLength = starterCards.Count / players.Count;
+
+            foreach (PlayerRef playerRef in players) {
+                PlayerController player = NetworkGame.GetPlayer(playerRef);
+
+                if (player) {
+                    PlayerDeck deck = decks[playerRef];
 
                     for (int i = 0; i < starterDeckLength; i++) {
                         ICard card = starterCards[NetworkGame.Random.Next(starterDeckLength - deck.Deck.Count)];
