@@ -19,6 +19,7 @@ namespace Vermines.Player {
     using Vermines.Core.Player;
     using Vermines.Core;
     using Vermines.ShopSystem.Data;
+    using Vermines.Gameplay.Cards.Effect;
 
     public partial class PlayerController : ContextBehaviour, IPlayer {
 
@@ -49,6 +50,15 @@ namespace Vermines.Player {
             courtyard.AddCard(level);
 
             GameEvents.OnShopRefilled.Invoke(ShopType.Courtyard, shop.GetDisplayCards(ShopType.Courtyard));
+
+            foreach (var card in Deck.PlayedCards) {
+                if (card.Data.Effects != null) {
+                    foreach (var effect in card.Data.Effects) {
+                        if ((effect.Type & EffectType.OnCardAddedToCourtyard) != 0)
+                            effect.Play(Object.InputAuthority);
+                    }
+                }
+            }
 
             AddChronicle(nEntry.ToChronicleEntry());
         }
@@ -148,6 +158,18 @@ namespace Vermines.Player {
 
                 return;
             }
+
+            foreach (ICard playedCard in Deck.PlayedCards) {
+                if (playedCard.Data.Effects != null) {
+                    foreach (AEffect effect in playedCard.Data.Effects) {
+                        if ((effect.Type & EffectType.OnOtherDiscard) != 0 && effect is OtherDiscardEffect discard) {
+                            if (discard.TargetType == card.Data.Type || discard.TargetType == CardType.None)
+                                effect.Play(Object.InputAuthority);
+                        }
+                    }
+                }
+            }
+
 
             if (card.Data.HasChoiceEffect(EffectType.Discard)) {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {

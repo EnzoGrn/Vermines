@@ -12,6 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
   m_Name: RoyalMessengerEffect
   m_EditorClassIdentifier: 
+  Context:
+    PeerUserID: 
+    Audio: {fileID: 0}
+    UI: {fileID: 0}
+    ObjectCache: {fileID: 0}
+    SceneInput: {fileID: 0}
+    Settings: {fileID: 0}
+    CustomGameScenePath: 
+    MatchmakingScenePath: 
+    GameScenePath: 
+    IsVisible: 0
+    HasInput: 0
+    Runner: {fileID: 0}
+    SceneChangeController: {fileID: 0}
+    HandManager: {fileID: 0}
+    NetworkGame: {fileID: 0}
+    GameplayMode: {fileID: 0}
+    NetworkLobby: {fileID: 0}
+    Lobby: {fileID: 0}
+    NetworkMatchmaking: {fileID: 0}
+    Matchmaking: {fileID: 0}
   _Type: 1
-  _Description: Earn <b><color=red>4A</color></b>.
-  _SubEffect: {fileID: 11400000, guid: 422b2a80103935f4e9ae9857657cb8fe, type: 2}
+  _Description: Earn <b><color=red>3A</color></b> then draw 1 card.
+  _SubEffect: {fileID: 11400000, guid: ed00aa7b0e7d9ff4295cc74ffe3f70d8, type: 2}

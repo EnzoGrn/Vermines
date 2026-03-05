@@ -83,7 +83,7 @@ namespace Vermines.CardSystem.Utilities {
             foreach (CardData data in cardDataArray) {
                 Sprite sprite = Resources.Load<Sprite>($"Sprites/Card/{family.ToString()}/{data.SpriteName}.png");
 
-                HandleCardData(data, family, sprite, cards, playerDecks);
+                HandleCardData(data, family, sprite, cards, playerDecks, true);
             }
 
             return cards;
@@ -93,7 +93,7 @@ namespace Vermines.CardSystem.Utilities {
 
         #region Helpers
 
-        private void HandleCardData(CardData data, CardFamily family, Sprite sprite, List<ICard> shopCards, List<List<ICard>> playerDecks)
+        private void HandleCardData(CardData data, CardFamily family, Sprite sprite, List<ICard> shopCards, List<List<ICard>> playerDecks, bool isFamilyCard = false)
         {
             // -- Exemplars
             for (int i = 0; i < data.Exemplars; i++) {
@@ -108,13 +108,23 @@ namespace Vermines.CardSystem.Utilities {
 
             // -- Starting Cards
             if (data.IsStartingCard && data.DeckExemplars > 0) {
-                for (int p = 0; p < _NumberOfPlayerToLoad; p++) {
+                if (!isFamilyCard) {
+                    for (int p = 0; p < _NumberOfPlayerToLoad; p++) {
+                        for (int i = 0; i < data.DeckExemplars; i++) {
+                            CardData copy = CreateCopy(data, family, sprite);
+
+                            ICard card = SetIdentity(CardFactory.CreateCard(copy));
+
+                            playerDecks[p].Add(card);
+                        }
+                    }
+                } else {
                     for (int i = 0; i < data.DeckExemplars; i++) {
                         CardData copy = CreateCopy(data, family, sprite);
 
                         ICard card = SetIdentity(CardFactory.CreateCard(copy));
 
-                        playerDecks[p].Add(card);
+                        playerDecks[0].Add(card);
                     }
                 }
             }

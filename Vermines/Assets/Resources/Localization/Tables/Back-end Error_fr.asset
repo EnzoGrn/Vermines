@@ -138,6 +138,10 @@ MonoBehaviour:
     m_Localized: "La carte s\xE9lectionn\xE9e n'existe pas dans la boutique."
     m_Metadata:
       m_Items: []
+  - m_Id: 60091037064880128
+    m_Localized: Vous ne pouvez pas recycler cette carte.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

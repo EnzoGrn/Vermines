@@ -130,6 +130,10 @@ MonoBehaviour:
     m_Localized: You cannot add a card in the courtyard when it's not your turn.
     m_Metadata:
       m_Items: []
+  - m_Id: 60091037064880128
+    m_Localized: You cannot recycle this card.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

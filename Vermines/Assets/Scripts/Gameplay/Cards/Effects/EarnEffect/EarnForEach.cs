@@ -14,13 +14,20 @@ namespace Vermines.Gameplay.Cards.Effect {
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Earn/Earn data for each ...")]
     public class EarnForEachEffect : AEffect {
 
+        public enum ZoneType {
+            PlayArea,
+            Graveyard,
+        }
+
         #region Constants
 
         private static readonly string template = "Earn {0} for each {1}";
         private static readonly string eloquenceTemplate = "<b><color=purple>{0}E</color></b>";
         private static readonly string soulTemplate = "<b><color=red>{0}A</color></b>";
-        private static readonly string partisanTemplate = "<b>Partisan</b> card played";
+        private static readonly string partisanTemplate = "<b>Partisan</b> card";
         private static readonly string equipmentTemplate = "<b>Equipment</b> card";
+        private static readonly string playTemplate = " played";
+        private static readonly string graveyardTemplate = " in the graveyard";
         private static readonly string linkerTemplate = " then ";
 
         #endregion
@@ -82,6 +89,20 @@ namespace Vermines.Gameplay.Cards.Effect {
         }
 
         [SerializeField]
+        private ZoneType _Area = ZoneType.PlayArea;
+
+        public ZoneType Area
+        {
+            get => _Area;
+            set
+            {
+                _Area = value;
+
+                UpdateDescription();
+            }
+        }
+
+        [SerializeField]
         private AEffect _SubEffect = null;
 
         public override AEffect SubEffect
@@ -99,6 +120,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #region UI Elements
 
+        public Sprite AlreadySacrifiedPartisan = null;
         public Sprite PartisanIcon = null;
         public Sprite EquipmentIcon = null;
         public Sprite EloquenceIcon = null;
@@ -120,9 +142,23 @@ namespace Vermines.Gameplay.Cards.Effect {
                     CommandInvoker.ExecuteCommand(earnCommand);
                 }
             } else if (CardType == CardType.Partisan) {
-                List<ICard> partisans = player.Deck.PlayedCards;
+                List<ICard> cards = player.Deck.PlayedCards;
 
-                foreach (ICard _ in partisans) {
+                if (Area == ZoneType.Graveyard)
+                    cards = player.Deck.Graveyard;
+                foreach (ICard card in cards) {
+                    if (card.Data.Type != CardType.Partisan)
+                        continue;
+                    ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
+
+                    CommandInvoker.ExecuteCommand(earnCommand);
+                }
+            } else if (CardType == CardType.None) {
+                List<ICard> cards = player.Deck.PlayedCards;
+
+                if (Area == ZoneType.Graveyard)
+                    cards = player.Deck.Graveyard;
+                foreach (ICard _ in cards) {
                     ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
 
                     CommandInvoker.ExecuteCommand(earnCommand);
@@ -147,7 +183,10 @@ namespace Vermines.Gameplay.Cards.Effect {
             elements.Add(("/", null));
 
             if (CardType == CardType.Partisan) {
-                elements.Add((null, PartisanIcon));
+                if (Area == ZoneType.Graveyard)
+                    elements.Add((null, AlreadySacrifiedPartisan));
+                else
+                    elements.Add((null, PartisanIcon));
             } else if (CardType == CardType.Equipment) {
                 elements.Add((null, EquipmentIcon));
             }
@@ -170,12 +209,18 @@ namespace Vermines.Gameplay.Cards.Effect {
                 amountFormatted = string.Format(soulTemplate, Amount);
 
             string target = "";
+
             if (CardType == CardType.Partisan)
                 target = partisanTemplate;
             else if (CardType == CardType.Equipment)
                 target = equipmentTemplate;
 
             Description = string.Format(template, amountFormatted, target);
+
+            if (Area == ZoneType.PlayArea)
+                Description += playTemplate;
+            else if (Area == ZoneType.Graveyard)
+                Description += graveyardTemplate;
 
             if (SubEffect != null) {
                 string subDescription = SubEffect.Description;
@@ -190,6 +235,8 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             UpdateDescription();
 
+            if (AlreadySacrifiedPartisan == null)
+                AlreadySacrifiedPartisan = Resources.Load<Sprite>("Sprites/UI/Effects/Already_sacrified_card");
             if (PartisanIcon == null)
                 PartisanIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Partisan_Card_Played");
             if (EquipmentIcon == null)

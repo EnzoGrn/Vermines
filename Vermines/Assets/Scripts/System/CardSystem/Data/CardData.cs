@@ -172,7 +172,19 @@ namespace Vermines.CardSystem.Data {
 
         #region Stats
 
-            [SerializeField]
+        /// <summary>
+        /// If the tool has no exemplars in shop and is only in players deck, it can't be recycled to gain eloquence.
+        /// </summary>
+        public bool CanBeRecycled()
+        {
+            if (Type != CardType.Tools)
+                return false;
+            if (Exemplars > 0)
+                return true;
+            return false;
+        }
+
+        [SerializeField]
         private int _RecycleEloquence = 0;
 
         public int RecycleEloquence
@@ -192,19 +204,17 @@ namespace Vermines.CardSystem.Data {
         /// </summary>
         [SerializeField]
         private int _Eloquence = 0;
-
         /// <summary>
+
         /// Get or set the cost of the card (with Eloquence as the currency).
         /// </summary>
         public int Eloquence
         {
-            get => (Type == CardType.Partisan && IsStartingCard) ? 0 : _Eloquence;
+            get => _Eloquence;
             set
             {
-                if (Type == CardType.Partisan && IsStartingCard)
-                    _Eloquence = 0;
-                else
-                    _Eloquence = value;
+                _Eloquence = value;
+
                 CurrentEloquence = _Eloquence;
             }
         }
