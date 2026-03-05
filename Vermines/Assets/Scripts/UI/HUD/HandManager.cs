@@ -29,7 +29,21 @@ namespace Vermines.UI.Card
 
         #region Getters & Setters
 
-        public bool HasCards() => handCards.Count > 0;
+        public bool HasCards(bool withoutUndiscardable = false)
+        {
+            if (handCards.Count == 0)
+                return false;
+            if (withoutUndiscardable) {
+                foreach (var cardGO in handCards) {
+                    if (cardGO.TryGetComponent<CardDisplay>(out var display) && display.Card.Data.CanBeDiscard())
+                        return true;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
 
         public List<GameObject> HandCards => handCards;
 
@@ -156,11 +170,10 @@ namespace Vermines.UI.Card
         {
             List<GameObject> cards = new(handCards);
 
-            foreach (var card in cards)
-            {
+            foreach (var card in cards) {
                 CardDisplay display = card.GetComponent<CardDisplay>();
 
-                if (display != null && phase is ActionPhaseAsset actionPhase)
+                if (display != null && phase is ActionPhaseAsset actionPhase && display.Card.Data.CanBeDiscard())
                     actionPhase.OnDiscardNoEffect(display.Card);
             }
         }

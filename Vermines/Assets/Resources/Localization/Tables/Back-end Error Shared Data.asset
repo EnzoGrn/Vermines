@@ -131,6 +131,10 @@ MonoBehaviour:
     m_Key: Recycle_CardNotRecyclable
     m_Metadata:
       m_Items: []
+  - m_Id: 60183981075718144
+    m_Key: Table_Discard_CardNotDiscardable
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
