@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using OMGG.DesignPattern;
+using UnityEngine;
+using Fusion;
 
 namespace Vermines.Gameplay.Core {
+    using System.Linq;
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Core;
     using Vermines.Player;
-    using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
-    using static System.Collections.Specialized.BitVector32;
 
     public partial class StandartGameplay : GameplayMode {
 
@@ -24,16 +24,22 @@ namespace Vermines.Gameplay.Core {
 
         protected override void CheckWinCondition()
         {
-            List<PlayerController> PlayersControllers = Context.Runner.GetAllBehaviours<PlayerController>();
+            List<PlayerController> players = Context.Runner.GetAllBehaviours<PlayerController>();
 
-            if (Context.NetworkGame == null || PlayersControllers == null)
+            if (Context.NetworkGame == null || players == null)
                 return;
-            foreach (PlayerController player in PlayersControllers) {
-                if (player == null)
-                    continue;
-                if (player.Statistics.Souls >= SoulsLimit) {
-                    FinishGameplay(player);
-                    return;
+            if (EndGameTriggerPlayer == PlayerRef.None) {
+                foreach (PlayerController player in players) {
+                    if (player == null)
+                        continue;
+                    if (player.Statistics.Souls >= SoulsLimit) {
+                        EndGameTriggerPlayer = player.Object.InputAuthority;
+                        EndGameTriggerTurn   = TotalTurnPlayed;
+
+                        Debug.Log($"End game triggered by {player.Nickname}");
+
+                        return;
+                    }
                 }
             }
         }
@@ -43,6 +49,16 @@ namespace Vermines.Gameplay.Core {
             base.FixedUpdateNetwork_Active();
 
             CheckWinCondition();
+
+            if (EndGameTriggerPlayer != PlayerRef.None) {
+                if (CurrentPlayer == EndGameTriggerPlayer && TotalTurnPlayed > EndGameTriggerTurn) {
+                    List<PlayerController> players = Context.Runner.GetAllBehaviours<PlayerController>();
+
+                    PlayerController winner = players.OrderByDescending(p => p.Statistics.Souls).ThenByDescending(p => p.Object.InputAuthority == EndGameTriggerPlayer).First();
+
+                    FinishGameplay(winner);
+                }
+            }
         }
 
         #endregion
