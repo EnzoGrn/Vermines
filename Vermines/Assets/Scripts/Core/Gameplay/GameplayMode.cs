@@ -33,9 +33,9 @@ namespace Vermines.Core {
         [SerializeField]
         private GameplayType _Type;
 
-        public int SoulsLimit         = 100;
-        public int MaxEloquence       = 20;
-        public int BonusSoulsOnFamily = 5;
+        public int SoulsLimit = 100;
+        public int MaxEloquence = 20;
+        public int BonusSoulsPerFamilyCardSacrified = 2;
 
         private DefaultPlayerComparer _PlayerComparer = new();
 

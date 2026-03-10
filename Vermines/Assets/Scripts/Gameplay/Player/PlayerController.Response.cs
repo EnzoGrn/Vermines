@@ -170,7 +170,6 @@ namespace Vermines.Player {
                 }
             }
 
-
             if (card.Data.HasChoiceEffect(EffectType.Discard)) {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {
                     GameplayUIController uiController = FindFirstObjectByType<GameplayUIController>();
