@@ -47,6 +47,17 @@ namespace Vermines.Player {
 
         #region Getters & Setters
 
+        public void SetNumberOfSlotOnTable(int amount)
+        {
+            if (!HasStateAuthority)
+                return;
+            PlayerStatistics stats = Statistics;
+
+            stats.NumberOfSlotInTable = amount;
+
+            UpdateStatistics(stats);
+        }
+
         public void SetEloquence(int eloquence)
         {
             if (!HasStateAuthority)

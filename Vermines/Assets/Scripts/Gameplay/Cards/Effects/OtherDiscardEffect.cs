@@ -12,6 +12,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         #region Constants
 
         private static readonly string descriptionTemplate = "As long as this card is placed in the partisan zone, then each time another {0} card is discarded";
+        private static readonly string godDescriptionTemplate = "Each time another {0} card is discarded";
         private static readonly string linkerTemplate = ", ";
 
         #endregion
@@ -39,6 +40,20 @@ namespace Vermines.Gameplay.Cards.Effect {
             set
             {
                 _TargetType = value;
+            }
+        }
+
+        [SerializeField]
+        private bool _IsGodEffect = false;
+
+        public bool IsGodEffect
+        {
+            get => _IsGodEffect;
+            set
+            {
+                _IsGodEffect = value;
+
+                UpdateDescription();
             }
         }
 
@@ -80,10 +95,12 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override List<(string, Sprite)> Draw()
         {
-            List<(string, Sprite)> elements = new() {
-                (null, PlayIcon),
-                (":" , null    ),
-            };
+            List<(string, Sprite)> elements = new();
+
+            if (!IsGodEffect) {
+                elements.Add((null, PlayIcon));
+                elements.Add((":" , null));
+            }
 
             if (TargetType == CardType.Tools)
                 elements.Add((null, ToolsDiscardIcon));
@@ -99,7 +116,10 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         protected override void UpdateDescription()
         {
-            Description = string.Format(descriptionTemplate, TargetType.ToString().ToLower());
+            if (IsGodEffect)
+                Description = string.Format(godDescriptionTemplate, TargetType.ToString().ToLower());
+            else
+                Description = string.Format(descriptionTemplate, TargetType.ToString().ToLower());
 
             if (SubEffect != null) {
                 string subDescription = SubEffect.Description;

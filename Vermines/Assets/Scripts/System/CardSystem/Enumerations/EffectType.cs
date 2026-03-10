@@ -57,5 +57,10 @@ namespace Vermines.CardSystem.Enumerations {
         /// Effect that is handle when a new card is added to the Courtyard.
         /// </summary>
         OnCardAddedToCourtyard = 1 << 9,
+
+        /// <summary>
+        /// The effect is handle at the start of the game, before the first turn.
+        /// </summary>
+        OnGameStart = 1 << 10,
     }
 }

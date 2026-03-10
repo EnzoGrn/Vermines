@@ -22,6 +22,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             serializedObject.ApplyModifiedProperties();
 
+            effect.IsGodEffect = EditorGUILayout.Toggle(new GUIContent("Is God Effect", "If true, the effect will be considered as a god effect and will trigger the god effect of the card."), effect.IsGodEffect);
+
             GUILayout.EndVertical();
             GUILayout.Space(10);
             // -- EOF --
