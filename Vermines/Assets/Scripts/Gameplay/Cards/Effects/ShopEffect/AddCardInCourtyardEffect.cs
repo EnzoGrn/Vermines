@@ -77,7 +77,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
             player.OnRequestNewCardInCourtyard(level);
-            player.NetworkEventCardEffect(Card.ID, level.ToString());
+            player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, level.ToString());
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)

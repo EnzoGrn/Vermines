@@ -92,7 +92,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
             if (Context.Runner.LocalPlayer == playerRef)
-                player.NetworkEventCardEffect(Card.ID);
+                player.NetworkEventCardEffect(Card == null ? -1 : Card.ID);
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Cards.Effect {
-
+    using Fusion;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
 
@@ -11,6 +11,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #region Constants
 
+        private static readonly string godTemplate = "Your first sacrifice each turn allows you";
         private static readonly string descriptionTemplate = "Sacrifice an other Partisan";
         private static readonly string linkerTemplate = " to ";
 
@@ -29,6 +30,22 @@ namespace Vermines.Gameplay.Cards.Effect {
                 _Type = value;
             }
         }
+
+        [SerializeField]
+        private bool _IsGodEffect = false;
+
+        public bool IsGodEffect
+        {
+            get => _IsGodEffect;
+            set
+            {
+                _IsGodEffect = value;
+
+                UpdateDescription();
+            }
+        }
+
+        private bool _IsFirstSacrificeThisTurn = true;
 
         [SerializeField]
         private string _Description;
@@ -64,14 +81,32 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        public override void Play(PlayerRef player)
+        {
+            if (IsGodEffect) {
+                if (_IsFirstSacrificeThisTurn)
+                    _IsFirstSacrificeThisTurn = false;
+                else
+                    return;
+            }
+
+            base.Play(player);
+        }
+
+        public override void Stop(PlayerRef player)
+        {
+            if (IsGodEffect)
+                _IsFirstSacrificeThisTurn = true;
+            base.Stop(player);
+        }
+
         public override List<(string, Sprite)> Draw()
         {
             List<(string, Sprite)> elements = new() {
                 { (null, OtherSacrificeThisCardIcon) }
             };
 
-            if (SubEffect != null)
-            {
+            if (SubEffect != null) {
                 elements.Add((" : ", null));
                 elements.AddRange(SubEffect.Draw());
             }
@@ -81,20 +116,17 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         protected override void UpdateDescription()
         {
-            if (SubEffect != null)
-            {
+            Description = IsGodEffect ? godTemplate : descriptionTemplate;
+
+            if (SubEffect != null) {
                 string subDescription = SubEffect.Description;
 
                 if (subDescription.Length > 0)
                     subDescription = char.ToLower(subDescription[0]) + subDescription[1..];
                 if (Card != null && Card.Data != null)
-                {
-                    Description = $"{string.Format(descriptionTemplate, Card.Data.Name)}{linkerTemplate}{subDescription}";
-                }
+                    Description += $"{linkerTemplate}{subDescription}";
                 else
-                {
-                    Description = $"{string.Format(descriptionTemplate, "{card_name}")}{linkerTemplate}{subDescription}";
-                }
+                    Description += $"{linkerTemplate}{subDescription}";
             }
 
             Description += ".";

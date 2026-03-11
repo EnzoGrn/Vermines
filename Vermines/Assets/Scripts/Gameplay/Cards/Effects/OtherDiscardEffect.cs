@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Cards.Effect {
-
+    using Fusion;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
 
@@ -12,6 +12,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         #region Constants
 
         private static readonly string descriptionTemplate = "As long as this card is placed in the partisan zone, then each time another {0} card is discarded";
+        private static readonly string godDescriptionTemplate = "Each turn the first another {0} card is discarded allows you to";
         private static readonly string linkerTemplate = ", ";
 
         #endregion
@@ -41,6 +42,22 @@ namespace Vermines.Gameplay.Cards.Effect {
                 _TargetType = value;
             }
         }
+
+        [SerializeField]
+        private bool _IsGodEffect = false;
+
+        public bool IsGodEffect
+        {
+            get => _IsGodEffect;
+            set
+            {
+                _IsGodEffect = value;
+
+                UpdateDescription();
+            }
+        }
+
+        private bool _IsFirstDiscardThisTurn = true;
 
         [SerializeField]
         private string _Description;
@@ -78,12 +95,33 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        public override void Play(PlayerRef player)
+        {
+            if (IsGodEffect) {
+                if (_IsFirstDiscardThisTurn)
+                    _IsFirstDiscardThisTurn = false;
+                else
+                    return;
+            }
+
+            base.Play(player);
+        }
+
+        public override void Stop(PlayerRef player)
+        {
+            if (IsGodEffect)
+                _IsFirstDiscardThisTurn = true;
+            base.Stop(player);
+        }
+
         public override List<(string, Sprite)> Draw()
         {
-            List<(string, Sprite)> elements = new() {
-                (null, PlayIcon),
-                (":" , null    ),
-            };
+            List<(string, Sprite)> elements = new();
+
+            if (!IsGodEffect) {
+                elements.Add((null, PlayIcon));
+                elements.Add((":" , null));
+            }
 
             if (TargetType == CardType.Tools)
                 elements.Add((null, ToolsDiscardIcon));
@@ -99,7 +137,10 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         protected override void UpdateDescription()
         {
-            Description = string.Format(descriptionTemplate, TargetType.ToString().ToLower());
+            if (IsGodEffect)
+                Description = string.Format(godDescriptionTemplate, TargetType.ToString().ToLower());
+            else
+                Description = string.Format(descriptionTemplate, TargetType.ToString().ToLower());
 
             if (SubEffect != null) {
                 string subDescription = SubEffect.Description;

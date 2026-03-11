@@ -89,7 +89,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             RoundEventDispatcher.RegisterEvent(player.Object.InputAuthority, Stop);
 
-            player.NetworkEventCardEffect(Card.ID, card.ID.ToString());
+            player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, card.ID.ToString());
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)

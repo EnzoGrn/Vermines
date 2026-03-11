@@ -328,8 +328,16 @@ namespace Vermines.Gameplay.Core {
             __ObservedSouls = cardToSacrifice.Data.CurrentSouls;
             __ObservedPlayer = playerSource;
 
-            if (player.Statistics.Family == cardToSacrifice.Data.Family)
-                __ObservedSouls += BonusSoulsOnFamily;
+            // If the card sacrificed by the player belongs to their insect family,
+            // then for each other card from the same family sacrificed before,
+            // they will earn a bonus of {BonusSoulsPerFamilyCardSacrified} additional souls.
+            if (player.Statistics.Family == cardToSacrifice.Data.Family) {
+                foreach (var sacrifiedCard in player.Deck.Graveyard) {
+                    if (sacrifiedCard.Data.Family == player.Statistics.Family)
+                        __ObservedSouls += BonusSoulsPerFamilyCardSacrified;
+                }
+            }
+
             ICommand earnCommand = new EarnCommand(player, __ObservedSouls, DataType.Soul);
 
             CommandInvoker.ExecuteCommand(earnCommand);
@@ -349,6 +357,13 @@ namespace Vermines.Gameplay.Core {
                         if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
                             effect.Play(playerSource);
                     }
+                }
+            }
+
+            if (player.God.Effects != null) {
+                foreach (var effect in player.God.Effects) {
+                    if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
+                        effect.Play(Object.InputAuthority);
                 }
             }
 

@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b0b11f1afa4a814696ce24c6476ccab, type: 3}
+  m_Name: "Chilosmod\xE9eEffect"
+  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Cards.Effect.OtherSacrificeEffect
+  Context:
+    PeerUserID: 
+    Audio: {fileID: 0}
+    UI: {fileID: 0}
+    ObjectCache: {fileID: 0}
+    SceneInput: {fileID: 0}
+    Settings: {fileID: 0}
+    CustomGameScenePath: 
+    MatchmakingScenePath: 
+    GameScenePath: 
+    IsVisible: 0
+    HasInput: 0
+    Runner: {fileID: 0}
+    SceneChangeController: {fileID: 0}
+    HandManager: {fileID: 0}
+    NetworkGame: {fileID: 0}
+    GameplayMode: {fileID: 0}
+    NetworkLobby: {fileID: 0}
+    Lobby: {fileID: 0}
+    NetworkMatchmaking: {fileID: 0}
+    Matchmaking: {fileID: 0}
+  _Type: 32
+  _IsGodEffect: 1
+  _Description: Your first sacrifice each turn allows you to earn <b><color=purple>2E</color></b>.
+  _SubEffect: {fileID: 11400000, guid: 99decfc020a17de469edd14b8530020a, type: 2}
+  OtherSacrificeThisCardIcon: {fileID: 21300000, guid: 156c42c3701633942bcfe423ce840169, type: 3}

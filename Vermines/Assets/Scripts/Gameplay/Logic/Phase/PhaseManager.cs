@@ -9,6 +9,7 @@ namespace Vermines.Gameplay.Phases
 {
 
     using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Core;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
@@ -26,6 +27,8 @@ namespace Vermines.Gameplay.Phases
     {
 
         #region Phases
+
+        private List<PhaseType> _PhaseOrder;
 
         [Networked]
         public PhaseType CurrentPhase { get; set; } = PhaseType.None;
@@ -64,8 +67,7 @@ namespace Vermines.Gameplay.Phases
         {
             GameEvents.OnAttemptNextPhase.RemoveListener(OnPhaseCompleted);
 
-            if (_Phases != null)
-            {
+            if (_Phases != null) {
                 foreach (var kvp in _Phases)
                     kvp.Value.Deinitialize();
             }
@@ -74,21 +76,19 @@ namespace Vermines.Gameplay.Phases
         private void SetUpPhases()
         {
             _Phases = new();
+            _PhaseOrder = new();
 
-            foreach (var entry in phaseEntries)
-            {
+            foreach (var entry in phaseEntries) {
                 entry.phaseAsset.Initialize(Context, this);
 
                 _Phases[entry.phaseType] = entry.phaseAsset;
+                _PhaseOrder.Add(entry.phaseType);
             }
-
-            if (Runner.IsServer)
-                CurrentPhase = _Phases.Keys.First();
         }
 
         public void OnGameStart()
         {
-            CurrentPhase = _Phases.Keys.First();
+            CurrentPhase = _PhaseOrder[0];
 
             if (HasStateAuthority)
                 RPC_ProcessPhase(CurrentPhase, Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex));
@@ -105,6 +105,15 @@ namespace Vermines.Gameplay.Phases
             GameEvents.OnAttemptNextPhase.AddListener(OnPhaseCompleted);
         }
 
+        private PhaseType GetNextPhase()
+        {
+            int index = _PhaseOrder.IndexOf(CurrentPhase);
+
+            if (index == -1 || index + 1 >= _PhaseOrder.Count)
+                return _PhaseOrder[0];
+            return _PhaseOrder[index + 1];
+        }
+
         #endregion
 
         public void NextTurn()
@@ -113,7 +122,7 @@ namespace Vermines.Gameplay.Phases
 
             if (!Runner.IsServer)
                 return;
-            CurrentPhase = _Phases.Keys.First();
+            CurrentPhase = _PhaseOrder[0];
 
             Context.GameplayMode.CurrentPlayerIndex = (Context.GameplayMode.CurrentPlayerIndex + 1) % Context.Runner.ActivePlayers.Count();
 
@@ -162,17 +171,13 @@ namespace Vermines.Gameplay.Phases
         {
             if (!Runner.IsServer)
                 return;
-
             // Check if the player did every phases.
-            if (CurrentPhase == PhaseType.Resolution)
-            {
+            if (CurrentPhase == PhaseType.Resolution) {
                 NextTurn();
 
                 RPC_TurnAnnounced();
-            }
-            else
-            {
-                CurrentPhase++;
+            } else {
+                CurrentPhase = GetNextPhase();
 
                 Debug.Log($"[SERVER]: Next phase is {CurrentPhase}.");
 

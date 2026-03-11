@@ -7,6 +7,7 @@ namespace Vermines.Player {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.Characters;
     using Vermines.Core;
     using Vermines.Core.Player;
     using Vermines.ShopSystem.Enumerations;
@@ -34,6 +35,8 @@ namespace Vermines.Player {
 
         public PlayerDeck Deck { get; private set; }
 
+        public God God { get; private set; }
+
         private int _InitCounter;
 
         [Networked]
@@ -46,6 +49,17 @@ namespace Vermines.Player {
         #endregion
 
         #region Getters & Setters
+
+        public void SetNumberOfSlotOnTable(int amount)
+        {
+            if (!HasStateAuthority)
+                return;
+            PlayerStatistics stats = Statistics;
+
+            stats.NumberOfSlotInTable = amount;
+
+            UpdateStatistics(stats);
+        }
 
         public void SetEloquence(int eloquence)
         {
@@ -89,6 +103,16 @@ namespace Vermines.Player {
         public void UpdateDeck(PlayerDeck deck)
         {
             Deck = deck;
+        }
+
+        public void SetGod(God god)
+        {
+            God = god;
+
+            if (god.Effects != null) {
+                foreach (var effect in god.Effects)
+                    effect.Initialize(Context, null);
+            }
         }
 
         public void Refresh()
