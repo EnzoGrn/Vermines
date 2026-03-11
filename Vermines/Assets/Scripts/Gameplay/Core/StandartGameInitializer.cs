@@ -10,6 +10,7 @@ namespace Vermines.Gameplay {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
+    using Vermines.Characters;
     using Vermines.Core;
     using Vermines.Core.Player;
     using Vermines.Player;
@@ -43,6 +44,8 @@ namespace Vermines.Gameplay {
 
         private void InitializePlayers(List<PlayerRef> players)
         {
+            God[] gods = Global.Settings.Gods.GetAllGods();
+
             foreach (PlayerRef playerRef in players) {
                 PlayerController player = NetworkGame.GetPlayer(playerRef);
 
@@ -54,6 +57,13 @@ namespace Vermines.Gameplay {
                     stats.NumberOfSlotInTable = 3;
 
                     player.UpdateStatistics(stats);
+
+                    int randomIndex = NetworkGame.Random.Next(0, gods.Length);
+                    int randomGodID = gods[randomIndex].ID;
+
+                    Debug.Log($"Player {playerRef} has the {gods[randomIndex].Name} divinity.");
+
+                    Mode.RPC_InitializeGod(player.Object.InputAuthority.RawEncoded, randomGodID);
                 }
             }
         }
@@ -207,6 +217,8 @@ namespace Vermines.Gameplay {
             InitializePlayerDecks(players);
             InitializeShop();
             InitializeDeck(players);
+
+            Mode.RPC_Initialized();
         }
 
         protected override void OnActivate() {}

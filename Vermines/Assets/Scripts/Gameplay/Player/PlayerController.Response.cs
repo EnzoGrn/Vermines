@@ -170,6 +170,15 @@ namespace Vermines.Player {
                 }
             }
 
+            if (God.Effects != null) {
+                foreach (var effect in God.Effects) {
+                    if ((effect.Type & EffectType.OnOtherDiscard) != 0 && effect is OtherDiscardEffect discard) {
+                        if (discard.TargetType == card.Data.Type || discard.TargetType == CardType.None)
+                            effect.Play(Object.InputAuthority);
+                    }
+                }
+            }
+
             if (card.Data.HasChoiceEffect(EffectType.Discard)) {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {
                     GameplayUIController uiController = FindFirstObjectByType<GameplayUIController>();

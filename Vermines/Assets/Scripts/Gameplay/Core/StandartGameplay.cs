@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Core {
-    using System.Linq;
+
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Core;

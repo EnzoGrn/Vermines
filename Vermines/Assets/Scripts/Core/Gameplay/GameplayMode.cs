@@ -158,19 +158,9 @@ namespace Vermines.Core {
         public void Initialize(string data)
         {
             _Initializer.Initialize(data);
-
-            _IsInitialized = true;
-
-            RPC_Initialized();
-
-            Activate();
         }
 
-        protected virtual void FixedUpdateNetwork_Active()
-        {
-            if (PhaseManager.CurrentPhase == PhaseType.None)
-                PhaseManager.OnGameStart();
-        }
+        protected virtual void FixedUpdateNetwork_Active() {}
 
         protected virtual void FixedUpdateNetwork_Finished()
         {
@@ -298,6 +288,16 @@ namespace Vermines.Core {
             State = GState.Active;
 
             GameEvents.OnGameInitialized.Invoke();
+
+            if (HasStateAuthority) {
+                _IsInitialized = true;
+
+                Activate();
+            }
+
+            GameEvents.OnGameInitialized.Invoke();
+            // if (PhaseManager.CurrentPhase == PhaseType.None)
+            //    PhaseManager.OnGameStart();
         }
 
         protected virtual void OnActivate() {}
@@ -341,7 +341,7 @@ namespace Vermines.Core {
         #region RPCs
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
-        private void RPC_Initialized()
+        public void RPC_Initialized()
         {
             OnInitialize();
         }
@@ -364,7 +364,7 @@ namespace Vermines.Core {
             GameEvents.InvokeOnPlayerWin(player, Runner.LocalPlayer);
         }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.Proxies, Channel = RpcChannel.Reliable)]
+        [Rpc(RpcSources.StateAuthority, RpcTargets.Proxies, Channel = RpcChannel.Reliable)]
         private void RPC_StopPublicGame()
         {
             Global.Networking.StopGame(Networking.STATUS_SERVER_CLOSED);
@@ -393,6 +393,14 @@ namespace Vermines.Core {
             List<CardFamily> families = FamilyUtils.FamiliesIdsToList(familiesIds);
 
             OnInitializeCards(families);
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
+        public void RPC_InitializeGod(int playerID, int godID)
+        {
+            PlayerController player = Context.NetworkGame.GetPlayer(PlayerRef.FromEncoded(playerID));
+
+            player.SetGod(Global.Settings.Gods.GetGodByID(godID));
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]

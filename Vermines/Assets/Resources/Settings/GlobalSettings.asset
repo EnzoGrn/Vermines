@@ -16,6 +16,7 @@ MonoBehaviour:
   LoadingScene: LoadingScene
   MenuScene: Menu
   Cultists: {fileID: 11400000, guid: bcf36aae321d60c408c9cb3400afd7e3, type: 2}
+  Gods: {fileID: 11400000, guid: 1b1db8acb3080e2488a84e839c877fe8, type: 2}
   Network: {fileID: 11400000, guid: d7484ce1aeae71849b98d43c50dfcd37, type: 2}
   DefaultOptions:
     _Values:
