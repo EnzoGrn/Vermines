@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Cards.Effect {
-
+    using Fusion;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
 
@@ -12,7 +12,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         #region Constants
 
         private static readonly string descriptionTemplate = "As long as this card is placed in the partisan zone, then each time another {0} card is discarded";
-        private static readonly string godDescriptionTemplate = "Each time another {0} card is discarded";
+        private static readonly string godDescriptionTemplate = "Each turn the first another {0} card is discarded allows you to";
         private static readonly string linkerTemplate = ", ";
 
         #endregion
@@ -57,6 +57,8 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
         }
 
+        private bool _IsFirstDiscardThisTurn = true;
+
         [SerializeField]
         private string _Description;
 
@@ -92,6 +94,25 @@ namespace Vermines.Gameplay.Cards.Effect {
         public Sprite ToolsDiscardIcon    = null;
 
         #endregion
+
+        public override void Play(PlayerRef player)
+        {
+            if (IsGodEffect) {
+                if (_IsFirstDiscardThisTurn)
+                    _IsFirstDiscardThisTurn = false;
+                else
+                    return;
+            }
+
+            base.Play(player);
+        }
+
+        public override void Stop(PlayerRef player)
+        {
+            if (IsGodEffect)
+                _IsFirstDiscardThisTurn = true;
+            base.Stop(player);
+        }
 
         public override List<(string, Sprite)> Draw()
         {

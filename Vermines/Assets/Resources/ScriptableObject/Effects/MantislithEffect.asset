@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2edef2e0f32dbb94494b922ebb05dbcd, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b0b11f1afa4a814696ce24c6476ccab, type: 3}
   m_Name: MantislithEffect
-  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Cards.Effect.OtherDiscardEffect
+  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Cards.Effect.OtherSacrificeEffect
   Context:
     PeerUserID: 
     Audio: {fileID: 0}
@@ -33,11 +33,8 @@ MonoBehaviour:
     Lobby: {fileID: 0}
     NetworkMatchmaking: {fileID: 0}
     Matchmaking: {fileID: 0}
-  _Type: 256
-  _TargetType: 0
+  _Type: 32
   _IsGodEffect: 1
-  _Description: Each time another partisan card is discarded, draw 1 card.
+  _Description: Your first sacrifice each turn allows you to draw 1 card.
   _SubEffect: {fileID: 11400000, guid: 918d05dd08e941440a9f71870faede1b, type: 2}
-  PlayIcon: {fileID: 21300000, guid: c32f68352779d084da18d83965696ce3, type: 3}
-  PartisanDiscardIcon: {fileID: 21300000, guid: 13c1dea4e2e80c144aacd148bb620132, type: 3}
-  ToolsDiscardIcon: {fileID: 21300000, guid: 0c05d2e6b9f065f4a8ba50a4bb647d9d, type: 3}
+  OtherSacrificeThisCardIcon: {fileID: 21300000, guid: 156c42c3701633942bcfe423ce840169, type: 3}

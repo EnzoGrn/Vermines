@@ -92,6 +92,13 @@ namespace Vermines.Player {
                         }
                     }
                 }
+
+                if (God.Effects != null) {
+                    foreach (var effect in God.Effects) {
+                        if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
+                            effect.Play(Object.InputAuthority);
+                    }
+                }
             }
 
             GameEvents.OnCardSacrified.Invoke(card);
@@ -304,10 +311,15 @@ namespace Vermines.Player {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_NetworkEventCardEffect(int cardID, string data)
         {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
+            if (cardID == -1) {
+                foreach (AEffect effect in God.Effects)
+                    effect.NetworkEventFunction(Object.InputAuthority, data);
+            } else {
+                ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
 
-            foreach (AEffect effect in card.Data.Effects)
-                effect.NetworkEventFunction(Object.InputAuthority, data);
+                foreach (AEffect effect in card.Data.Effects)
+                    effect.NetworkEventFunction(Object.InputAuthority, data);
+            }
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

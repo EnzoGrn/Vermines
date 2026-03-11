@@ -360,6 +360,13 @@ namespace Vermines.Gameplay.Core {
                 }
             }
 
+            if (player.God.Effects != null) {
+                foreach (var effect in player.God.Effects) {
+                    if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
+                        effect.Play(Object.InputAuthority);
+                }
+            }
+
             player.OnSoulsChanged -= ObserveSoulChange;
 
             ChronicleEntry entry = new() {

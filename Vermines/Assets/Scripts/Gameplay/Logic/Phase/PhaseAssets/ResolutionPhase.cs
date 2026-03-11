@@ -58,9 +58,14 @@ namespace Vermines.Gameplay.Phases {
         {
             foreach (ICard card in player.Deck.PlayedCards) {
                 foreach (AEffect effect in card.Data.Effects) {
-                    if ((effect.Type & EffectType.Passive) != 0)
+                    if ((effect.Type & EffectType.Passive) != 0 || (effect.Type & EffectType.Activate) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0 || (effect.Type & EffectType.OnOtherDiscard) != 0)
                         effect.Stop(player.Object.InputAuthority);
-                    if ((effect.Type & EffectType.Activate) != 0)
+                }
+            }
+
+            if (player.God.Effects != null) {
+                foreach (AEffect effect in player.God.Effects) {
+                    if ((effect.Type & EffectType.Passive) != 0 || (effect.Type & EffectType.Activate) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0 || (effect.Type & EffectType.OnOtherDiscard) != 0)
                         effect.Stop(player.Object.InputAuthority);
                 }
             }

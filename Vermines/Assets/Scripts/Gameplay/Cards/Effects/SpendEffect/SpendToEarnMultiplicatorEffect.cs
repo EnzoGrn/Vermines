@@ -135,7 +135,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                 UIContextManager.Instance.PopContextOfType<SpendEffectContext>();
             if (amount <= 0 || (_DataToSpend == DataType.Eloquence && amount > Context.GameplayMode.MaxEloquence) || (_DataToSpend == DataType.Soul && amount > Context.GameplayMode.SoulsLimit))
                 return;
-            player.NetworkEventCardEffect(Card.ID, amount.ToString());
+            player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, amount.ToString());
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)
