@@ -144,12 +144,17 @@ namespace Vermines.UI.Screen
             InitUser();
 
             ClearAllSlots();
-            SetupPartisanSlots(defaultPartisanSlotCount); // TODO: make this dynamic based on player count or game settings
+
+            if (partisanSlots.Count == 0)
+                SetupPartisanSlots(defaultPartisanSlotCount); // TODO: make this dynamic based on player count or game settings
             SetupEquipmentSlots(defaultEquipmentSlotCount); // TODO: make this dynamic based on player count or game settings
             SetupDiscardZone();
+
             GameEvents.OnPhaseChanged.AddListener(UpdateUIForPhase);
             GameEvents.OnEquipmentCardPurchased.AddListener(AddEquipment);
             GameEvents.OnDiscardShuffled.AddListener(ClearDiscard);
+            GameEvents.OnPartisanAreaSlotChanged.AddListener(OnNumberOfPartisanSlotsChanged);
+
             SetupCloseViewPopup();
         }
 
@@ -218,6 +223,36 @@ namespace Vermines.UI.Screen
                 var slot = CreateSlot(i, partisanSlotsContainer, CardType.Partisan);
                 partisanSlots.Add(slot);
             }
+        }
+
+        private void OnNumberOfPartisanSlotsChanged(int newCount)
+        {
+            if (newCount < 0)
+                return;
+            int currentCount = partisanSlots.Count;
+
+            if (currentCount == newCount)
+                return;
+            if (newCount > currentCount) {
+                for (int i = currentCount; i < newCount; i++) {
+                    var slot = CreateSlot(i, partisanSlotsContainer, CardType.Partisan);
+
+                    partisanSlots.Add(slot);
+                }
+            } else {
+                for (int i = currentCount - 1; i >= newCount; i--) {
+                    var slot = partisanSlots[i];
+
+                    slot.ResetSlot();
+
+                    _Pool.ReturnSlot(slot);
+
+                    partisanSlots.RemoveAt(i);
+                }
+            }
+
+            for (int i = 0; i < partisanSlots.Count; i++)
+                partisanSlots[i].SetIndex(i);
         }
 
         private void SetupEquipmentSlots(int count)

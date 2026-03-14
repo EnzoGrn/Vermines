@@ -21,6 +21,7 @@ namespace Vermines.Gameplay.Core {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Commands.Cards.Effects;
+    using Vermines.ShopSystem.Data;
 
     public partial class StandartGameplay : GameplayMode {
 
@@ -134,7 +135,7 @@ namespace Vermines.Gameplay.Core {
             player.RPC_BuyCard(NetworkChronicleEntry.FromChronicleEntry(entry), shopType, cardID);
         }
 
-        public override void OnReplaceCardInShop(PlayerRef playerSource, ShopType shopType, int cardID)
+        public override void OnCardAddInCourtyard(PlayerRef playerSource, int level)
         {
             PlayerController player = Context.NetworkGame.GetPlayer(playerSource);
 
@@ -144,65 +145,42 @@ namespace Vermines.Gameplay.Core {
                     Target = playerSource,
                     Severity = ErrorSeverity.Major,
                     Location = ErrorLocation.Shop,
-                    MessageKey = "Shop_Replace_NotYourTurn"
+                    MessageKey = "Courtyard_Add_NotYourTurn"
                 });
 
                 return;
             }
 
-            ShopArgs parameters = new(Context.GameplayMode.Shop, shopType, cardID);
+            CourtyardSection courtyard = Context.GameplayMode.Shop.Sections[ShopType.Courtyard] as CourtyardSection;
 
-            ICommand checker = new ADMIN_CheckChangeCardCommand(parameters);
+            ICard cardAdded = courtyard.NextCard(level);
 
-            CommandResponse response = CommandInvoker.ExecuteCommand(checker);
+            if (cardAdded != null) {
+                ChronicleEntry entry = new() {
+                    Id = KeyGen.UUID(),
+                    TimestampUtc = DateTime.UtcNow.Ticks,
+                    EventType = new VerminesLogEventType(VerminesLogsType.ChangeCard),
+                    TitleKey = $"T_CardAdded",
+                    MessageKey = $"D_CardAdded",
+                    IconKey = $"{ShopType.Courtyard}"
+                };
 
-            if (response.Status != CommandStatus.Success) { // Can only failed if the shop or the card selected doesn't exist. So if it's a cheat, bug or a desync.
-                SendError(new GameActionError {
-                    Scope = ErrorScope.Local,
-                    Target = playerSource,
-                    Severity = ErrorSeverity.Critical,
-                    Location = ErrorLocation.Shop,
-                    MessageKey = response.Message,
-                    MessageArgs = new GameActionErrorArgs(response.Args)
-                });
-
-                return;
-            }
-
-            ICard cardToReplace = CardSetDatabase.Instance.GetCardByID(cardID);
-
-            response = CommandInvoker.ExecuteCommand(new CLIENT_ChangeCardCommand(parameters)); // Simulate the change to get the new card
-
-            ICard newCard = CardSetDatabase.Instance.GetCardByID(response.Args[^1]); // CLIENT_ChangeCardCommand return when success: Shoptype, oldCard id and newCard id. So we take the last args to know the newCard.
-
-            CommandInvoker.UndoCommand(); // Undo the change in the simulation to keep the real state intact until the RPC is sent to all clients.
-
-            ChronicleEntry entry = new() {
-                Id = KeyGen.UUID(),
-                TimestampUtc = DateTime.UtcNow.Ticks,
-                EventType = new VerminesLogEventType(VerminesLogsType.ChangeCard),
-                TitleKey = $"T_CardReplaced",
-                MessageKey = $"D_CardReplaced",
-                IconKey = $"{shopType}"
-            };
-
-            var payloadObject = new {
-                DescriptionArgs = new string[] {
-                    $"ST_{shopType}_CardPurchase",
+                var payloadObject = new {
+                    DescriptionArgs = new string[] {
+                    $"ST_{ShopType.Courtyard}_CardAdd",
                     player.NetworkedNickname.Value,
-                    cardToReplace.Data.Name,
-                    newCard.Data.Name
-                },
-                oldCardId = cardToReplace.ID,
-                newCardId = newCard.ID
-                // ...
-            };
+                    cardAdded?.Data.Name
+                  },
+                  newCardId = cardAdded.ID
+                  // ...
+                };
 
-            string payloadJson = JsonConvert.SerializeObject(payloadObject);
+                string payloadJson = JsonConvert.SerializeObject(payloadObject);
 
-            ChroniclePayloadStorage.Add(entry.Id, payloadJson);
+                ChroniclePayloadStorage.Add(entry.Id, payloadJson);
 
-            player.RPC_ReplaceCardInShop(NetworkChronicleEntry.FromChronicleEntry(entry), shopType, cardID);
+                player.RPC_AddCardInCourtyard(NetworkChronicleEntry.FromChronicleEntry(entry), level);
+            }
         }
 
         #endregion
@@ -350,8 +328,16 @@ namespace Vermines.Gameplay.Core {
             __ObservedSouls = cardToSacrifice.Data.CurrentSouls;
             __ObservedPlayer = playerSource;
 
-            if (player.Statistics.Family == cardToSacrifice.Data.Family)
-                __ObservedSouls += BonusSoulsOnFamily;
+            // If the card sacrificed by the player belongs to their insect family,
+            // then for each other card from the same family sacrificed before,
+            // they will earn a bonus of {BonusSoulsPerFamilyCardSacrified} additional souls.
+            if (player.Statistics.Family == cardToSacrifice.Data.Family) {
+                foreach (var sacrifiedCard in player.Deck.Graveyard) {
+                    if (sacrifiedCard.Data.Family == player.Statistics.Family)
+                        __ObservedSouls += BonusSoulsPerFamilyCardSacrified;
+                }
+            }
+
             ICommand earnCommand = new EarnCommand(player, __ObservedSouls, DataType.Soul);
 
             CommandInvoker.ExecuteCommand(earnCommand);
@@ -371,6 +357,13 @@ namespace Vermines.Gameplay.Core {
                         if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
                             effect.Play(playerSource);
                     }
+                }
+            }
+
+            if (player.God.Effects != null) {
+                foreach (var effect in player.God.Effects) {
+                    if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
+                        effect.Play(Object.InputAuthority);
                 }
             }
 

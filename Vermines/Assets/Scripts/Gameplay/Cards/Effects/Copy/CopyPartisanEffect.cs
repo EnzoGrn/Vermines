@@ -89,7 +89,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             RoundEventDispatcher.RegisterEvent(player.Object.InputAuthority, Stop);
 
-            player.NetworkEventCardEffect(Card.ID, card.ID.ToString());
+            player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, card.ID.ToString());
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)
@@ -101,7 +101,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             Card.Data.CopyEffect(card.Data.Effects);
 
             foreach (var effect in card.Data.Effects) {
-                if ((effect.Type & EffectType.Sacrifice) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0)
+                if ((effect.Type & EffectType.Sacrifice) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0 || (effect.Type & EffectType.OnOtherDiscard) != 0 || (effect.Type & EffectType.OnCardAddedToCourtyard) != 0)
                     continue;
                 effect.Play(playerRef);
             }

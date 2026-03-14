@@ -41,7 +41,11 @@ namespace Vermines.Gameplay.Commands {
             if (_Card.Data.Type != CardType.Tools)
                 return new CommandResponse(CommandStatus.CriticalError, "Recycle_WrongCardType", _CardId.ToString());
 
-            // 3. Check if the card is in the player hand.
+            // 3. Check if the card is Recycable or not.
+            if (_Card.Data.CanBeRecycled() == false)
+                return new CommandResponse(CommandStatus.CriticalError, "Recycle_CardNotRecyclable", _CardId.ToString(), _Card.Data.Name);
+
+            // 4. Check if the card is in the player hand.
             if (!_Player.Deck.Hand.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Recycle_CardNotInHand", _CardId.ToString(), _Card.Data.Name);
             return new CommandResponse(CommandStatus.Success, "", _Card.Data.Name);

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Insectonomicon
   m_EditorClassIdentifier: 
   Name: insectonomicon
-  Exemplars: 6
+  Exemplars: 4
   IsStartingCard: 0
   _DeckExemplars: 0
   Type: 2
@@ -22,9 +22,8 @@ MonoBehaviour:
   _Level: 0
   Effects:
   - {fileID: 11400000, guid: 7d2949c04b66bfd4e92e4ffdf393d727, type: 2}
-  - {fileID: 11400000, guid: 9d80460d1d280e64f84d4f6463d2f846, type: 2}
   ReduceInSilence: 0
-  _RecycleEloquence: 7
+  _RecycleEloquence: 6
   _Eloquence: 7
   IsFree: 0
   CurrentEloquence: 7

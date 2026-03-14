@@ -73,7 +73,7 @@ namespace Vermines.UI.Screen
             {
                 if (!cardGO.TryGetComponent<CardDisplay>(out var card)) continue;
 
-                if (card.Card?.Data.Type == CardType.Tools)
+                if (card.Card?.Data.Type == CardType.Tools && card.Card?.Data.CanBeRecycled() == true)
                     card.SetClickHandler(_recycleHandler);
                 else
                     card.SetClickHandler(null);

@@ -18,6 +18,8 @@ namespace Vermines.Player {
     using Vermines.UI.Screen;
     using Vermines.Core.Player;
     using Vermines.Core;
+    using Vermines.ShopSystem.Data;
+    using Vermines.Gameplay.Cards.Effect;
 
     public partial class PlayerController : ContextBehaviour, IPlayer {
 
@@ -40,13 +42,23 @@ namespace Vermines.Player {
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_ReplaceCardInShop(NetworkChronicleEntry nEntry, ShopType shopType, int cardId)
+        public void RPC_AddCardInCourtyard(NetworkChronicleEntry nEntry, int level)
         {
-            ICommand replaceCommand = new CLIENT_ChangeCardCommand(new ShopArgs(Context.GameplayMode.Shop, shopType, cardId));
+            ShopData              shop = Context.GameplayMode.Shop;
+            CourtyardSection courtyard = shop.Sections[ShopType.Courtyard] as CourtyardSection;
 
-            CommandInvoker.ExecuteCommand(replaceCommand);
+            courtyard.AddCard(level);
 
-            GameEvents.OnShopRefilled.Invoke(shopType, Context.GameplayMode.Shop.GetDisplayCards(shopType));
+            GameEvents.OnShopRefilled.Invoke(ShopType.Courtyard, shop.GetDisplayCards(ShopType.Courtyard));
+
+            foreach (var card in Deck.PlayedCards) {
+                if (card.Data.Effects != null) {
+                    foreach (var effect in card.Data.Effects) {
+                        if ((effect.Type & EffectType.OnCardAddedToCourtyard) != 0)
+                            effect.Play(Object.InputAuthority);
+                    }
+                }
+            }
 
             AddChronicle(nEntry.ToChronicleEntry());
         }
@@ -78,6 +90,13 @@ namespace Vermines.Player {
                             if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
                                 effect.Play(Object.InputAuthority);
                         }
+                    }
+                }
+
+                if (God.Effects != null) {
+                    foreach (var effect in God.Effects) {
+                        if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
+                            effect.Play(Object.InputAuthority);
                     }
                 }
             }
@@ -145,6 +164,26 @@ namespace Vermines.Player {
                 }
 
                 return;
+            }
+
+            foreach (ICard playedCard in Deck.PlayedCards) {
+                if (playedCard.Data.Effects != null) {
+                    foreach (AEffect effect in playedCard.Data.Effects) {
+                        if ((effect.Type & EffectType.OnOtherDiscard) != 0 && effect is OtherDiscardEffect discard) {
+                            if (discard.TargetType == card.Data.Type || discard.TargetType == CardType.None)
+                                effect.Play(Object.InputAuthority);
+                        }
+                    }
+                }
+            }
+
+            if (God.Effects != null) {
+                foreach (var effect in God.Effects) {
+                    if ((effect.Type & EffectType.OnOtherDiscard) != 0 && effect is OtherDiscardEffect discard) {
+                        if (discard.TargetType == card.Data.Type || discard.TargetType == CardType.None)
+                            effect.Play(Object.InputAuthority);
+                    }
+                }
             }
 
             if (card.Data.HasChoiceEffect(EffectType.Discard)) {
@@ -272,10 +311,15 @@ namespace Vermines.Player {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_NetworkEventCardEffect(int cardID, string data)
         {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
+            if (cardID == -1) {
+                foreach (AEffect effect in God.Effects)
+                    effect.NetworkEventFunction(Object.InputAuthority, data);
+            } else {
+                ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
 
-            foreach (AEffect effect in card.Data.Effects)
-                effect.NetworkEventFunction(Object.InputAuthority, data);
+                foreach (AEffect effect in card.Data.Effects)
+                    effect.NetworkEventFunction(Object.InputAuthority, data);
+            }
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

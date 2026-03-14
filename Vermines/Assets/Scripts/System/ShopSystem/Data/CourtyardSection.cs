@@ -3,9 +3,10 @@ using System.Collections;
 using Newtonsoft.Json;
 
 namespace Vermines.ShopSystem.Data {
-
+    using System.Linq;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Utilities;
+    using Vermines.ShopSystem.Enumerations;
 
     [JsonObject(MemberSerialization.OptIn)]
     public class CourtyardSection : ShopSectionBase, IEnumerable<ICard> {
@@ -13,10 +14,10 @@ namespace Vermines.ShopSystem.Data {
         #region Attributes
 
         [JsonProperty]
-        private int _Level1Slots;
+        private readonly int _Level1Slots;
 
         [JsonProperty]
-        private int _Level2Slots;
+        private readonly int _Level2Slots;
 
         [JsonProperty]
         public Dictionary<int, ICard> AvailableCards;
@@ -26,12 +27,6 @@ namespace Vermines.ShopSystem.Data {
 
         [JsonProperty]
         public List<ICard> Deck2;
-
-        [JsonProperty]
-        public List<ICard> Discard1;
-
-        [JsonProperty]
-        public List<ICard> Discard2;
 
         #endregion
 
@@ -48,9 +43,6 @@ namespace Vermines.ShopSystem.Data {
                 AvailableCards.Add(i, null);
             Deck1 = new List<ICard>();
             Deck2 = new List<ICard>();
-
-            Discard1 = new List<ICard>();
-            Discard2 = new List<ICard>();
         }
 
         public override ShopSectionBase DeepCopy()
@@ -60,9 +52,6 @@ namespace Vermines.ShopSystem.Data {
 
                 Deck1 = new List<ICard>(this.Deck1),
                 Deck2 = new List<ICard>(this.Deck2),
-
-                Discard1 = new List<ICard>(this.Discard1),
-                Discard2 = new List<ICard>(this.Discard2)
             };
 
             return section;
@@ -74,11 +63,10 @@ namespace Vermines.ShopSystem.Data {
 
         public override bool HasCard(int cardId)
         {
-            foreach (var slot in AvailableCards) {
-                if (slot.Value != null && slot.Value.ID == cardId)
-                    return true;
-            }
+            var slot = AvailableCards.FirstOrDefault(x => x.Value?.ID == cardId);
 
+            if (!slot.Equals(default(KeyValuePair<int, ICard>)))
+                return true;
             return false;
         }
 
@@ -92,10 +80,6 @@ namespace Vermines.ShopSystem.Data {
             foreach (ICard card in Deck1)
                 card.Data.IsFree = free;
             foreach (ICard card in Deck2)
-                card.Data.IsFree = free;
-            foreach (ICard card in Discard1)
-                card.Data.IsFree = free;
-            foreach (ICard card in Discard2)
                 card.Data.IsFree = free;
         }
 
@@ -114,80 +98,61 @@ namespace Vermines.ShopSystem.Data {
 
         #region Methods
 
+        private int FindSlotEmpty()
+        {
+            int index = 0;
+
+            foreach (var slot in AvailableCards) {
+                if (slot.Value == null)
+                    return index;
+                index++;
+            }
+
+            return index;
+        }
+
+        public ICard AddCard(int level)
+        {
+            List<ICard> deck = level == 1 ? Deck1 : Deck2;
+
+            if (deck.Count == 0)
+                return null;
+            ICard card = deck.Draw();
+
+            int index = FindSlotEmpty();
+
+            AvailableCards[index] = card;
+
+            return card;
+        }
+
+        public ICard NextCard(int level)
+        {
+            List<ICard> deck = level == 1 ? Deck1 : Deck2;
+
+            if (deck.Count == 0)
+                return null;
+            return deck[0];
+        }
+
         public override ICard BuyCard(int cardId)
         {
             if (!HasCard(cardId))
                 return null;
-            foreach (var slot in AvailableCards) {
-                if (slot.Value != null && slot.Value.ID == cardId) {
-                    ICard card = slot.Value;
+            var slot = AvailableCards.FirstOrDefault(x => x.Value?.ID == cardId);
 
-                    AvailableCards[slot.Key] = null;
-
-                    return card;
-                }
-            }
-
-            return null;
-        }
-
-        public override ICard ChangeCard(ICard card)
-        {
-            int slotIndex = -1;
-
-            foreach (var kvp in AvailableCards) {
-                if (kvp.Value != null && kvp.Value.ID == card.ID) {
-                    slotIndex = kvp.Key;
-
-                    break;
-                }
-            }
-
-            if (slotIndex == -1)
+            if (slot.Equals(default(KeyValuePair<int, ICard>)))
                 return null;
-            ICard oldCard = AvailableCards[slotIndex];
+            int  index = slot.Key;
+            ICard card = slot.Value;
 
-            AvailableCards[slotIndex] = null;
+            int lastIndex = AvailableCards.Count - 1;
 
-            if (oldCard.Data.Level == 1)
-                Discard1.Add(oldCard);
-            else
-                Discard2.Add(oldCard);
-            ICard newCard = Draw(oldCard.Data.Level);
+            for (int i = index; i < lastIndex; i++)
+                AvailableCards[i] = AvailableCards[i + 1];
+            AvailableCards.Remove(lastIndex);
 
-            AvailableCards[slotIndex] = newCard;
-
-            return newCard;
-        }
-
-        private ICard Draw(int level)
-        {
-            if (level == 1) {
-                if (Deck1.Count == 0) {
-                    Discard1.Reverse();
-                    Deck1.Merge(Discard1);
-                }
-
-                return Deck1.Draw();
-            }
-
-            if (Deck2.Count == 0) {
-                Discard2.Reverse();
-                Deck2.Merge(Discard2);
-            }
-
-            return Deck2.Draw();
-        }
-
-        public override void Refill()
-        {
-            for (int i = 0; i < AvailableCards.Count; i++) {
-                if (AvailableCards[i] != null)
-                    continue;
-                ICard card = Draw(i >= _Level1Slots ? 2 : 1);
-
-                AvailableCards[i] = card;
-            }
+            return card;
         }
 
         public override void ApplyReduction(int amount)
@@ -198,10 +163,6 @@ namespace Vermines.ShopSystem.Data {
                 card.Data.EloquenceReduction(amount);
             foreach (ICard card in Deck2)
                 card.Data.EloquenceReduction(amount);
-            foreach (ICard card in Discard1)
-                card.Data.EloquenceReduction(amount);
-            foreach (ICard card in Discard2)
-                card.Data.EloquenceReduction(amount);
         }
 
         public override void RemoveReduction(int amount)
@@ -211,10 +172,6 @@ namespace Vermines.ShopSystem.Data {
             foreach (ICard card in Deck1)
                 card.Data.RemoveReduction(amount);
             foreach (ICard card in Deck2)
-                card.Data.RemoveReduction(amount);
-            foreach (ICard card in Discard1)
-                card.Data.RemoveReduction(amount);
-            foreach (ICard card in Discard2)
                 card.Data.RemoveReduction(amount);
         }
 

@@ -11,9 +11,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         protected override void DrawCustomProperties()
         {
-            if (target == null || target is not EarnForEachEffect)
+            if (target == null || target is not EarnForEachEffect effect)
                 return;
-            EarnForEachEffect effect = (EarnForEachEffect)target;
 
             // -- [Header("Card Properties")]
             GUILayout.BeginVertical(EditorStyles.helpBox);
@@ -24,11 +23,10 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             EditorGUILayout.EndVertical();
 
-            EditorGUILayout.HelpBox("Only Partisan and Equipment card types are supported.", MessageType.Warning);
-
             GUILayout.BeginVertical(EditorStyles.helpBox);
 
             effect.CardType = (CardType)EditorGUILayout.EnumPopup(new GUIContent("Card type", "The type of card to count."), effect.CardType);
+            effect.Area     = (EarnForEachEffect.ZoneType)EditorGUILayout.EnumPopup(new GUIContent("Card type", "The type of area where the cards are."), effect.Area);
 
             GUILayout.EndVertical();
             GUILayout.Space(10);

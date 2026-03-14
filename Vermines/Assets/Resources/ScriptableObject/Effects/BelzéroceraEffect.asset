@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fc0d6aa3b9be714d8ba3c0d6673e47c, type: 3}
+  m_Name: "Belz\xE9roceraEffect"
+  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Cards.Effect.OnGameStartEffect
+  Context:
+    PeerUserID: 
+    Audio: {fileID: 0}
+    UI: {fileID: 0}
+    ObjectCache: {fileID: 0}
+    SceneInput: {fileID: 0}
+    Settings: {fileID: 0}
+    CustomGameScenePath: 
+    MatchmakingScenePath: 
+    GameScenePath: 
+    IsVisible: 0
+    HasInput: 0
+    Runner: {fileID: 0}
+    SceneChangeController: {fileID: 0}
+    HandManager: {fileID: 0}
+    NetworkGame: {fileID: 0}
+    GameplayMode: {fileID: 0}
+    NetworkLobby: {fileID: 0}
+    Lobby: {fileID: 0}
+    NetworkMatchmaking: {fileID: 0}
+    Matchmaking: {fileID: 0}
+  _Type: 1024
+  _Description: You can play up to 4 partisans in your partisans zone.
+  _SubEffect: {fileID: 11400000, guid: 32888513d477b644d8a87704a295e313, type: 2}

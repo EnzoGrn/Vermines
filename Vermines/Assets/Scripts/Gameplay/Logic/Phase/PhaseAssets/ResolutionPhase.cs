@@ -18,7 +18,7 @@ namespace Vermines.Gameplay.Phases {
 
         #region Attributes
 
-        public int NumberOfCardsToDrawAtEndOfTurn = 3;
+        public int NumberOfCardsToHaveInHand = 3;
 
         #endregion
 
@@ -32,15 +32,9 @@ namespace Vermines.Gameplay.Phases {
 
             PlayerController player = _Context.NetworkGame.GetPlayer(playerRef);
 
-            ICommand refillShopCommand = new FillShopCommand(_Context.GameplayMode.Shop);
-
-            CommandInvoker.ExecuteCommand(refillShopCommand);
-
-            foreach (var shopSection in _Context.GameplayMode.Shop.Sections)
-                GameEvents.OnShopRefilled.Invoke(shopSection.Key, _Context.GameplayMode.Shop.GetDisplayCards(shopSection.Key));
             player.Deck.MergeToolDiscard(_Context.NetworkGame.Seed);
 
-            for (int i = 0; i < NumberOfCardsToDrawAtEndOfTurn; i++) {
+            for (int i = player.Deck.Hand.Count; i < NumberOfCardsToHaveInHand; i++) {
                 ICommand drawCardCommand = new DrawCommand(player);
 
                 CommandResponse command = CommandInvoker.ExecuteCommand(drawCardCommand);
@@ -64,7 +58,14 @@ namespace Vermines.Gameplay.Phases {
         {
             foreach (ICard card in player.Deck.PlayedCards) {
                 foreach (AEffect effect in card.Data.Effects) {
-                    if ((effect.Type & EffectType.Passive) != 0)
+                    if ((effect.Type & EffectType.Passive) != 0 || (effect.Type & EffectType.Activate) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0 || (effect.Type & EffectType.OnOtherDiscard) != 0)
+                        effect.Stop(player.Object.InputAuthority);
+                }
+            }
+
+            if (player.God.Effects != null) {
+                foreach (AEffect effect in player.God.Effects) {
+                    if ((effect.Type & EffectType.Passive) != 0 || (effect.Type & EffectType.Activate) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0 || (effect.Type & EffectType.OnOtherDiscard) != 0)
                         effect.Stop(player.Object.InputAuthority);
                 }
             }

@@ -12,6 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 331c308e0bfee7a45a2e4d9d8bdab32e, type: 3}
   m_Name: RogueEffect
   m_EditorClassIdentifier: 
+  Context:
+    PeerUserID: 
+    Audio: {fileID: 0}
+    UI: {fileID: 0}
+    ObjectCache: {fileID: 0}
+    SceneInput: {fileID: 0}
+    Settings: {fileID: 0}
+    CustomGameScenePath: 
+    MatchmakingScenePath: 
+    GameScenePath: 
+    IsVisible: 0
+    HasInput: 0
+    Runner: {fileID: 0}
+    SceneChangeController: {fileID: 0}
+    HandManager: {fileID: 0}
+    NetworkGame: {fileID: 0}
+    GameplayMode: {fileID: 0}
+    NetworkLobby: {fileID: 0}
+    Lobby: {fileID: 0}
+    NetworkMatchmaking: {fileID: 0}
+    Matchmaking: {fileID: 0}
   _Type: 1
-  _Description: Earn <b><color=purple>2E</color></b> then earn <b><color=red>2A</color></b>.
-  _SubEffect: {fileID: 11400000, guid: cf749a4dd8b7fba4d925f77d43219803, type: 2}
+  _Description: Earn <b><color=purple>2E</color></b> then earn <b><color=red>3A</color></b>.
+  _SubEffect: {fileID: 11400000, guid: 2534443bea9613146bbeedefdabd986c, type: 2}

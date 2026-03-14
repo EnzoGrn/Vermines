@@ -125,6 +125,19 @@ MonoBehaviour:
     m_Localized: '{0} has returned <b>{1}</b> to the market and recovered <b><color="purple">{2}</color></b>.'
     m_Metadata:
       m_Items: []
+  - m_Id: 55745208153792512
+    m_Localized: Newcomer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55745236691836928
+    m_Localized: Thanks to an inspiring speech or a well-placed rumor, a new face
+      joins the ranks of the court.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55745288248221696
+    m_Localized: 'The words of {0} bear fruit: <b>{1}</b> joins the court.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

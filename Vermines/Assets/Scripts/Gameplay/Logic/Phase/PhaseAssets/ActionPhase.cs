@@ -18,8 +18,10 @@ namespace Vermines.Gameplay.Phases {
                 return;
             base.Run(player);
 
-            GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
-            GameEvents.OnCardPlayedRequested.AddListener(OnCardPlayed);
+            if (_Context.Runner.LocalPlayer == _CurrentPlayer) {
+                GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
+                GameEvents.OnCardPlayedRequested.AddListener(OnCardPlayed);
+            }
         }
 
         public override void Deinitialize()

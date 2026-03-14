@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e048bfe3d262d64598cb222f1601034, type: 3}
+  m_Name: RoyalMissiveEffect
+  m_EditorClassIdentifier: 
+  Context:
+    PeerUserID: 
+    Audio: {fileID: 0}
+    UI: {fileID: 0}
+    ObjectCache: {fileID: 0}
+    SceneInput: {fileID: 0}
+    Settings: {fileID: 0}
+    CustomGameScenePath: 
+    MatchmakingScenePath: 
+    GameScenePath: 
+    IsVisible: 0
+    HasInput: 0
+    Runner: {fileID: 0}
+    SceneChangeController: {fileID: 0}
+    HandManager: {fileID: 0}
+    NetworkGame: {fileID: 0}
+    GameplayMode: {fileID: 0}
+    NetworkLobby: {fileID: 0}
+    Lobby: {fileID: 0}
+    NetworkMatchmaking: {fileID: 0}
+    Matchmaking: {fileID: 0}
+  _Type: 2
+  _Description: Discard the <b>{card_name}</b> to you can add a card in the courtyard
+    then draw 1 card.
+  _SubEffect: {fileID: 11400000, guid: 942ba217a7b395843b0bc6cd4ba06387, type: 2}
+  DiscardThisCardIcon: {fileID: 21300000, guid: e2c1b4b34178c27429f3f4c6a74ece94, type: 3}

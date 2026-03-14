@@ -27,6 +27,8 @@ namespace Vermines.Gameplay.Cards.Effect {
         private static readonly string eloquenceEarnTemplate = "earn <b><color=purple>{0}xE</color></b>";
         private static readonly string soulEarnTemplate = "earn <b><color=red>{0}xA</color></b>";
 
+        private static readonly string linkerSubEffectTemplate = " then ";
+
         #endregion
 
         #region Properties
@@ -85,12 +87,27 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
         }
 
+        [SerializeField]
+        private AEffect _SubEffect = null;
+
+        public override AEffect SubEffect
+        {
+            get => _SubEffect;
+            set
+            {
+                _SubEffect = value;
+
+                UpdateDescription();
+            }
+        }
+
         #endregion
 
         #region UI Elements
 
         public Sprite EloquenceIcon = null;
         public Sprite SoulIcon = null;
+        public Sprite ThenIcon = null;
 
         #endregion
 
@@ -118,7 +135,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                 UIContextManager.Instance.PopContextOfType<SpendEffectContext>();
             if (amount <= 0 || (_DataToSpend == DataType.Eloquence && amount > Context.GameplayMode.MaxEloquence) || (_DataToSpend == DataType.Soul && amount > Context.GameplayMode.SoulsLimit))
                 return;
-            player.NetworkEventCardEffect(Card.ID, amount.ToString());
+            player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, amount.ToString());
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)
@@ -169,6 +186,8 @@ namespace Vermines.Gameplay.Cards.Effect {
             entry.PayloadJson = payloadJson;
 
             player.AddChronicle(entry);
+
+            base.Play(playerRef);
         }
 
         public override List<(string, Sprite)> Draw()
@@ -184,12 +203,21 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
 
             elements.Add((" : ", null));
-            elements.Add(($"+{Multiplicator}X", null));
+
+            if (Multiplicator != 1)
+                elements.Add(($"+{Multiplicator}X", null));
+            else
+                elements.Add(($"+X", null));
 
             if (DataToEarn == DataType.Eloquence) {
                 elements.Add((null, EloquenceIcon));
             } else if (DataToEarn == DataType.Soul) {
                 elements.Add((null, SoulIcon));
+            }
+
+            if (SubEffect != null) {
+                elements.Add((null, ThenIcon));
+                elements.AddRange(SubEffect.Draw());
             }
 
             return elements;
@@ -209,6 +237,14 @@ namespace Vermines.Gameplay.Cards.Effect {
             else if (DataToEarn == DataType.Soul)
                 descriptionTemplate += string.Format(soulEarnTemplate, Multiplicator);
             Description = descriptionTemplate;
+
+            if (SubEffect != null) {
+                string subDescription = SubEffect.Description;
+
+                if (!string.IsNullOrEmpty(subDescription))
+                    subDescription = char.ToLower(subDescription[0]) + subDescription[1..];
+                Description += $"{linkerSubEffectTemplate}{subDescription}";
+            }
         }
 
         private void OnEnable()
@@ -219,6 +255,8 @@ namespace Vermines.Gameplay.Cards.Effect {
                 EloquenceIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Eloquence");
             if (SoulIcon == null)
                 SoulIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Souls");
+            if (ThenIcon == null)
+                ThenIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Then");
         }
 
         #region Editor Editor

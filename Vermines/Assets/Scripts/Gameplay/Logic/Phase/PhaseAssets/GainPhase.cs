@@ -24,6 +24,8 @@ namespace Vermines.Gameplay.Phases {
 
         private GainSummaryData _gainSummary;
 
+        private bool isFirstTurn = true;
+
         #endregion
 
         #region Override Methods
@@ -41,6 +43,19 @@ namespace Vermines.Gameplay.Phases {
             base.Run(playerRef);
 
             PlayerController player = _Context.NetworkGame.GetPlayer(playerRef);
+
+            if (isFirstTurn) {
+                List<PlayerController> players = _Context.Runner.GetAllBehaviours<PlayerController>();
+
+                foreach (var p in players) {
+                    foreach (var effect in p.God.Effects) {
+                        if ((effect.Type & EffectType.OnGameStart) != 0)
+                            effect.Play(p.Object.InputAuthority);
+                    }
+                }
+
+                isFirstTurn = false;
+            }
 
             ExecuteCardEffect(player);
 

@@ -171,7 +171,7 @@ namespace Vermines.UI.Screen
                 return;
             }
 
-            if (context.HandManager.HasCards() && phaseManager.CurrentPhase == PhaseType.Action) {
+            if (context.HandManager.HasCards(true) && phaseManager.CurrentPhase == PhaseType.Action) {
                 Controller.ShowDualPopup(new DefaultDiscardStrategy());
 
                 return;

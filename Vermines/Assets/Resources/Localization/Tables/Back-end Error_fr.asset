@@ -43,8 +43,9 @@ MonoBehaviour:
     m_Localized: "Vous poss\xE8dez d\xE9j\xE0 {0}."
     m_Metadata:
       m_Items: []
-  - m_Id: 215561349881856
-    m_Localized: Vous ne pouvez pas remplacer une carte si ce n'est pas votre tour.
+  - m_Id: 60020162764464128
+    m_Localized: "Vous ne pouvez pas ajouter de carte \xE0 la cour si ce n'est pas
+      votre tour."
     m_Metadata:
       m_Items: []
   - m_Id: 225365833277440
@@ -135,6 +136,15 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 9276500577607680
     m_Localized: "La carte s\xE9lectionn\xE9e n'existe pas dans la boutique."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60091037064880128
+    m_Localized: Vous ne pouvez pas recycler cette carte.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60183981075718144
+    m_Localized: "Vous ne pouvez pas d\xE9fausser une carte partisane sans effet
+      de d\xE9fausse."
     m_Metadata:
       m_Items: []
   references:
