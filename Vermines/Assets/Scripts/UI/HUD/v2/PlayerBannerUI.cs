@@ -164,6 +164,8 @@ namespace Vermines.UI
 
         public PlayerRef GetPlayerRef() => _player.Object.InputAuthority;
 
+        public PlayerController GetPlayer() => _player;
+
         #region Animation Coroutines
 
         public IEnumerator PlayHideAnimation(bool adjustFramerate = true)

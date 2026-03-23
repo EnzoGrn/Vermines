@@ -89,3 +89,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _CardDisplayPrefab: {fileID: 548401717956231047, guid: aa93eda88b9cdc749a3fdbb5706da2d4, type: 3}
+  _acceptedType: -1
+  cardCanvasGroup: {fileID: 0}
+  purchasedOverlay: {fileID: 0}
+  purchasedLabel: {fileID: 0}
+  purchasedAlpha: 0.4
+  greyScaleAmount: 1
+  greyscaleMaterial: {fileID: 0}

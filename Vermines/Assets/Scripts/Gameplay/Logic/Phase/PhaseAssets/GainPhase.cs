@@ -68,7 +68,9 @@ namespace Vermines.Gameplay.Phases {
 
             GameEvents.OnPlayerUpdated.Invoke(player);
 
+            // Who is the local player? If it's the current player, show the gain summary screen. Otherwise, skip it.
             if (_CurrentPlayer == _Context.Runner.LocalPlayer) {
+
                 gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
                 gameplayUIController.ShowWithParams<GameplayUIGainSummary, GainSummaryData>(_gainSummary, lastScreen);
             }
