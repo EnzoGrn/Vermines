@@ -235,11 +235,9 @@ namespace Vermines.UI.Shop
             ReturnAllSlots();
 
             int startIndex = _currentPage * SlotsPerPage;
-            int endIndex = Mathf.Min(startIndex + SlotsPerPage, _currentEntries.Count);
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = 0; i < SlotsPerPage; i++)
             {
-                var entry = _currentEntries[i];
                 var slot = _CardPool.GetSlot(cardSlotRoot);
 
                 if (slot == null)
@@ -254,26 +252,31 @@ namespace Vermines.UI.Shop
                 }
 
                 slot.ResetSlot();
+                slot.gameObject.SetActive(true);
                 slot.transform.SetParent(cardSlotRoot, false);
+                slot.SetIndex(i);
+                slot.transform.SetSiblingIndex(i);
 
-                int localIndex = i - startIndex;
-                slot.SetIndex(localIndex);
-                slot.transform.SetSiblingIndex(localIndex);
+                int entryIndex = startIndex + i;
+                bool hasEntry = entryIndex < _currentEntries.Count;
+                var entry = hasEntry ? _currentEntries[entryIndex] : null;
 
-                if (entry != null)
-                    slot.Init(entry.Data, entry.IsNew, CreateClickHandler(i));
+                if (entry?.Data != null)
+                    slot.Init(entry.Data, entry.IsNew, CreateClickHandler(entryIndex));
 
                 _activeSlots.Add(slot);
             }
         }
 
-
         private void ReturnAllSlots()
         {
             foreach (var slot in _activeSlots)
             {
-                if (slot != null)
-                    _CardPool.ReturnSlot(slot);
+                if (slot == null) return;
+
+                slot.gameObject.SetActive(false);
+                slot.transform.SetParent(_CardPool.transform, false);
+                _CardPool.ReturnSlot(slot);
             }
             _activeSlots.Clear();
         }

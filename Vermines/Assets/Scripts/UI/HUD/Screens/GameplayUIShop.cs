@@ -159,6 +159,11 @@ namespace Vermines.UI.Screen
 
             HideUser();
 
+            foreach (var plugin in Plugins)
+            {
+                plugin.Hide();
+            }
+
             GameEvents.OnCardClicked.RemoveListener(OnCardClicked);
         }
 
