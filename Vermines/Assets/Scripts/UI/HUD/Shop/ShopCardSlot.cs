@@ -21,13 +21,6 @@ namespace Vermines.UI.Card
         {
             if (_stackCountContainer == null || _stackCountText == null) return;
 
-            Debug.LogFormat(
-                "[{0}] Showing stack count for card ID {1}: {2}",
-                nameof(ShopCardSlot),
-                CardDisplay.Card.ID,
-                count
-            );
-
             bool shouldShow = count > 1;
             _stackCountContainer.SetActive(shouldShow);
 

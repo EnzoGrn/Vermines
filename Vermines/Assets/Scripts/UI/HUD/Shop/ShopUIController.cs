@@ -268,16 +268,8 @@ namespace Vermines.UI.Shop
                 {
                     slot.Init(entry.Data, entry.IsNew, CreateClickHandler(entryIndex));
 
-                    Debug.LogFormat(
-                        "[{0}] Populating slot {1} with card ID {2} (Entry Index: {3}).",
-                        nameof(ShopUIController),
-                        i,
-                        entry.Data.ID,
-                        entryIndex
-                    );
                     if (ShopType == ShopType.Market)
                     {
-                        Debug.Log($"[ShopUIController] entry.StackCount for card {entry.Data.ID} = {entry.StackCount}");
                         slot.ShowStackCount(entry.StackCount);
                     }
                 }

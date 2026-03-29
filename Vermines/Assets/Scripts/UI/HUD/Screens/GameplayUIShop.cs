@@ -263,9 +263,6 @@ namespace Vermines.UI.Screen
                 int stackCount = newCard != null && stackCounts.TryGetValue(newCard.ID, out int count)
                     ? count
                     : 1;
-
-                Debug.Log($"[{nameof(GameplayUIShop)}] Card {newCard?.ID} at index {i} is {(isNew ? "new" : "existing")} with stack count {stackCount}.");
-
                 entries.Add(new ShopCardEntry(newCard, isNew, stackCount));
             }
 
@@ -287,8 +284,6 @@ namespace Vermines.UI.Screen
                 if (pile.Count > 0)
                     counts[pile[^1].ID] = pile.Count;
             }
-
-            Debug.Log($"[{nameof(GameplayUIShop)}] Stack counts for {type}: {string.Join(", ", counts.Select(kvp => $"{kvp.Key}: {kvp.Value}"))}");
 
             return counts;
         }
