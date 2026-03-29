@@ -51160,6 +51160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _CardDisplayPrefab: {fileID: 548401717956231047, guid: aa93eda88b9cdc749a3fdbb5706da2d4, type: 3}
+  _cardContainer: {fileID: 198904008173971781}
   _acceptedType: -1
 --- !u!224 &8624266981184361430
 RectTransform:

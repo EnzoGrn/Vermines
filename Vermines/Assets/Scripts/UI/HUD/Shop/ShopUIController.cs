@@ -175,6 +175,9 @@ namespace Vermines.UI.Shop
         {
             _currentEntries = entries ?? new List<Vermines.UI.Screen.ShopCardEntry>();
 
+            foreach (var e in _currentEntries)
+                Debug.Log($"[ShopUIController] SetEntries — card {e.Data?.ID} stackCount={e.StackCount}");
+
             if (_currentPage >= TotalPages)
                 _currentPage = 0;
 
@@ -262,7 +265,22 @@ namespace Vermines.UI.Shop
                 var entry = hasEntry ? _currentEntries[entryIndex] : null;
 
                 if (entry?.Data != null)
+                {
                     slot.Init(entry.Data, entry.IsNew, CreateClickHandler(entryIndex));
+
+                    Debug.LogFormat(
+                        "[{0}] Populating slot {1} with card ID {2} (Entry Index: {3}).",
+                        nameof(ShopUIController),
+                        i,
+                        entry.Data.ID,
+                        entryIndex
+                    );
+                    if (ShopType == ShopType.Market)
+                    {
+                        Debug.Log($"[ShopUIController] entry.StackCount for card {entry.Data.ID} = {entry.StackCount}");
+                        slot.ShowStackCount(entry.StackCount);
+                    }
+                }
 
                 _activeSlots.Add(slot);
             }

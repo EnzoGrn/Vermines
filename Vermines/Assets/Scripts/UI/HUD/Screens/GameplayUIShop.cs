@@ -8,6 +8,7 @@ using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Core.Scene;
 using Vermines.Player;
+using Vermines.ShopSystem.Data;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Plugin;
 using Vermines.UI.Shop;
@@ -25,11 +26,13 @@ namespace Vermines.UI.Screen
     {
         public ICard Data;
         public bool IsNew;
+        public int StackCount;
 
-        public ShopCardEntry(ICard data, bool isNew = false)
+        public ShopCardEntry(ICard data, bool isNew = false, int stackCount = 1)
         {
             Data = data;
             IsNew = isNew;
+            StackCount = stackCount;
         }
     }
 
@@ -115,8 +118,6 @@ namespace Vermines.UI.Screen
 
             GameEvents.OnShopRefilled.AddListener(ReceiveFullShopList);
             GameEvents.OnCardPurchased.AddListener(OnCardPurchased);
-
-            Resync();
         }
 
         /// <summary>
@@ -224,16 +225,10 @@ namespace Vermines.UI.Screen
 
         public List<ShopCardEntry> GetEntries(ShopType type)
         {
-            if (previousShopStates.TryGetValue(type, out var shopList))
-            {
-                List<ShopCardEntry> entries = new();
-                foreach (var card in shopList)
-                {
-                    entries.Add(new ShopCardEntry(card));
-                }
-                return entries;
-            }
-            return new List<ShopCardEntry>();
+            if (!previousShopStates.TryGetValue(type, out var shopList))
+                return new List<ShopCardEntry>();
+
+            return BuildShopEntries(type, shopList, shopList);
         }
 
         public void ReceiveFullShopList(ShopType type, Dictionary<int, ICard> newList)
@@ -247,25 +242,55 @@ namespace Vermines.UI.Screen
                 .Select(kvp => kvp.Value)
                 .ToList();
 
-            var entries = BuildShopEntries(oldList, sortedNewList);
+            var entries = BuildShopEntries(type, oldList, sortedNewList);
 
             previousShopStates[type] = sortedNewList;
 
             GameEvents.OnShopUpdated.Invoke(type, entries);
         }
 
-        private List<ShopCardEntry> BuildShopEntries(List<ICard> oldList, List<ICard> newList)
+        private List<ShopCardEntry> BuildShopEntries(ShopType type, List<ICard> oldList, List<ICard> newList)
         {
             var entries = new List<ShopCardEntry>();
+
+            Dictionary<int, int> stackCounts = GetStackCounts(type);
 
             for (int i = 0; i < newList.Count; i++)
             {
                 ICard newCard = newList[i];
                 bool isNew = i >= oldList.Count || oldList[i]?.ID != newCard?.ID;
-                entries.Add(new ShopCardEntry(newCard, isNew));
+
+                int stackCount = newCard != null && stackCounts.TryGetValue(newCard.ID, out int count)
+                    ? count
+                    : 1;
+
+                Debug.Log($"[{nameof(GameplayUIShop)}] Card {newCard?.ID} at index {i} is {(isNew ? "new" : "existing")} with stack count {stackCount}.");
+
+                entries.Add(new ShopCardEntry(newCard, isNew, stackCount));
             }
 
             return entries;
+        }
+
+        private Dictionary<int, int> GetStackCounts(ShopType type)
+        {
+            if (type != ShopType.Market) return new();
+
+            var shop = Context.GameplayMode.Shop;
+
+            if (!shop.Sections.TryGetValue(type, out var section)) return new();
+            if (section is not MarketSection market) return new();
+
+            var counts = new Dictionary<int, int>();
+            foreach (var pile in market.CardPiles.Values)
+            {
+                if (pile.Count > 0)
+                    counts[pile[^1].ID] = pile.Count;
+            }
+
+            Debug.Log($"[{nameof(GameplayUIShop)}] Stack counts for {type}: {string.Join(", ", counts.Select(kvp => $"{kvp.Key}: {kvp.Value}"))}");
+
+            return counts;
         }
 
         private void ShowPluginsExcept<T>() where T : class
