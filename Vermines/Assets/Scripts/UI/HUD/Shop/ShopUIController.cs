@@ -23,20 +23,29 @@ namespace Vermines.UI.Shop
         [SerializeField] private DialogueBubble bubbleLeft;
         [SerializeField] private DialogueBubble bubbleRight;
 
-        [Header("Configuration")]
-        private ShopUIConfig config;
-
         [Header("Common UI")]
         public Transform cardSlotRoot;
 
-        protected List<Vermines.UI.Screen.ShopCardEntry> currentEntries = new();
-        protected List<ShopCardSlot> activeSlots = new();
+        [Header("Pagination")]
+        [SerializeField] private Button _PrevButton;
+        [SerializeField] private Button _NextButton;
+        [SerializeField] private TMP_Text _PageIndicator;
 
-        [SerializeField]
-        private CardSlotPool _CardPool;
+        [Header("Dependencies")]
+        [SerializeField] private CardSlotPool _CardPool;
 
-        [SerializeField]
-        public ShopType ShopType;
+        public ShopType ShopType { get; private set; }
+
+        private ShopUIConfig _config;
+
+        private List<Vermines.UI.Screen.ShopCardEntry> _currentEntries = new();
+        private List<ShopCardSlot> _activeSlots = new();
+
+        private int _currentPage = 0;
+        private int SlotsPerPage => _config?.slotsPerPage ?? 5;
+        private int TotalPages => _currentEntries.Count == 0
+            ? 1
+            : Mathf.CeilToInt((float)_currentEntries.Count / SlotsPerPage);
 
         #region Override Methods
 
@@ -55,76 +64,92 @@ namespace Vermines.UI.Shop
         public override void Hide()
         {
             base.Hide();
-            //GameEvents.OnShopUpdated.RemoveListener(HandleShopUpdate);
+            GameEvents.OnShopUpdated.RemoveListener(HandleShopUpdate);
         }
 
         #endregion
 
         public void Init(List<Vermines.UI.Screen.ShopCardEntry> entries, ShopUIConfig configSet)
         {
-            config = configSet;
+            _config = configSet;
+            _CardPool = CardSlotPool.Instance;
 
-            if (config == null)
+            if (_config == null)
             {
-                Debug.LogError("[ShopUIController] Init called but config is null.");
+                Debug.LogErrorFormat(
+                    gameObject,
+                    "[{0}] Init called but config is null.",
+                    nameof(ShopUIController)
+                );
                 return;
             }
-            Debug.Log($"[ShopUIController] Init called with {entries.Count} entries for {config.shopName}.");
-            ShopType = config.shopType;
-            if (bubbleLeft != null)
-                bubbleLeft.gameObject.SetActive(false);
-            if (bubbleRight != null)
-                bubbleRight.gameObject.SetActive(false);
-            SetupUI();
-            currentEntries = entries;
-            PopulateShop();
 
+            ShopType = _config.shopType;
+
+            _currentPage = 0;
+
+            SetupUI();
+
+            GameEvents.OnShopUpdated.RemoveListener(HandleShopUpdate);
             GameEvents.OnShopUpdated.AddListener(HandleShopUpdate);
+
+            SetEntries(entries);
         }
 
         private void SetupUI()
         {
-            areaName.text = config.shopName;
-            areaDescription.text = config.shopDescription;
+            areaName.text = _config.shopName;
+            areaDescription.text = _config.shopDescription;
 
-            if (bubbleLeft != null && !string.IsNullOrWhiteSpace(config.leftDialogue) && config.portraitLeft != null)
+            SetupDialogueBubbles();
+            SetupPortrait(portraitLeft, _config.portraitLeft, _config.flipLeft);
+            SetupPortrait(portraitRight, _config.portraitRight, _config.flipRight);
+
+            // Pagination buttons
+            if (_PrevButton != null)
             {
-                bubbleLeft.SetText(config.leftDialogue);
-                bubbleLeft.SetVisible(true);
+                _PrevButton.onClick.RemoveAllListeners();
+                _PrevButton.onClick.AddListener(GoToPreviousPage);
             }
 
-            if (bubbleRight != null && !string.IsNullOrWhiteSpace(config.rightDialogue) && config.portraitRight != null)
+            if (_NextButton != null)
             {
-                bubbleRight.SetText(config.rightDialogue);
-                bubbleRight.SetVisible(true);
+                _NextButton.onClick.RemoveAllListeners();
+                _NextButton.onClick.AddListener(GoToNextPage);
+            }
+        }
+
+        private void SetupDialogueBubbles()
+        {
+            if (bubbleLeft != null)
+            {
+                bool hasLeft = !string.IsNullOrWhiteSpace(_config.leftDialogue)
+                    && _config.portraitLeft != null;
+                bubbleLeft.gameObject.SetActive(false);
+                if (hasLeft)
+                {
+                    bubbleLeft.SetText(_config.leftDialogue);
+                    bubbleLeft.SetVisible(true);
+                }
             }
 
-            // TODO: Use the following code for Localization
-
-            //areaName.text = ""; // Clear temp
-            //areaDescription.text = "";
-
-            //config.shopName.StringChanged += (value) => areaName.text = value;
-            //config.shopDescription.StringChanged += (value) => areaDescription.text = value;
-
-            //config.shopName.RefreshString(); // force refresh
-            //config.shopDescription.RefreshString();
-
-            //bubbleLeft.SetText(""); // clear
-            //bubbleRight.SetText("");
-
-            //leftDialogue.StringChanged += value => bubbleLeft.SetText(value);
-            //rightDialogue.StringChanged += value => bubbleRight.SetText(value);
-
-            //leftDialogue.RefreshString();
-            //rightDialogue.RefreshString();
-
-            SetupPortrait(portraitLeft, config.portraitLeft, config.flipLeft);
-            SetupPortrait(portraitRight, config.portraitRight, config.flipRight);
+            if (bubbleRight != null)
+            {
+                bool hasRight = !string.IsNullOrWhiteSpace(_config.rightDialogue)
+                    && _config.portraitRight != null;
+                bubbleRight.gameObject.SetActive(false);
+                if (hasRight)
+                {
+                    bubbleRight.SetText(_config.rightDialogue);
+                    bubbleRight.SetVisible(true);
+                }
+            }
         }
 
         private void SetupPortrait(Image image, Sprite sprite, bool flip)
         {
+            if (image == null) return;
+
             if (sprite == null)
             {
                 image.gameObject.SetActive(false);
@@ -143,51 +168,127 @@ namespace Vermines.UI.Shop
         private void HandleShopUpdate(ShopType type, List<Vermines.UI.Screen.ShopCardEntry> entries)
         {
             if (type != ShopType) return;
-            Debug.Log($"[ShopUIController] Received {entries.Count} entries for {type}.");
-            Init(entries, config);
+            SetEntries(entries);
+        }
+
+        public void SetEntries(List<Vermines.UI.Screen.ShopCardEntry> entries)
+        {
+            _currentEntries = entries ?? new List<Vermines.UI.Screen.ShopCardEntry>();
+
+            foreach (var e in _currentEntries)
+                Debug.Log($"[ShopUIController] SetEntries — card {e.Data?.ID} stackCount={e.StackCount}");
+
+            if (_currentPage >= TotalPages)
+                _currentPage = 0;
+
+            PopulateCurrentPage();
+            RefreshPaginationUI();
+        }
+
+        private void GoToNextPage()
+        {
+            if (_currentPage >= TotalPages - 1) return;
+            _currentPage++;
+            PopulateCurrentPage();
+            RefreshPaginationUI();
+        }
+
+        private void GoToPreviousPage()
+        {
+            if (_currentPage <= 0) return;
+            _currentPage--;
+            PopulateCurrentPage();
+            RefreshPaginationUI();
+        }
+
+        private void RefreshPaginationUI()
+        {
+            if (_PageIndicator != null)
+            {
+                _PageIndicator.text = TotalPages > 1
+                    ? $"{_currentPage + 1} / {TotalPages}"
+                    : string.Empty;
+
+                if (_PageIndicator.transform.parent != null)
+                    _PageIndicator.transform.parent.gameObject.SetActive(TotalPages > 1);
+            }
+
+            if (_PrevButton != null)
+                _PrevButton.gameObject.SetActive(_currentPage > 0);
+
+            if (_NextButton != null)
+                _NextButton.gameObject.SetActive(_currentPage < TotalPages - 1);
         }
 
         public void SetDialogueVisible(bool visible)
         {
-            if (bubbleLeft != null && config.portraitLeft != null && !string.IsNullOrWhiteSpace(config.leftDialogue))
+            if (bubbleLeft != null
+                && _config.portraitLeft != null
+                && !string.IsNullOrWhiteSpace(_config.leftDialogue))
                 bubbleLeft.SetVisible(visible);
 
-            if (bubbleRight != null && config.portraitRight != null && !string.IsNullOrWhiteSpace(config.rightDialogue))
+            if (bubbleRight != null
+                && _config.portraitRight != null
+                && !string.IsNullOrWhiteSpace(_config.rightDialogue))
                 bubbleRight.SetVisible(visible);
         }
 
-        protected virtual void PopulateShop()
+        protected virtual void PopulateCurrentPage()
         {
-            foreach (var slot in activeSlots)
-            {
-                CardSlotPool.Instance.ReturnSlot(slot);
-            }
-            activeSlots.Clear();
+            ReturnAllSlots();
 
-            for (int i = 0; i < currentEntries.Count; i++)
+            int startIndex = _currentPage * SlotsPerPage;
+
+            for (int i = 0; i < SlotsPerPage; i++)
             {
-                Vermines.UI.Screen.ShopCardEntry entry = currentEntries[i];
-                var slot = CardSlotPool.Instance.GetSlot(cardSlotRoot);
+                var slot = _CardPool.GetSlot(cardSlotRoot);
 
                 if (slot == null)
                 {
-                    Debug.LogError($"[ShopUIController] Failed to get slot from pool for {ShopType} shop.");
+                    Debug.LogErrorFormat(
+                        gameObject,
+                        "[{0}] Failed to get slot from pool for shop {1}.",
+                        nameof(ShopUIController),
+                        ShopType
+                    );
                     continue;
                 }
 
                 slot.ResetSlot();
-
+                slot.gameObject.SetActive(true);
                 slot.transform.SetParent(cardSlotRoot, false);
                 slot.SetIndex(i);
+                slot.transform.SetSiblingIndex(i);
 
-                if (entry != null)
+                int entryIndex = startIndex + i;
+                bool hasEntry = entryIndex < _currentEntries.Count;
+                var entry = hasEntry ? _currentEntries[entryIndex] : null;
+
+                if (entry?.Data != null)
                 {
-                    var clickHandler = CreateClickHandler(i);
-                    slot.Init(entry.Data, entry.IsNew, clickHandler);
+                    slot.Init(entry.Data, entry.IsNew, CreateClickHandler(entryIndex));
+
+                    if (ShopType == ShopType.Market)
+                    {
+                        slot.ShowStackCount(entry.StackCount);
+                    }
                 }
 
-                activeSlots.Add(slot);
+                _activeSlots.Add(slot);
             }
+        }
+
+        private void ReturnAllSlots()
+        {
+            foreach (var slot in _activeSlots)
+            {
+                if (slot == null) return;
+
+                slot.gameObject.SetActive(false);
+                slot.transform.SetParent(_CardPool.transform, false);
+                _CardPool.ReturnSlot(slot);
+            }
+            _activeSlots.Clear();
         }
 
         protected virtual ICardClickHandler CreateClickHandler(int slotIndex)

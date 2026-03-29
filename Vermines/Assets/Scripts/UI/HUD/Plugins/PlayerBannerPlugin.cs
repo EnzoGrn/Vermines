@@ -5,6 +5,8 @@ using Vermines.Core;
 using Vermines.Core.Player;
 using Vermines.Core.Scene;
 using Vermines.Player;
+using UnityEngine.UI;
+using Vermines.UI.Screen;
 
 namespace Vermines.UI.Plugin
 {
@@ -146,6 +148,11 @@ namespace Vermines.UI.Plugin
                 {
                     _banners[i].SetActive(i == 0);
                 }
+            });
+            Button button = banner.GetComponent<Button>();
+            button.onClick.AddListener(() =>
+            {
+                _ParentScreen.Controller.ShowWithParams<GameplayUIPlayerDetails, PlayerController>(_banners.Find(b => b.GetPlayerId() == player.Object.InputAuthority.PlayerId)?.GetPlayer());
             });
         }
 

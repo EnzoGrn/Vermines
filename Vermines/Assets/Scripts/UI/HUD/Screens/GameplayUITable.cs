@@ -40,7 +40,7 @@ namespace Vermines.UI.Screen
         [Header("Zone Containers")]
 
         [SerializeField] protected Transform partisanSlotsContainer;
-        [SerializeField] protected Transform equipmentSlotsContainer;
+        //[SerializeField] protected Transform equipmentSlotsContainer;
 
         [SerializeField] protected GameTableCardSlotPool _Pool;
         protected List<TableCardSlot> partisanSlots = new();
@@ -107,15 +107,15 @@ namespace Vermines.UI.Screen
                 return;
             }
 
-            if (equipmentSlotsContainer == null)
-            {
-                Debug.LogErrorFormat(
-                    gameObject,
-                    "GameplayUITable Critical Error: Missing 'Transform' reference on GameObject '{0}'. This component is required to render the equipment slots. Please assign a valid Transform in the Inspector.",
-                    gameObject.name
-                );
-                return;
-            }
+            //if (equipmentSlotsContainer == null)
+            //{
+            //    Debug.LogErrorFormat(
+            //        gameObject,
+            //        "GameplayUITable Critical Error: Missing 'Transform' reference on GameObject '{0}'. This component is required to render the equipment slots. Please assign a valid Transform in the Inspector.",
+            //        gameObject.name
+            //    );
+            //    return;
+            //}
 
             if (_Pool == null)
             {
@@ -147,7 +147,7 @@ namespace Vermines.UI.Screen
 
             if (partisanSlots.Count == 0)
                 SetupPartisanSlots(defaultPartisanSlotCount); // TODO: make this dynamic based on player count or game settings
-            SetupEquipmentSlots(defaultEquipmentSlotCount); // TODO: make this dynamic based on player count or game settings
+            //SetupEquipmentSlots(defaultEquipmentSlotCount); // TODO: make this dynamic based on player count or game settings
             SetupDiscardZone();
 
             GameEvents.OnPhaseChanged.AddListener(UpdateUIForPhase);
@@ -255,14 +255,14 @@ namespace Vermines.UI.Screen
                 partisanSlots[i].SetIndex(i);
         }
 
-        private void SetupEquipmentSlots(int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                var slot = CreateSlot(i, equipmentSlotsContainer, CardType.Equipment);
-                equipmentSlots.Add(slot);
-            }
-        }
+        //private void SetupEquipmentSlots(int count)
+        //{
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        var slot = CreateSlot(i, equipmentSlotsContainer, CardType.Equipment);
+        //        equipmentSlots.Add(slot);
+        //    }
+        //}
 
         private TableCardSlot CreateSlot(int index, Transform parent, CardType acceptedType)
         {

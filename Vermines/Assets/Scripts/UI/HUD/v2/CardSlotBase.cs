@@ -8,6 +8,7 @@ namespace Vermines.UI.Card
     public abstract class CardSlotBase : MonoBehaviour
     {
         [SerializeField] private GameObject _CardDisplayPrefab;
+        [SerializeField] private GameObject _cardContainer;
         protected int _SlotIndex;
 
         [SerializeField]
@@ -25,7 +26,7 @@ namespace Vermines.UI.Card
         {
             if (CardDisplay == null)
             {
-                GameObject obj = Instantiate(_CardDisplayPrefab, transform);
+                GameObject obj = Instantiate(_CardDisplayPrefab, _cardContainer.transform);
                 DraggableCard draggableCard = obj.GetComponent<DraggableCard>();
                 if (draggableCard != null)
                 {

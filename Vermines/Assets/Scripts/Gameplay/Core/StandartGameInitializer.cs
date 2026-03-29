@@ -179,6 +179,7 @@ namespace Vermines.Gameplay {
 
             Mode.Shop.AddSection(ShopType.Market, section);
             Mode.RPC_InitializeShop(ShopType.Market, Mode.Shop.SerializeSection(ShopType.Market));
+            Debug.Log($"It's how the market has been initialized : {Mode.Shop.SerializeSection(ShopType.Market)}");
         }
 
         private void InitializeDeck(List<PlayerRef> playerRefs)

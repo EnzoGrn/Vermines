@@ -17,6 +17,7 @@ MonoBehaviour:
   shopDescription: Welcome to the market
   leftDialogue: Best weapons of the country
   rightDialogue: Need to poison someone?
+  slotsPerPage: 4
   portraitLeft: {fileID: 21300000, guid: bc7d74a5b93cbc64fbacddbc463255b3, type: 3}
   flipLeft: 0
   portraitRight: {fileID: 21300000, guid: 667288bc3d732f349a694dbf113e70ae, type: 3}
