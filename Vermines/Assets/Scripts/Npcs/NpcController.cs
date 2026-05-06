@@ -27,7 +27,7 @@ public class NpcController : MonoBehaviour
     #endregion
 
     #region Public Fields
-    [HideInInspector] public bool IsRoutineRunning = false;
+    public bool IsRoutineRunning = false;
     public Camera Camera => _camera;
     #endregion
 
