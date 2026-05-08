@@ -187,6 +187,7 @@ public class CinematicCameraController : MonoBehaviour
         _cc.stepOffset = 0.35f;   // monte les marches jusqu'à ~35cm sans bloquer
         _cc.skinWidth = 0.08f;   // évite le collage contre les bords de marche
         _cc.radius = 0.3f;    // capsule assez fine pour les escaliers étroits
+        _cc.slopeLimit = 89f; // permet de monter des pentes très raides (presque verticales)
 
         // Repose la caméra au sol sous sa position actuelle
         Vector3 pos = transform.position;
