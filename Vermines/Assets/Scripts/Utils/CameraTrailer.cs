@@ -83,6 +83,11 @@ public class CinematicCameraController : MonoBehaviour
     public float bobAmplitude = 0.04f;   // léger et discret
     public float bobSmoothing = 8f;
 
+    [Header("Téléportation")]
+
+    public Transform sacrificeZone;
+    public KeyCode teleportKey = KeyCode.P;
+
     // ─────────────────────────────────────────
     //  PRIVÉ — HUD
     // ─────────────────────────────────────────
@@ -235,6 +240,7 @@ public class CinematicCameraController : MonoBehaviour
         HandleFPSRotation();
         HandleFPSMovement();
         HandleCameraBob();
+        HandleFPSTeleport();
     }
 
     void HandleFPSRotation()
@@ -577,6 +583,37 @@ public class CinematicCameraController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F8)) { routineManager.ResumeNpcRoutine(); Debug.Log("RoutineManager : Resume"); }
     }
 
+    // ---
+    // Teleportation
+    // ---
+
+    void HandleFPSTeleport()
+    {
+        if (!_fpsMode)
+            return;
+        if (sacrificeZone == null)
+            return;
+        if (Input.GetKeyDown(teleportKey))
+            TeleportToSacrificeZone();
+    }
+
+    void TeleportToSacrificeZone()
+    {
+        bool wasEnabled = _cc.enabled;
+        
+        // Important : désactiver temporairement le CharacterController pour éviter les collisions bizarres
+        _cc.enabled = false;
+
+        transform.position = sacrificeZone.position;
+        transform.rotation = sacrificeZone.rotation;
+
+        _fpsVelocity = Vector3.zero;
+
+        _cc.enabled = wasEnabled;
+
+        Debug.Log("Téléportation -> Zone de sacrifice");
+    }
+
     // ═════════════════════════════════════════
     //  UI DEBUG
     // ═════════════════════════════════════════
@@ -593,11 +630,14 @@ public class CinematicCameraController : MonoBehaviour
         style.fontSize = 14;
         style.normal.textColor = Color.white;
 
-        if (_fpsMode)
-        {
-            GUI.Label(new Rect(10, 10, 400, 40),
-                "MODE FPS  (F2 pour revenir en caméra libre)\nSouris = regarder · ZQSD = marcher",
-                style);
+        if (_fpsMode) {
+            GUI.Label(new Rect(10, 10, 400, 40), "MODE FPS  (F2 pour revenir en caméra libre)\nSouris = regarder · ZQSD = marcher", style);
+
+            if (sacrificeZone != null) {
+                if (GUI.Button(new Rect(10, 70, 220, 40), $"Téléporter à la zone de sacrifice ({teleportKey})"))
+                    TeleportToSacrificeZone();
+            }
+
             return;
         }
 
