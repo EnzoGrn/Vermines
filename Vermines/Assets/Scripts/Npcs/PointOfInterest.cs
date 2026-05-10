@@ -18,6 +18,7 @@ public class PointOfInterest : MonoBehaviour
             // Store it's own index in the list
             slot.Id = _slots.IndexOf(slot);
         }
+
     }
 
     /// <summary>
