@@ -23,6 +23,10 @@ using UnityEngine;
 ///   ZQSD          → marcher
 ///   Souris        → regarder
 ///   F2            → repasser en caméra libre
+///   I             → ajouter un point FPS au travelling
+///   K             → annuler le dernier point FPS
+///   L             → vider la séquence FPS
+///   G             → lancer / stopper le travelling FPS (avec bob de marche)
 ///
 /// ROUTINE MANAGER :
 ///   F5 Start · F6 Stop · F7 Interrupt · F8 Resume
@@ -54,7 +58,7 @@ public class CinematicCameraController : MonoBehaviour
     public float mouseRotationSpeed = 3f;
 
     // ─────────────────────────────────────────
-    //  TRAVELLING
+    //  TRAVELLING CAMÉRA LIBRE
     // ─────────────────────────────────────────
     [Header("Rotation clavier (flèches)")]
     public float arrowRotationSpeed = 45f;
@@ -73,18 +77,31 @@ public class CinematicCameraController : MonoBehaviour
     //  MODE FPS
     // ─────────────────────────────────────────
     [Header("Mode FPS")]
-    public float fpsHeight = 1.75f;   // hauteur des yeux du personnage
+    public float fpsHeight = 1.75f;
     public float fpsWalkSpeed = 3f;
     public float fpsMouseSensitivity = 2f;
     public float gravity = -9.81f;
 
     [Header("Bob caméra (marche)")]
-    public float bobFrequency = 1.8f;    // cycles par seconde
-    public float bobAmplitude = 0.04f;   // léger et discret
+    public float bobFrequency = 1.8f;
+    public float bobAmplitude = 0.04f;
     public float bobSmoothing = 8f;
 
-    [Header("Téléportation")]
+    // ─────────────────────────────────────────
+    //  TRAVELLING FPS
+    // ─────────────────────────────────────────
+    [Header("Travelling FPS")]
+    [Tooltip("Vitesse de déplacement lors du travelling FPS (unités/s)")]
+    public float fpsTravellingSpeed = 2f;
+    [Tooltip("Fréquence du bob pendant le travelling FPS (cycles/s). Laisser à 0 pour utiliser bobFrequency.")]
+    public float fpsTravelBobFrequency = 0f;   // 0 = hérite de bobFrequency
+    [Tooltip("Amplitude du bob pendant le travelling FPS. Laisser à 0 pour utiliser bobAmplitude.")]
+    public float fpsTravelBobAmplitude = 0f;   // 0 = hérite de bobAmplitude
 
+    // ─────────────────────────────────────────
+    //  TÉLÉPORTATION
+    // ─────────────────────────────────────────
+    [Header("Téléportation")]
     public Transform sacrificeZone;
     public KeyCode teleportKey = KeyCode.P;
 
@@ -103,24 +120,35 @@ public class CinematicCameraController : MonoBehaviour
     private float _targetYaw = 0f;
     private float _targetPitch = 0f;
 
-    // Travelling multi-points
+    // ─────────────────────────────────────────
+    //  PRIVÉ — travelling partagé (struct)
+    // ─────────────────────────────────────────
     private struct TravelPoint
     {
         public Vector3 position;
         public Quaternion rotation;
     }
 
-    private System.Collections.Generic.List<TravelPoint> _travelPoints = new System.Collections.Generic.List<TravelPoint>();
+    // ── Travelling caméra libre ──
+    private System.Collections.Generic.List<TravelPoint> _travelPoints =
+        new System.Collections.Generic.List<TravelPoint>();
     private bool _travellingActive = false;
-    private int _travelSegment = 0;   // index du segment en cours (entre point N et N+1)
-    private float _travelProgress = 0f;  // progression sur le segment courant (0→1)
+    private int _travelSegment = 0;
+    private float _travelProgress = 0f;
+
+    // ── Travelling FPS ──
+    private System.Collections.Generic.List<TravelPoint> _fpsTravelPoints =
+        new System.Collections.Generic.List<TravelPoint>();
+    private bool _fpsTravellingActive = false;
+    private int _fpsTravelSegment = 0;
+    private float _fpsTravelProgress = 0f;
 
     // ─────────────────────────────────────────
     //  PRIVÉ — mode FPS
     // ─────────────────────────────────────────
     private bool _fpsMode = false;
     private CharacterController _cc;
-    private Vector3 _fpsVelocity = Vector3.zero;  // gravité
+    private Vector3 _fpsVelocity = Vector3.zero;
     private float _fpsPitch = 0f;
     private float _fpsYaw = 0f;
 
@@ -133,7 +161,7 @@ public class CinematicCameraController : MonoBehaviour
     void Start()
     {
         _cc = GetComponent<CharacterController>();
-        _cc.enabled = false;   // inactif par défaut (mode caméra libre)
+        _cc.enabled = false;
 
         _targetPosition = transform.position;
         _yaw = transform.eulerAngles.y;
@@ -182,29 +210,24 @@ public class CinematicCameraController : MonoBehaviour
 
     void EnterFPSMode()
     {
-        // Stoppe le travelling si en cours
         if (_travellingActive) StopTravelling();
 
-        // Active le CharacterController et place la caméra à hauteur des yeux
         _cc.enabled = true;
         _cc.height = fpsHeight;
         _cc.center = new Vector3(0f, -0.8f, 0f);
-        _cc.stepOffset = 0.35f;   // monte les marches jusqu'à ~35cm sans bloquer
-        _cc.skinWidth = 0.08f;   // évite le collage contre les bords de marche
-        _cc.radius = 0.3f;    // capsule assez fine pour les escaliers étroits
-        _cc.slopeLimit = 89f; // permet de monter des pentes très raides (presque verticales)
+        _cc.stepOffset = 0.35f;
+        _cc.skinWidth = 0.08f;
+        _cc.radius = 0.3f;
+        _cc.slopeLimit = 89f;
 
-        // Repose la caméra au sol sous sa position actuelle
         Vector3 pos = transform.position;
         pos.y = GetGroundY(pos);
         transform.position = pos;
         _targetPosition = pos;
 
-        // Initialise la rotation FPS depuis la rotation courante
         _fpsYaw = transform.eulerAngles.y;
         _fpsPitch = 0f;
 
-        // Verrouille le curseur
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -216,13 +239,14 @@ public class CinematicCameraController : MonoBehaviour
 
     void ExitFPSMode()
     {
+        // Arrête le travelling FPS si actif
+        if (_fpsTravellingActive) StopFPSTravelling();
+
         _cc.enabled = false;
 
-        // Libère le curseur
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // Reprend le yaw/pitch depuis la rotation FPS
         _yaw = _fpsYaw;
         _pitch = _fpsPitch;
         _targetYaw = _yaw;
@@ -237,10 +261,22 @@ public class CinematicCameraController : MonoBehaviour
     // ═════════════════════════════════════════
     void UpdateFPS()
     {
-        HandleFPSRotation();
-        HandleFPSMovement();
-        HandleCameraBob();
-        HandleFPSTeleport();
+        if (_fpsTravellingActive)
+        {
+            // Travelling FPS : la caméra suit les points, le bob simule la marche
+            UpdateFPSTravelling();
+            HandleCameraBob();
+        }
+        else
+        {
+            HandleFPSRotation();
+            HandleFPSMovement();
+            HandleCameraBob();
+            HandleFPSTeleport();
+        }
+
+        // Toujours disponibles en mode FPS
+        HandleFPSTravellingControls();
     }
 
     void HandleFPSRotation()
@@ -249,13 +285,11 @@ public class CinematicCameraController : MonoBehaviour
         _fpsPitch -= Input.GetAxis("Mouse Y") * fpsMouseSensitivity;
         _fpsPitch = Mathf.Clamp(_fpsPitch, -80f, 80f);
 
-        // Applique la rotation sans le bob (le bob s'ajoute après)
         transform.rotation = Quaternion.Euler(_fpsPitch, _fpsYaw, 0f);
     }
 
     void HandleFPSMovement()
     {
-        // Direction relative au yaw uniquement (pas de pitch)
         Quaternion horizontalRot = Quaternion.Euler(0f, _fpsYaw, 0f);
         Vector3 moveDir = Vector3.zero;
 
@@ -264,7 +298,6 @@ public class CinematicCameraController : MonoBehaviour
         if (Input.GetKey(KeyCode.A)) moveDir += horizontalRot * Vector3.left;
         if (Input.GetKey(KeyCode.D)) moveDir += horizontalRot * Vector3.right;
 
-        // Gravité
         if (_cc.isGrounded && _fpsVelocity.y < 0f)
             _fpsVelocity.y = -2f;
 
@@ -273,37 +306,182 @@ public class CinematicCameraController : MonoBehaviour
         Vector3 finalMove = moveDir * fpsWalkSpeed + Vector3.up * _fpsVelocity.y;
         _cc.Move(finalMove * Time.deltaTime);
 
-        // Bob actif seulement si on se déplace et qu'on est au sol
         bool isWalking = moveDir.magnitude > 0.1f && _cc.isGrounded;
-        UpdateBobTimer(isWalking);
+        UpdateBobTimer(isWalking, bobFrequency, bobAmplitude);
     }
 
-    void UpdateBobTimer(bool isWalking)
+    void UpdateBobTimer(bool isWalking, float freq, float amp)
     {
         if (isWalking)
         {
-            _bobTimer += Time.deltaTime * bobFrequency * Mathf.PI * 2f;
+            _bobTimer += Time.deltaTime * freq * Mathf.PI * 2f;
             _bobTargetOffset = new Vector3(
-                Mathf.Sin(_bobTimer * 0.5f) * bobAmplitude * 0.5f,   // léger roulis horizontal
-                Mathf.Sin(_bobTimer) * bobAmplitude,            // oscillation verticale
+                Mathf.Sin(_bobTimer * 0.5f) * amp * 0.5f,
+                Mathf.Sin(_bobTimer) * amp,
                 0f
             );
         }
         else
         {
-            _bobTimer = 0f;   // reset propre pour repartir du bas du cycle
+            _bobTimer = 0f;
             _bobTargetOffset = Vector3.zero;
         }
     }
 
     void HandleCameraBob()
     {
-        // Lissage du bob pour éviter les à-coups
         _bobCurrentOffset = Vector3.Lerp(_bobCurrentOffset, _bobTargetOffset, Time.deltaTime * bobSmoothing);
-
-        // Position finale = position CharacterController + offset du bob en espace local
         Vector3 basePos = transform.position;
         transform.position = basePos + transform.TransformDirection(_bobCurrentOffset);
+    }
+
+    // ═════════════════════════════════════════
+    //  TRAVELLING FPS
+    // ═════════════════════════════════════════
+
+    /// <summary>
+    /// Gère les raccourcis clavier du travelling FPS.
+    /// I → poser un point, K → annuler dernier, L → tout effacer, G → lancer/stopper.
+    /// </summary>
+    void HandleFPSTravellingControls()
+    {
+        // I → ajouter un point FPS
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            _fpsTravelPoints.Add(new TravelPoint
+            {
+                position = transform.position,
+                rotation = Quaternion.Euler(_fpsPitch, _fpsYaw, 0f)
+            });
+            Debug.Log($"Travelling FPS : point {_fpsTravelPoints.Count} posé → {transform.position}");
+        }
+
+        // K → annuler le dernier point FPS
+        if (Input.GetKeyDown(KeyCode.K) && _fpsTravelPoints.Count > 0)
+        {
+            _fpsTravelPoints.RemoveAt(_fpsTravelPoints.Count - 1);
+            Debug.Log($"Travelling FPS : dernier point supprimé ({_fpsTravelPoints.Count} restants)");
+        }
+
+        // L → vider la séquence FPS
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            _fpsTravelPoints.Clear();
+            Debug.Log("Travelling FPS : séquence réinitialisée.");
+        }
+
+        // G → lancer / stopper
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            if (_fpsTravellingActive)
+                StopFPSTravelling();
+            else if (_fpsTravelPoints.Count >= 2)
+                StartFPSTravelling();
+            else
+                Debug.LogWarning($"Travelling FPS : il faut au moins 2 points (actuellement {_fpsTravelPoints.Count}). Ajoute des points avec I.");
+        }
+    }
+
+    void StartFPSTravelling()
+    {
+        _fpsTravellingActive = true;
+        _fpsTravelSegment = 0;
+        _fpsTravelProgress = 0f;
+        _bobTimer = 0f;
+        _bobCurrentOffset = Vector3.zero;
+
+        // On place la caméra sur le premier point
+        transform.position = _fpsTravelPoints[0].position;
+        transform.rotation = _fpsTravelPoints[0].rotation;
+        _fpsYaw = _fpsTravelPoints[0].rotation.eulerAngles.y;
+        _fpsPitch = _fpsTravelPoints[0].rotation.eulerAngles.x;
+
+        // Désactiver le CharacterController pendant le travelling pour éviter les collisions
+        // (la caméra suit la courbe mathématiquement, pas via physique)
+        _cc.enabled = false;
+
+        Debug.Log($"Travelling FPS démarré ({_fpsTravelPoints.Count} points, {_fpsTravelPoints.Count - 1} segments).");
+    }
+
+    void StopFPSTravelling()
+    {
+        _fpsTravellingActive = false;
+        _bobTimer = 0f;
+        _bobTargetOffset = Vector3.zero;
+
+        // Réactive le CharacterController pour reprendre la marche normale
+        _cc.enabled = true;
+
+        // Sync de la rotation depuis le dernier état interpolé
+        _fpsYaw = transform.eulerAngles.y;
+        _fpsPitch = transform.eulerAngles.x;
+        // Normalise le pitch dans [-180, 180]
+        if (_fpsPitch > 180f) _fpsPitch -= 360f;
+
+        Debug.Log("Travelling FPS stoppé.");
+    }
+
+    void UpdateFPSTravelling()
+    {
+        int n = _fpsTravelPoints.Count;
+        if (n < 2) { StopFPSTravelling(); return; }
+
+        // ── Avance sur le segment en cours ──
+        float segDist = Vector3.Distance(
+            _fpsTravelPoints[_fpsTravelSegment].position,
+            _fpsTravelPoints[_fpsTravelSegment + 1].position
+        );
+
+        if (segDist > 0.001f)
+            _fpsTravelProgress += (fpsTravellingSpeed / segDist) * Time.deltaTime;
+        else
+            _fpsTravelProgress = 1f;
+
+        if (_fpsTravelProgress >= 1f)
+        {
+            _fpsTravelSegment++;
+            _fpsTravelProgress = 0f;
+
+            if (_fpsTravelSegment >= n - 1)
+            {
+                // Arrivée au dernier point
+                transform.position = _fpsTravelPoints[n - 1].position;
+                transform.rotation = _fpsTravelPoints[n - 1].rotation;
+                StopFPSTravelling();
+                return;
+            }
+        }
+
+        int i = _fpsTravelSegment;
+        float t = _fpsTravelProgress;
+
+        // ── Position : Catmull-Rom ──
+        Vector3 p0 = _fpsTravelPoints[Mathf.Max(i - 1, 0)].position;
+        Vector3 p1 = _fpsTravelPoints[i].position;
+        Vector3 p2 = _fpsTravelPoints[Mathf.Min(i + 1, n - 1)].position;
+        Vector3 p3 = _fpsTravelPoints[Mathf.Min(i + 2, n - 1)].position;
+
+        // On applique la position de base SANS le bob (le bob s'ajoute dans HandleCameraBob)
+        transform.position = CatmullRom(p0, p1, p2, p3, t);
+
+        // ── Rotation : Slerp anti-flip ──
+        Quaternion rotFrom = _fpsTravelPoints[i].rotation;
+        Quaternion rotTo = _fpsTravelPoints[Mathf.Min(i + 1, n - 1)].rotation;
+        if (Quaternion.Dot(rotFrom, rotTo) < 0f)
+            rotTo = new Quaternion(-rotTo.x, -rotTo.y, -rotTo.z, -rotTo.w);
+
+        Quaternion interpolatedRot = Quaternion.Slerp(rotFrom, rotTo, t);
+        transform.rotation = interpolatedRot;
+
+        // Sync les angles FPS depuis la rotation interpolée (pour cohérence si on reprend le contrôle)
+        Vector3 eulers = interpolatedRot.eulerAngles;
+        _fpsYaw = eulers.y;
+        _fpsPitch = eulers.x > 180f ? eulers.x - 360f : eulers.x;
+
+        // ── Bob de marche continu ──
+        float freq = fpsTravelBobFrequency > 0f ? fpsTravelBobFrequency : bobFrequency;
+        float amp = fpsTravelBobAmplitude > 0f ? fpsTravelBobAmplitude : bobAmplitude;
+        UpdateBobTimer(true, freq, amp);
     }
 
     // ═════════════════════════════════════════
@@ -346,19 +524,16 @@ public class CinematicCameraController : MonoBehaviour
 
     void HandleRotation()
     {
-        // Molette → rotation horizontale
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) > 0.01f)
             _targetYaw += scroll * scrollRotationSpeed;
 
-        // Clic droit maintenu → rotation libre souris
         if (Input.GetMouseButton(1))
         {
             _targetYaw += Input.GetAxis("Mouse X") * mouseRotationSpeed;
             _targetPitch -= Input.GetAxis("Mouse Y") * mouseRotationSpeed;
         }
 
-        // Flèches → rotation parfaite sur axe fixe, sans tremblement
         if (Input.GetKey(KeyCode.LeftArrow)) _targetYaw -= arrowRotationSpeed * Time.deltaTime;
         if (Input.GetKey(KeyCode.RightArrow)) _targetYaw += arrowRotationSpeed * Time.deltaTime;
         if (Input.GetKey(KeyCode.UpArrow)) _targetPitch -= arrowRotationSpeed * Time.deltaTime;
@@ -366,7 +541,6 @@ public class CinematicCameraController : MonoBehaviour
 
         _targetPitch = Mathf.Clamp(_targetPitch, -89f, 89f);
 
-        // Lissage vers la cible
         _yaw = Mathf.Lerp(_yaw, _targetYaw, Time.deltaTime * arrowSmoothing);
         _pitch = Mathf.Lerp(_pitch, _targetPitch, Time.deltaTime * arrowSmoothing);
 
@@ -378,7 +552,6 @@ public class CinematicCameraController : MonoBehaviour
     // ═════════════════════════════════════════
     void HandleSpeedAdjustment()
     {
-        // ── Numpad + / -  →  vitesse déplacement ZQSD ──
         if (Input.GetKeyDown(KeyCode.KeypadPlus))
         {
             moveSpeed = Mathf.Clamp(moveSpeed + speedStep, minSpeed, maxSpeed);
@@ -389,8 +562,6 @@ public class CinematicCameraController : MonoBehaviour
             moveSpeed = Mathf.Clamp(moveSpeed - speedStep, minSpeed, maxSpeed);
             Debug.Log($"Vitesse déplacement : {moveSpeed:F1}");
         }
-
-        // ── Numpad * / /  →  vitesse travelling ──
         if (Input.GetKeyDown(KeyCode.KeypadMultiply))
         {
             travellingSpeed = Mathf.Clamp(travellingSpeed + travellingStep, travellingSpeedMin, travellingSpeedMax);
@@ -401,8 +572,6 @@ public class CinematicCameraController : MonoBehaviour
             travellingSpeed = Mathf.Clamp(travellingSpeed - travellingStep, travellingSpeedMin, travellingSpeedMax);
             Debug.Log($"Vitesse travelling : {travellingSpeed:F1}");
         }
-
-        // ── Numpad 8 / 2  →  vitesse rotation flèches ──
         if (Input.GetKeyDown(KeyCode.Keypad8))
         {
             arrowRotationSpeed = Mathf.Clamp(arrowRotationSpeed + arrowRotationStep, arrowRotationSpeedMin, arrowRotationSpeedMax);
@@ -434,11 +603,10 @@ public class CinematicCameraController : MonoBehaviour
     }
 
     // ═════════════════════════════════════════
-    //  TRAVELLING A → B
+    //  TRAVELLING CAMÉRA LIBRE
     // ═════════════════════════════════════════
     void HandleTravellingControls()
     {
-        // U → ajouter un point à la séquence
         if (Input.GetKeyDown(KeyCode.U))
         {
             _travelPoints.Add(new TravelPoint
@@ -449,21 +617,18 @@ public class CinematicCameraController : MonoBehaviour
             Debug.Log($"Travelling : point {_travelPoints.Count} posé → {transform.position}");
         }
 
-        // Y → annuler le dernier point
         if (Input.GetKeyDown(KeyCode.Y) && _travelPoints.Count > 0)
         {
             _travelPoints.RemoveAt(_travelPoints.Count - 1);
             Debug.Log($"Travelling : dernier point supprimé ({_travelPoints.Count} restants)");
         }
 
-        // O → vider toute la séquence
         if (Input.GetKeyDown(KeyCode.O))
         {
             _travelPoints.Clear();
             Debug.Log("Travelling : séquence réinitialisée.");
         }
 
-        // T → lancer / stopper
         if (Input.GetKeyDown(KeyCode.T))
         {
             if (_travellingActive)
@@ -502,9 +667,7 @@ public class CinematicCameraController : MonoBehaviour
         if (_travelPoints.Count < 2) { StopTravelling(); return; }
 
         int n = _travelPoints.Count;
-        float total = n - 1; // nombre de segments
 
-        // _travelProgress ici représente t global sur [0, n-1]
         float segmentDistance = Vector3.Distance(
             _travelPoints[_travelSegment].position,
             _travelPoints[_travelSegment + 1].position
@@ -529,14 +692,9 @@ public class CinematicCameraController : MonoBehaviour
             }
         }
 
-        // t global : 0 = premier point, n-1 = dernier point
-        float tGlobal = _travelSegment + _travelProgress;
-
-        // ── Position : Catmull-Rom ──
-        int i = Mathf.Clamp(_travelSegment, 0, n - 1);
+        int i = _travelSegment;
         float t = _travelProgress;
 
-        // Points de contrôle avec clamp aux extrémités
         Vector3 p0 = _travelPoints[Mathf.Max(i - 1, 0)].position;
         Vector3 p1 = _travelPoints[i].position;
         Vector3 p2 = _travelPoints[Mathf.Min(i + 1, n - 1)].position;
@@ -544,20 +702,15 @@ public class CinematicCameraController : MonoBehaviour
 
         transform.position = CatmullRom(p0, p1, p2, p3, t);
 
-        // ── Rotation : Slerp avec correction du flip ──
         Quaternion rotFrom = _travelPoints[i].rotation;
         Quaternion rotTo = _travelPoints[Mathf.Min(i + 1, n - 1)].rotation;
 
-        // Si le dot est négatif, les deux quaternions sont dans des hémisphères opposés
-        // → on inverse rotTo pour que Slerp prenne le chemin court
         if (Quaternion.Dot(rotFrom, rotTo) < 0f)
             rotTo = new Quaternion(-rotTo.x, -rotTo.y, -rotTo.z, -rotTo.w);
 
         transform.rotation = Quaternion.Slerp(rotFrom, rotTo, t);
     }
 
-    // Calcule un point sur une courbe Catmull-Rom entre p1 et p2
-    // p0 et p3 sont les points de contrôle précédent/suivant
     Vector3 CatmullRom(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
     {
         float t2 = t * t;
@@ -583,16 +736,13 @@ public class CinematicCameraController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F8)) { routineManager.ResumeNpcRoutine(); Debug.Log("RoutineManager : Resume"); }
     }
 
-    // ---
-    // Teleportation
-    // ---
-
+    // ═════════════════════════════════════════
+    //  TÉLÉPORTATION
+    // ═════════════════════════════════════════
     void HandleFPSTeleport()
     {
-        if (!_fpsMode)
-            return;
-        if (sacrificeZone == null)
-            return;
+        if (!_fpsMode) return;
+        if (sacrificeZone == null) return;
         if (Input.GetKeyDown(teleportKey))
             TeleportToSacrificeZone();
     }
@@ -600,13 +750,10 @@ public class CinematicCameraController : MonoBehaviour
     void TeleportToSacrificeZone()
     {
         bool wasEnabled = _cc.enabled;
-        
-        // Important : désactiver temporairement le CharacterController pour éviter les collisions bizarres
         _cc.enabled = false;
 
         transform.position = sacrificeZone.position;
         transform.rotation = sacrificeZone.rotation;
-
         _fpsVelocity = Vector3.zero;
 
         _cc.enabled = wasEnabled;
@@ -626,21 +773,38 @@ public class CinematicCameraController : MonoBehaviour
         }
 
         if (!_showHUD) return;
+
         GUIStyle style = new GUIStyle(GUI.skin.label);
         style.fontSize = 14;
         style.normal.textColor = Color.white;
 
-        if (_fpsMode) {
-            GUI.Label(new Rect(10, 10, 400, 40), "MODE FPS  (F2 pour revenir en caméra libre)\nSouris = regarder · ZQSD = marcher", style);
+        if (_fpsMode)
+        {
+            int fpsPts = _fpsTravelPoints.Count;
+            string fpsTState;
+            if (_fpsTravellingActive)
+                fpsTState = $"EN COURS  segment {_fpsTravelSegment + 1}/{fpsPts - 1}  ({(_fpsTravelProgress * 100f):F0}%)";
+            else
+                fpsTState = $"arrêté  ({fpsPts} point{(fpsPts > 1 ? "s" : "")})";
 
-            if (sacrificeZone != null) {
-                if (GUI.Button(new Rect(10, 70, 220, 40), $"Téléporter à la zone de sacrifice ({teleportKey})"))
+            GUI.Label(new Rect(10, 10, 700, 120), string.Join("\n", new[]
+            {
+                "MODE FPS  (F2 pour revenir en caméra libre)  |  Souris = regarder · ZQSD = marcher",
+                $"Travelling FPS : {fpsTState}",
+                $"  I ajouter un point  ·  K annuler dernier  ·  L tout effacer  ·  G lancer/stopper",
+                $"  Vitesse : {fpsTravellingSpeed:F1} u/s  (modifiable dans l'Inspector)"
+            }), style);
+
+            if (sacrificeZone != null && !_fpsTravellingActive)
+            {
+                if (GUI.Button(new Rect(10, 140, 260, 36), $"Téléporter à la zone de sacrifice ({teleportKey})"))
                     TeleportToSacrificeZone();
             }
 
             return;
         }
 
+        // ── HUD caméra libre ──
         int totalPts = _travelPoints.Count;
         string tState = _travellingActive
             ? $"EN COURS  segment {_travelSegment + 1}/{totalPts - 1}  ({(_travelProgress * 100f):F0}%)"
