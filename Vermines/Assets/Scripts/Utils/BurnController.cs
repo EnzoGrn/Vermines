@@ -4,30 +4,30 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class BurnController : MonoBehaviour
 {
-    [Header("Durée de l'effet")]
+    [Header("DurÃ©e de l'effet")]
     [SerializeField] float burnDuration = 2.5f;
 
     [Header("Courbe d'animation (optionnel)")]
     [SerializeField] AnimationCurve burnCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    [Header("Détruire l'objet après la brûlure ?")]
+    [Header("DÃ©truire l'objet aprÃ©s la brÃ»lure ?")]
     [SerializeField] bool destroyOnComplete = true;
 
-    // Référence au matériau instancié (évite de modifier l'asset partagé)
+    // RÃ©fÃ©rence au matÃ©riau instanciÃ© (Ã©vite de modifier l'asset partagÃ©)
     Material mat;
     static readonly int BurnAmountID = Shader.PropertyToID("_BurnAmount");
 
     void Awake()
     {
         var sr = GetComponent<SpriteRenderer>();
-        // On crée une copie du matériau pour ce personnage uniquement
+        // On crÃ©e une copie du matÃ©riau pour ce personnage uniquement
         mat = new Material(sr.sharedMaterial);
         sr.material = mat;
         mat.SetFloat(BurnAmountID, 0f);
     }
 
     // -------------------------------------------------------
-    // Appel public : déclenche la brûlure depuis n'importe où
+    // Appel public : dÃ©clenche la brÃ©lure depuis n'importe oÃ©
     // -------------------------------------------------------
     public void StartBurn() => StartCoroutine(BurnRoutine());
 
@@ -58,7 +58,7 @@ public class BurnController : MonoBehaviour
 
     void OnDestroy()
     {
-        // Nettoyage propre du matériau instancié
+        // Nettoyage propre du matÃ©riau instanciÃ©
         if (mat) Destroy(mat);
     }
 }
