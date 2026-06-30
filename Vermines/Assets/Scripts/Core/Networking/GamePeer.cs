@@ -22,7 +22,7 @@ namespace Vermines.Core.Network {
         public SceneContext        Context;
 
         public int ConnectionTries   = 3;
-        public int ReconnectionTries = 1;
+        public int ReconnectionTries = 3;
 
         #endregion
 
@@ -38,6 +38,7 @@ namespace Vermines.Core.Network {
         public bool Loaded;
         public bool WasConnected;
         public bool CanConnect => WasConnected ? ReconnectionTries > 0 : ConnectionTries > 0;
+        public float? DisconnectDetectedAt;
 
         public bool IsConnected
         {

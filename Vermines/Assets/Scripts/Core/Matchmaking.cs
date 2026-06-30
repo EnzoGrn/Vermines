@@ -183,7 +183,7 @@ namespace Vermines.Core {
 
         void INetworkRunnerCallbacks.OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
         {
-            DisconnectedFromServer.Invoke(runner, reason);
+            DisconnectedFromServer?.Invoke(runner, reason);
         }
 
         void INetworkRunnerCallbacks.OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)

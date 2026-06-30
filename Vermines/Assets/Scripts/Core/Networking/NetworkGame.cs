@@ -31,7 +31,17 @@ namespace Vermines.Core {
         #endregion
 
         private Dictionary<PlayerRef, PlayerController> _PendingPlayers = new();
-        private Dictionary<string, PlayerController> _DisconnectedPlayers = new();
+
+        private struct DisconnectedEntry
+        {
+            public PlayerController Player;
+            public float Time;
+        }
+
+        private readonly Dictionary<string, DisconnectedEntry> _DisconnectedPlayers = new();
+        private readonly List<string> _PurgeBuffer = new();
+
+        private const float DISCONNECTED_TTL = 120f;
 
         private List<PlayerController> _SpawnedPlayers = new(byte.MaxValue);
         private List<PlayerController> _AllPlayers     = new(byte.MaxValue);
@@ -94,6 +104,30 @@ namespace Vermines.Core {
                 ActivePlayers.Add(player);
             }
 
+
+            if (HasStateAuthority && _DisconnectedPlayers.Count > 0)
+            {
+                _PurgeBuffer.Clear();
+
+                foreach (var kvp in _DisconnectedPlayers)
+                {
+                    if (Runner.SimulationTime - kvp.Value.Time > DISCONNECTED_TTL)
+                        _PurgeBuffer.Add(kvp.Key);
+                }
+
+                for (int i = 0; i < _PurgeBuffer.Count; i++)
+                {
+                    string userId = _PurgeBuffer[i];
+
+                    if (_DisconnectedPlayers.TryGetValue(userId, out DisconnectedEntry stale))
+                    {
+                        if (stale.Player != null && stale.Player.Object != null)
+                            Runner.Despawn(stale.Player.Object);
+                        _DisconnectedPlayers.Remove(userId);
+                    }
+                }
+            }
+
             if (!HasStateAuthority || _PendingPlayers.Count == 0)
                 return;
             List<PlayerRef> playersToRemove = ListPool.Get<PlayerRef>(128);
@@ -106,7 +140,9 @@ namespace Vermines.Core {
                     continue;
                 playersToRemove.Remove(playerRef);
 
-                if (_DisconnectedPlayers.TryGetValue(player.UserID, out PlayerController disconnectedPlayer)) {
+                if (_DisconnectedPlayers.TryGetValue(player.UserID, out DisconnectedEntry entry))
+                {
+                    PlayerController disconnectedPlayer = entry.Player;
                     _DisconnectedPlayers.Remove(player.UserID);
 
                     int activePlayerIndex = ActivePlayers.IndexOf(player);
@@ -260,10 +296,7 @@ namespace Vermines.Core {
         public bool IsCustomGame()
         {
             GamePeer peer = Global.Networking?.GetPeer(Runner);
-
-            if (peer.Request.IsCustom)
-                return true;
-            return false;
+            return peer != null && peer.Request.IsCustom;
         }
 
         public List<PlayerController> GetConnectedPlayer()
@@ -315,7 +348,10 @@ namespace Vermines.Core {
             ActivePlayers.Remove(player);
             
             if (!player.UserID.IsNullOrEmpty()) {
-                _DisconnectedPlayers[player.UserID] = player;
+                _DisconnectedPlayers[player.UserID] = new DisconnectedEntry {
+                    Player = player,
+                    Time   = Runner.SimulationTime
+                };
 
                 _Gameplay.PlayerLeft(player);
 
