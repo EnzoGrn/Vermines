@@ -25,7 +25,6 @@ namespace Vermines.Player {
             Seed = seed;
 
             Deck        = new List<ICard>();
-            Deck        = new List<ICard>();
             Hand        = new List<ICard>();
             Discard     = new List<ICard>();
             ToolDiscard = new List<ICard>();
@@ -102,6 +101,7 @@ namespace Vermines.Player {
         public PlayerDeck DeepCopy()
         {
             return new() {
+                Seed        = this.Seed,
                 Deck        = new List<ICard>(this.Deck),
                 Hand        = new List<ICard>(this.Hand),
                 Discard     = new List<ICard>(this.Discard),
@@ -140,6 +140,7 @@ namespace Vermines.Player {
         static public PlayerDeck Deserialize(string data)
         {
             PlayerDeck deck = new();
+            deck.Initialize(0);
 
             // Separate each section of the data
             string[] sections = data.Split(';');

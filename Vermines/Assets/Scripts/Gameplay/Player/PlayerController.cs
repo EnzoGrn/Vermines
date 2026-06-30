@@ -1,9 +1,10 @@
-﻿using UnityEngine;
-using Fusion;
+﻿using Fusion;
 using System;
+using UnityEngine;
 
 namespace Vermines.Player {
-
+    using System.Collections.Generic;
+    using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
@@ -103,6 +104,33 @@ namespace Vermines.Player {
         public void UpdateDeck(PlayerDeck deck)
         {
             Deck = deck;
+
+            if (HasStateAuthority)
+                Debug.Log($"[DECK-PUSH] {UserID} hand={deck.Hand?.Count} deck={deck.Deck?.Count}");
+                RPC_DeckResynchronization(deck.Serialize());
+        }
+
+        public void DrawAuthoritative(int amount)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            PlayerDeck deck = Deck;
+            List<int> drawnIds = new();
+
+            for (int i = 0; i < amount; i++)
+            {
+                ICard card = deck.Draw();
+
+                if (card == null)
+                    break;
+                drawnIds.Add(card.ID);
+            }
+
+            UpdateDeck(deck);
+
+            if (drawnIds.Count > 0)
+                RPC_NotifyDrawn(string.Join(",", drawnIds));
         }
 
         public void SetGod(God god)
@@ -248,17 +276,38 @@ namespace Vermines.Player {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
         public void RPC_DeckResynchronization(string data)
         {
+            if (HasStateAuthority)
+                return;
+            Debug.Log($"[DECK-RECV] auth={HasStateAuthority} {(HasStateAuthority ? "SKIP" : "APPLY")} {UserID}");
             Deck = PlayerDeck.Deserialize(data);
         }
 
-        [Rpc(RpcSources.All, RpcTargets.All, Channel = RpcChannel.Reliable)]
-        public void RPC_DrawCards(int cardsToDraw)
+        public void NotifyDrawnToOwner(int cardId)
         {
-            for (int i = 0; i < cardsToDraw; i++) {
-                ICard drawnCard = Deck.Draw();
+            if (!HasStateAuthority)
+                return;
+            RPC_NotifyDrawn(cardId.ToString());
+        }
 
-                if (drawnCard != null && Object.InputAuthority == Runner.LocalPlayer)
-                    GameEvents.InvokeOnDrawCard(drawnCard);
+        [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority, Channel = RpcChannel.Reliable)]
+        private void RPC_NotifyDrawn(string ids)
+        {
+            if (string.IsNullOrEmpty(ids))
+                return;
+
+            Debug.Log($"[REVEAL] {UserID} ids={ids} localPlayer={Runner.LocalPlayer}");
+
+            string[] parts = ids.Split(',');
+
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (int.TryParse(parts[i], out int id))
+                {
+                    ICard card = CardSetDatabase.Instance.GetCardByID(id);
+
+                    if (card != null)
+                        GameEvents.InvokeOnDrawCard(card);
+                }
             }
         }
 

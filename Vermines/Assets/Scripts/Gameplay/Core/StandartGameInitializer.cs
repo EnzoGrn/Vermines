@@ -124,7 +124,7 @@ namespace Vermines.Gameplay {
 
                     deck.Deck.Shuffle(NetworkGame.Seed);
 
-                    player.RPC_DeckResynchronization(deck.Serialize());
+                    player.UpdateDeck(deck);
                 }
             }
         }
@@ -193,7 +193,7 @@ namespace Vermines.Gameplay {
                 if (player) {
                     int cardsToDraw = isFirst ? baseCardsToDraw - 1 : baseCardsToDraw;
 
-                    player.RPC_DrawCards(cardsToDraw);
+                    player.DrawAuthoritative(cardsToDraw);
                 }
 
                 isFirst = false;
