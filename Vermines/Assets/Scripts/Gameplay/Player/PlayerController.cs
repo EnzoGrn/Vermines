@@ -270,7 +270,10 @@ namespace Vermines.Player {
 
             UpdateStatistics(stats);
 
-            Context.GameplayMode.OnPlayerDataReceived(playerRef, family);
+            if (Context.GameplayMode != null)
+                Context.GameplayMode.OnPlayerDataReceived(playerRef, family);
+            else
+                Log.Error("[PlayerController] RPC_SendPlayerData : Context.GameplayMode is null");
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]

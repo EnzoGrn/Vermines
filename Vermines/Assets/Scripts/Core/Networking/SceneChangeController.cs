@@ -47,7 +47,7 @@ namespace Vermines.Core.Network {
 
         #region RPCs
 
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
+        [Rpc(RpcSources.StateAuthority, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
         public void RPC_RequestSceneChange(string scenePath, bool isCustom, bool isGameSession, GameplayType gameplay, string oldScene, int playerConnected, string data = "")
         {
             StartCoroutine(HostPerformSceneChangeCoroutine(scenePath, isCustom, isGameSession, gameplay, oldScene, playerConnected, data));

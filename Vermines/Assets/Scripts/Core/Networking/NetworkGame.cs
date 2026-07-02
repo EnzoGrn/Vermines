@@ -374,5 +374,33 @@ namespace Vermines.Core {
         }
 
         #endregion
+
+        private bool IsRpcSourceValid(RpcInfo info, int claimedPlayerId)
+        {
+            if (info.Source == PlayerRef.None)
+                return true;
+
+            if (info.Source.RawEncoded != claimedPlayerId)
+            {
+                Log.Error($"[NetworkGame] RPC rejeté : source réelle {info.Source} != playerID annoncé {claimedPlayerId}.");
+
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool IsGameplayReady()
+        {
+            if (_Gameplay == null)
+            {
+                Log.Error("[NetworkGame] RPC reçu avant que le gameplay soit prêt — action ignorée.");
+
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }
