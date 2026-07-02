@@ -205,7 +205,7 @@ namespace Vermines.Menu.CustomLobby {
                 PlayerRef     inputAuthority = player.Object.InputAuthority;
 
                 if (inputAuthority.IsRealPlayer) {
-                    if (HasInputAuthority && !Runner.IsPlayerValid(inputAuthority)) {
+                    if (HasStateAuthority && !Runner.IsPlayerValid(inputAuthority)) {
                         _AllPlayers.RemoveAt(i);
 
                         OnPlayerLeft(player);
