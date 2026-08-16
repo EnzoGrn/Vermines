@@ -58,6 +58,8 @@ namespace Vermines.Core {
 
         public System.Random Random { get; set; }
 
+        private const int PLAYER_SWEEP_INTERVAL = 16;
+
         #endregion
 
         #region Methods
@@ -75,74 +77,64 @@ namespace Vermines.Core {
         {
             if (Runner == null)
                 return;
-            _AllPlayers.Clear();
 
-            Runner.GetAllBehaviours<PlayerController>(_AllPlayers);
-
-            if (_AllPlayers == null || _AllPlayers.Count == 0)
-                return;
-            for (int i = _AllPlayers.Count - 1; i >= 0; i--) {
-                PlayerController player = _AllPlayers[i];
-                PlayerRef         input = player.Object.InputAuthority;
-
-                if (!input.IsRealPlayer) {
-                    if (HasStateAuthority && !Runner.IsPlayerValid(input)) {
-                        _AllPlayers.RemoveAt(i);
-
-                        OnPlayerLeft(player);
-                    }
-                } else {
-                    _AllPlayers.RemoveAt(i);
-                }
-            }
-
-            ActivePlayers.Clear();
-
-            foreach (PlayerController player in _AllPlayers) {
-                if (player.UserID.IsNullOrEmpty())
-                    continue;
-                ActivePlayers.Add(player);
-            }
-
-
-            if (HasStateAuthority && _DisconnectedPlayers.Count > 0)
+            if (Runner.IsForward && (Runner.Tick % PLAYER_SWEEP_INTERVAL) == 0)
             {
-                _PurgeBuffer.Clear();
+                _AllPlayers.Clear();
 
-                foreach (var kvp in _DisconnectedPlayers)
+                Runner.GetAllBehaviours<PlayerController>(_AllPlayers);
+
+                if (_AllPlayers != null && _AllPlayers.Count > 0)
                 {
-                    if (Runner.SimulationTime - kvp.Value.Time > DISCONNECTED_TTL)
-                        _PurgeBuffer.Add(kvp.Key);
-                }
-
-                for (int i = 0; i < _PurgeBuffer.Count; i++)
-                {
-                    string userId = _PurgeBuffer[i];
-
-                    if (_DisconnectedPlayers.TryGetValue(userId, out DisconnectedEntry stale))
+                    for (int i = _AllPlayers.Count - 1; i >= 0; i--)
                     {
-                        if (stale.Player != null && stale.Player.Object != null)
-                            Runner.Despawn(stale.Player.Object);
-                        _DisconnectedPlayers.Remove(userId);
+                        PlayerController player = _AllPlayers[i];
+                        PlayerRef input = player.Object.InputAuthority;
+
+                        if (!input.IsRealPlayer)
+                        {
+                            if (HasStateAuthority && !Runner.IsPlayerValid(input))
+                            {
+                                _AllPlayers.RemoveAt(i);
+
+                                OnPlayerLeft(player);
+                            }
+                        }
+                        else
+                        {
+                            _AllPlayers.RemoveAt(i);
+                        }
+                    }
+
+                    ActivePlayers.Clear();
+
+                    foreach (PlayerController player in _AllPlayers)
+                    {
+                        if (player.UserID.IsNullOrEmpty())
+                            continue;
+                        ActivePlayers.Add(player);
                     }
                 }
             }
 
             if (!HasStateAuthority || _PendingPlayers.Count == 0)
                 return;
+
             List<PlayerRef> playersToRemove = ListPool.Get<PlayerRef>(128);
 
-            foreach (var kvp in _PendingPlayers) {
-                PlayerRef     playerRef = kvp.Key;
+            foreach (var kvp in _PendingPlayers)
+            {
+                PlayerRef playerRef = kvp.Key;
                 PlayerController player = kvp.Value;
 
                 if (!player.IsInitialized)
                     continue;
-                playersToRemove.Remove(playerRef);
+                playersToRemove.Add(playerRef);
 
                 if (_DisconnectedPlayers.TryGetValue(player.UserID, out DisconnectedEntry entry))
                 {
                     PlayerController disconnectedPlayer = entry.Player;
+
                     _DisconnectedPlayers.Remove(player.UserID);
 
                     int activePlayerIndex = ActivePlayers.IndexOf(player);
