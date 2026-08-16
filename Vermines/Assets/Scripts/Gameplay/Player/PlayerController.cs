@@ -12,6 +12,8 @@ namespace Vermines.Player {
     using Vermines.Core;
     using Vermines.Core.Player;
     using Vermines.ShopSystem.Enumerations;
+    using Vermines.UI;
+    using Vermines.UI.Card;
 
     public partial class PlayerController : ContextBehaviour, IPlayer {
 
@@ -46,6 +48,15 @@ namespace Vermines.Player {
         private byte _LocalSyncToken;
 
         private bool _PlayerDataSent;
+
+        private GameplayUIController _gameplayUICache;
+        private DiscardDropHandler _discardDropCache;
+
+        private GameplayUIController GameplayUI
+            => _gameplayUICache != null ? _gameplayUICache : (_gameplayUICache = FindFirstObjectByType<GameplayUIController>());
+
+        private DiscardDropHandler DiscardDrop
+            => _discardDropCache != null ? _discardDropCache : (_discardDropCache = FindFirstObjectByType<DiscardDropHandler>());
 
         #endregion
 
