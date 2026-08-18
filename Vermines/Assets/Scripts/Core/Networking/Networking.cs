@@ -6,7 +6,6 @@ using System.Collections;
 using System;
 using Fusion.Sockets;
 using Fusion;
-using WebSocketSharp;
 
 namespace Vermines.Core.Network {
 

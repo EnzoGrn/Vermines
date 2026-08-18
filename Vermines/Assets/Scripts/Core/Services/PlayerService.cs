@@ -2,13 +2,13 @@ using System.Threading.Tasks;
 using System;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
-using WebSocketSharp;
 using UnityEngine;
 
 namespace Vermines.Core.Services {
 
     using Vermines.Core.Player;
     using Vermines.Utils;
+    using Vermines.Extension;
 
     public class PlayerService : IGlobalService {
 

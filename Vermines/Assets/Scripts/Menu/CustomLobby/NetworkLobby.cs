@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Fusion.Sockets;
 using Fusion;
 using UnityEngine;
-using WebSocketSharp;
 
 namespace Vermines.Menu.CustomLobby {
 
@@ -11,8 +10,6 @@ namespace Vermines.Menu.CustomLobby {
     using Vermines.Core.Network;
     using Vermines.Utils;
     using System.Linq;
-    using Vermines.Gameplay.Core;
-    using Vermines.Player;
 
     public sealed class NetworkLobby : ContextBehaviour, IPlayerJoined, IPlayerLeft {
 

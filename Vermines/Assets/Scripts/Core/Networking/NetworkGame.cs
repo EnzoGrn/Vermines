@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using WebSocketSharp;
 using Fusion.Sockets;
 using Fusion;
 using UnityEngine;
