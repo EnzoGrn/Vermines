@@ -1,1 +1,77 @@
-*.mkv filter=lfs diff=lfs merge=lfs -text
+# Normalise les fins de ligne en LF pour tout le code source, quel que soit
+# l'OS/l'éditeur du contributeur. Le projet est déjà ~92% LF (311 fichiers LF
+# contre 27 CRLF) : LF est la norme de fait, pas CRLF.
+* text=auto eol=lf
+
+# Sources C# / config texte : toujours LF, jamais de conversion binaire.
+*.cs      text eol=lf diff=csharp
+*.cginc   text eol=lf
+*.shader  text eol=lf
+*.compute text eol=lf
+*.json    text eol=lf
+*.xml     text eol=lf
+*.txt     text eol=lf
+*.md      text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+
+# Assets Unity texte (YAML) : LF, sinon chaque ouverture d'éditeur Unity sur
+# une autre plateforme regénère un diff de fin de ligne massif sur des .meta
+# et .asset qui n'ont pourtant pas changé de contenu.
+*.meta      text eol=lf
+*.asset     text eol=lf
+*.prefab    text eol=lf
+*.unity     text eol=lf
+*.mat       text eol=lf
+*.physicMaterial   text eol=lf
+*.physicsMaterial2D text eol=lf
+*.anim      text eol=lf
+*.controller text eol=lf
+*.mask      text eol=lf
+*.playable  text eol=lf
+*.asmdef    text eol=lf
+*.asmref    text eol=lf
+
+# Binaires Unity : jamais de conversion de fin de ligne (corromprait le fichier).
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.psd   binary
+*.tga   binary
+*.tif   binary
+*.exr   binary
+*.hdr   binary
+*.dds   binary
+
+*.fbx   binary
+*.obj   binary
+*.blend binary
+*.3ds   binary
+*.max   binary
+
+*.wav   binary
+*.mp3   binary
+*.ogg   binary
+*.aif   binary
+
+*.mp4   binary
+*.mov   binary
+*.webm  binary
+
+*.dll   binary
+*.pdb   binary
+*.so    binary
+*.dylib binary
+*.a     binary
+
+*.ttf   binary
+*.otf   binary
+*.fnt   binary
+
+*.zip   binary
+*.7z    binary
+*.rar   binary
+
+# ScriptableObjects / bundles binaires Unity (non-YAML)
+*.unitypackage binary
