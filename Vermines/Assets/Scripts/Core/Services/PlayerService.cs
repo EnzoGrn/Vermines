@@ -26,19 +26,30 @@ namespace Vermines.Core.Services {
         {
             PlayerData = LoadPlayer();
 
-            try {
-                PlayerData.UnityID = await GetUnityID();
-            } catch (Exception exception) {
-                PlayerData.UnityID = default;
+            try
+            {
+                try
+                {
+                    PlayerData.UnityID = await GetUnityID();
+                }
+                catch (Exception exception)
+                {
+                    PlayerData.UnityID = default;
 
-                Debug.LogException(exception);
-                Debug.LogWarning("Exception raised when initializing Unity Services. Please check if a Unity Project ID is linked in project settings.");
+                    Debug.LogException(exception);
+                    Debug.LogWarning("Exception raised when initializing Unity Services. Please check if a Unity Project ID is linked in project settings.");
+                }
+
+                PlayerData.Lock();
+
+                SavePlayer();
             }
-
-            PlayerData.Lock();
-
-            SavePlayer();
+            catch (Exception exception)
+            {
+                Debug.LogError($"[PlayerService] Initialize a échoué après GetUnityID (Lock/Save) : {exception}");
+            }
         }
+
 
         void IGlobalService.Deinitialize()
         {

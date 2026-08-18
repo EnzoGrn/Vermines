@@ -85,9 +85,19 @@ namespace Vermines.Menu.View {
 
             Open<UIMainMenuView>();
 
-            if (camera)
+            if (camera == null)
+                return;
+
+            try
+            {
                 await OnCameraCloseAsync(camera);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[UITavernView] OnCameraCloseAsync a échoué : {ex}");
+            }
         }
+
 
         private async Task OnCameraCloseAsync(MainMenuCamera camera)
         {
