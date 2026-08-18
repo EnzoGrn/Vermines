@@ -75,3 +75,6 @@
 
 # ScriptableObjects / bundles binaires Unity (non-YAML)
 *.unitypackage binary
+
+Assets/Photon/** -text
+Assets/OMGG/** -text
