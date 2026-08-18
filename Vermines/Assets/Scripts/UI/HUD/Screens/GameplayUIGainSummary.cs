@@ -138,6 +138,7 @@ namespace Vermines.UI.Screen
         /// </summary>
         protected virtual void OnCloseButtonPressed()
         {
+            Controller.RemoveLastScreen();
             Controller.Hide();
 
             List<ICard> playedCards = PlayerController.Local.Deck.PlayedCards;
