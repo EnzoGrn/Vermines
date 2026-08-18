@@ -18,7 +18,7 @@ namespace Vermines.Core.Network {
         public NetworkSceneInfo    Scene;
         public UnityScene          LoadedScene;
         public NetworkSceneManager SceneManager;
-        public NetworkObjectPool   NetworkPool;
+        public NetworkObjectFactory NetworkPool;
         public SceneContext        Context;
 
         public int ConnectionTries   = 3;
