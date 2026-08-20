@@ -18,6 +18,8 @@ namespace Vermines.Menu.CustomLobby {
 
             AddService(Context.UI);
 
+            if (Context.Runner == null)
+                return;
             List<IContextBehaviour> contextBehaviours = Context.Runner.SimulationUnityScene.GetComponents<IContextBehaviour>(true);
 
             foreach (IContextBehaviour behaviour in contextBehaviours)

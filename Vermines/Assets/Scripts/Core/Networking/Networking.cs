@@ -142,6 +142,8 @@ namespace Vermines.Core.Network {
 
             if (_CurrentSession != null)
                 _CurrentSession.ConnectionRequested = false;
+            else if (_Coroutine == null)
+                _Coroutine = StartCoroutine(LoadMenuCoroutine());
             ErrorStatus = errorStatus;
         }
 
@@ -150,6 +152,16 @@ namespace Vermines.Core.Network {
             Log($"StopGameOnDisconnect()");
 
             _StopGameOnDisconnect = true;
+        }
+
+        /// <summary>
+        /// Loads the Matchmaking scene without Fusion so the player can search for a match immediately.
+        /// </summary>
+        public void EnterMatchmakingSearch(string scenePath)
+        {
+            if (_Coroutine != null)
+                return;
+            _Coroutine = StartCoroutine(EnterMatchmakingSearchCoroutine(scenePath));
         }
 
         #endregion
@@ -765,6 +777,91 @@ namespace Vermines.Core.Network {
             _IsChangeScene = false;
 
             yield break;
+        }
+
+        private IEnumerator EnterMatchmakingSearchCoroutine(string scenePath)
+        {
+            Status            = "matchmaking";
+            StatusDescription = "loading_matchmaking_scene";
+
+            yield return ShowLoadingSceneCoroutine(true);
+
+            List<UnityScene> scenesToUnload = GetScenesToUnload();
+
+            foreach (UnityScene s in scenesToUnload) {
+                Scene currentScene = s.GetComponent<Scene>();
+
+                if (currentScene != null) {
+                    Log($"Deinitializing Scene.");
+
+                    currentScene.Deinitialize();
+                }
+
+                Log($"Unloading scene {s.name}");
+
+                yield return PersistentSceneService.Instance.UnloadScene(s.name);
+                yield return null;
+            }
+
+            yield return PersistentSceneService.Instance.LoadSceneAdditive(scenePath);
+
+            UnityScene newScene = SceneManager.GetSceneByName(scenePath);
+            float       timeout = Time.realtimeSinceStartup + 30f;
+
+            while (!newScene.IsValid() || !newScene.isLoaded) {
+                newScene = SceneManager.GetSceneByName(scenePath);
+
+                if (Time.realtimeSinceStartup >= timeout) {
+                    Debug.LogError($"Timeout waiting for scene {scenePath} to be loaded.");
+
+                    _Coroutine = null;
+
+                    yield return LoadMenuCoroutine();
+                    yield break;
+                }
+
+                yield return null;
+            }
+
+            PersistentSceneService.Instance.SwitchToScene(scenePath);
+
+            NetworkObject[] networkObjects = FindObjectsByType<NetworkObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+            for (int i = 0; i < networkObjects.Length; i++) {
+                if (networkObjects[i] != null)
+                    Destroy(networkObjects[i].gameObject);
+            }
+
+            Scene scene = newScene.GetComponent<Scene>(true);
+
+            if (scene == null) {
+                Debug.LogError($"Scene component missing on {scenePath}.");
+
+                _Coroutine = null;
+
+                yield return LoadMenuCoroutine();
+                yield break;
+            }
+
+            scene.PrepareContext();
+
+            SceneContext context = scene.Context;
+
+            context.IsVisible  = true;
+            context.HasInput   = true;
+            context.Runner     = null;
+            context.PeerUserID = Global.PlayerService.PlayerData.UserID;
+
+            scene.Initialize();
+
+            yield return scene.Activate();
+            yield return ShowLoadingSceneCoroutine(false);
+
+            Status            = string.Empty;
+            StatusDescription = string.Empty;
+            _Coroutine        = null;
+
+            Log($"EnterMatchmakingSearchCoroutine() finished.");
         }
 
         private IEnumerator LoadMenuCoroutine()

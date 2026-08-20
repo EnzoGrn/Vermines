@@ -4,10 +4,12 @@ using UnityEngine;
 namespace Vermines.Menu.View {
 
     using Vermines.Menu.Tavern;
+    using Vermines.UI.Dialog;
     using Vermines.UI.Core;
     using Vermines.UI;
-    using Vermines.Core;
     using Vermines.Characters;
+    using Vermines.Extension;
+    using Vermines.Core;
 
     public class UITavernView : UICloseView {
 
@@ -110,9 +112,18 @@ namespace Vermines.Menu.View {
             Open<UIPartyMenuView>();
         }
 
-        private async void OnQuickPlayButton()
+        private void OnQuickPlayButton()
         {
-            await Context.Matchmaking.FindMatchAsync(Context.MatchmakingScenePath);
+            if (!Global.Settings.Cultists.IsValidCultistID(PlayerCultist)) {
+                var dialog = Open<UIYesNoDialog>();
+
+                dialog.Title.SetTextSafe("CULTIST REQUIRED");
+                dialog.Description.SetTextSafe("Select a cultist before searching for a match.");
+
+                return;
+            }
+
+            Global.Networking.EnterMatchmakingSearch(Context.MatchmakingScenePath);
         }
 
         public void OnCultistSelected(Cultist cultist)

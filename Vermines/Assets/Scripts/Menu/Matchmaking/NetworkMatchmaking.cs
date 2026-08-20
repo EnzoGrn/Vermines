@@ -1,11 +1,12 @@
-using Fusion;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
+using Fusion;
 
 namespace Vermines.Menu.Matchmaking {
 
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Characters;
+    using Vermines.Core.Services;
     using Vermines.Core;
 
     public class NetworkMatchmaking : ContextBehaviour, IPlayerJoined, IPlayerLeft {
@@ -30,6 +31,20 @@ namespace Vermines.Menu.Matchmaking {
 
         private readonly Dictionary<PlayerRef, CardFamily> _PlayerFamilies = new();
 
+        public int PlayerCount => _ActivePlayers.Count;
+
+        public int MaxPlayers
+        {
+            get
+            {
+                if (Runner != null && Runner.SessionInfo != null && Runner.SessionInfo.MaxPlayers > 0)
+                    return Runner.SessionInfo.MaxPlayers;
+                return MatchmakerTicketClient.DefaultMaxPlayers;
+            }
+        }
+
+        public event Action<int, int> PlayersChanged;
+
         #endregion
 
         #region Methods
@@ -44,12 +59,16 @@ namespace Vermines.Menu.Matchmaking {
             _TimeoutTimer   = 0f;
 
             Log.Info("[Matchmaking] Initialized and waiting for players...");
+
+            NotifyPlayersChanged();
         }
 
         public void Activate()
         {
             _IsActive     = true;
             _TimeoutTimer = 0f;
+
+            NotifyPlayersChanged();
         }
 
         public void LeaveGame()
@@ -66,19 +85,18 @@ namespace Vermines.Menu.Matchmaking {
 
                 if (_StartTimer >= _StartDelay)
                     StartGame();
-            }
-            else
+            } else {
                 _StartTimer = 0f;
+            }
 
             if (_ActivePlayers.Count <= 1 && !_IsGameStarting) {
                 _TimeoutTimer += Runner.DeltaTime;
 
-
                 if (_TimeoutTimer >= _TimeoutDelay)
                     LeaveGame();
-            }
-            else
+            } else {
                 _TimeoutTimer = 0f;
+            }
         }
 
         private void StartGame()
@@ -91,6 +109,11 @@ namespace Vermines.Menu.Matchmaking {
             RPC_ShowLoadingScreen();
 
             Context.SceneChangeController.RPC_RequestSceneChange(Context.GameScenePath, false, true, GameplayType.Standart, Context.MatchmakingScenePath, _ActivePlayers.Count);
+        }
+
+        private void NotifyPlayersChanged()
+        {
+            PlayersChanged?.Invoke(PlayerCount, MaxPlayers);
         }
 
         #endregion
@@ -109,6 +132,8 @@ namespace Vermines.Menu.Matchmaking {
             _StartTimer   = 0f;
 
             _PlayerFamilies[player] = CardFamily.None;
+
+            NotifyPlayersChanged();
         }
 
         public void PlayerLeft(PlayerRef player)
@@ -118,11 +143,12 @@ namespace Vermines.Menu.Matchmaking {
             if (_ActivePlayers.Contains(player))
                 _ActivePlayers.Remove(player);
             _PlayerFamilies.Remove(player);
-            
+
             Log.Warn($"[Matchmaking] Player left: {player} (Remaining: {_ActivePlayers.Count})");
 
             if (_ActivePlayers.Count < _MinPlayersToStart)
                 _StartTimer = 0f;
+            NotifyPlayersChanged();
         }
 
         #endregion
