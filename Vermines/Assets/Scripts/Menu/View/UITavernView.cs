@@ -1,13 +1,11 @@
 using System.Threading.Tasks;
 using UnityEngine;
-using Fusion;
 
 namespace Vermines.Menu.View {
 
     using Vermines.Menu.Tavern;
     using Vermines.UI.Core;
     using Vermines.UI;
-    using Vermines.Core.Network;
     using Vermines.Core;
     using Vermines.Characters;
 
@@ -112,16 +110,9 @@ namespace Vermines.Menu.View {
             Open<UIPartyMenuView>();
         }
 
-        private void OnQuickPlayButton()
+        private async void OnQuickPlayButton()
         {
-            SessionRequest session = new() {
-                GameMode = GameMode.AutoHostOrClient,
-                GameplayType = GameplayType.Standart,
-                MaxPlayers = 4,
-                ScenePath = Context.MatchmakingScenePath
-            };
-
-            Context.Matchmaking.CreateSession(session, isCustom: false);
+            await Context.Matchmaking.FindMatchAsync(Context.MatchmakingScenePath);
         }
 
         public void OnCultistSelected(Cultist cultist)

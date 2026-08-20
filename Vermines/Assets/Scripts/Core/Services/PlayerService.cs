@@ -18,6 +18,9 @@ namespace Vermines.Core.Services {
 
         public PlayerData PlayerData { get; set; }
 
+        public bool IsAuthenticated { get; private set; }
+        public bool IsAuthenticating { get; private set; }
+
         #endregion
 
         #region Initialize
@@ -26,15 +29,12 @@ namespace Vermines.Core.Services {
         {
             PlayerData = LoadPlayer();
 
-            try {
-                PlayerData.UnityID = await GetUnityID();
-            } catch (Exception exception) {
+            IsAuthenticated = await EnsureAuthenticatedAsync();
+
+            if (!IsAuthenticated)
                 PlayerData.UnityID = default;
-
-                Debug.LogException(exception);
-                Debug.LogWarning("Exception raised when initializing Unity Services. Please check if a Unity Project ID is linked in project settings.");
-            }
-
+            else
+                PlayerData.UnityID = AuthenticationService.Instance.PlayerId;
             PlayerData.Lock();
 
             SavePlayer();
@@ -47,6 +47,49 @@ namespace Vermines.Core.Services {
             SavePlayer();
 
             PlayerDataChanged = null;
+            IsAuthenticated   = false;
+        }
+
+        #endregion
+
+        #region Authentication
+
+        public async Task<bool> EnsureAuthenticatedAsync()
+        {
+            if (IsAuthenticated && AuthenticationService.Instance.IsAuthorized)
+                return true;
+            #if UNITY_EDITOR
+                if (UnityEditor.CloudProjectSettings.projectId.IsNullOrEmpty()) {
+                    Debug.LogWarning("Unity Project ID is not linked in project settings. Unity Services authentication is unavailable.");
+
+                    return false;
+                }
+            #endif
+
+            IsAuthenticating = true;
+
+            try {
+                if (UnityServices.State == ServicesInitializationState.Uninitialized)
+                    await UnityServices.InitializeAsync();
+                if (!AuthenticationService.Instance.IsAuthorized) {
+                    AuthenticationService.Instance.ClearSessionToken();
+
+                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                }
+
+                IsAuthenticated = true;
+
+                return true;
+            } catch (Exception exception) {
+                IsAuthenticated = false;
+
+                Debug.LogException(exception);
+                Debug.LogWarning("Exception raised when initializing Unity Services. Please check if a Unity Project ID is linked in project settings.");
+
+                return false;
+            } finally {
+                IsAuthenticating = false;
+            }
         }
 
         #endregion
@@ -62,24 +105,6 @@ namespace Vermines.Core.Services {
             #endif
 
             return userID;
-        }
-
-        private async Task<string> GetUnityID()
-        {
-            #if UNITY_EDITOR
-                if (UnityEditor.CloudProjectSettings.projectId.IsNullOrEmpty())
-                        return default;
-            #endif
-
-            if (UnityServices.State == ServicesInitializationState.Uninitialized)
-                await UnityServices.InitializeAsync();
-            if (!AuthenticationService.Instance.IsAuthorized) {
-                AuthenticationService.Instance.ClearSessionToken();
-
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            }
-
-            return AuthenticationService.Instance.PlayerId;
         }
 
         #endregion

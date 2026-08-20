@@ -1,5 +1,9 @@
+using Unity.Services.Matchmaker.Models;
+using Unity.Services.Authentication;
+using Unity.Services.Matchmaker;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 using System;
 using Fusion.Sockets;
 using Fusion;
@@ -13,14 +17,27 @@ namespace Vermines.Core {
 
     public class Matchmaking : SceneService, INetworkRunnerCallbacks {
 
+        #region Constant
+
+        private const string DefaultQueueName = "default-queue";
+
+        private const int TicketPollDelayMs = 1000;
+
+        #endregion
+
         #region Attributes
 
         public bool IsJoiningToLobby;
         public bool IsConnectedToLobby;
+        public bool IsSearchingForMatch;
 
         public Action LobbyJoined;
         public Action LobbyJoinFailed;
         public Action LobbyLeft;
+        public Action MatchmakingStarted;
+        public Action<string> MatchFound;
+        public Action MatchmakingCancelled;
+        public Action<string> MatchmakingFailed;
 
         public event Action<NetworkRunner, NetworkObject, PlayerRef> ObjectExitAOI;
         public event Action<NetworkRunner, NetworkObject, PlayerRef> ObjectEnterAOI;
@@ -46,6 +63,10 @@ namespace Vermines.Core {
         private NetworkRunner _LobbyRunner;
 
         private string _LobbyName;
+
+        private string _ActiveTicketId;
+
+        private CancellationTokenSource _MatchmakingCancellation;
 
         #endregion
 
@@ -77,6 +98,95 @@ namespace Vermines.Core {
             };
 
             Global.Networking.StartGame(request);
+        }
+
+        public async Task FindMatchAsync(string scenePath)
+        {
+            if (IsSearchingForMatch)
+                return;
+            if (!Global.Settings.Cultists.IsValidCultistID(Context.PlayerData.CultistID)) {
+                MatchmakingFailed?.Invoke("A cultist must be selected before matchmaking.");
+
+                return;
+            }
+
+            if (!await Global.PlayerService.EnsureAuthenticatedAsync()) {
+                MatchmakingFailed?.Invoke("Unity Services authentication failed.");
+
+                return;
+            }
+
+            IsSearchingForMatch = true;
+
+            MatchmakingStarted?.Invoke();
+
+            _MatchmakingCancellation = new CancellationTokenSource();
+
+            try {
+                string queueName = GetQueueName();
+
+                var customData = new Dictionary<string, object> {
+                    { "CultistID", Context.PlayerData.CultistID }
+                };
+
+                var player = new Unity.Services.Matchmaker.Models.Player(AuthenticationService.Instance.PlayerId, customData);
+
+                CreateTicketResponse ticketResponse = await MatchmakerService.Instance.CreateTicketAsync(new List<Unity.Services.Matchmaker.Models.Player> {
+                    player
+                }, new CreateTicketOptions(queueName));
+
+                _ActiveTicketId = ticketResponse.Id;
+
+                string matchId = await PollForMatchAsync(ticketResponse.Id, _MatchmakingCancellation.Token);
+
+                if (string.IsNullOrEmpty(matchId))
+                    return;
+                int maxPlayers = await GetMatchedPlayerCountAsync(matchId);
+
+                var request = new SessionRequest {
+                    UserID       = Context.PlayerData.UserID,
+                    GameMode     = GameMode.AutoHostOrClient,
+                    GameplayType = GameplayType.Standart,
+                    SessionName  = matchId,
+                    ScenePath    = scenePath,
+                    MaxPlayers   = maxPlayers,
+                    IsCustom     = false
+                };
+
+                CreateSession(request, isCustom: false);
+
+                MatchFound?.Invoke(matchId);
+            } catch (OperationCanceledException) {
+                MatchmakingCancelled?.Invoke();
+            } catch (Exception exception) {
+                Debug.LogException(exception);
+
+                MatchmakingFailed?.Invoke(exception.Message);
+            } finally {
+                _ActiveTicketId     = null;
+                IsSearchingForMatch = false;
+
+                _MatchmakingCancellation?.Dispose();
+
+                _MatchmakingCancellation = null;
+            }
+        }
+
+        public async Task CancelFindMatchAsync()
+        {
+            _MatchmakingCancellation?.Cancel();
+
+            if (!string.IsNullOrEmpty(_ActiveTicketId)) {
+                try {
+                    await MatchmakerService.Instance.DeleteTicketAsync(_ActiveTicketId);
+                } catch (Exception exception) {
+                    Debug.LogException(exception);
+                }
+
+                _ActiveTicketId = null;
+            }
+
+            IsSearchingForMatch = false;
         }
 
         public async Task JoinLobby(bool force = false)
@@ -111,6 +221,63 @@ namespace Vermines.Core {
 
         #endregion
 
+        #region Matchmaking Helpers
+
+        private static string GetQueueName()
+        {
+            NetworkSettings networkSettings = Global.Settings?.Network;
+            string          queueName       = networkSettings?.QueueName;
+
+            return string.IsNullOrWhiteSpace(queueName) ? DefaultQueueName : queueName;
+        }
+
+        private async Task<string> PollForMatchAsync(string ticketId, CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested) {
+                TicketStatusResponse ticketStatus = await MatchmakerService.Instance.GetTicketAsync(ticketId);
+
+                if (ticketStatus.Type == typeof(MatchIdAssignment) && ticketStatus.Value is MatchIdAssignment matchIdAssignment) {
+                    switch (matchIdAssignment.Status) {
+                        case MatchIdAssignment.StatusOptions.Found:
+                            return matchIdAssignment.MatchId;
+
+                        case MatchIdAssignment.StatusOptions.InProgress:
+                            break;
+
+                        case MatchIdAssignment.StatusOptions.Failed:
+                            throw new InvalidOperationException(string.IsNullOrEmpty(matchIdAssignment.Message) ? "Matchmaking failed." : matchIdAssignment.Message);
+
+                        case MatchIdAssignment.StatusOptions.Timeout:
+                            throw new TimeoutException("Matchmaking timed out.");
+                    }
+                }
+
+                await Task.Delay(TicketPollDelayMs, cancellationToken);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return null;
+        }
+
+        private static async Task<int> GetMatchedPlayerCountAsync(string matchId)
+        {
+            const int defaultMaxPlayers = 4;
+
+            try {
+                StoredMatchmakingResults results = await MatchmakerService.Instance.GetMatchmakingResultsAsync(matchId);
+
+                if (results?.MatchProperties?.MaxPlayers > 0)
+                    return results.MatchProperties.MaxPlayers;
+            } catch (Exception exception) {
+                Debug.LogException(exception);
+            }
+
+            return defaultMaxPlayers;
+        }
+
+        #endregion
+
         #region Interface
 
         protected override void OnInitialize()
@@ -126,19 +293,16 @@ namespace Vermines.Core {
 
         protected override void OnDeinitialize()
         {
+            if (_MatchmakingCancellation != null) {
+                _MatchmakingCancellation.Cancel();
+                _MatchmakingCancellation.Dispose();
+
+                _MatchmakingCancellation = null;
+            }
+
             if (_LobbyRunner != null)
                 _LobbyRunner.RemoveCallbacks(this);
             base.OnDeinitialize();
-        }
-
-        protected override void OnActivate()
-        {
-            base.OnActivate();
-        }
-
-        protected override void OnTick()
-        {
-            base.OnTick();
         }
 
         void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
