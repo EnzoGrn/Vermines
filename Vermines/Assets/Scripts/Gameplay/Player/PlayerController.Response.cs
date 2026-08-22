@@ -157,7 +157,7 @@ namespace Vermines.Player {
 
             if (!hasEffect) {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {
-                    DiscardDropHandler discardDropHandler = FindFirstObjectByType<DiscardDropHandler>();
+                    DiscardDropHandler discardDropHandler = DiscardDrop;
 
                     if (discardDropHandler != null)
                         discardDropHandler.SetLatestDiscardedCard(card);
@@ -188,7 +188,7 @@ namespace Vermines.Player {
 
             if (card.Data.HasChoiceEffect(EffectType.Discard)) {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {
-                    GameplayUIController uiController = FindFirstObjectByType<GameplayUIController>();
+                    GameplayUIController uiController = GameplayUI;
 
                     if (uiController != null)
                         uiController.ShowWithParams<GameplayUIChoiceEffect, ICard>(card);
@@ -328,7 +328,7 @@ namespace Vermines.Player {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
             if (Object.InputAuthority == Context.Runner.LocalPlayer) {
-                GameplayUIController uiController = FindFirstObjectByType<GameplayUIController>();
+                GameplayUIController uiController = GameplayUI;
 
                 if (uiController != null)
                     uiController.Hide<GameplayUIChoiceEffect>();

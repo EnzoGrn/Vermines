@@ -279,6 +279,7 @@ namespace Vermines.Core {
 
         protected virtual void OnInitialize()
         {
+            Debug.Log($"[INIT] OnInitialize | hasAuth={HasStateAuthority} frame={Time.frameCount}");
             _RoutineManager = FindFirstObjectByType<RoutineManager>();
 
             if (_RoutineManager)
@@ -295,7 +296,7 @@ namespace Vermines.Core {
                 Activate();
             }
 
-            GameEvents.OnGameInitialized.Invoke();
+            //GameEvents.OnGameInitialized.Invoke();
             // if (PhaseManager.CurrentPhase == PhaseType.None)
             //    PhaseManager.OnGameStart();
         }

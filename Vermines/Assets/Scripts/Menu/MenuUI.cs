@@ -1,12 +1,7 @@
-using WebSocketSharp;
 
 namespace Vermines.Menu {
 
     using Vermines.Core.UI;
-    using Vermines.Core;
-    using Vermines.UI.Dialog;
-    using Vermines.Extension;
-    using Vermines.Core.Network;
 
     public class MenuUI : SceneUI {
 

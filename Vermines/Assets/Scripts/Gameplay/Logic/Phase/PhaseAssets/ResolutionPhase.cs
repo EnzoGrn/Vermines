@@ -34,13 +34,11 @@ namespace Vermines.Gameplay.Phases {
 
             player.Deck.MergeToolDiscard(_Context.NetworkGame.Seed);
 
+            PlayerDeck merged = player.Deck;
+            player.UpdateDeck(merged);
+
             for (int i = player.Deck.Hand.Count; i < NumberOfCardsToHaveInHand; i++) {
-                ICommand drawCardCommand = new DrawCommand(player);
-
-                CommandResponse command = CommandInvoker.ExecuteCommand(drawCardCommand);
-
-                if (command.Status == CommandStatus.Success && _Context.Runner.LocalPlayer == playerRef)
-                    GameEvents.InvokeOnDrawCard(player.Deck.Hand.Last());
+                CommandInvoker.ExecuteCommand(new DrawCommand(player));
             }
 
             StopEffects(player);

@@ -2,13 +2,13 @@ using System.Threading.Tasks;
 using System;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
-using WebSocketSharp;
 using UnityEngine;
 
 namespace Vermines.Core.Services {
 
     using Vermines.Core.Player;
     using Vermines.Utils;
+    using Vermines.Extension;
 
     public class PlayerService : IGlobalService {
 
@@ -31,13 +31,17 @@ namespace Vermines.Core.Services {
 
             IsAuthenticated = await EnsureAuthenticatedAsync();
 
-            if (!IsAuthenticated)
-                PlayerData.UnityID = default;
-            else
-                PlayerData.UnityID = AuthenticationService.Instance.PlayerId;
-            PlayerData.Lock();
+            try {
+                if (!IsAuthenticated)
+                    PlayerData.UnityID = default;
+                else
+                    PlayerData.UnityID = AuthenticationService.Instance.PlayerId;
+                PlayerData.Lock();
 
-            SavePlayer();
+                SavePlayer();
+            } catch (Exception exception) {
+                Debug.LogError($"[PlayerService] Initialize a échoué après authentification (Lock/Save) : {exception}");
+            }
         }
 
         void IGlobalService.Deinitialize()

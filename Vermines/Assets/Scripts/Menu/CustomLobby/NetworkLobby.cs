@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Fusion.Sockets;
 using Fusion;
 using UnityEngine;
-using WebSocketSharp;
 
 namespace Vermines.Menu.CustomLobby {
 
@@ -11,8 +10,6 @@ namespace Vermines.Menu.CustomLobby {
     using Vermines.Core.Network;
     using Vermines.Utils;
     using System.Linq;
-    using Vermines.Gameplay.Core;
-    using Vermines.Player;
 
     public sealed class NetworkLobby : ContextBehaviour, IPlayerJoined, IPlayerLeft {
 
@@ -39,6 +36,8 @@ namespace Vermines.Menu.CustomLobby {
         private LobbyManager _LobbyManager;
 
         private bool _IsActive;
+
+        private const int PLAYER_SWEEP_INTERVAL = 16;
 
         #endregion
 
@@ -194,60 +193,70 @@ namespace Vermines.Menu.CustomLobby {
         {
             if (Runner == null)
                 return;
-            _AllPlayers.Clear();
 
-            Runner.GetAllBehaviours<LobbyPlayerController>(_AllPlayers);
+            if (Runner.IsForward && (Runner.Tick % PLAYER_SWEEP_INTERVAL) == 0)
+            {
+                _AllPlayers.Clear();
 
-            if (_AllPlayers == null || _AllPlayers.Count == 0)
-                return;
-            for (int i = _AllPlayers.Count - 1; i >= 0; i--) {
-                LobbyPlayerController player = _AllPlayers[i];
-                PlayerRef     inputAuthority = player.Object.InputAuthority;
+                Runner.GetAllBehaviours<LobbyPlayerController>(_AllPlayers);
 
-                if (inputAuthority.IsRealPlayer) {
-                    if (HasInputAuthority && !Runner.IsPlayerValid(inputAuthority)) {
-                        _AllPlayers.RemoveAt(i);
+                if (_AllPlayers != null && _AllPlayers.Count > 0)
+                {
+                    for (int i = _AllPlayers.Count - 1; i >= 0; i--)
+                    {
+                        LobbyPlayerController player = _AllPlayers[i];
+                        PlayerRef inputAuthority = player.Object.InputAuthority;
 
-                        OnPlayerLeft(player);
+                        if (inputAuthority.IsRealPlayer)
+                        {
+                            if (HasStateAuthority && !Runner.IsPlayerValid(inputAuthority))
+                            {
+                                _AllPlayers.RemoveAt(i);
+
+                                OnPlayerLeft(player);
+                            }
+                        }
+                        else
+                        {
+                            _AllPlayers.RemoveAt(i);
+                        }
                     }
-                } else {
-                    _AllPlayers.RemoveAt(i);
+
+                    ActivePlayers.Clear();
+
+                    foreach (LobbyPlayerController player in _AllPlayers)
+                    {
+                        if (player.UserID.IsNullOrEmpty())
+                            continue;
+                        ActivePlayers.Add(player);
+                    }
                 }
-            }
-
-            ActivePlayers.Clear();
-
-            foreach (LobbyPlayerController player in _AllPlayers) {
-                if (player.UserID.IsNullOrEmpty())
-                    continue;
-                ActivePlayers.Add(player);
             }
 
             if (!HasStateAuthority || _PendingPlayers.Count == 0)
                 return;
-            var playersToRemove = ListPool.Get<PlayerRef>(128);
 
-            foreach (var playerPair in _PendingPlayers) {
-                var playerRef = playerPair.Key;
-                var player    = playerPair.Value;
+            List<PlayerRef> playersToRemove = ListPool.Get<PlayerRef>(128);
+
+            foreach (var kvp in _PendingPlayers)
+            {
+                PlayerRef playerRef = kvp.Key;
+                LobbyPlayerController player = kvp.Value;
 
                 if (!player.IsInitialized)
                     continue;
                 playersToRemove.Add(playerRef);
 
                 player.Refresh();
-
                 Runner.SetPlayerObject(playerRef, player.Object);
 
                 #if UNITY_EDITOR
                     player.gameObject.name = $"Player {player.Nickname}";
                 #endif
-
-                _LobbyManager.PlayerJoined(player);
             }
 
-            for (int i = 0; i < playersToRemove.Count; i++)
-                _PendingPlayers.Remove(playersToRemove[i]);
+            foreach (PlayerRef playerToRemove in playersToRemove)
+                _PendingPlayers.Remove(playerToRemove);
             ListPool.Return(playersToRemove);
         }
 

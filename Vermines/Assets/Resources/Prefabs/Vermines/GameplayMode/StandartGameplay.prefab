@@ -49,12 +49,13 @@ MonoBehaviour:
   _Type: 0
   SoulsLimit: 100
   MaxEloquence: 20
-  BonusSoulsOnFamily: 5
+  BonusSoulsPerFamilyCardSacrified: 2
   PhaseManager: {fileID: 2002843721064209688}
   _BaseShopData: {fileID: 11400000, guid: da984adf5b7938e4f8143513dfe0b094, type: 2}
   _PlayerTurnOrder: []
   _CurrentPlayerIndex: 0
   _TotalTurnPlayed: 0
+  _EndGameTriggerTurn: 0
   _State: 0
 --- !u!114 &2002843721064209688
 MonoBehaviour:
@@ -68,7 +69,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd71a62a739ffa74cb90c79f0c584fc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _CurrentPhase: 1
+  _CurrentPhase: -1
   phaseEntries:
   - phaseType: 1
     phaseAsset: {fileID: 11400000, guid: bc7aa5203e724e14d90cea4e8d89882e, type: 2}

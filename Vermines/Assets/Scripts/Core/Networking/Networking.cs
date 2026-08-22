@@ -6,7 +6,6 @@ using System.Collections;
 using System;
 using Fusion.Sockets;
 using Fusion;
-using WebSocketSharp;
 
 namespace Vermines.Core.Network {
 
@@ -29,6 +28,8 @@ namespace Vermines.Core.Network {
         public const string TYPE_KEY     = "type";
         public const string CUSTOM_KEY   = "custom";
         public const string GAME_SESSION = "game_s";
+
+        private const float CONNECTION_LOST_GRACE = 3f;
 
         #endregion
 
@@ -199,6 +200,9 @@ namespace Vermines.Core.Network {
                 GamePeer    peer = peers[i];
                 bool isConnected = peer.IsConnected;
 
+                if (isConnected)
+                    peer.DisconnectDetectedAt = null;
+
                 if (_CurrentSession.ConnectionRequested && !peer.Loaded && !isConnected && peer.CanConnect) { // First connect or reconnect after failed connect
                     Status = !peer.WasConnected ? "starting" : "reconnecting";
 
@@ -216,6 +220,11 @@ namespace Vermines.Core.Network {
 
                     return;
                 } else if (peer.Loaded && !isConnected) { // Connection Lost
+                    peer.DisconnectDetectedAt ??= Time.realtimeSinceStartup;
+
+                    if (Time.realtimeSinceStartup - peer.DisconnectDetectedAt.Value < CONNECTION_LOST_GRACE)
+                        continue;
+
                     Status = "connexion_lost";
 
                     Log($"Starting DisconnectPeerCoroutine() - {Status} - Peer {peer.ID}");
@@ -238,350 +247,379 @@ namespace Vermines.Core.Network {
 
         #region Peers
 
-        private IEnumerator ConnectPeerCoroutine(GamePeer peer, float connectionTimeout = 10f, float loadTimeout = 45f)
+
+
+        private IEnumerator ConnectPeerCoroutine(GamePeer peer, float connectionTimeout = 20f, float loadTimeout = 45f)
         {
             peer.Loaded = true;
 
-            if (peer.WasConnected)
-                peer.ReconnectionTries--;
-            else
-                peer.ConnectionTries--;
-            StatusDescription = "unloading_current_scene";
+            bool success = false;
 
-            if (!IsSceneLoaded(peer.Request.ScenePath) && !IsSceneLoaded(_LoadingScene)) {
-                Log($"Show loading scene.");
+            try
+            {
+                StatusDescription = "unloading_current_scene";
 
-                yield return ShowLoadingSceneCoroutine(true);
+                if (!IsSceneLoaded(peer.Request.ScenePath) && !IsSceneLoaded(_LoadingScene))
+                {
+                    Log($"Show loading scene.");
 
-                List<UnityScene> scenesToUnload = GetScenesToUnload();
+                    yield return ShowLoadingSceneCoroutine(true);
 
-                for (int i = 0; i < _CurrentSession.GamePeers.Length; i++) {
-                    if (scenesToUnload.Contains(_CurrentSession.GamePeers[i].LoadedScene)) {
-                        scenesToUnload.Remove(_CurrentSession.GamePeers[i].LoadedScene);
+                    List<UnityScene> scenesToUnload = GetScenesToUnload();
+
+                    for (int i = 0; i < _CurrentSession.GamePeers.Length; i++)
+                    {
+                        if (scenesToUnload.Contains(_CurrentSession.GamePeers[i].LoadedScene))
+                        {
+                            scenesToUnload.Remove(_CurrentSession.GamePeers[i].LoadedScene);
+
+                            break;
+                        }
+                    }
+
+                    foreach (UnityScene s in scenesToUnload)
+                    {
+                        Scene currentScene = s.GetComponent<Scene>();
+
+                        if (currentScene != null)
+                        {
+                            Log($"Deinitializing Scene.");
+
+                            currentScene.Deinitialize();
+                        }
+
+                        Log($"Unloading scene {s.name}");
+
+                        yield return PersistentSceneService.Instance.UnloadScene(s.name);
+                        yield return null;
+                    }
+                }
+                float baseTime = Time.realtimeSinceStartup;
+                float limitTime = baseTime + connectionTimeout;
+                string peerName = $"{peer.GameMode}#{peer.ID}";
+
+                Debug.LogWarning($"Starting {peerName} ...");
+
+                StatusDescription = "starting_network_connection";
+
+                yield return null;
+
+                peer.NetworkPool = new();
+
+                NetworkRunner runner = Instantiate(Global.Settings.RunnerPrefab);
+
+                runner.name = peerName;
+
+                runner.EnableVisibilityExtension();
+
+                peer.Runner = runner;
+                peer.SceneManager = runner.GetComponent<NetworkSceneManager>();
+                peer.LoadedScene = default;
+
+                StartGameArgs startGameArgs = new()
+                {
+                    GameMode = peer.GameMode,
+                    SessionName = peer.Request.SessionName,
+                    Scene = peer.Scene,
+                    ObjectProvider = peer.NetworkPool,
+                    CustomLobbyName = peer.Request.CustomLobby,
+                    SceneManager = peer.SceneManager,
+                    EnableClientSessionCreation = true
+                };
+                if (peer.Request.MaxPlayers > 0)
+                    startGameArgs.PlayerCount = peer.Request.MaxPlayers;
+                if (peer.GameMode == GameMode.Server || peer.GameMode == GameMode.Host)
+                    startGameArgs.SessionProperties = CreateSessionProperties(peer.Request);
+                if (!peer.Request.IPAddress.IsNullOrEmpty())
+                    startGameArgs.Address = NetAddress.CreateFromIpPort(peer.Request.IPAddress, peer.Request.Port);
+                else if (peer.Request.Port > 0)
+                    startGameArgs.Address = NetAddress.Any(peer.Request.Port);
+                Log($"NetworkRunner.StartGame().");
+
+                var startGameTask = runner.StartGame(startGameArgs);
+
+                while (!startGameTask.IsCompleted)
+                {
+                    yield return null;
+
+                    if (Time.realtimeSinceStartup >= limitTime)
+                    {
+                        Debug.LogError($"{peerName} start timeout! IsCompleted: {startGameTask.IsCompleted} IsCanceled: {startGameTask.IsCanceled} IsFaulted: {startGameTask.IsFaulted}");
+
+                        break;
+                    }
+
+                    if (!_CurrentSession.ConnectionRequested)
+                    {
+                        Log($"Stopping coroutine (requested by user");
 
                         break;
                     }
                 }
 
-                foreach (UnityScene s in scenesToUnload) {
-                    Scene currentScene = s.GetComponent<Scene>();
-
-                    if (currentScene != null) {
-                        Log($"Deinitializing Scene.");
-
-                        currentScene.Deinitialize();
-                    }
-
-                    Log($"Unloading scene {s.name}");
-
-                    yield return PersistentSceneService.Instance.UnloadScene(s.name);
-                    yield return null;
-                }
-            }
-            float baseTime  = Time.realtimeSinceStartup;
-            float limitTime = baseTime + connectionTimeout;
-            string peerName = $"{peer.GameMode}#{peer.ID}";
-
-            Debug.LogWarning($"Starting {peerName} ...");
-
-            StatusDescription = "starting_network_connection";
-
-            yield return null;
-
-            peer.NetworkPool = new();
-
-            NetworkRunner   runner = Instantiate(Global.Settings.RunnerPrefab);
-
-            runner.name = peerName;
-
-            runner.EnableVisibilityExtension();
-
-            peer.Runner       = runner;
-            peer.SceneManager = runner.GetComponent<NetworkSceneManager>();
-            peer.LoadedScene  = default;
-
-            StartGameArgs startGameArgs = new() {
-                GameMode                    = peer.GameMode,
-                SessionName                 = peer.Request.SessionName,
-                Scene                       = peer.Scene,
-                ObjectProvider              = peer.NetworkPool,
-                CustomLobbyName             = peer.Request.CustomLobby,
-                SceneManager                = peer.SceneManager,
-                EnableClientSessionCreation = true
-            };
-            if (peer.Request.MaxPlayers > 0)
-                startGameArgs.PlayerCount = peer.Request.MaxPlayers;
-            if (peer.GameMode == GameMode.Server || peer.GameMode == GameMode.Host)
-                startGameArgs.SessionProperties = CreateSessionProperties(peer.Request);
-            if (!peer.Request.IPAddress.IsNullOrEmpty())
-                startGameArgs.Address = NetAddress.CreateFromIpPort(peer.Request.IPAddress, peer.Request.Port);
-            else if (peer.Request.Port > 0)
-                startGameArgs.Address = NetAddress.Any(peer.Request.Port);
-            Log($"NetworkRunner.StartGame().");
-            
-            var startGameTask = runner.StartGame(startGameArgs);
-
-            while (!startGameTask.IsCompleted) {
-                yield return null;
-
-                if (Time.realtimeSinceStartup >= limitTime) {
-                    Debug.LogError($"{peerName} start timeout! IsCompleted: {startGameTask.IsCompleted} IsCanceled: {startGameTask.IsCanceled} IsFaulted: {startGameTask.IsFaulted}");
-
-                    break;
-                }
-
-                if (!_CurrentSession.ConnectionRequested) {
-                    Log($"Stopping coroutine (requested by user");
-
-                    break;
-                }
-            }
-
-            if (startGameTask.IsCanceled || startGameTask.IsFaulted || !startGameTask.IsCompleted) {
-                Debug.LogError($"{peerName} failed to start!");
-                Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}.");
-
-                yield return DisconnectPeerCoroutine(peer);
-
-                _Coroutine = null;
-
-                yield break;
-            }
-
-            var result = startGameTask.Result;
-
-            Log($"StartGame() Result: {result} - Peer {peer.ID}.");
-
-            if (!result.Ok) {
-                Debug.LogError($"{peerName} failed to start! Result: {result}");
-
-                if (!Application.isBatchMode)
-                    StopGame();
-                if (peer.WasConnected && result.ShutdownReason == ShutdownReason.GameNotFound)
-                    ErrorStatus = STATUS_SERVER_CLOSED;
-                else
-                    ErrorStatus = StringToLabel(result.ShutdownReason.ToString());
-                Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}.");
-
-                yield return DisconnectPeerCoroutine(peer);
-
-                _Coroutine = null;
-
-                yield break;
-            }
-            limitTime += loadTimeout;
-
-            Log($"Waiting for connection - Peer {peer.ID}.");
-
-            StatusDescription = "waiting_server_connection";
-
-            while (!peer.IsConnected) {
-                yield return null;
-
-                if (Time.realtimeSinceStartup >= limitTime) {
-                    Debug.LogError($"{peerName} start timeout! IsCloudReady: {runner.IsCloudReady} IsRunning: {runner.IsRunning}");
+                if (startGameTask.IsCanceled || startGameTask.IsFaulted || !startGameTask.IsCompleted)
+                {
+                    Debug.LogError($"{peerName} failed to start!");
                     Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}.");
 
                     yield return DisconnectPeerCoroutine(peer);
 
-                    _Coroutine = null;
-
                     yield break;
                 }
-            }
-            Log($"Loading gameplay scene - Peer {peer.ID}");
 
-            StatusDescription = "loading_gameplay_scene";
+                var result = startGameTask.Result;
 
-            while (!runner.SimulationUnityScene.IsValid() || !runner.SimulationUnityScene.isLoaded) {
-                Log($"Waiting for NetworkRunner.SimulationUnityScene - Peer {peer.ID}.");
+                Log($"StartGame() Result: {result} - Peer {peer.ID}.");
 
-                yield return null;
+                if (!result.Ok)
+                {
+                    Debug.LogError($"{peerName} failed to start! Result: {result}");
 
-                if (Time.realtimeSinceStartup >= limitTime) {
-                    Debug.LogError($"{peerName} scene load timeout!");
+                    if (!Application.isBatchMode)
+                        StopGame();
+                    if (peer.WasConnected && result.ShutdownReason == ShutdownReason.GameNotFound)
+                        ErrorStatus = STATUS_SERVER_CLOSED;
+                    else
+                        ErrorStatus = StringToLabel(result.ShutdownReason.ToString());
                     Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}.");
 
                     yield return DisconnectPeerCoroutine(peer);
 
-                    _Coroutine = null;
-
                     yield break;
                 }
-            }
+                limitTime += loadTimeout;
 
-            Debug.LogWarning($"{peerName} started in {(Time.realtimeSinceStartup - baseTime):0.00}s");
+                Log($"Waiting for connection - Peer {peer.ID}.");
 
-            peer.LoadedScene = runner.SimulationUnityScene;
+                StatusDescription = "waiting_server_connection";
 
-            StatusDescription = "waiting_gameplay_scene_load";
-
-            var scene = peer.SceneManager.GameplayScene;
-
-            while (scene == null) {
-                Log($"Waiting for GameplayScene - Peer {peer.ID}.");
-
-                yield return null;
-
-                scene = peer.SceneManager.GameplayScene;
-
-                if (Time.realtimeSinceStartup >= limitTime) {
-                    Debug.LogError($"{peerName} GameplayScene query timeout!");
-                    Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}.");
-
-                    yield return DisconnectPeerCoroutine(peer);
-
-                    _Coroutine = null;
-
-                    yield break;
-                }
-            }
-
-            Log($"Scene.PrepareContext() - Peer {peer.ID}");
-
-            scene.PrepareContext();
-
-            var sceneContext = scene.Context;
-
-            sceneContext.IsVisible  = peer.ID == 0;
-            sceneContext.HasInput   = peer.ID == 0;
-            sceneContext.Runner     = peer.Runner;
-            sceneContext.PeerUserID = peer.UserID;
-
-            peer.Context             = sceneContext;
-            peer.NetworkPool.Context = sceneContext;
-
-            StatusDescription = "waiting_networked_game";
-
-            ContextBehaviour networkManager = null;
-
-            if (peer.Request.IsGameSession) {
-                networkManager = scene.GetComponentInChildren<NetworkGame>(true);
-            } else {
-                if (peer.Request.IsCustom)
-                    networkManager = scene.GetComponentInChildren<NetworkLobby>(true);
-                else
-                    networkManager = scene.GetComponentInChildren<NetworkMatchmaking>(true);
-            }
-
-            while (networkManager.Object == null) {
-                Log($"Waiting for NetworkGame - Peer {peer.ID}");
-
-                yield return null;
-
-                if (Time.realtimeSinceStartup >= limitTime) {
-                    Debug.LogError($"{peerName} start timeout! Network game not started properly.");
-                    Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}.");
-
-                    yield return DisconnectPeerCoroutine(peer);
-
-                    _Coroutine = null;
-
-                    yield break;
-                }
-
-                if (!_CurrentSession.ConnectionRequested) {
-                    Log($"Starting DisconnectPeerCoroutine() - Connection is not requested anymore - Peer {peer.ID}.");
-
-                    yield return DisconnectPeerCoroutine(peer);
-
-                    _Coroutine = null;
-
-                    yield break;
-                }
-            }
-
-            StatusDescription = "waiting_gameplay_load";
-
-            Log($"NetworkGame.Initialize() - Peer {peer.ID}");
-
-            NetworkLobby             lobby = null;
-            NetworkMatchmaking matchmaking = null;
-            NetworkGame               game = null;
-
-            if (networkManager is NetworkLobby nl) {
-                nl.Initialize();
-
-                lobby = nl;
-
-                while (scene.Context.Lobby == null) {
-                    Log($"Waiting for LobbyManager - Peer {peer.ID}");
-
+                while (!peer.IsConnected)
+                {
                     yield return null;
 
-                    if (Time.realtimeSinceStartup >= limitTime) {
-                        Debug.LogError($"{peerName} start timeout! LobbyManager not started properly.");
-
-                        Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}");
+                    if (Time.realtimeSinceStartup >= limitTime)
+                    {
+                        Debug.LogError($"{peerName} start timeout! IsCloudReady: {runner.IsCloudReady} IsRunning: {runner.IsRunning}");
+                        Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}.");
 
                         yield return DisconnectPeerCoroutine(peer);
-
-                        _Coroutine = null;
 
                         yield break;
                     }
                 }
-            } else if (networkManager is NetworkMatchmaking nm) {
-                nm.Initialize();
+                Log($"Loading gameplay scene - Peer {peer.ID}");
 
-                matchmaking = nm;
-            } else if (networkManager is NetworkGame ng) {
-                ng.Initialize(peer.Request.GameplayType);
+                StatusDescription = "loading_gameplay_scene";
 
-                game = ng;
-
-                while (scene.Context.GameplayMode == null) {
-                    Log($"Waiting for GameplayMode - Peer {peer.ID}");
+                while (!runner.SimulationUnityScene.IsValid() || !runner.SimulationUnityScene.isLoaded)
+                {
+                    Log($"Waiting for NetworkRunner.SimulationUnityScene - Peer {peer.ID}.");
 
                     yield return null;
 
-                    if (Time.realtimeSinceStartup >= limitTime) {
-                        Debug.LogError($"{peerName} start timeout! Gameplay not started properly.");
-
-                        Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}");
+                    if (Time.realtimeSinceStartup >= limitTime)
+                    {
+                        Debug.LogError($"{peerName} scene load timeout!");
+                        Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}.");
 
                         yield return DisconnectPeerCoroutine(peer);
-
-                        _Coroutine = null;
 
                         yield break;
                     }
                 }
+
+                Debug.LogWarning($"{peerName} started in {(Time.realtimeSinceStartup - baseTime):0.00}s");
+
+                peer.LoadedScene = runner.SimulationUnityScene;
+
+                StatusDescription = "waiting_gameplay_scene_load";
+
+                var scene = peer.SceneManager.GameplayScene;
+
+                while (scene == null)
+                {
+                    Log($"Waiting for GameplayScene - Peer {peer.ID}.");
+
+                    yield return null;
+
+                    scene = peer.SceneManager.GameplayScene;
+
+                    if (Time.realtimeSinceStartup >= limitTime)
+                    {
+                        Debug.LogError($"{peerName} GameplayScene query timeout!");
+                        Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}.");
+
+                        yield return DisconnectPeerCoroutine(peer);
+
+                        yield break;
+                    }
+                }
+
+                Log($"Scene.PrepareContext() - Peer {peer.ID}");
+
+                scene.PrepareContext();
+
+                var sceneContext = scene.Context;
+
+                sceneContext.IsVisible = peer.ID == 0;
+                sceneContext.HasInput = peer.ID == 0;
+                sceneContext.Runner = peer.Runner;
+                sceneContext.PeerUserID = peer.UserID;
+
+                peer.Context = sceneContext;
+                peer.NetworkPool.Context = sceneContext;
+
+                StatusDescription = "waiting_networked_game";
+
+                ContextBehaviour networkManager = null;
+
+                if (peer.Request.IsGameSession)
+                {
+                    networkManager = scene.GetComponentInChildren<NetworkGame>(true);
+                }
+                else
+                {
+                    if (peer.Request.IsCustom)
+                        networkManager = scene.GetComponentInChildren<NetworkLobby>(true);
+                    else
+                        networkManager = scene.GetComponentInChildren<NetworkMatchmaking>(true);
+                }
+
+                while (networkManager.Object == null)
+                {
+                    Log($"Waiting for NetworkGame - Peer {peer.ID}");
+
+                    yield return null;
+
+                    if (Time.realtimeSinceStartup >= limitTime)
+                    {
+                        Debug.LogError($"{peerName} start timeout! Network game not started properly.");
+                        Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}.");
+
+                        yield return DisconnectPeerCoroutine(peer);
+
+                        yield break;
+                    }
+
+                    if (!_CurrentSession.ConnectionRequested)
+                    {
+                        Log($"Starting DisconnectPeerCoroutine() - Connection is not requested anymore - Peer {peer.ID}.");
+
+                        yield return DisconnectPeerCoroutine(peer);
+
+                        yield break;
+                    }
+                }
+
+                StatusDescription = "waiting_gameplay_load";
+
+                Log($"NetworkGame.Initialize() - Peer {peer.ID}");
+
+                NetworkLobby lobby = null;
+                NetworkMatchmaking matchmaking = null;
+                NetworkGame game = null;
+
+                if (networkManager is NetworkLobby nl)
+                {
+                    nl.Initialize();
+
+                    lobby = nl;
+
+                    while (scene.Context.Lobby == null)
+                    {
+                        Log($"Waiting for LobbyManager - Peer {peer.ID}");
+
+                        yield return null;
+
+                        if (Time.realtimeSinceStartup >= limitTime)
+                        {
+                            Debug.LogError($"{peerName} start timeout! LobbyManager not started properly.");
+
+                            Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}");
+
+                            yield return DisconnectPeerCoroutine(peer);
+
+                            yield break;
+                        }
+                    }
+                }
+                else if (networkManager is NetworkMatchmaking nm)
+                {
+                    nm.Initialize();
+
+                    matchmaking = nm;
+                }
+                else if (networkManager is NetworkGame ng)
+                {
+                    ng.Initialize(peer.Request.GameplayType);
+
+                    game = ng;
+
+                    while (scene.Context.GameplayMode == null)
+                    {
+                        Log($"Waiting for GameplayMode - Peer {peer.ID}");
+
+                        yield return null;
+
+                        if (Time.realtimeSinceStartup >= limitTime)
+                        {
+                            Debug.LogError($"{peerName} start timeout! Gameplay not started properly.");
+
+                            Log($"Starting DisconnectPeerCoroutine() - Peer {peer.ID}");
+
+                            yield return DisconnectPeerCoroutine(peer);
+
+                            yield break;
+                        }
+                    }
+                }
+
+                StatusDescription = "activating_scene";
+
+                Log($"Scene.Initialize() - Peer {peer.ID}");
+
+                scene.Initialize();
+
+                Log($"Scene.Activate() - Peer {peer.ID}");
+
+                yield return scene.Activate();
+
+                StatusDescription = "activating_network_game";
+
+                Log($"NetworkGame.Activate() - Peer {peer.ID}");
+
+                lobby?.Activate();
+                matchmaking?.Activate();
+                game?.Activate();
+
+                if (SceneManager.GetSceneByName(_LoadingScene).IsValid())
+                {
+                    yield return new WaitForSeconds(1f);
+
+                    Log($"Hide loading scene");
+
+                    yield return ShowLoadingSceneCoroutine(false);
+                }
+
+                peer.WasConnected = true;
+                success = true;
+
+                Log($"ConnectPeerCoroutine() finished.");
             }
+            finally
+            {
+                bool userCancelled = _CurrentSession == null || !_CurrentSession.ConnectionRequested;
 
-            StatusDescription = "activating_scene";
+                if (!success && !userCancelled)
+                {
+                    if (peer.WasConnected)
+                        peer.ReconnectionTries--;
+                    else
+                        peer.ConnectionTries--;
+                }
 
-            Log($"Scene.Initialize() - Peer {peer.ID}");
-
-            scene.Initialize();
-
-            Log($"Scene.Activate() - Peer {peer.ID}");
-
-            yield return scene.Activate();
-
-            StatusDescription = "activating_network_game";
-
-            Log($"NetworkGame.Activate() - Peer {peer.ID}");
-
-            lobby?.Activate();
-            matchmaking?.Activate();
-            game?.Activate();
-
-            if (SceneManager.GetSceneByName(_LoadingScene).IsValid()) {
-                yield return new WaitForSeconds(1f);
-
-                Log($"Hide loading scene");
-
-                yield return ShowLoadingSceneCoroutine(false);
+                _Coroutine = null;
             }
-
-            if (peer.WasConnected)
-                peer.ReconnectionTries++;
-            peer.WasConnected = true;
-
-            _Coroutine = null;
-
-            Log($"ConnectPeerCoroutine() finished.");
         }
 
         private IEnumerator DisconnectPeerCoroutine(GamePeer peer)
@@ -630,7 +668,7 @@ namespace Vermines.Core.Network {
             yield return ShowLoadingSceneCoroutine(true);
 
             if (shutdownTask != null) {
-                for (float operationTimeout = 10.0f; operationTimeout > 0.0f && !shutdownTask.IsCompleted; operationTimeout -= Time.unscaledTime)
+                for (float operationTimeout = 10.0f; operationTimeout > 0.0f && !shutdownTask.IsCompleted; operationTimeout -= Time.unscaledDeltaTime)
                     yield return null;
             }
             StatusDescription = "unloading_gameplay_scene";

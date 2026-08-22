@@ -32,6 +32,7 @@ namespace Vermines.Gameplay.Phases {
 
         public override void Run(PlayerRef playerRef)
         {
+            Debug.Log($"[GAIN.Run] local={_Context.Runner.LocalPlayer} current={_CurrentPlayer} uiNull={GameObject.FindAnyObjectByType<GameplayUIController>() == null} t={Time.frameCount}");
             GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
             
             if (_Context.GameplayMode.State != Vermines.Core.GameplayMode.GState.Active || gameplayUIController == null) {
@@ -70,8 +71,7 @@ namespace Vermines.Gameplay.Phases {
 
             // Who is the local player? If it's the current player, show the gain summary screen. Otherwise, skip it.
             if (_CurrentPlayer == _Context.Runner.LocalPlayer) {
-
-                gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
+                Debug.Log($"[GAIN.SHOW] current={_CurrentPlayer} phase={_Context.GameplayMode.PhaseManager.CurrentPhase} turnIdx={_Context.GameplayMode.CurrentPlayerIndex} totalTurns={_Context.GameplayMode.TotalTurnPlayed} frame={Time.frameCount}"); gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
                 gameplayUIController.ShowWithParams<GameplayUIGainSummary, GainSummaryData>(_gainSummary, lastScreen);
             }
         }
