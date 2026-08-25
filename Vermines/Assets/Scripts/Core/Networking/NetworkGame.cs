@@ -165,13 +165,24 @@ namespace Vermines.Core {
             ListPool.Return(playersToRemove);
         }
 
-        public void Initialize(GameplayType type, string data = null)
+        public void Initialize(GameplayType type, string data = null, int expectedPlayers = 0)
         {
             if (HasStateAuthority) {
                 var prefab = _ModePrefabs.Find(t => t.Type == type);
 
                 _Gameplay = Runner.Spawn(prefab);
 
+                int expected = expectedPlayers;
+
+                if (expected <= 0) {
+                    GamePeer peer = Global.Networking?.GetPeer(Runner);
+
+                    if (peer != null)
+                        expected = peer.Request.ExpectedPlayers;
+                }
+
+                if (expected > 0)
+                    _Gameplay.SetExpectedPlayerCount(expected);
                 if (data != null && data != "")
                     _Gameplay.Initialize(data);
                 ResyncExistingPlayers();

@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.Core;
@@ -59,18 +59,29 @@ namespace Vermines.UI.Plugin
 
         public void Awake()
         {
-            Init();
+            GameEvents.OnGameInitialized.AddListener(Init);
         }
 
         #endregion
 
         public void Init()
         {
-            if (PlayerController.Local == null)
+            GameEvents.OnGameInitialized.RemoveListener(Init);
+
+            if (PlayerController.Local == null) {
+                Debug.LogWarning("[PlayerBannerPlugin] Init called but PlayerController.Local is null.");
+
                 return;
+            }
+
             GameEvents.OnGameInitialized.AddListener(ReorderBanners);
 
             _players.Clear();
+
+            // Clear any banners that may have been created already.
+            foreach (PlayerBannerUI banner in _banners)
+                if (banner != null) Destroy(banner.gameObject);
+            _banners.Clear();
 
             SceneContext context = PlayerController.Local.Context;
 

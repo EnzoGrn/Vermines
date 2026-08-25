@@ -62,9 +62,10 @@ namespace Vermines.Gameplay.Core {
 
                 Context.HandManager = hand;
 
-                AddService(hand);
-
-                hand.Activate();
+                if (hand != null) {
+                    AddService(hand);
+                    hand.Activate();
+                }
             }
         }
 

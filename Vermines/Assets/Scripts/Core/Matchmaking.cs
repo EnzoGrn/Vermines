@@ -106,16 +106,18 @@ namespace Vermines.Core {
                 _ActiveTicketId = match.TicketId;
 
                 var request = new SessionRequest {
-                    UserID       = Context.PlayerData.UserID,
-                    GameMode     = GameMode.AutoHostOrClient,
-                    GameplayType = GameplayType.Standart,
-                    SessionName  = match.MatchId,
-                    ScenePath    = scenePath,
-                    MaxPlayers   = match.MaxPlayers,
-                    IsCustom     = false
+                    UserID          = Context.PlayerData.UserID,
+                    GameMode        = match.ResolveLocalGameMode(Unity.Services.Authentication.AuthenticationService.Instance.PlayerId),
+                    GameplayType    = GameplayType.Standart,
+                    SessionName     = match.MatchId,
+                    ScenePath       = scenePath,
+                    MaxPlayers      = match.MaxPlayers,
+                    ExpectedPlayers = match.MaxPlayers,
+                    IsCustom        = false,
+                    IsGameSession   = true
                 };
 
-                CreateSession(request, isCustom: false);
+                Global.Networking.StartGame(request);
 
                 MatchFound?.Invoke(match.MatchId);
             } catch (OperationCanceledException) {

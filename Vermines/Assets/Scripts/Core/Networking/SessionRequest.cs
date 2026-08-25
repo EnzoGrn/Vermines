@@ -17,6 +17,12 @@ namespace Vermines.Core.Network {
         public bool IsGameSession;
 
         public int MaxPlayers;
+
+        /// <summary>
+        /// Number of players expected before gameplay initialization.
+        /// 0 keeps the current snapshot behaviour (custom lobby scene change).
+        /// </summary>
+        public int ExpectedPlayers;
         public int ExtraPeers;
 
         public string IPAddress;

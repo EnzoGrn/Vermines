@@ -69,8 +69,10 @@ namespace Vermines.UI.Card
         {
             base.OnActivate();
 
-            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
+            PlayerController player = Context.NetworkGame != null ? Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer) : null;
 
+            if (player == null || player.Deck.Hand == null)
+                return;
             ResyncHand(player.Deck.Hand);
         }
 
