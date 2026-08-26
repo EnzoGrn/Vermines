@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -268,22 +268,26 @@ namespace Vermines.UI
 
         public virtual async void ShowDualPopup(IDiscardPopupStrategy strategy)
         {
-            bool? result = await PopupDualAsync(
-                strategy.GetMessage(),
-                strategy.GetTitle(),
-                strategy.GetCancelText(),
-                strategy.GetConfirmText()
-            );
+            try
+            {
+                bool? result = await PopupDualAsync(
+                    strategy.GetMessage(),
+                    strategy.GetTitle(),
+                    strategy.GetCancelText(),
+                    strategy.GetConfirmText()
+                );
 
-            if (result == true)
-            {
-                strategy.OnConfirm();
+                if (result == true)
+                    strategy.OnConfirm();
+                else
+                    strategy.OnCancel();
             }
-            else
+            catch (System.Exception ex)
             {
-                strategy.OnCancel();
+                Debug.LogError($"[GameplayUIController] ShowDualPopup a échoué : {ex}");
             }
         }
+
 
         /// <summary>
         /// Show the popup/notification.

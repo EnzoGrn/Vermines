@@ -51,6 +51,7 @@ namespace Vermines.Core {
         protected GameModeInitializer _Initializer;
 
         private bool _IsInitialized;
+        private int _ExpectedPlayerCount;
 
         [SerializeField]
         private ShopData _BaseShopData;
@@ -160,6 +161,13 @@ namespace Vermines.Core {
             _Initializer.Initialize(data);
         }
 
+        public void SetExpectedPlayerCount(int expectedPlayerCount)
+        {
+            _ExpectedPlayerCount = expectedPlayerCount;
+
+            TryInitializeGameplay();
+        }
+
         protected virtual void FixedUpdateNetwork_Active() {}
 
         protected virtual void FixedUpdateNetwork_Finished()
@@ -229,8 +237,22 @@ namespace Vermines.Core {
 
         private void CheckAllPlayersInitialized()
         {
-            if (_IsInitialized || _PendingPlayers.Count > 0)
+            TryInitializeGameplay();
+        }
+
+        private void TryInitializeGameplay()
+        {
+            if (_IsInitialized)
                 return;
+            if (_ExpectedPlayerCount > 0) {
+                if (_PlayerFamilies.Count < _ExpectedPlayerCount)
+                    return;
+            } else if (_PendingPlayers.Count > 0) {
+                return;
+            }
+
+            _IsInitialized = true;
+
             string data = JsonConvert.SerializeObject(_PlayerFamilies.ToDictionary(
                 kvp => kvp.Key.RawEncoded, kvp => kvp.Value
             ));
@@ -279,6 +301,7 @@ namespace Vermines.Core {
 
         protected virtual void OnInitialize()
         {
+            Debug.Log($"[INIT] OnInitialize | hasAuth={HasStateAuthority} frame={Time.frameCount}");
             _RoutineManager = FindFirstObjectByType<RoutineManager>();
 
             if (_RoutineManager)
@@ -295,7 +318,7 @@ namespace Vermines.Core {
                 Activate();
             }
 
-            GameEvents.OnGameInitialized.Invoke();
+            //GameEvents.OnGameInitialized.Invoke();
             // if (PhaseManager.CurrentPhase == PhaseType.None)
             //    PhaseManager.OnGameStart();
         }
@@ -310,7 +333,7 @@ namespace Vermines.Core {
 
             _PendingPlayers.Remove(player);
 
-            CheckAllPlayersInitialized();
+            TryInitializeGameplay();
         }
 
         #region RPCs Events

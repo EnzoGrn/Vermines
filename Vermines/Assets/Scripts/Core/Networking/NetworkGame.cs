@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using WebSocketSharp;
 using Fusion.Sockets;
 using Fusion;
 using UnityEngine;
@@ -31,7 +30,17 @@ namespace Vermines.Core {
         #endregion
 
         private Dictionary<PlayerRef, PlayerController> _PendingPlayers = new();
-        private Dictionary<string, PlayerController> _DisconnectedPlayers = new();
+
+        private struct DisconnectedEntry
+        {
+            public PlayerController Player;
+            public float Time;
+        }
+
+        private readonly Dictionary<string, DisconnectedEntry> _DisconnectedPlayers = new();
+        private readonly List<string> _PurgeBuffer = new();
+
+        private const float DISCONNECTED_TTL = 120f;
 
         private List<PlayerController> _SpawnedPlayers = new(byte.MaxValue);
         private List<PlayerController> _AllPlayers     = new(byte.MaxValue);
@@ -47,6 +56,8 @@ namespace Vermines.Core {
         public int Seed { get; set; }
 
         public System.Random Random { get; set; }
+
+        private const int PLAYER_SWEEP_INTERVAL = 16;
 
         #endregion
 
@@ -65,48 +76,64 @@ namespace Vermines.Core {
         {
             if (Runner == null)
                 return;
-            _AllPlayers.Clear();
 
-            Runner.GetAllBehaviours<PlayerController>(_AllPlayers);
+            if (Runner.IsForward && (Runner.Tick % PLAYER_SWEEP_INTERVAL) == 0)
+            {
+                _AllPlayers.Clear();
 
-            if (_AllPlayers == null || _AllPlayers.Count == 0)
-                return;
-            for (int i = _AllPlayers.Count - 1; i >= 0; i--) {
-                PlayerController player = _AllPlayers[i];
-                PlayerRef         input = player.Object.InputAuthority;
+                Runner.GetAllBehaviours<PlayerController>(_AllPlayers);
 
-                if (!input.IsRealPlayer) {
-                    if (HasStateAuthority && !Runner.IsPlayerValid(input)) {
-                        _AllPlayers.RemoveAt(i);
+                if (_AllPlayers != null && _AllPlayers.Count > 0)
+                {
+                    for (int i = _AllPlayers.Count - 1; i >= 0; i--)
+                    {
+                        PlayerController player = _AllPlayers[i];
+                        PlayerRef input = player.Object.InputAuthority;
 
-                        OnPlayerLeft(player);
+                        if (!input.IsRealPlayer)
+                        {
+                            if (HasStateAuthority && !Runner.IsPlayerValid(input))
+                            {
+                                _AllPlayers.RemoveAt(i);
+
+                                OnPlayerLeft(player);
+                            }
+                        }
+                        else
+                        {
+                            _AllPlayers.RemoveAt(i);
+                        }
                     }
-                } else {
-                    _AllPlayers.RemoveAt(i);
+
+                    ActivePlayers.Clear();
+
+                    foreach (PlayerController player in _AllPlayers)
+                    {
+                        if (player.UserID.IsNullOrEmpty())
+                            continue;
+                        ActivePlayers.Add(player);
+                    }
                 }
-            }
-
-            ActivePlayers.Clear();
-
-            foreach (PlayerController player in _AllPlayers) {
-                if (player.UserID.IsNullOrEmpty())
-                    continue;
-                ActivePlayers.Add(player);
             }
 
             if (!HasStateAuthority || _PendingPlayers.Count == 0)
                 return;
+
             List<PlayerRef> playersToRemove = ListPool.Get<PlayerRef>(128);
 
-            foreach (var kvp in _PendingPlayers) {
-                PlayerRef     playerRef = kvp.Key;
+            foreach (var kvp in _PendingPlayers)
+            {
+                PlayerRef playerRef = kvp.Key;
                 PlayerController player = kvp.Value;
 
                 if (!player.IsInitialized)
                     continue;
-                playersToRemove.Remove(playerRef);
+                playersToRemove.Add(playerRef);
 
-                if (_DisconnectedPlayers.TryGetValue(player.UserID, out PlayerController disconnectedPlayer)) {
+                if (_DisconnectedPlayers.TryGetValue(player.UserID, out DisconnectedEntry entry))
+                {
+                    PlayerController disconnectedPlayer = entry.Player;
+
                     _DisconnectedPlayers.Remove(player.UserID);
 
                     int activePlayerIndex = ActivePlayers.IndexOf(player);
@@ -138,13 +165,24 @@ namespace Vermines.Core {
             ListPool.Return(playersToRemove);
         }
 
-        public void Initialize(GameplayType type, string data = null)
+        public void Initialize(GameplayType type, string data = null, int expectedPlayers = 0)
         {
             if (HasStateAuthority) {
                 var prefab = _ModePrefabs.Find(t => t.Type == type);
 
                 _Gameplay = Runner.Spawn(prefab);
 
+                int expected = expectedPlayers;
+
+                if (expected <= 0) {
+                    GamePeer peer = Global.Networking?.GetPeer(Runner);
+
+                    if (peer != null)
+                        expected = peer.Request.ExpectedPlayers;
+                }
+
+                if (expected > 0)
+                    _Gameplay.SetExpectedPlayerCount(expected);
                 if (data != null && data != "")
                     _Gameplay.Initialize(data);
                 ResyncExistingPlayers();
@@ -260,10 +298,7 @@ namespace Vermines.Core {
         public bool IsCustomGame()
         {
             GamePeer peer = Global.Networking?.GetPeer(Runner);
-
-            if (peer.Request.IsCustom)
-                return true;
-            return false;
+            return peer != null && peer.Request.IsCustom;
         }
 
         public List<PlayerController> GetConnectedPlayer()
@@ -315,7 +350,10 @@ namespace Vermines.Core {
             ActivePlayers.Remove(player);
             
             if (!player.UserID.IsNullOrEmpty()) {
-                _DisconnectedPlayers[player.UserID] = player;
+                _DisconnectedPlayers[player.UserID] = new DisconnectedEntry {
+                    Player = player,
+                    Time   = Runner.SimulationTime
+                };
 
                 _Gameplay.PlayerLeft(player);
 
@@ -338,5 +376,33 @@ namespace Vermines.Core {
         }
 
         #endregion
+
+        private bool IsRpcSourceValid(RpcInfo info, int claimedPlayerId)
+        {
+            if (info.Source == PlayerRef.None)
+                return true;
+
+            if (info.Source.RawEncoded != claimedPlayerId)
+            {
+                Log.Error($"[NetworkGame] RPC rejeté : source réelle {info.Source} != playerID annoncé {claimedPlayerId}.");
+
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool IsGameplayReady()
+        {
+            if (_Gameplay == null)
+            {
+                Log.Error("[NetworkGame] RPC reçu avant que le gameplay soit prêt — action ignorée.");
+
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 using System;
 using Fusion.Sockets;
 using Fusion;
@@ -9,6 +10,7 @@ namespace Vermines.Core {
 
     using Vermines.Core.Network;
     using Vermines.Core.Scene;
+    using Vermines.Core.Services;
     using Vermines.Core.Settings;
 
     public class Matchmaking : SceneService, INetworkRunnerCallbacks {
@@ -17,10 +19,15 @@ namespace Vermines.Core {
 
         public bool IsJoiningToLobby;
         public bool IsConnectedToLobby;
+        public bool IsSearchingForMatch;
 
         public Action LobbyJoined;
         public Action LobbyJoinFailed;
         public Action LobbyLeft;
+        public Action MatchmakingStarted;
+        public Action<string> MatchFound;
+        public Action MatchmakingCancelled;
+        public Action<string> MatchmakingFailed;
 
         public event Action<NetworkRunner, NetworkObject, PlayerRef> ObjectExitAOI;
         public event Action<NetworkRunner, NetworkObject, PlayerRef> ObjectEnterAOI;
@@ -46,6 +53,8 @@ namespace Vermines.Core {
         private NetworkRunner _LobbyRunner;
 
         private string _LobbyName;
+        private string _ActiveTicketId;
+        private CancellationTokenSource _MatchmakingCancellation;
 
         #endregion
 
@@ -77,6 +86,66 @@ namespace Vermines.Core {
             };
 
             Global.Networking.StartGame(request);
+        }
+
+        public async Task FindMatchAsync(string scenePath)
+        {
+            if (IsSearchingForMatch)
+                return;
+            IsSearchingForMatch = true;
+
+            MatchmakingStarted?.Invoke();
+
+            _MatchmakingCancellation = new CancellationTokenSource();
+
+            try {
+                MatchmakerMatchResult match = await MatchmakerTicketClient.FindMatchAsync(Context.PlayerData, _MatchmakingCancellation.Token);
+
+                if (string.IsNullOrEmpty(match.MatchId))
+                    return;
+                _ActiveTicketId = match.TicketId;
+
+                var request = new SessionRequest {
+                    UserID          = Context.PlayerData.UserID,
+                    GameMode        = match.ResolveLocalGameMode(Unity.Services.Authentication.AuthenticationService.Instance.PlayerId),
+                    GameplayType    = GameplayType.Standart,
+                    SessionName     = match.MatchId,
+                    ScenePath       = scenePath,
+                    MaxPlayers      = match.MaxPlayers,
+                    ExpectedPlayers = match.MaxPlayers,
+                    IsCustom        = false,
+                    IsGameSession   = true
+                };
+
+                Global.Networking.StartGame(request);
+
+                MatchFound?.Invoke(match.MatchId);
+            } catch (OperationCanceledException) {
+                MatchmakingCancelled?.Invoke();
+            } catch (Exception exception) {
+                Debug.LogException(exception);
+                MatchmakingFailed?.Invoke(exception.Message);
+            } finally {
+                _ActiveTicketId     = null;
+                IsSearchingForMatch = false;
+
+                _MatchmakingCancellation?.Dispose();
+
+                _MatchmakingCancellation = null;
+            }
+        }
+
+        public async Task CancelFindMatchAsync()
+        {
+            _MatchmakingCancellation?.Cancel();
+
+            if (!string.IsNullOrEmpty(_ActiveTicketId)) {
+                await MatchmakerTicketClient.CancelTicketAsync(_ActiveTicketId);
+
+                _ActiveTicketId = null;
+            }
+
+            IsSearchingForMatch = false;
         }
 
         public async Task JoinLobby(bool force = false)
@@ -126,19 +195,16 @@ namespace Vermines.Core {
 
         protected override void OnDeinitialize()
         {
+            if (_MatchmakingCancellation != null) {
+                _MatchmakingCancellation.Cancel();
+                _MatchmakingCancellation.Dispose();
+
+                _MatchmakingCancellation = null;
+            }
+
             if (_LobbyRunner != null)
                 _LobbyRunner.RemoveCallbacks(this);
             base.OnDeinitialize();
-        }
-
-        protected override void OnActivate()
-        {
-            base.OnActivate();
-        }
-
-        protected override void OnTick()
-        {
-            base.OnTick();
         }
 
         void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
@@ -183,7 +249,7 @@ namespace Vermines.Core {
 
         void INetworkRunnerCallbacks.OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
         {
-            DisconnectedFromServer.Invoke(runner, reason);
+            DisconnectedFromServer?.Invoke(runner, reason);
         }
 
         void INetworkRunnerCallbacks.OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)

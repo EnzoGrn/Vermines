@@ -89,9 +89,12 @@ namespace Vermines.Gameplay.Phases
         public void OnGameStart()
         {
             CurrentPhase = _PhaseOrder[0];
-
+            Debug.Log($"[OGS] OnGameStart | phase={CurrentPhase} turnPlayer={Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex)} frame={Time.frameCount}");
             if (HasStateAuthority)
+            {
+                Debug.Log("[RPP] from=OnGameStart");
                 RPC_ProcessPhase(CurrentPhase, Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex));
+            }
             GameEvents.OnGameInitialized.RemoveListener(OnGameStart);
         }
 
@@ -149,6 +152,7 @@ namespace Vermines.Gameplay.Phases
 
             if (!Runner.IsServer)
                 yield break;
+            Debug.Log("[RPP] from=SacrificeRoutine");
             RPC_ProcessPhase(CurrentPhase, Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex));
         }
 
@@ -162,7 +166,7 @@ namespace Vermines.Gameplay.Phases
 
         public void ProcessPhase(PhaseType currentPhase, PlayerRef playerRef)
         {
-            if (currentPhase == PhaseType.None)
+            if (currentPhase == PhaseType.None || !playerRef.IsRealPlayer)
                 return;
             _Phases[currentPhase].Run(playerRef);
         }
@@ -171,6 +175,7 @@ namespace Vermines.Gameplay.Phases
         {
             if (!Runner.IsServer)
                 return;
+            Debug.Log($"[PC] before={CurrentPhase} next={GetNextPhase()} order=[{string.Join(",", _PhaseOrder)}]");
             // Check if the player did every phases.
             if (CurrentPhase == PhaseType.Resolution) {
                 NextTurn();
@@ -182,6 +187,7 @@ namespace Vermines.Gameplay.Phases
                 Debug.Log($"[SERVER]: Next phase is {CurrentPhase}.");
 
                 RPC_UpdatePhaseUI();
+                Debug.Log($"[RPP] from=PhaseCompleted next={CurrentPhase}");
                 RPC_ProcessPhase(CurrentPhase, Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex));
             }
         }
@@ -246,8 +252,7 @@ namespace Vermines.Gameplay.Phases
 
         public void OnPhaseCompleted()
         {
-            Debug.Log("$[SERVER]: Event triggered | Asking for a phase completion.");
-
+            Debug.Log($"[OPC] frame={Time.frameCount}\n{new System.Diagnostics.StackTrace(true)}");
             RPC_PhaseCompleted();
         }
 

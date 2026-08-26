@@ -88,15 +88,9 @@ namespace Vermines.Gameplay.Cards.Effect {
         #endregion
 
         private void Draw(PlayerController player, int amount)
-        {
-            for (int i = 0; i < amount; i++) {
-                ICommand drawCommand = new DrawCommand(player);
-
-                CommandResponse command = CommandInvoker.ExecuteCommand(drawCommand);
-
-                if (command.Status == CommandStatus.Success && Context.Runner.LocalPlayer == player.Object.InputAuthority)
-                    GameEvents.InvokeOnDrawCard(player.Deck.Hand.Last());
-            }
+        { 
+            for (int i = 0; i < amount; i++)
+                CommandInvoker.ExecuteCommand(new DrawCommand(player));
         }
 
         public override void Play(PlayerRef playerRef)
