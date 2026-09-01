@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine;
 
@@ -23,7 +23,6 @@ public class TrackedEvent : ITrackedEvent
         if (_listeners.Add(listener))
         {
             _event.AddListener(listener);
-            Debug.Log($"[TrackedEvent<void>: {_eventName}] Added listener. Total: {_listeners.Count}");
         }
     }
 
@@ -32,7 +31,6 @@ public class TrackedEvent : ITrackedEvent
         if (_listeners.Remove(listener))
         {
             _event.RemoveListener(listener);
-            Debug.Log($"[TrackedEvent<void>: {_eventName}] Removed listener. Total: {_listeners.Count}");
         }
     }
 
@@ -69,7 +67,6 @@ public class TrackedEvent<T> : ITrackedEvent
         if (_listeners.Add(listener))
         {
             _event.AddListener(listener);
-            Debug.Log($"[TrackedEvent<{typeof(T).Name}>: {_eventName}] Added listener. Total: {_listeners.Count}");
         }
     }
 
@@ -78,7 +75,6 @@ public class TrackedEvent<T> : ITrackedEvent
         if (_listeners.Remove(listener))
         {
             _event.RemoveListener(listener);
-            Debug.Log($"[TrackedEvent<{typeof(T).Name}>: {_eventName}] Removed listener. Total: {_listeners.Count}");
         }
     }
 
@@ -115,7 +111,6 @@ public class TrackedEvent<T1, T2> : ITrackedEvent
         if (_listeners.Add(listener))
         {
             _event.AddListener(listener);
-            Debug.Log($"[TrackedEvent<{typeof(T1).Name}, {typeof(T2).Name}>: {_eventName}] Listener added. Total: {_listeners.Count}");
         }
     }
 
@@ -124,7 +119,6 @@ public class TrackedEvent<T1, T2> : ITrackedEvent
         if (_listeners.Remove(listener))
         {
             _event.RemoveListener(listener);
-            Debug.Log($"[TrackedEvent<{typeof(T1).Name}, {typeof(T2).Name}>: {_eventName}] Listener removed. Total: {_listeners.Count}");
         }
     }
 

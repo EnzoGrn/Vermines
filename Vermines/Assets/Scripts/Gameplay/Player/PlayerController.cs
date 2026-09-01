@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System;
 using UnityEngine;
 
@@ -42,7 +42,7 @@ namespace Vermines.Player {
 
         private int _InitCounter;
 
-        [Networked]
+        [Networked, OnChangedRender(nameof(UpdateLocalState))])
         private byte _SyncToken { get; set; }
 
         private byte _LocalSyncToken;
@@ -167,10 +167,8 @@ namespace Vermines.Player {
 
         private void UpdateLocalState()
         {
-            if (_LocalSyncToken != _SyncToken) {
-                UserID   = NetworkedUserID.Value;
-                Nickname = NetworkedNickname.Value;
-            }
+            UserID = NetworkedUserID.Value;
+            Nickname = NetworkedNickname.Value;
         }
 
         public override void Spawned()
