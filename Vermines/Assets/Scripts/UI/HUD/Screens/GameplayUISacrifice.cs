@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.UI.Plugin;
 using Fusion;
@@ -189,7 +189,8 @@ namespace Vermines.UI.Screen
             currentEntries.Clear();
             currentPage = 0;
 
-            foreach (var card in player.Deck.Hand) {
+            foreach (var card in player.Hand)
+            {
                 if (card.Data.Type == type)
                     currentEntries.Add(new ShopCardEntry(card));
             }

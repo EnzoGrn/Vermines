@@ -1,4 +1,4 @@
-﻿using OMGG.DesignPattern;
+using OMGG.DesignPattern;
 using Fusion;
 
 namespace Vermines.Gameplay.Commands {
@@ -7,6 +7,7 @@ namespace Vermines.Gameplay.Commands {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
     using Vermines.Player;
+    using System.Linq;
 
     public class ADMIN_CheckDiscardCommand : ACommand {
 
@@ -35,7 +36,7 @@ namespace Vermines.Gameplay.Commands {
                 return new CommandResponse(CommandStatus.CriticalError, "CardNotExist", _CardId.ToString());
 
             // 2. Check if the card is in the player hand.
-            if (!_Player.Deck.Hand.Contains(_Card))
+            if (!_Player.Hand.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Table_Discard_CardNotInHand", _CardId.ToString(), _Card.Data.Name);
 
             // 3. Check if the card is discardable.

@@ -1,14 +1,17 @@
-﻿using OMGG.DesignPattern;
+using OMGG.DesignPattern;
 using Fusion;
 
-namespace Vermines.Gameplay.Commands {
+namespace Vermines.Gameplay.Commands
+{
 
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
     using Vermines.Player;
+    using System.Linq;
 
-    public class ADMIN_CheckPlayCommand : ACommand {
+    public class ADMIN_CheckPlayCommand : ACommand
+    {
 
         private PlayerController _Player;
 
@@ -19,10 +22,10 @@ namespace Vermines.Gameplay.Commands {
 
         public ADMIN_CheckPlayCommand(PlayerController player, PhaseType currentPhase, int cardId)
         {
-            _Player       = player;
+            _Player = player;
             _CurrentPhase = currentPhase;
-            _Card         = CardSetDatabase.Instance.GetCardByID(cardId);
-            _CardId       = cardId;
+            _Card = CardSetDatabase.Instance.GetCardByID(cardId);
+            _CardId = cardId;
         }
 
         public override CommandResponse Execute()
@@ -36,36 +39,42 @@ namespace Vermines.Gameplay.Commands {
                 return new CommandResponse(CommandStatus.CriticalError, "CardNotExist", _CardId.ToString());
 
             // 2. Check if the card is in the player hand.
-            if (!_Player.Deck.Hand.Contains(_Card))
+            if (!_Player.Hand.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Table_Play_CardNotInHand", _CardId.ToString(), _Card.Data.Name);
             return new CommandResponse(CommandStatus.Success, "", _Card.Data.Name);
         }
     }
 
-    public class CLIENT_PlayCommand : ACommand {
+
+    public class CLIENT_PlayCommand : ACommand
+    {
 
         private PlayerController _Player;
 
-        private readonly ICard     _Card;
-        private readonly int       _CardId;
+        private readonly ICard _Card;
+        private readonly int _CardId;
 
         public CLIENT_PlayCommand(PlayerController player, int cardID)
         {
             _Player = player;
-            _Card   = CardSetDatabase.Instance.GetCardByID(cardID);
+            _Card = CardSetDatabase.Instance.GetCardByID(cardID);
             _CardId = cardID;
         }
 
         public override CommandResponse Execute()
         {
+            if (!_Player.Hand.Contains(_Card))
+                return new CommandResponse(CommandStatus.CriticalError, "Table_Play_CardNotInHand", _CardId.ToString());
+
             PlayerDeck deck = _Player.Deck;
-            ICard      card = deck.PlayCard(_CardId);
+            ICard card = deck.PlayCard(_Card);
 
             _Player.UpdateDeck(deck);
+            _Player.RemoveCardFromHand(card);
 
             return new CommandResponse(CommandStatus.Success, "");
         }
 
-        public override void Undo() {}
+        public override void Undo() { }
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Vermines.Player {
     using System.Collections.Generic;
+    using System.Linq;
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
@@ -37,12 +38,27 @@ namespace Vermines.Player {
         public PlayerStatistics Statistics { get; private set; }
 
         public PlayerDeck Deck { get; private set; }
+        private const int HAND_CAPACITY = 15;
+
+        [Networked, Capacity(HAND_CAPACITY)]
+        private NetworkArray<int> HandCardIds => default;
+
+        [Networked, OnChangedRender(nameof(RebuildHandCache))]
+
+        private List<ICard> _HandCache = new();
+
+        public IReadOnlyList<ICard> Hand => _HandCache;
+
+
+        private int HandCount { get; set; }
+
+
 
         public God God { get; private set; }
 
         private int _InitCounter;
 
-        [Networked, OnChangedRender(nameof(UpdateLocalState))])
+        [Networked, OnChangedRender(nameof(UpdateLocalState))]
         private byte _SyncToken { get; set; }
 
         private byte _LocalSyncToken;
@@ -117,9 +133,31 @@ namespace Vermines.Player {
             Deck = deck;
 
             if (HasStateAuthority)
-                Debug.Log($"[DECK-PUSH] {UserID} hand={deck.Hand?.Count} deck={deck.Deck?.Count}");
                 RPC_DeckResynchronization(deck.Serialize());
         }
+
+        public void AddCardToHand(ICard card)
+        {
+            if (!HasStateAuthority || card == null)
+                return;
+
+            List<ICard> hand = _HandCache.ToList();
+
+            hand.Add(card);
+            WriteHand(hand);
+        }
+
+        public void RemoveCardFromHand(ICard card)
+        {
+            if (!HasStateAuthority || card == null)
+                return;
+
+            List<ICard> hand = _HandCache.ToList();
+
+            hand.Remove(card);
+            WriteHand(hand);
+        }
+
 
         public void DrawAuthoritative(int amount)
         {
@@ -128,6 +166,7 @@ namespace Vermines.Player {
 
             PlayerDeck deck = Deck;
             List<int> drawnIds = new();
+            List<ICard> drawnCards = new();
 
             for (int i = 0; i < amount; i++)
             {
@@ -136,9 +175,18 @@ namespace Vermines.Player {
                 if (card == null)
                     break;
                 drawnIds.Add(card.ID);
+                drawnCards.Add(card);
             }
 
             UpdateDeck(deck);
+
+            if (drawnCards.Count > 0)
+            {
+                List<ICard> hand = _HandCache.ToList();
+
+                hand.AddRange(drawnCards);
+                WriteHand(hand);
+            }
 
             if (drawnIds.Count > 0)
                 RPC_NotifyDrawn(string.Join(",", drawnIds));
@@ -186,6 +234,7 @@ namespace Vermines.Player {
             UpdateLocalState();
 
             Runner.SetIsSimulated(Object, true);
+            RebuildHandCache();
         }
 
         public void Despawn()
@@ -225,6 +274,41 @@ namespace Vermines.Player {
                     _PlayerDataSent = true;
                 }
             }
+        }
+
+        private void RebuildHandCache()
+        {
+            _HandCache.Clear();
+
+            for (int i = 0; i < HandCount; i++)
+            {
+                ICard card = CardSetDatabase.Instance.GetCardByID(HandCardIds[i]);
+
+                if (card != null)
+                    _HandCache.Add(card);
+            }
+        }
+
+        private void WriteHand(List<ICard> hand)
+        {
+            if (!HasStateAuthority)
+            {
+                Log.Error("[PlayerController] WriteHand appelé hors StateAuthority — ignoré.");
+
+                return;
+            }
+
+            int count = Mathf.Min(hand?.Count ?? 0, HAND_CAPACITY);
+
+            if (hand != null && hand.Count > HAND_CAPACITY)
+                Log.Error($"[PlayerController] Hand dépasse HAND_CAPACITY ({hand.Count} > {HAND_CAPACITY}) — cartes en trop tronquées. Augmenter HAND_CAPACITY.");
+
+            for (int i = 0; i < count; i++)
+                HandCardIds.Set(i, hand[i].ID);
+
+            HandCount = count; // déclenche OnChangedRender -> RebuildHandCache, y compris localement sur l'autorité
+
+            RebuildHandCache(); // l'autorité ne reçoit pas nécessairement son propre OnChangedRender au même tick ; on force la cohérence immédiate côté serveur
         }
 
         #endregion
@@ -290,7 +374,6 @@ namespace Vermines.Player {
         {
             if (HasStateAuthority)
                 return;
-            Debug.Log($"[DECK-RECV] auth={HasStateAuthority} {(HasStateAuthority ? "SKIP" : "APPLY")} {UserID}");
             Deck = PlayerDeck.Deserialize(data);
         }
 

@@ -13,7 +13,7 @@ namespace Vermines.Player {
         private int Seed;
 
         public List<ICard> Deck { get; set; }
-        public List<ICard> Hand { get; set; }
+
         public List<ICard> Discard { get; set; }
         public List<ICard> ToolDiscard { get; set; }
         public List<ICard> Graveyard { get; set; }
@@ -25,7 +25,6 @@ namespace Vermines.Player {
             Seed = seed;
 
             Deck        = new List<ICard>();
-            Hand        = new List<ICard>();
             Discard     = new List<ICard>();
             ToolDiscard = new List<ICard>();
             Graveyard   = new List<ICard>();
@@ -48,28 +47,20 @@ namespace Vermines.Player {
                 GameEvents.OnDiscardShuffled.Invoke();
             }
 
-            ICard card = Deck.Draw();
-
-            Hand.Add(card);
-
-            return card;
+            return Deck.Draw();
         }
 
         public readonly ICard DiscardCard(int cardId)
         {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
-            if (card != null && Hand.Contains(card)) {
-                Hand.Remove(card);
-
-                if (card.Data.Type == CardType.Tools)
-                    ToolDiscard.Add(card);
-                else
-                    Discard.Add(card);
-                return card;
-            }
-
-            return null;
+            if (card == null)
+                return null;
+            if (card.Data.Type == CardType.Tools)
+                ToolDiscard.Add(card);
+            else
+                Discard.Add(card);
+            return card;
         }
 
         public readonly void MergeToolDiscard(int seed)
@@ -80,18 +71,14 @@ namespace Vermines.Player {
             }
         }
 
-        public readonly ICard PlayCard(int cardId)
+        public readonly ICard PlayCard(ICard card)
         {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
+            if (card == null)
+                return null;
 
-            if (card != null && Hand.Contains(card)) {
-                Hand.Remove(card);
-                PlayedCards.Add(card);
+            PlayedCards.Add(card);
 
-                return card;
-            }
-
-            return null;
+            return card;
         }
 
         #endregion
@@ -103,7 +90,6 @@ namespace Vermines.Player {
             return new() {
                 Seed        = this.Seed,
                 Deck        = new List<ICard>(this.Deck),
-                Hand        = new List<ICard>(this.Hand),
                 Discard     = new List<ICard>(this.Discard),
                 Graveyard   = new List<ICard>(this.Graveyard),
                 PlayedCards = new List<ICard>(this.PlayedCards),
@@ -126,7 +112,6 @@ namespace Vermines.Player {
 
             string[] parts = new[] {
                 SerializeList("Deck", Deck),
-                SerializeList("Hand", Hand),
                 SerializeList("Discard", Discard),
                 SerializeList("ToolDiscard", ToolDiscard),
                 SerializeList("Graveyard", Graveyard),
@@ -151,10 +136,6 @@ namespace Vermines.Player {
                     string content = deckSection[5..^1];
 
                     deck.Deck = CardSetDatabase.Instance.GetCardByIds(content);
-                } else if (deckSection.StartsWith("Hand[") && deckSection.EndsWith("]")) {
-                    string content = deckSection[5..^1];
-
-                    deck.Hand = CardSetDatabase.Instance.GetCardByIds(content);
                 } else if (deckSection.StartsWith("Discard[") && deckSection.EndsWith("]")) {
                     string content = deckSection[8..^1];
 

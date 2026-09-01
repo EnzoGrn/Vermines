@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using UnityEngine;
 using System.Collections.Generic;
 using Vermines.UI.Plugin;
@@ -77,7 +77,7 @@ public class CopyEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginParam
     {
         PlayerController player = PlayerController.Local;
 
-        foreach (var card in player.Deck.Hand) {
+        foreach (var card in player.Hand) {
             if (card.Data.Type == CardTypeTrigger)
                 currentEntries.Add(new ShopCardEntry(card));
         }
