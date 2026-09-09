@@ -30,7 +30,7 @@ namespace Vermines.Gameplay.Commands.Deck {
                 return new CommandResponse(CommandStatus.Failure, $"Player {_Player.Object.InputAuthority} does not have any card left in his deck.");
 
             _Player.UpdateDeck(deck);
-            _Player.NotifyDrawnToOwner(card.ID);
+            _Player.DrawCardToHand(card);
 
             return new CommandResponse(CommandStatus.Success, $"Player {_Player.Object.InputAuthority} drew a card.");
         }

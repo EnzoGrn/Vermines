@@ -62,10 +62,14 @@ namespace Vermines.Gameplay.Commands {
 
         public override CommandResponse Execute()
         {
+            if (!_Player.Hand.Contains(_Card))
+                return new CommandResponse(CommandStatus.CriticalError, "Table_Discard_CardNotInHand", _CardId.ToString());
+
             PlayerDeck deck = _Player.Deck;
-            ICard      card = deck.DiscardCard(_CardId);
+            ICard card = deck.DiscardCard(_Card);
 
             _Player.UpdateDeck(deck);
+            _Player.RemoveCardFromHand(card);
 
             return new CommandResponse(CommandStatus.Success, "");
         }

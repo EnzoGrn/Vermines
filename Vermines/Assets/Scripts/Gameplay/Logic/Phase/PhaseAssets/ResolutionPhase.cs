@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using OMGG.DesignPattern;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +37,7 @@ namespace Vermines.Gameplay.Phases {
             PlayerDeck merged = player.Deck;
             player.UpdateDeck(merged);
 
-            for (int i = player.Deck.Hand.Count; i < NumberOfCardsToHaveInHand; i++) {
+            for (int i = player.Hand.Count; i < NumberOfCardsToHaveInHand; i++) {
                 CommandInvoker.ExecuteCommand(new DrawCommand(player));
             }
 

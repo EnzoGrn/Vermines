@@ -43,13 +43,11 @@ namespace Vermines.Player {
         [Networked, Capacity(HAND_CAPACITY)]
         private NetworkArray<int> HandCardIds => default;
 
-        [Networked, OnChangedRender(nameof(RebuildHandCache))]
-
         private List<ICard> _HandCache = new();
 
         public IReadOnlyList<ICard> Hand => _HandCache;
 
-
+        [Networked, OnChangedRender(nameof(RebuildHandCache))]
         private int HandCount { get; set; }
 
 
@@ -202,6 +200,15 @@ namespace Vermines.Player {
             }
         }
 
+        public void DrawCardToHand(ICard card)
+        {
+            if (!HasStateAuthority || card == null)
+                return;
+
+            AddCardToHand(card);
+            NotifyDrawnToOwner(card.ID);
+        }
+
         public void Refresh()
         {
             PlayerStatistics statistics = Statistics;
@@ -306,9 +313,8 @@ namespace Vermines.Player {
             for (int i = 0; i < count; i++)
                 HandCardIds.Set(i, hand[i].ID);
 
-            HandCount = count; // déclenche OnChangedRender -> RebuildHandCache, y compris localement sur l'autorité
-
-            RebuildHandCache(); // l'autorité ne reçoit pas nécessairement son propre OnChangedRender au même tick ; on force la cohérence immédiate côté serveur
+            HandCount = count;
+            RebuildHandCache();
         }
 
         #endregion

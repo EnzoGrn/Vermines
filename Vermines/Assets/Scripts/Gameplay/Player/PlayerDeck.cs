@@ -50,16 +50,16 @@ namespace Vermines.Player {
             return Deck.Draw();
         }
 
-        public readonly ICard DiscardCard(int cardId)
+        public readonly ICard DiscardCard(ICard card)
         {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
-
             if (card == null)
                 return null;
+
             if (card.Data.Type == CardType.Tools)
                 ToolDiscard.Add(card);
             else
                 Discard.Add(card);
+
             return card;
         }
 
