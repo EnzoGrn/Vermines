@@ -363,7 +363,7 @@ namespace Vermines.Gameplay.Core {
             if (player.God.Effects != null) {
                 foreach (var effect in player.God.Effects) {
                     if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
-                        effect.Play(Object.InputAuthority);
+                        effect.Play(playerSource);
                 }
             }
 
