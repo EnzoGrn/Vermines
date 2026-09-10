@@ -32,13 +32,8 @@ namespace Vermines.Gameplay.Phases {
 
             PlayerController player = _Context.NetworkGame.GetPlayer(playerRef);
 
-            PlayerDeck resolutionDeck = player.Deck;
-            resolutionDeck.MergeToolDiscard(_Context.NetworkGame.Seed, player.ToolDiscard.ToList());
-            player.UpdateDeck(resolutionDeck);
+            player.MergeToolDiscardIntoDiscard(_Context.NetworkGame.Seed, player.ToolDiscard.ToList());
             player.ClearToolDiscard();
-
-            PlayerDeck merged = player.Deck;
-            player.UpdateDeck(merged);
 
             for (int i = player.Hand.Count; i < NumberOfCardsToHaveInHand; i++) {
                 CommandInvoker.ExecuteCommand(new DrawCommand(player));

@@ -92,7 +92,7 @@ public class CopyEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginParam
                 currentEntries.Add(new ShopCardEntry(card));
         }
 
-        foreach (var card in player.Deck.Discard) {
+        foreach (var card in player.Discard) {
             if (card.Data.Type == CardTypeTrigger)
                 currentEntries.Add(new ShopCardEntry(card));
         }

@@ -2,7 +2,8 @@ using Fusion;
 using OMGG.DesignPattern;
 using UnityEngine;
 
-namespace Vermines.ShopSystem.Commands {
+namespace Vermines.ShopSystem.Commands
+{
 
     using System.Linq;
     using Vermines.CardSystem.Data;
@@ -12,11 +13,8 @@ namespace Vermines.ShopSystem.Commands {
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
 
-    /// <summary>
-    /// This buy command is simulate on all clients but not on the authority object client.
-    /// It simulate the result of the purchase that was already checked and processed by the authority object client.
-    /// </summary>
-    public class CLIENT_BuyCommand : ACommand {
+    public class CLIENT_BuyCommand : ACommand
+    {
 
         private PlayerController _Player;
         private ShopArgs _Args;
@@ -24,33 +22,27 @@ namespace Vermines.ShopSystem.Commands {
         public CLIENT_BuyCommand(PlayerController player, ShopArgs shopInfo)
         {
             _Player = player;
-            _Args   = shopInfo;
+            _Args = shopInfo;
         }
 
         public override CommandResponse Execute()
         {
             ICard card = _Args.Shop.BuyCard(_Args.ShopType, _Args.CardId);
 
-            if (card.Data.Type == CardType.Equipment) {
+            if (card.Data.Type == CardType.Equipment)
                 _Player.AddEquipment(card);
-            } else {
-                PlayerDeck deck = _Player.Deck;
-                deck.Discard.Add(card);
-                _Player.UpdateDeck(deck);
-            }
+            else
+                _Player.AddCardToDiscard(card);
             card.Owner = _Player.Object.InputAuthority;
 
             return new CommandResponse(CommandStatus.Success, $"Player {_Player} bought the card {card.Data.Name}.");
         }
 
-        public override void Undo() {}
+        public override void Undo() { }
     }
 
-    /// <summary>
-    /// This check command simulate only on authority object client.
-    /// Check if we can execute a buy command, and simulate the network operation.
-    /// </summary>
-    public class ADMIN_CheckBuyCommand : ACommand {
+    public class ADMIN_CheckBuyCommand : ACommand
+    {
 
         private PlayerController _Player;
 
@@ -60,15 +52,13 @@ namespace Vermines.ShopSystem.Commands {
 
         public ADMIN_CheckBuyCommand(PlayerController player, PhaseType phase, ShopArgs parameters)
         {
-            _Player       = player;
+            _Player = player;
             _CurrentPhase = phase;
-            _Parameters   = parameters;
+            _Parameters = parameters;
         }
 
         public override CommandResponse Execute()
         {
-            PlayerDeck playerDeck = _Player.Deck;
-
             // 0. Check if the shop exist
             if (_Parameters.Shop == null)
                 return new CommandResponse(CommandStatus.CriticalError, "Shop_ShopNotExist", _Parameters.ShopType.ToString());
@@ -80,12 +70,15 @@ namespace Vermines.ShopSystem.Commands {
                 return new CommandResponse(CommandStatus.CriticalError, "Shop_SlotEmpty", _Parameters.ShopType.ToString());
 
             // 2. Check phase
-            if (_CurrentPhase == PhaseType.Gain && _Parameters.Shop.HasCard(_Parameters.ShopType, _Parameters.CardId)) {
+            if (_CurrentPhase == PhaseType.Gain && _Parameters.Shop.HasCard(_Parameters.ShopType, _Parameters.CardId))
+            {
                 ICard freeCard = CardSetDatabase.Instance.GetCardByID(_Parameters.CardId);
 
                 if (freeCard.Data.IsFree)
                     return new CommandResponse(CommandStatus.Success, string.Empty);
-            } else if (_CurrentPhase != PhaseType.Action) {
+            }
+            else if (_CurrentPhase != PhaseType.Action)
+            {
                 return new CommandResponse(CommandStatus.Invalid, "Shop_Buy_WrongPhase");
             }
 
@@ -99,7 +92,8 @@ namespace Vermines.ShopSystem.Commands {
                 return new CommandResponse(CommandStatus.Failure, "Shop_Buy_NotEnoughEloquence", card.Data.Name, (-canPay).ToString());
 
             // 5. Check if it's an equipment and if he already have it.
-            if (_Player.Equipments.Count > 0 && card.Data.Type == CardType.Equipment) {
+            if (_Player.Equipments.Count > 0 && card.Data.Type == CardType.Equipment)
+            {
                 ICard found = _Player.Equipments.FirstOrDefault(c => c.Data.Name == card.Data.Name);
 
                 if (found != null)
@@ -109,13 +103,10 @@ namespace Vermines.ShopSystem.Commands {
             return new CommandResponse(CommandStatus.Success, string.Empty);
         }
 
-        /// <summary>
-        /// Return the difference between player eloquence and card cost.
-        /// </summary>
         private int CanPurchase(PlayerStatistics playerData, ICard card)
         {
             int playerEloquence = playerData.Eloquence;
-            int cardCost        = card.Data.CurrentEloquence;
+            int cardCost = card.Data.CurrentEloquence;
 
             if (card.Data.IsFree)
                 return playerData.Eloquence;
@@ -123,19 +114,15 @@ namespace Vermines.ShopSystem.Commands {
         }
     }
 
-    /// <summary>
-    /// This buy command simulate only on authority object client.
-    /// Process it only after doing the check command.
-    /// It process the purchase of a card from the shop to the player's deck.
-    /// </summary>
-    public class ADMIN_BuyCommand : ACommand {
+    public class ADMIN_BuyCommand : ACommand
+    {
 
         private PlayerController _Player;
         private ShopArgs _Parameters;
 
         public ADMIN_BuyCommand(PlayerController player, ShopArgs parameters)
         {
-            _Player     = player;
+            _Player = player;
             _Parameters = parameters;
         }
 
@@ -143,29 +130,20 @@ namespace Vermines.ShopSystem.Commands {
         {
             ICard card = _Parameters.Shop.BuyCard(_Parameters.ShopType, _Parameters.CardId);
 
-            // 1. Process the purchase
             int remainingE = Purchase(_Player, _Player.Statistics, card);
 
-            // 2. Move the card to the player's deck
             if (card.Data.Type == CardType.Equipment)
                 _Player.AddEquipment(card);
-            else {
-                PlayerDeck deck = _Player.Deck;
-                deck.Discard.Add(card);
-                _Player.UpdateDeck(deck);
-            }
+            else
+                _Player.AddCardToDiscard(card);
 
-            // 3. Attribute the owner of the card
             card.Owner = _Player.Object.InputAuthority;
 
             return new CommandResponse(CommandStatus.Success, $"Player {_Player} bought the card {card.Data.Name}.", remainingE.ToString());
         }
 
-        public override void Undo() {}
+        public override void Undo() { }
 
-        /// <summary>
-        /// Process the purchase and return the new eloquence of the player.
-        /// </summary>
         private int Purchase(PlayerController player, PlayerStatistics stats, ICard card)
         {
             if (card.Data.IsFree)

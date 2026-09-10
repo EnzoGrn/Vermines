@@ -66,14 +66,11 @@ namespace Vermines.Gameplay.Commands {
             if (!_Player.Hand.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Table_Discard_CardNotInHand", _CardId.ToString());
 
-            PlayerDeck deck = _Player.Deck;
-            ICard card = deck.DiscardCard(_Card);
+            _Player.RemoveCardFromHand(_Card);
+            _Player.DiscardCardToDiscard(_Card);
 
-            _Player.UpdateDeck(deck);
-            _Player.RemoveCardFromHand(card);
-
-            if (card.Data.Type == CardType.Tools)
-                _Player.AddCardToToolDiscard(card);
+            if (_Card.Data.Type == CardType.Tools)
+                _Player.AddCardToToolDiscard(_Card);
 
             return new CommandResponse(CommandStatus.Success, "");
         }

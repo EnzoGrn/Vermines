@@ -39,27 +39,13 @@ namespace Test.Vermines.Gameplay.Deck
             _Player = new();
             _Player2 = new();
 
-            _Player.UpdateDeck(new());
-
-            PlayerDeck deck = new();
-
-            deck.Initialize(Seed);
-
-            deck.Deck.Add(CardSetDatabase.Instance.GetCardByID(45));
-            deck.Deck.Add(CardSetDatabase.Instance.GetCardByID(46));
-            _Player.AddCardToPlayedCards(CardSetDatabase.Instance.GetCardByID(47));
-            _Player.AddCardToPlayedCards(CardSetDatabase.Instance.GetCardByID(48));
-            // NOTE: Hand vit maintenant sur PlayerController (état [Networked]),
-            // qui nécessite un NetworkObject réellement spawné par Fusion. Ce test
-            // EditMode construit _Player via `new PlayerController()` sans passer par
-            // Runner.Spawn(...), donc Hand ne peut plus être peuplée ici.
-            // TODO: nécessite un harnais de test Fusion (mock NetworkRunner) pour
-            // spawner un vrai PlayerController testable. Cartes 49/50 retirées en
-            // attendant -- voir impact sur PlayedCard()/DiscardCard() ci-dessous.
-
-            _Player.UpdateDeck(deck);
-
-            _Player2.Deck.Initialize(Seed);
+            // NOTE: Deck/Discard/Hand/PlayedCards/Graveyard/etc. sont désormais
+            // [Networked] sur PlayerController -- nécessitent un NetworkObject
+            // réellement spawné par Fusion (HasStateAuthority == false sur un
+            // `new PlayerController()` nu, donc AddCardToX/InitializeDeck seraient
+            // des no-op silencieux ici). Toute construction d'état de deck est donc
+            // retirée de ce Setup ; les tests concernés restent Assert.Ignore en
+            // attendant un harnais de test Fusion (mock NetworkRunner).
         }
 
         #endregion

@@ -9,6 +9,7 @@ namespace Vermines.Player {
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
+    using Vermines.CardSystem.Utilities;
     using Vermines.Characters;
     using Vermines.Core;
     using Vermines.Core.Player;
@@ -37,7 +38,31 @@ namespace Vermines.Player {
         [Networked, OnChangedRender(nameof(OnStatisticsChange))]
         public PlayerStatistics Statistics { get; private set; }
 
-        public PlayerDeck Deck { get; private set; }
+        private int _DeckSeed;
+
+        private const int DECK_CAPACITY = 100;
+        private const int DISCARD_CAPACITY = 100;
+
+        [Networked, Capacity(DECK_CAPACITY)]
+        private NetworkArray<int> DeckIds => default;
+
+        [Networked, OnChangedRender(nameof(RebuildDeckCache))]
+        private int DeckCount { get; set; }
+
+        private List<ICard> _DeckCache = new();
+
+        public IReadOnlyList<ICard> Deck => _DeckCache;
+
+        [Networked, Capacity(DISCARD_CAPACITY)]
+        private NetworkArray<int> DiscardIds => default;
+
+        [Networked, OnChangedRender(nameof(RebuildDiscardCache))]
+        private int DiscardCount { get; set; }
+
+        private List<ICard> _DiscardCache = new();
+
+        public IReadOnlyList<ICard> Discard => _DiscardCache;
+
         private const int HAND_CAPACITY = 15;
 
         [Networked, Capacity(HAND_CAPACITY)]
@@ -172,13 +197,6 @@ namespace Vermines.Player {
             Statistics = statistics;
         }
 
-        public void UpdateDeck(PlayerDeck deck)
-        {
-            Deck = deck;
-
-            if (HasStateAuthority)
-                RPC_DeckResynchronization(deck.Serialize());
-        }
 
         public void AddCardToHand(ICard card)
         {
@@ -202,27 +220,23 @@ namespace Vermines.Player {
             WriteHand(hand);
         }
 
-
         public void DrawAuthoritative(int amount)
         {
             if (!HasStateAuthority)
                 return;
 
-            PlayerDeck deck = Deck;
             List<int> drawnIds = new();
             List<ICard> drawnCards = new();
 
             for (int i = 0; i < amount; i++)
             {
-                ICard card = deck.Draw();
+                ICard card = DrawOneCard();
 
                 if (card == null)
                     break;
                 drawnIds.Add(card.ID);
                 drawnCards.Add(card);
             }
-
-            UpdateDeck(deck);
 
             if (drawnCards.Count > 0)
             {
@@ -258,12 +272,8 @@ namespace Vermines.Player {
         public void Refresh()
         {
             PlayerStatistics statistics = Statistics;
-
             statistics.PlayerRef = Object.InputAuthority;
-
             Statistics = statistics;
-
-            RPC_DeckResynchronization(Deck.Serialize());
         }
 
         private void UpdateLocalState()
@@ -292,6 +302,8 @@ namespace Vermines.Player {
             RebuildPlayedCardsCache();
             RebuildToolDiscardCache();
             RebuildGraveyardCache();
+            RebuildDeckCache();
+            RebuildDiscardCache();
         }
 
         public void Despawn()
@@ -577,6 +589,165 @@ namespace Vermines.Player {
             WriteGraveyard(graveyard);
         }
 
+        private void RebuildDeckCache()
+        {
+            _DeckCache.Clear();
+
+            for (int i = 0; i < DeckCount; i++)
+            {
+                ICard card = CardSetDatabase.Instance.GetCardByID(DeckIds[i]);
+
+                if (card != null)
+                    _DeckCache.Add(card);
+            }
+        }
+
+        private void RebuildDiscardCache()
+        {
+            _DiscardCache.Clear();
+
+            for (int i = 0; i < DiscardCount; i++)
+            {
+                ICard card = CardSetDatabase.Instance.GetCardByID(DiscardIds[i]);
+
+                if (card != null)
+                    _DiscardCache.Add(card);
+            }
+        }
+
+        private void WriteDeck(List<ICard> deck)
+        {
+            if (!HasStateAuthority)
+            {
+                Log.Error("[PlayerController] WriteDeck appelé hors StateAuthority — ignoré.");
+
+                return;
+            }
+
+            int count = Mathf.Min(deck?.Count ?? 0, DECK_CAPACITY);
+
+            if (deck != null && deck.Count > DECK_CAPACITY)
+                Log.Error($"[PlayerController] Deck dépasse DECK_CAPACITY ({deck.Count} > {DECK_CAPACITY}).");
+
+            for (int i = 0; i < count; i++)
+                DeckIds.Set(i, deck[i].ID);
+
+            DeckCount = count;
+            RebuildDeckCache();
+        }
+
+        private void WriteDiscard(List<ICard> discard)
+        {
+            if (!HasStateAuthority)
+            {
+                Log.Error("[PlayerController] WriteDiscard appelé hors StateAuthority — ignoré.");
+
+                return;
+            }
+
+            int count = Mathf.Min(discard?.Count ?? 0, DISCARD_CAPACITY);
+
+            if (discard != null && discard.Count > DISCARD_CAPACITY)
+                Log.Error($"[PlayerController] Discard dépasse DISCARD_CAPACITY ({discard.Count} > {DISCARD_CAPACITY}).");
+
+            for (int i = 0; i < count; i++)
+                DiscardIds.Set(i, discard[i].ID);
+
+            DiscardCount = count;
+            RebuildDiscardCache();
+        }
+
+        public void InitializeDeck(int seed, List<ICard> startingDeck)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            _DeckSeed = seed;
+
+            WriteDeck(startingDeck ?? new List<ICard>());
+            WriteDiscard(new List<ICard>());
+        }
+
+        public ICard DrawOneCard()
+        {
+            if (!HasStateAuthority)
+                return null;
+
+            List<ICard> deck = _DeckCache.ToList();
+            List<ICard> discard = _DiscardCache.ToList();
+
+            if (deck.Count == 0)
+            {
+                if (discard.Count == 0)
+                    return null;
+
+                deck.AddRange(discard.Where(card => card != null));
+                discard.Clear();
+
+                deck.Shuffle(_DeckSeed);   // mélange UNE FOIS, côté serveur ; le
+                                           // résultat déjà mélangé sera répliqué tel quel
+
+                GameEvents.OnDiscardShuffled.Invoke();
+            }
+
+            if (deck.Count == 0)
+                return null;
+
+            ICard card = deck[0];
+
+            deck.RemoveAt(0);
+
+            WriteDeck(deck);
+            WriteDiscard(discard);
+
+            return card;
+        }
+
+        // Remplace PlayerDeck.DiscardCard(ICard) pour la branche Discard (Tools est
+        // géré par l'appelant via AddCardToToolDiscard, comme depuis le Patch L).
+        public ICard DiscardCardToDiscard(ICard card)
+        {
+            if (!HasStateAuthority || card == null)
+                return card;
+
+            if (card.Data.Type != CardType.Tools)
+            {
+                List<ICard> discard = _DiscardCache.ToList();
+
+                discard.Add(card);
+                WriteDiscard(discard);
+            }
+
+            return card;
+        }
+
+        // Ajoute directement une carte à Discard (utilisé par les achats en boutique).
+        public void AddCardToDiscard(ICard card)
+        {
+            if (!HasStateAuthority || card == null)
+                return;
+
+            List<ICard> discard = _DiscardCache.ToList();
+
+            discard.Add(card);
+            WriteDiscard(discard);
+        }
+
+        // Remplace PlayerDeck.MergeToolDiscard(seed, toolDiscard) : fusionne une
+        // liste externe (ToolDiscard) dans Discard et mélange.
+        public void MergeToolDiscardIntoDiscard(int seed, List<ICard> toolDiscard)
+        {
+            if (!HasStateAuthority || toolDiscard == null || toolDiscard.Count == 0)
+                return;
+
+            List<ICard> discard = _DiscardCache.ToList();
+
+            discard.AddRange(toolDiscard.Where(card => card != null));
+            discard.Shuffle(seed);
+
+            WriteDiscard(discard);
+        }
+
         #endregion
 
         #region Events
@@ -591,8 +762,6 @@ namespace Vermines.Player {
             NetworkedUserID   = player.NetworkedUserID;
             NetworkedNickname = player.NetworkedNickname;
             UnityID           = player.UnityID;
-
-            RPC_DeckResynchronization(player.Deck.Serialize());
         }
 
         private void OnStatisticsChange()
@@ -633,14 +802,6 @@ namespace Vermines.Player {
                 Context.GameplayMode.OnPlayerDataReceived(playerRef, family);
             else
                 Log.Error("[PlayerController] RPC_SendPlayerData : Context.GameplayMode is null");
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
-        public void RPC_DeckResynchronization(string data)
-        {
-            if (HasStateAuthority)
-                return;
-            Deck = PlayerDeck.Deserialize(data);
         }
 
         public void NotifyDrawnToOwner(int cardId)

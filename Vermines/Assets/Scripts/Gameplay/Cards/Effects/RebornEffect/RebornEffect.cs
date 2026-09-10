@@ -56,7 +56,6 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
             PlayerStatistics stat = player.Statistics;
-            PlayerDeck       deck = player.Deck;
 
             if (player.PlayedCards.Count >= stat.NumberOfSlotInTable || player.Graveyard.Count == 0)
                 return;
