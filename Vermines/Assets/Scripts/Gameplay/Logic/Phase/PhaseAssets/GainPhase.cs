@@ -62,7 +62,7 @@ namespace Vermines.Gameplay.Phases {
             ExecuteCardEffect(player);
 
             _gainSummary.BaseValue     = EloquenceToEarn;
-            _gainSummary.FollowerValue = CalculateFollowerBonus(player.Deck.PlayedCards);
+            _gainSummary.FollowerValue = CalculateFollowerBonus(player.PlayedCards.ToList());
 
             ICommand earnCommand = new EarnCommand(player, _gainSummary.BaseValue, DataType.Eloquence);
 
@@ -98,7 +98,7 @@ namespace Vermines.Gameplay.Phases {
         private void ExecuteCardEffect(PlayerController player)
         {
             List<ICard> equipmentCards = player.Equipments.ToList();
-            List<ICard> playedCards    = player.Deck.PlayedCards;
+            List<ICard> playedCards    = player.PlayedCards.ToList();
 
             foreach (ICard card in equipmentCards) {
                 foreach (IEffect effect in card.Data.Effects) {

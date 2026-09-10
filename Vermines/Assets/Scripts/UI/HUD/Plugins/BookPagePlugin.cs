@@ -177,7 +177,7 @@ namespace Vermines.UI.Plugin
 
         public void ShowPlayedCards()
         {
-            deckHolder.Show(_Player.Deck.PlayedCards);
+            deckHolder.Show(_Player.PlayedCards.ToList());
             deckHolder.SetTitle("Played Cards");
         }
 

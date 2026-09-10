@@ -24,8 +24,10 @@ namespace Vermines.Gameplay.Commands {
 
             if (!playerDeck.Graveyard.Contains(_CardToReborn))
                 return new CommandResponse(CommandStatus.Invalid, $"Card {_CardToReborn.ID} does not exist in the graveyard.");
+
             playerDeck.Graveyard.Remove(_CardToReborn);
-            playerDeck.PlayedCards.Add(_CardToReborn);
+            _Player.UpdateDeck(playerDeck);
+            _Player.AddCardToPlayedCards(_CardToReborn);
 
             return new CommandResponse(CommandStatus.Success, "");
         }

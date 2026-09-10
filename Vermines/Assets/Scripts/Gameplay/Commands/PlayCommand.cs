@@ -66,11 +66,8 @@ namespace Vermines.Gameplay.Commands
             if (!_Player.Hand.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Table_Play_CardNotInHand", _CardId.ToString());
 
-            PlayerDeck deck = _Player.Deck;
-            ICard card = deck.PlayCard(_Card);
-
-            _Player.UpdateDeck(deck);
-            _Player.RemoveCardFromHand(card);
+            _Player.RemoveCardFromHand(_Card);
+            _Player.AddCardToPlayedCards(_Card);
 
             return new CommandResponse(CommandStatus.Success, "");
         }

@@ -7,6 +7,7 @@ namespace Vermines.Gameplay.Commands {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Data;
     using Vermines.Player;
+    using System.Linq;
 
     public class ADMIN_SacrificeCommand : ACommand {
 
@@ -33,7 +34,7 @@ namespace Vermines.Gameplay.Commands {
                 return new CommandResponse(CommandStatus.Invalid, "Sacrifice_WrongCardType");
 
             // 2. Check if the card is in the player played cards.
-            if (!_Player.Deck.PlayedCards.Contains(_Card))
+            if (!_Player.PlayedCards.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Sacrifice_CardNotInTable", _Card.Data.Name);
             return new CommandResponse(CommandStatus.Success, "", _Card.Data.Name);
         }
@@ -58,9 +59,9 @@ namespace Vermines.Gameplay.Commands {
             PlayerDeck deck = _Player.Deck;
 
             deck.Graveyard.Add(_Card);
-            deck.PlayedCards.Remove(_Card);
 
             _Player.UpdateDeck(deck);
+            _Player.RemoveCardFromPlayedCards(_Card);
 
             return new CommandResponse(CommandStatus.Success, "");
         }

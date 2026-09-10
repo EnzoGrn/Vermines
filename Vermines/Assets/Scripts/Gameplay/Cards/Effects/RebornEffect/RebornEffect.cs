@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using Newtonsoft.Json;
 using OMGG.Chronicle;
 using OMGG.DesignPattern;
@@ -61,7 +61,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerStatistics stat = player.Statistics;
             PlayerDeck       deck = player.Deck;
 
-            if (deck.PlayedCards.Count >= stat.NumberOfSlotInTable || deck.Graveyard.Count == 0)
+            if (player.PlayedCards.Count >= stat.NumberOfSlotInTable || deck.Graveyard.Count == 0)
                 return;
             if (UIContextManager.Instance) {
                 CardSelectedEffectContext args = new(CardType.Partisan, Card);

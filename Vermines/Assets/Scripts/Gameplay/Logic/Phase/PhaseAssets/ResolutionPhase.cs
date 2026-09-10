@@ -54,7 +54,7 @@ namespace Vermines.Gameplay.Phases {
 
         private void StopEffects(PlayerController player)
         {
-            foreach (ICard card in player.Deck.PlayedCards) {
+            foreach (ICard card in player.PlayedCards) {
                 foreach (AEffect effect in card.Data.Effects) {
                     if ((effect.Type & EffectType.Passive) != 0 || (effect.Type & EffectType.Activate) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0 || (effect.Type & EffectType.OnOtherDiscard) != 0)
                         effect.Stop(player.Object.InputAuthority);

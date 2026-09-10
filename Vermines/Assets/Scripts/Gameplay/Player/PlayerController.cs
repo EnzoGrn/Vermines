@@ -62,6 +62,18 @@ namespace Vermines.Player {
 
         public IReadOnlyList<ICard> Equipments => _EquipmentsCache;
 
+        private const int PLAYEDCARDS_CAPACITY = 5;
+
+        [Networked, Capacity(PLAYEDCARDS_CAPACITY)]
+        private NetworkArray<int> PlayedCardIds => default;
+
+        [Networked, OnChangedRender(nameof(RebuildPlayedCardsCache))]
+        private int PlayedCardsCount { get; set; }
+
+        private List<ICard> _PlayedCardsCache = new();
+
+        public IReadOnlyList<ICard> PlayedCards => _PlayedCardsCache;
+
         public God God { get; private set; }
 
         private int _InitCounter;
@@ -253,6 +265,7 @@ namespace Vermines.Player {
             Runner.SetIsSimulated(Object, true);
             RebuildHandCache();
             RebuildEquipmentsCache();
+            RebuildPlayedCardsCache();
         }
 
         public void Despawn()
@@ -371,6 +384,62 @@ namespace Vermines.Player {
 
             equipments.Add(card);
             WriteEquipments(equipments);
+        }
+
+        private void RebuildPlayedCardsCache()
+        {
+            _PlayedCardsCache.Clear();
+
+            for (int i = 0; i < PlayedCardsCount; i++)
+            {
+                ICard card = CardSetDatabase.Instance.GetCardByID(PlayedCardIds[i]);
+
+                if (card != null)
+                    _PlayedCardsCache.Add(card);
+            }
+        }
+
+        private void WritePlayedCards(List<ICard> playedCards)
+        {
+            if (!HasStateAuthority)
+            {
+                Log.Error("[PlayerController] WritePlayedCards appelé hors StateAuthority — ignoré.");
+
+                return;
+            }
+
+            int count = Mathf.Min(playedCards?.Count ?? 0, PLAYEDCARDS_CAPACITY);
+
+            if (playedCards != null && playedCards.Count > PLAYEDCARDS_CAPACITY)
+                Log.Error($"[PlayerController] PlayedCards dépasse PLAYEDCARDS_CAPACITY ({playedCards.Count} > {PLAYEDCARDS_CAPACITY}). Un dieu permettant 4 cartes en jeu + marge -> vérifier ce cas si ça arrive.");
+
+            for (int i = 0; i < count; i++)
+                PlayedCardIds.Set(i, playedCards[i].ID);
+
+            PlayedCardsCount = count;
+            RebuildPlayedCardsCache();
+        }
+
+        public void AddCardToPlayedCards(ICard card)
+        {
+            if (!HasStateAuthority || card == null)
+                return;
+
+            List<ICard> playedCards = _PlayedCardsCache.ToList();
+
+            playedCards.Add(card);
+            WritePlayedCards(playedCards);
+        }
+
+        public void RemoveCardFromPlayedCards(ICard card)
+        {
+            if (!HasStateAuthority || card == null)
+                return;
+
+            List<ICard> playedCards = _PlayedCardsCache.ToList();
+
+            playedCards.Remove(card);
+            WritePlayedCards(playedCards);
         }
 
         #endregion

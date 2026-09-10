@@ -143,7 +143,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                     CommandInvoker.ExecuteCommand(earnCommand);
                 }
             } else if (CardType == CardType.Partisan) {
-                List<ICard> cards = player.Deck.PlayedCards;
+                List<ICard> cards = player.PlayedCards.ToList();
 
                 if (Area == ZoneType.Graveyard)
                     cards = player.Deck.Graveyard;
@@ -155,7 +155,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                     CommandInvoker.ExecuteCommand(earnCommand);
                 }
             } else if (CardType == CardType.None) {
-                List<ICard> cards = player.Deck.PlayedCards;
+                List<ICard> cards = player.PlayedCards.ToList();
 
                 if (Area == ZoneType.Graveyard)
                     cards = player.Deck.Graveyard;

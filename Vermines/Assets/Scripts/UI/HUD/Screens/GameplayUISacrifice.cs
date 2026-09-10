@@ -200,7 +200,7 @@ namespace Vermines.UI.Screen
                     currentEntries.Add(new ShopCardEntry(card));
             }
 
-            foreach (var card in player.Deck.PlayedCards) {
+            foreach (var card in player.PlayedCards) {
                 if (card.Data.Type == type)
                     currentEntries.Add(new ShopCardEntry(card));
             }

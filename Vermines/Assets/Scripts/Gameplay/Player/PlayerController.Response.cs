@@ -1,4 +1,4 @@
-﻿using OMGG.DesignPattern;
+using OMGG.DesignPattern;
 using OMGG.Chronicle;
 using UnityEngine;
 using Fusion;
@@ -51,7 +51,7 @@ namespace Vermines.Player {
 
             GameEvents.OnShopRefilled.Invoke(ShopType.Courtyard, shop.GetDisplayCards(ShopType.Courtyard));
 
-            foreach (var card in Deck.PlayedCards) {
+            foreach (var card in PlayedCards) {
                 if (card.Data.Effects != null) {
                     foreach (var effect in card.Data.Effects) {
                         if ((effect.Type & EffectType.OnCardAddedToCourtyard) != 0)
@@ -84,7 +84,7 @@ namespace Vermines.Player {
                         effect.Stop(Object.InputAuthority);
                 }
 
-                foreach (ICard playedCard in Deck.PlayedCards) {
+                foreach (ICard playedCard in PlayedCards) {
                     if (playedCard.Data.Effects != null) {
                         foreach (AEffect effect in playedCard.Data.Effects) {
                             if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
@@ -126,7 +126,7 @@ namespace Vermines.Player {
                     effect.Play(Object.InputAuthority);
             }
 
-            foreach (ICard playedCard in Deck.PlayedCards) {
+            foreach (ICard playedCard in PlayedCards) {
                 if (playedCard.Data.Effects != null) {
                     foreach (AEffect effect in playedCard.Data.Effects) {
                         if ((effect.Type & EffectType.OnOtherRecycle) != 0)
@@ -166,7 +166,7 @@ namespace Vermines.Player {
                 return;
             }
 
-            foreach (ICard playedCard in Deck.PlayedCards) {
+            foreach (ICard playedCard in PlayedCards) {
                 if (playedCard.Data.Effects != null) {
                     foreach (AEffect effect in playedCard.Data.Effects) {
                         if ((effect.Type & EffectType.OnOtherDiscard) != 0 && effect is OtherDiscardEffect discard) {

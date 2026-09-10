@@ -351,7 +351,7 @@ namespace Vermines.Gameplay.Core {
                     effect.Stop(playerSource);
             }
 
-            foreach (ICard playedCard in player.Deck.PlayedCards) {
+            foreach (ICard playedCard in player.PlayedCards) {
                 if (playedCard.Data.Effects != null) {
                     foreach (AEffect effect in playedCard.Data.Effects) {
                         if ((effect.Type & EffectType.OnOtherSacrifice) != 0)

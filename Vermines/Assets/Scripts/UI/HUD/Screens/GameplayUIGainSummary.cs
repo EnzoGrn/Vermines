@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +8,7 @@ using Vermines.Gameplay.Phases.Data;
 using Vermines.Player;
 using Vermines.CardSystem.Elements;
 using Vermines.Core.Player;
+using System.Linq;
 
 namespace Vermines.UI.Screen
 {
@@ -141,7 +142,7 @@ namespace Vermines.UI.Screen
             Controller.RemoveLastScreen();
             Controller.Hide();
 
-            List<ICard> playedCards = PlayerController.Local.Deck.PlayedCards;
+            List<ICard> playedCards = PlayerController.Local.PlayedCards.ToList();
 
             if (playedCards.Find(c => c.Data.HasEffectOfType(EffectType.Activate)) == null) {
                 GameEvents.OnAttemptNextPhase.Invoke();
