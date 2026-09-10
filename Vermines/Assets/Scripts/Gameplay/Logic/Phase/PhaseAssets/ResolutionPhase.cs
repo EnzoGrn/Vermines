@@ -32,7 +32,10 @@ namespace Vermines.Gameplay.Phases {
 
             PlayerController player = _Context.NetworkGame.GetPlayer(playerRef);
 
-            player.Deck.MergeToolDiscard(_Context.NetworkGame.Seed);
+            PlayerDeck resolutionDeck = player.Deck;
+            resolutionDeck.MergeToolDiscard(_Context.NetworkGame.Seed, player.ToolDiscard.ToList());
+            player.UpdateDeck(resolutionDeck);
+            player.ClearToolDiscard();
 
             PlayerDeck merged = player.Deck;
             player.UpdateDeck(merged);

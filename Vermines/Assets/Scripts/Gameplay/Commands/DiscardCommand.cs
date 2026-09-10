@@ -1,13 +1,14 @@
-using OMGG.DesignPattern;
 using Fusion;
+using OMGG.DesignPattern;
 
 namespace Vermines.Gameplay.Commands {
 
-    using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.CardSystem.Elements;
-    using Vermines.CardSystem.Data;
-    using Vermines.Player;
     using System.Linq;
+    using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.Player;
 
     public class ADMIN_CheckDiscardCommand : ACommand {
 
@@ -70,6 +71,9 @@ namespace Vermines.Gameplay.Commands {
 
             _Player.UpdateDeck(deck);
             _Player.RemoveCardFromHand(card);
+
+            if (card.Data.Type == CardType.Tools)
+                _Player.AddCardToToolDiscard(card);
 
             return new CommandResponse(CommandStatus.Success, "");
         }

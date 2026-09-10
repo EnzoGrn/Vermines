@@ -167,7 +167,7 @@ namespace Vermines.UI.Plugin
         public void ShowDiscardedCards()
         {
             List<ICard> discardedC = new(_Player.Deck.Discard);
-            List<ICard> discardedT = new(_Player.Deck.ToolDiscard);
+            List<ICard> discardedT = new(_Player.ToolDiscard);
 
             discardedC.Merge(discardedT);
 

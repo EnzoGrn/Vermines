@@ -74,6 +74,18 @@ namespace Vermines.Player {
 
         public IReadOnlyList<ICard> PlayedCards => _PlayedCardsCache;
 
+        private const int TOOLDISCARD_CAPACITY = 40;
+
+        [Networked, Capacity(TOOLDISCARD_CAPACITY)]
+        private NetworkArray<int> ToolDiscardIds => default;
+
+        [Networked, OnChangedRender(nameof(RebuildToolDiscardCache))]
+        private int ToolDiscardCount { get; set; }
+
+        private List<ICard> _ToolDiscardCache = new();
+
+        public IReadOnlyList<ICard> ToolDiscard => _ToolDiscardCache;
+
         public God God { get; private set; }
 
         private int _InitCounter;
@@ -266,6 +278,7 @@ namespace Vermines.Player {
             RebuildHandCache();
             RebuildEquipmentsCache();
             RebuildPlayedCardsCache();
+            RebuildToolDiscardCache();
         }
 
         public void Despawn()
@@ -440,6 +453,59 @@ namespace Vermines.Player {
 
             playedCards.Remove(card);
             WritePlayedCards(playedCards);
+        }
+
+        private void RebuildToolDiscardCache()
+        {
+            _ToolDiscardCache.Clear();
+
+            for (int i = 0; i < ToolDiscardCount; i++)
+            {
+                ICard card = CardSetDatabase.Instance.GetCardByID(ToolDiscardIds[i]);
+
+                if (card != null)
+                    _ToolDiscardCache.Add(card);
+            }
+        }
+
+        private void WriteToolDiscard(List<ICard> toolDiscard)
+        {
+            if (!HasStateAuthority)
+            {
+                Log.Error("[PlayerController] WriteToolDiscard appelé hors StateAuthority — ignoré.");
+
+                return;
+            }
+
+            int count = Mathf.Min(toolDiscard?.Count ?? 0, TOOLDISCARD_CAPACITY);
+
+            if (toolDiscard != null && toolDiscard.Count > TOOLDISCARD_CAPACITY)
+                Log.Error($"[PlayerController] ToolDiscard dépasse TOOLDISCARD_CAPACITY ({toolDiscard.Count} > {TOOLDISCARD_CAPACITY}).");
+
+            for (int i = 0; i < count; i++)
+                ToolDiscardIds.Set(i, toolDiscard[i].ID);
+
+            ToolDiscardCount = count;
+            RebuildToolDiscardCache();
+        }
+
+        public void AddCardToToolDiscard(ICard card)
+        {
+            if (!HasStateAuthority || card == null)
+                return;
+
+            List<ICard> toolDiscard = _ToolDiscardCache.ToList();
+
+            toolDiscard.Add(card);
+            WriteToolDiscard(toolDiscard);
+        }
+
+        public void ClearToolDiscard()
+        {
+            if (!HasStateAuthority)
+                return;
+
+            WriteToolDiscard(new List<ICard>());
         }
 
         #endregion

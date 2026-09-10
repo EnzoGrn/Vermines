@@ -15,7 +15,6 @@ namespace Vermines.Player {
         public List<ICard> Deck { get; set; }
 
         public List<ICard> Discard { get; set; }
-        public List<ICard> ToolDiscard { get; set; }
         public List<ICard> Graveyard { get; set; }
 
         public void Initialize(int seed)
@@ -24,7 +23,6 @@ namespace Vermines.Player {
 
             Deck        = new List<ICard>();
             Discard     = new List<ICard>();
-            ToolDiscard = new List<ICard>();
             Graveyard   = new List<ICard>();
         }
 
@@ -51,18 +49,17 @@ namespace Vermines.Player {
             if (card == null)
                 return null;
 
-            if (card.Data.Type == CardType.Tools)
-                ToolDiscard.Add(card);
-            else
+            if (card.Data.Type != CardType.Tools)
                 Discard.Add(card);
 
             return card;
         }
 
-        public readonly void MergeToolDiscard(int seed)
+        public readonly void MergeToolDiscard(int seed, List<ICard> toolDiscard)
         {
-            if (ToolDiscard.Count > 0) {
-                Discard.Merge(ToolDiscard);
+            if (toolDiscard != null && toolDiscard.Count > 0)
+            {
+                Discard.Merge(toolDiscard);
                 Discard.Shuffle(seed);
             }
         }
@@ -98,7 +95,6 @@ namespace Vermines.Player {
             string[] parts = new[] {
                 SerializeList("Deck", Deck),
                 SerializeList("Discard", Discard),
-                SerializeList("ToolDiscard", ToolDiscard),
                 SerializeList("Graveyard", Graveyard),
             };
 
@@ -127,10 +123,6 @@ namespace Vermines.Player {
                     string content = deckSection[10..^1];
 
                     deck.Graveyard = CardSetDatabase.Instance.GetCardByIds(content);
-                } else if (deckSection.StartsWith("ToolDiscard[") && deckSection.EndsWith("]")) {
-                    string content = deckSection[12..^1];
-
-                    deck.ToolDiscard = CardSetDatabase.Instance.GetCardByIds(content);
                 }
             }
 
