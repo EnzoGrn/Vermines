@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using OMGG.DesignPattern;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +14,7 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.UI.Screen;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Phases.Data;
+    using System.Linq;
 
     [CreateAssetMenu(menuName = "Vermines/Phases/GainPhase")]
     public class GainPhaseAsset : PhaseAsset {
@@ -96,7 +97,7 @@ namespace Vermines.Gameplay.Phases {
 
         private void ExecuteCardEffect(PlayerController player)
         {
-            List<ICard> equipmentCards = player.Deck.Equipments;
+            List<ICard> equipmentCards = player.Equipments.ToList();
             List<ICard> playedCards    = player.Deck.PlayedCards;
 
             foreach (ICard card in equipmentCards) {

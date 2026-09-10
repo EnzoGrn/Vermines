@@ -1,6 +1,7 @@
-﻿using Fusion;
+using Fusion;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Utilities;
@@ -148,7 +149,7 @@ namespace Vermines.UI.Plugin
             EquipmentBookSection equipmentSection = GetComponentInChildren<EquipmentBookSection>();
 
             if (equipmentSection != null)
-                equipmentSection.UpdateEquipment(player.Deck.Equipments);
+                equipmentSection.UpdateEquipment(player.Equipments.ToList());
 
             if (leftPage.TryGetComponent<CanvasGroup>(out var canvasGroup)) {
                 canvasGroup.alpha = 1f;

@@ -1,15 +1,16 @@
+using Fusion;
 using OMGG.DesignPattern;
 using UnityEngine;
-using Fusion;
 
 namespace Vermines.ShopSystem.Commands {
 
-    using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.CardSystem.Enumerations;
-    using Vermines.CardSystem.Elements;
-    using Vermines.Player;
+    using System.Linq;
     using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Core.Player;
+    using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.Player;
 
     /// <summary>
     /// This buy command is simulate on all clients but not on the authority object client.
@@ -30,10 +31,13 @@ namespace Vermines.ShopSystem.Commands {
         {
             ICard card = _Args.Shop.BuyCard(_Args.ShopType, _Args.CardId);
 
-            if (card.Data.Type == CardType.Equipment)
-                _Player.Deck.Equipments.Add(card);
-            else
-                _Player.Deck.Discard.Add(card);
+            if (card.Data.Type == CardType.Equipment) {
+                _Player.AddEquipment(card);
+            } else {
+                PlayerDeck deck = _Player.Deck;
+                deck.Discard.Add(card);
+                _Player.UpdateDeck(deck);
+            }
             card.Owner = _Player.Object.InputAuthority;
 
             return new CommandResponse(CommandStatus.Success, $"Player {_Player} bought the card {card.Data.Name}.");
@@ -95,8 +99,8 @@ namespace Vermines.ShopSystem.Commands {
                 return new CommandResponse(CommandStatus.Failure, "Shop_Buy_NotEnoughEloquence", card.Data.Name, (-canPay).ToString());
 
             // 5. Check if it's an equipment and if he already have it.
-            if (playerDeck.Equipments.Count > 0 && card.Data.Type == CardType.Equipment) {
-                ICard found = playerDeck.Equipments.Find(c => c.Data.Name == card.Data.Name);
+            if (_Player.Equipments.Count > 0 && card.Data.Type == CardType.Equipment) {
+                ICard found = _Player.Equipments.FirstOrDefault(c => c.Data.Name == card.Data.Name);
 
                 if (found != null)
                     return new CommandResponse(CommandStatus.Failure, "Shop_Buy_AlreadyHasThisEquipment", card.Data.Name);
@@ -144,9 +148,12 @@ namespace Vermines.ShopSystem.Commands {
 
             // 2. Move the card to the player's deck
             if (card.Data.Type == CardType.Equipment)
-                _Player.Deck.Equipments.Add(card);
-            else
-                _Player.Deck.Discard.Add(card);
+                _Player.AddEquipment(card);
+            else {
+                PlayerDeck deck = _Player.Deck;
+                deck.Discard.Add(card);
+                _Player.UpdateDeck(deck);
+            }
 
             // 3. Attribute the owner of the card
             card.Owner = _Player.Object.InputAuthority;

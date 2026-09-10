@@ -10,6 +10,7 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.Gameplay.Commands.Cards.Effects;
     using OMGG.DesignPattern;
     using Vermines.Player;
+    using System.Linq;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Earn/Earn data for each ...")]
     public class EarnForEachEffect : AEffect {
@@ -134,7 +135,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
             if (CardType == CardType.Equipment) {
-                List<ICard> equipments =player.Deck.Equipments;
+                List<ICard> equipments =player.Equipments.ToList();
 
                 foreach (ICard _ in equipments) {
                     ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);

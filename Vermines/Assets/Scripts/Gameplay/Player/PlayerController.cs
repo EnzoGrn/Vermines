@@ -50,7 +50,17 @@ namespace Vermines.Player {
         [Networked, OnChangedRender(nameof(RebuildHandCache))]
         private int HandCount { get; set; }
 
+        private const int EQUIPMENTS_CAPACITY = 8;
 
+        [Networked, Capacity(EQUIPMENTS_CAPACITY)]
+        private NetworkArray<int> EquipmentIds => default;
+
+        [Networked, OnChangedRender(nameof(RebuildEquipmentsCache))]
+        private int EquipmentsCount { get; set; }
+
+        private List<ICard> _EquipmentsCache = new();
+
+        public IReadOnlyList<ICard> Equipments => _EquipmentsCache;
 
         public God God { get; private set; }
 
@@ -242,6 +252,7 @@ namespace Vermines.Player {
 
             Runner.SetIsSimulated(Object, true);
             RebuildHandCache();
+            RebuildEquipmentsCache();
         }
 
         public void Despawn()
@@ -315,6 +326,51 @@ namespace Vermines.Player {
 
             HandCount = count;
             RebuildHandCache();
+        }
+
+        private void RebuildEquipmentsCache()
+        {
+            _EquipmentsCache.Clear();
+
+            for (int i = 0; i < EquipmentsCount; i++)
+            {
+                ICard card = CardSetDatabase.Instance.GetCardByID(EquipmentIds[i]);
+
+                if (card != null)
+                    _EquipmentsCache.Add(card);
+            }
+        }
+
+        private void WriteEquipments(List<ICard> equipments)
+        {
+            if (!HasStateAuthority)
+            {
+                Log.Error("[PlayerController] WriteEquipments appelé hors StateAuthority — ignoré.");
+
+                return;
+            }
+
+            int count = Mathf.Min(equipments?.Count ?? 0, EQUIPMENTS_CAPACITY);
+
+            if (equipments != null && equipments.Count > EQUIPMENTS_CAPACITY)
+                Log.Error($"[PlayerController] Equipments dépasse EQUIPMENTS_CAPACITY ({equipments.Count} > {EQUIPMENTS_CAPACITY}).");
+
+            for (int i = 0; i < count; i++)
+                EquipmentIds.Set(i, equipments[i].ID);
+
+            EquipmentsCount = count;
+            RebuildEquipmentsCache();
+        }
+
+        public void AddEquipment(ICard card)
+        {
+            if (!HasStateAuthority || card == null)
+                return;
+
+            List<ICard> equipments = _EquipmentsCache.ToList();
+
+            equipments.Add(card);
+            WriteEquipments(equipments);
         }
 
         #endregion
