@@ -15,7 +15,6 @@ namespace Vermines.Player {
         public List<ICard> Deck { get; set; }
 
         public List<ICard> Discard { get; set; }
-        public List<ICard> Graveyard { get; set; }
 
         public void Initialize(int seed)
         {
@@ -23,7 +22,6 @@ namespace Vermines.Player {
 
             Deck        = new List<ICard>();
             Discard     = new List<ICard>();
-            Graveyard   = new List<ICard>();
         }
 
         #region Deck Manipulation
@@ -75,7 +73,6 @@ namespace Vermines.Player {
                 Seed        = this.Seed,
                 Deck        = new List<ICard>(this.Deck),
                 Discard     = new List<ICard>(this.Discard),
-                Graveyard   = new List<ICard>(this.Graveyard),
             };
         }
 
@@ -95,7 +92,6 @@ namespace Vermines.Player {
             string[] parts = new[] {
                 SerializeList("Deck", Deck),
                 SerializeList("Discard", Discard),
-                SerializeList("Graveyard", Graveyard),
             };
 
             return string.Join(";", parts);
@@ -119,10 +115,6 @@ namespace Vermines.Player {
                     string content = deckSection[8..^1];
 
                     deck.Discard = CardSetDatabase.Instance.GetCardByIds(content);
-                } else if (deckSection.StartsWith("Graveyard[") && deckSection.EndsWith("]")) {
-                    string content = deckSection[10..^1];
-
-                    deck.Graveyard = CardSetDatabase.Instance.GetCardByIds(content);
                 }
             }
 

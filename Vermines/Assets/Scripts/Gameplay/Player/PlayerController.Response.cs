@@ -85,6 +85,8 @@ namespace Vermines.Player {
                 }
 
                 foreach (ICard playedCard in PlayedCards) {
+                    if (playedCard == card)
+                        continue;
                     if (playedCard.Data.Effects != null) {
                         foreach (AEffect effect in playedCard.Data.Effects) {
                             if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
@@ -127,6 +129,8 @@ namespace Vermines.Player {
             }
 
             foreach (ICard playedCard in PlayedCards) {
+                if (playedCard == card)
+                    continue;
                 if (playedCard.Data.Effects != null) {
                     foreach (AEffect effect in playedCard.Data.Effects) {
                         if ((effect.Type & EffectType.OnOtherRecycle) != 0)
@@ -167,6 +171,8 @@ namespace Vermines.Player {
             }
 
             foreach (ICard playedCard in PlayedCards) {
+                if (playedCard == card)
+                    continue;
                 if (playedCard.Data.Effects != null) {
                     foreach (AEffect effect in playedCard.Data.Effects) {
                         if ((effect.Type & EffectType.OnOtherDiscard) != 0 && effect is OtherDiscardEffect discard) {
@@ -186,6 +192,7 @@ namespace Vermines.Player {
                 }
             }
 
+            Debug.Log($"[DISCARD] {UserID} card={cardId} hasChoice={card.Data.HasChoiceEffect(EffectType.Discard)} frame={Time.frameCount}");
             if (card.Data.HasChoiceEffect(EffectType.Discard)) {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {
                     GameplayUIController uiController = GameplayUI;
@@ -333,7 +340,7 @@ namespace Vermines.Player {
                 if (uiController != null)
                     uiController.Hide<GameplayUIChoiceEffect>();
             }
-
+            Debug.Log($"[EFFECT-CHOSEN] {UserID} card={cardId} index={effectIndex} effectType={card.Data.Effects[effectIndex].Type} frame={Time.frameCount}");
             card.Data.Effects[effectIndex].Play(Object.InputAuthority);
         }
     }

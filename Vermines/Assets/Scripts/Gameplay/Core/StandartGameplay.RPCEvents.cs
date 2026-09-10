@@ -332,7 +332,7 @@ namespace Vermines.Gameplay.Core {
             // then for each other card from the same family sacrificed before,
             // they will earn a bonus of {BonusSoulsPerFamilyCardSacrified} additional souls.
             if (player.Statistics.Family == cardToSacrifice.Data.Family) {
-                foreach (var sacrifiedCard in player.Deck.Graveyard) {
+                foreach (var sacrifiedCard in player.Graveyard) {
                     if (sacrifiedCard.Data.Family == player.Statistics.Family)
                         __ObservedSouls += BonusSoulsPerFamilyCardSacrified;
                 }

@@ -71,7 +71,7 @@ public class RebornEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginPar
 
     public virtual List<Vermines.UI.Screen.ShopCardEntry> GetEntries()
     {
-        foreach (var card in PlayerController.Local.Deck.Graveyard) {
+        foreach (var card in PlayerController.Local.Graveyard) {
             if (card.Data.Type == CardTypeTrigger)
                 currentEntries.Add(new ShopCardEntry(card));
         }

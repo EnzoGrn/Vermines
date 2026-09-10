@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -86,7 +86,7 @@ namespace Vermines.UI.Screen
         private void GenerateEffectButtons()
         {
             ClearButtons();
-
+            Debug.Log($"[CHOICE-UI] Generating buttons for card={_card?.ID} effectCount={_card?.Data?.Effects?.Count}");
             if (_card == null || _card.Data == null || _card.Data.Effects == null)
             {
                 Debug.LogWarning("[UIChoiceEffect] Card or effects missing.");

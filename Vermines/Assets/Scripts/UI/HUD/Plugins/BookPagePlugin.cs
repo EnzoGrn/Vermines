@@ -183,7 +183,7 @@ namespace Vermines.UI.Plugin
 
         public void ShowSacrificedCards()
         {
-            deckHolder.Show(_Player.Deck.Graveyard);
+            deckHolder.Show(_Player.Graveyard.ToList());
             deckHolder.SetTitle("Sacrificed Cards");
         }
     }

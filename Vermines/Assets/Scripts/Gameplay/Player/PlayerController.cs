@@ -86,6 +86,18 @@ namespace Vermines.Player {
 
         public IReadOnlyList<ICard> ToolDiscard => _ToolDiscardCache;
 
+        private const int GRAVEYARD_CAPACITY = 100;
+
+        [Networked, Capacity(GRAVEYARD_CAPACITY)]
+        private NetworkArray<int> GraveyardIds => default;
+
+        [Networked, OnChangedRender(nameof(RebuildGraveyardCache))]
+        private int GraveyardCount { get; set; }
+
+        private List<ICard> _GraveyardCache = new();
+
+        public IReadOnlyList<ICard> Graveyard => _GraveyardCache;
+
         public God God { get; private set; }
 
         private int _InitCounter;
@@ -279,6 +291,7 @@ namespace Vermines.Player {
             RebuildEquipmentsCache();
             RebuildPlayedCardsCache();
             RebuildToolDiscardCache();
+            RebuildGraveyardCache();
         }
 
         public void Despawn()
@@ -506,6 +519,62 @@ namespace Vermines.Player {
                 return;
 
             WriteToolDiscard(new List<ICard>());
+        }
+
+        private void RebuildGraveyardCache()
+        {
+            _GraveyardCache.Clear();
+
+            for (int i = 0; i < GraveyardCount; i++)
+            {
+                ICard card = CardSetDatabase.Instance.GetCardByID(GraveyardIds[i]);
+
+                if (card != null)
+                    _GraveyardCache.Add(card);
+            }
+        }
+
+        private void WriteGraveyard(List<ICard> graveyard)
+        {
+            if (!HasStateAuthority)
+            {
+                Log.Error("[PlayerController] WriteGraveyard appelé hors StateAuthority — ignoré.");
+
+                return;
+            }
+
+            int count = Mathf.Min(graveyard?.Count ?? 0, GRAVEYARD_CAPACITY);
+
+            if (graveyard != null && graveyard.Count > GRAVEYARD_CAPACITY)
+                Log.Error($"[PlayerController] Graveyard dépasse GRAVEYARD_CAPACITY ({graveyard.Count} > {GRAVEYARD_CAPACITY}). Augmenter la capacité si ça arrive en jeu réel.");
+
+            for (int i = 0; i < count; i++)
+                GraveyardIds.Set(i, graveyard[i].ID);
+
+            GraveyardCount = count;
+            RebuildGraveyardCache();
+        }
+
+        public void AddCardToGraveyard(ICard card)
+        {
+            if (!HasStateAuthority || card == null)
+                return;
+
+            List<ICard> graveyard = _GraveyardCache.ToList();
+
+            graveyard.Add(card);
+            WriteGraveyard(graveyard);
+        }
+
+        public void RemoveCardFromGraveyard(ICard card)
+        {
+            if (!HasStateAuthority || card == null)
+                return;
+
+            List<ICard> graveyard = _GraveyardCache.ToList();
+
+            graveyard.Remove(card);
+            WriteGraveyard(graveyard);
         }
 
         #endregion

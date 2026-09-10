@@ -40,7 +40,8 @@ namespace Vermines.Gameplay.Commands {
         }
     }
 
-    public class CLIENT_CardSacrifiedCommand : ACommand {
+    public class CLIENT_CardSacrifiedCommand : ACommand
+    {
 
         private PlayerController _Player;
 
@@ -50,22 +51,18 @@ namespace Vermines.Gameplay.Commands {
         public CLIENT_CardSacrifiedCommand(PlayerController player, int cardID)
         {
             _Player = player;
-            _Card   = CardSetDatabase.Instance.GetCardByID(cardID);
+            _Card = CardSetDatabase.Instance.GetCardByID(cardID);
             _CardId = cardID;
         }
 
         public override CommandResponse Execute()
         {
-            PlayerDeck deck = _Player.Deck;
-
-            deck.Graveyard.Add(_Card);
-
-            _Player.UpdateDeck(deck);
+            _Player.AddCardToGraveyard(_Card);
             _Player.RemoveCardFromPlayedCards(_Card);
 
             return new CommandResponse(CommandStatus.Success, "");
         }
 
-        public override void Undo() {}
+        public override void Undo() { }
     }
 }

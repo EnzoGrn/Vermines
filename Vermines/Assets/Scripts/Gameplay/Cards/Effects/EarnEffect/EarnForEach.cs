@@ -146,7 +146,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                 List<ICard> cards = player.PlayedCards.ToList();
 
                 if (Area == ZoneType.Graveyard)
-                    cards = player.Deck.Graveyard;
+                    cards = player.Graveyard.ToList();
                 foreach (ICard card in cards) {
                     if (card.Data.Type != CardType.Partisan)
                         continue;
@@ -158,7 +158,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                 List<ICard> cards = player.PlayedCards.ToList();
 
                 if (Area == ZoneType.Graveyard)
-                    cards = player.Deck.Graveyard;
+                    cards = player.Graveyard.ToList();
                 foreach (ICard _ in cards) {
                     ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
 
