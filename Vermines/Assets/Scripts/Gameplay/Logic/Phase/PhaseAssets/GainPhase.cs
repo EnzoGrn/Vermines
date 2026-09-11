@@ -33,24 +33,21 @@ namespace Vermines.Gameplay.Phases {
 
         public override void Run(PlayerRef playerRef)
         {
-            Debug.Log($"[GAIN.Run] local={_Context.Runner.LocalPlayer} current={_CurrentPlayer} uiNull={GameObject.FindAnyObjectByType<GameplayUIController>() == null} t={Time.frameCount}");
-            GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
-            
-            if (_Context.GameplayMode.State != Vermines.Core.GameplayMode.GState.Active || gameplayUIController == null) {
-                _Context.GameplayMode.PhaseManager.CurrentPhase = Enumerations.PhaseType.None;
-
+            if (_Context.GameplayMode.State != Vermines.Core.GameplayMode.GState.Active)
                 return;
-            }
 
             base.Run(playerRef);
 
             PlayerController player = _Context.NetworkGame.GetPlayer(playerRef);
 
-            if (isFirstTurn) {
+            if (isFirstTurn)
+            {
                 List<PlayerController> players = _Context.Runner.GetAllBehaviours<PlayerController>();
 
-                foreach (var p in players) {
-                    foreach (var effect in p.God.Effects) {
+                foreach (var p in players)
+                {
+                    foreach (var effect in p.God.Effects)
+                    {
                         if ((effect.Type & EffectType.OnGameStart) != 0)
                             effect.Play(p.Object.InputAuthority);
                     }
@@ -61,7 +58,7 @@ namespace Vermines.Gameplay.Phases {
 
             ExecuteCardEffect(player);
 
-            _gainSummary.BaseValue     = EloquenceToEarn;
+            _gainSummary.BaseValue = EloquenceToEarn;
             _gainSummary.FollowerValue = CalculateFollowerBonus(player.PlayedCards.ToList());
 
             ICommand earnCommand = new EarnCommand(player, _gainSummary.BaseValue, DataType.Eloquence);
@@ -70,10 +67,19 @@ namespace Vermines.Gameplay.Phases {
 
             GameEvents.OnPlayerUpdated.Invoke(player);
 
-            // Who is the local player? If it's the current player, show the gain summary screen. Otherwise, skip it.
-            if (_CurrentPlayer == _Context.Runner.LocalPlayer) {
-                Debug.Log($"[GAIN.SHOW] current={_CurrentPlayer} phase={_Context.GameplayMode.PhaseManager.CurrentPhase} turnIdx={_Context.GameplayMode.CurrentPlayerIndex} totalTurns={_Context.GameplayMode.TotalTurnPlayed} frame={Time.frameCount}"); gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
-                gameplayUIController.ShowWithParams<GameplayUIGainSummary, GainSummaryData>(_gainSummary, lastScreen);
+            if (_CurrentPlayer == _Context.Runner.LocalPlayer)
+            {
+                GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>(FindObjectsInactive.Include);
+
+                if (gameplayUIController != null)
+                {
+                    gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
+                    gameplayUIController.ShowWithParams<GameplayUIGainSummary, GainSummaryData>(_gainSummary, lastScreen);
+                }
+                else
+                {
+                    Debug.LogError("[GainPhase] GameplayUIController introuvable — la popup de gain n'a pas pu s'afficher pour ce joueur.");
+                }
             }
         }
 
