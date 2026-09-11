@@ -59,7 +59,6 @@ namespace Vermines.Menu.Matchmaking {
         {
             if (_LeaveButton != null)
                 _LeaveButton.onClick.RemoveListener(OnLeaveButton);
-            UnsubscribeNetworkMatchmaking();
             CancelSearchInternal();
 
             base.OnDeinitialize();
@@ -75,18 +74,11 @@ namespace Vermines.Menu.Matchmaking {
 
             RefreshUi();
 
-            if (IsNetworkSessionReady()) {
-                EnterWaitingForPlayersState();
-
-                return;
-            }
-
             _ = StartSearchAsync();
         }
 
         protected override void OnClose()
         {
-            UnsubscribeNetworkMatchmaking();
             CancelSearchInternal();
 
             base.OnClose();
@@ -96,7 +88,7 @@ namespace Vermines.Menu.Matchmaking {
         {
             if (!IsOpen)
                 return;
-            if (_IsSearching || _IsJoiningSession || IsNetworkSessionReady())
+            if (_IsSearching || _IsJoiningSession)
                 RefreshUi();
         }
 
@@ -126,17 +118,19 @@ namespace Vermines.Menu.Matchmaking {
                 _IsSearching      = false;
                 _IsJoiningSession = true;
 
-                SetStatus("MATCH FOUND", "Connecting to session...");
+                SetStatus("MATCH FOUND", "Joining game...");
                 RefreshUi();
 
                 var request = new SessionRequest {
-                    UserID       = Context.PlayerData.UserID,
-                    GameMode     = GameMode.AutoHostOrClient,
-                    GameplayType = GameplayType.Standart,
-                    SessionName  = match.MatchId,
-                    ScenePath    = Context.MatchmakingScenePath,
-                    MaxPlayers   = match.MaxPlayers,
-                    IsCustom     = false
+                    UserID          = Context.PlayerData.UserID,
+                    GameMode        = match.ResolveLocalGameMode(Unity.Services.Authentication.AuthenticationService.Instance.PlayerId),
+                    GameplayType    = GameplayType.Standart,
+                    SessionName     = match.MatchId,
+                    ScenePath       = Context.GameScenePath,
+                    MaxPlayers      = match.MaxPlayers,
+                    ExpectedPlayers = match.MaxPlayers,
+                    IsCustom        = false,
+                    IsGameSession   = true
                 };
 
                 Global.Networking.StartGame(request);
@@ -156,27 +150,6 @@ namespace Vermines.Menu.Matchmaking {
 
                 _SearchCancellation = null;
             }
-        }
-
-        private void EnterWaitingForPlayersState()
-        {
-            _IsSearching      = false;
-            _IsJoiningSession = false;
-            _SearchStartTime  = Time.realtimeSinceStartup;
-
-            SubscribeNetworkMatchmaking();
-
-            if (Context.NetworkMatchmaking != null) {
-                _CurrentPlayers = Mathf.Max(1, Context.NetworkMatchmaking.PlayerCount);
-                _MaxPlayers     = Context.NetworkMatchmaking.MaxPlayers;
-            }
-            SetStatus("WAITING", "Waiting for players...");
-            RefreshUi();
-        }
-
-        private bool IsNetworkSessionReady()
-        {
-            return Context != null && Context.Runner != null && Context.Runner.IsRunning && Context.NetworkMatchmaking != null;
         }
 
         #endregion
@@ -225,34 +198,6 @@ namespace Vermines.Menu.Matchmaking {
 
             _SearchCancellation = null;
             _IsSearching        = false;
-        }
-
-        #endregion
-
-        #region Network UI
-
-        private void SubscribeNetworkMatchmaking()
-        {
-            if (Context?.NetworkMatchmaking == null)
-                return;
-            Context.NetworkMatchmaking.PlayersChanged -= OnPlayersChanged;
-            Context.NetworkMatchmaking.PlayersChanged += OnPlayersChanged;
-        }
-
-        private void UnsubscribeNetworkMatchmaking()
-        {
-            if (Context?.NetworkMatchmaking == null)
-                return;
-            Context.NetworkMatchmaking.PlayersChanged -= OnPlayersChanged;
-        }
-
-        private void OnPlayersChanged(int count, int max)
-        {
-            _CurrentPlayers = Mathf.Max(1, count);
-            _MaxPlayers     = Mathf.Max(1, max);
-
-            SetStatus("WAITING", "Waiting for players...");
-            RefreshUi();
         }
 
         #endregion
