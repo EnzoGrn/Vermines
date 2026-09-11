@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using Newtonsoft.Json;
 using OMGG.Chronicle;
 using OMGG.DesignPattern;
@@ -16,9 +16,6 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.Gameplay.Chronicle;
     using Vermines.Gameplay.Commands;
     using Vermines.Player;
-    using Vermines.UI;
-    using Vermines.UI.Card;
-    using Vermines.UI.Screen;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Reborn/Reborn a partisan effect.")]
     public class RebornEffect : AEffect {
@@ -59,9 +56,8 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
             PlayerStatistics stat = player.Statistics;
-            PlayerDeck       deck = player.Deck;
 
-            if (deck.PlayedCards.Count >= stat.NumberOfSlotInTable || deck.Graveyard.Count == 0)
+            if (player.PlayedCards.Count >= stat.NumberOfSlotInTable || player.Graveyard.Count == 0)
                 return;
             if (UIContextManager.Instance) {
                 CardSelectedEffectContext args = new(CardType.Partisan, Card);

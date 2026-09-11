@@ -1,4 +1,4 @@
-﻿using OMGG.DesignPattern;
+using OMGG.DesignPattern;
 using OMGG.Chronicle;
 using UnityEngine;
 using Fusion;
@@ -51,7 +51,7 @@ namespace Vermines.Player {
 
             GameEvents.OnShopRefilled.Invoke(ShopType.Courtyard, shop.GetDisplayCards(ShopType.Courtyard));
 
-            foreach (var card in Deck.PlayedCards) {
+            foreach (var card in PlayedCards) {
                 if (card.Data.Effects != null) {
                     foreach (var effect in card.Data.Effects) {
                         if ((effect.Type & EffectType.OnCardAddedToCourtyard) != 0)
@@ -84,7 +84,9 @@ namespace Vermines.Player {
                         effect.Stop(Object.InputAuthority);
                 }
 
-                foreach (ICard playedCard in Deck.PlayedCards) {
+                foreach (ICard playedCard in PlayedCards) {
+                    if (playedCard == card)
+                        continue;
                     if (playedCard.Data.Effects != null) {
                         foreach (AEffect effect in playedCard.Data.Effects) {
                             if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
@@ -126,7 +128,9 @@ namespace Vermines.Player {
                     effect.Play(Object.InputAuthority);
             }
 
-            foreach (ICard playedCard in Deck.PlayedCards) {
+            foreach (ICard playedCard in PlayedCards) {
+                if (playedCard == card)
+                    continue;
                 if (playedCard.Data.Effects != null) {
                     foreach (AEffect effect in playedCard.Data.Effects) {
                         if ((effect.Type & EffectType.OnOtherRecycle) != 0)
@@ -166,7 +170,9 @@ namespace Vermines.Player {
                 return;
             }
 
-            foreach (ICard playedCard in Deck.PlayedCards) {
+            foreach (ICard playedCard in PlayedCards) {
+                if (playedCard == card)
+                    continue;
                 if (playedCard.Data.Effects != null) {
                     foreach (AEffect effect in playedCard.Data.Effects) {
                         if ((effect.Type & EffectType.OnOtherDiscard) != 0 && effect is OtherDiscardEffect discard) {
@@ -186,6 +192,7 @@ namespace Vermines.Player {
                 }
             }
 
+            Debug.Log($"[DISCARD] {UserID} card={cardId} hasChoice={card.Data.HasChoiceEffect(EffectType.Discard)} frame={Time.frameCount}");
             if (card.Data.HasChoiceEffect(EffectType.Discard)) {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {
                     GameplayUIController uiController = GameplayUI;
@@ -333,7 +340,7 @@ namespace Vermines.Player {
                 if (uiController != null)
                     uiController.Hide<GameplayUIChoiceEffect>();
             }
-
+            Debug.Log($"[EFFECT-CHOSEN] {UserID} card={cardId} index={effectIndex} effectType={card.Data.Effects[effectIndex].Type} frame={Time.frameCount}");
             card.Data.Effects[effectIndex].Play(Object.InputAuthority);
         }
     }

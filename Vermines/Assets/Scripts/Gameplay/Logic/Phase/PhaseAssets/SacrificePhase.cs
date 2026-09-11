@@ -1,9 +1,9 @@
-﻿using Fusion;
+using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Phases {
-
+    using System.Linq;
     using Vermines.CardSystem.Elements;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
@@ -28,7 +28,7 @@ namespace Vermines.Gameplay.Phases {
             base.Run(playerRef);
 
             PlayerController player  = _Context.NetworkGame.GetPlayer(_CurrentPlayer);
-            List <ICard> playedCards = player.Deck.PlayedCards;
+            List <ICard> playedCards = player.PlayedCards.ToList();
 
             GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
 
@@ -73,7 +73,7 @@ namespace Vermines.Gameplay.Phases {
             PlayerController player = _Context.NetworkGame.GetPlayer(_CurrentPlayer);
 
             int cardId = cardSacrified.ID;
-            ICard card = player.Deck.PlayedCards.Find(c => c.ID == cardId);
+            ICard card = player.PlayedCards.ToList().Find(c => c.ID == cardId);
 
             if (card != null) {
                 player.OnCardSacrified(card.ID);

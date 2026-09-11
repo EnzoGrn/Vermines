@@ -114,6 +114,29 @@ namespace Vermines.Core {
                         ActivePlayers.Add(player);
                     }
                 }
+
+                if (HasStateAuthority && _DisconnectedPlayers.Count > 0)
+                {
+                    _PurgeBuffer.Clear();
+
+                    foreach (var kvp in _DisconnectedPlayers)
+                    {
+                        if (Runner.SimulationTime - kvp.Value.Time > DISCONNECTED_TTL)
+                            _PurgeBuffer.Add(kvp.Key);
+                    }
+
+                    for (int i = 0; i < _PurgeBuffer.Count; i++)
+                    {
+                        string userId = _PurgeBuffer[i];
+
+                        if (_DisconnectedPlayers.TryGetValue(userId, out DisconnectedEntry stale))
+                        {
+                            if (stale.Player != null && stale.Player.Object != null)
+                                Runner.Despawn(stale.Player.Object);
+                            _DisconnectedPlayers.Remove(userId);
+                        }
+                    }
+                }
             }
 
             if (!HasStateAuthority || _PendingPlayers.Count == 0)

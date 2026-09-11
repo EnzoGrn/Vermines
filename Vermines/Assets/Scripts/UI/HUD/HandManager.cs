@@ -1,10 +1,10 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.UI.Card
 {
-
+    using System.Linq;
     using Vermines.CardSystem.Elements;
     using Vermines.Core.Scene;
     using Vermines.Gameplay.Phases;
@@ -71,9 +71,7 @@ namespace Vermines.UI.Card
 
             PlayerController player = Context.NetworkGame != null ? Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer) : null;
 
-            if (player == null || player.Deck.Hand == null)
-                return;
-            ResyncHand(player.Deck.Hand);
+            ResyncHand(player.Hand.ToList());
         }
 
         #endregion

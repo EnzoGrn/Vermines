@@ -10,6 +10,7 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.Gameplay.Commands.Cards.Effects;
     using OMGG.DesignPattern;
     using Vermines.Player;
+    using System.Linq;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Earn/Earn data for each ...")]
     public class EarnForEachEffect : AEffect {
@@ -134,7 +135,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
             if (CardType == CardType.Equipment) {
-                List<ICard> equipments =player.Deck.Equipments;
+                List<ICard> equipments =player.Equipments.ToList();
 
                 foreach (ICard _ in equipments) {
                     ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
@@ -142,10 +143,10 @@ namespace Vermines.Gameplay.Cards.Effect {
                     CommandInvoker.ExecuteCommand(earnCommand);
                 }
             } else if (CardType == CardType.Partisan) {
-                List<ICard> cards = player.Deck.PlayedCards;
+                List<ICard> cards = player.PlayedCards.ToList();
 
                 if (Area == ZoneType.Graveyard)
-                    cards = player.Deck.Graveyard;
+                    cards = player.Graveyard.ToList();
                 foreach (ICard card in cards) {
                     if (card.Data.Type != CardType.Partisan)
                         continue;
@@ -154,10 +155,10 @@ namespace Vermines.Gameplay.Cards.Effect {
                     CommandInvoker.ExecuteCommand(earnCommand);
                 }
             } else if (CardType == CardType.None) {
-                List<ICard> cards = player.Deck.PlayedCards;
+                List<ICard> cards = player.PlayedCards.ToList();
 
                 if (Area == ZoneType.Graveyard)
-                    cards = player.Deck.Graveyard;
+                    cards = player.Graveyard.ToList();
                 foreach (ICard _ in cards) {
                     ICommand earnCommand = new EarnCommand(player, Amount, DataToEarn);
 
