@@ -1,5 +1,3 @@
-﻿using DG.Tweening;
-using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
@@ -8,80 +6,145 @@ using Vermines.UI.GameTable;
 
 namespace Vermines.UI.Card
 {
+    /// <summary>
+    /// Handles dropping a card onto a table slot ("playing a card").
+    /// Applies an OPTIMISTIC display: the visual change happens immediately on
+    /// drop, before server confirmation. If the server refuses, the action is
+    /// rolled back visually (see <see cref="OnActionRefused"/>).
+    /// </summary>
     public class CardDropHandler : MonoBehaviour, IDropHandler
     {
         protected CardSlotBase slot;
 
-        private void Awake()
+        // Card whose action is currently pending server confirmation/refusal.
+        // Null if no action is currently in flight for this slot.
+        private ICard _PendingCard;
+
+        #region Unity Lifecycle
+
+        protected virtual void Awake()
         {
             slot = GetComponent<CardSlotBase>();
 
-            GameEvents.OnCardPlayedRefused.AddListener(OnPlayRefused);
+            // Single, stable subscription: set up once, torn down once.
+            // Unlike the previous version, no more dynamic subscription
+            // inside OnDrop().
+            GameEvents.OnCardPlayedRefused.AddListener(OnActionRefused);
         }
+
+        protected virtual void OnDestroy()
+        {
+            GameEvents.OnCardPlayedRefused.RemoveListener(OnActionRefused);
+        }
+
+        #endregion
+
+        #region Local (read-only) prediction checks
+
+        // LOCAL, non-authoritative check: avoids attempting an action we
+        // already know will fail (it's not our turn). The server remains the
+        // only real source of truth; this check only exists to give the
+        // player instant feedback without a network round-trip.
+        protected bool IsMyTurn => PlayerController.Local.Context.GameplayMode.IsMyTurn;
+
+        protected GameObject GetHandDisplay(ICard card)
+            => PlayerController.Local.Context.HandManager.GetCardDisplayGO(card);
+
+        #endregion
+
+        #region Drop Handling
 
         public virtual void OnDrop(PointerEventData eventData)
         {
-            Debug.Log($"[CardDropHandler] Dropped on slot {slot.GetIndex()}");
             DraggableCard drag = eventData.pointerDrag?.GetComponent<DraggableCard>();
-            if (drag == null || slot == null) return;
 
-            if (!PlayerController.Local.Context.GameplayMode.IsMyTurn)
+            if (drag == null || slot == null)
+                return;
+
+            if (!IsMyTurn)
             {
-                Debug.Log("[DiscardDropHandler] Not your turn, cannot discard card.");
                 drag.ReturnToOriginalPosition();
+
                 return;
             }
 
             ICard card = drag.GetCard();
+
             if (card == null)
             {
-                Debug.Log($"[CardDropHandler] Card is null, cannot drop.");
+                drag.ReturnToOriginalPosition();
+
                 return;
             }
-            if (slot.CanAcceptCard(card))
+
+            if (!slot.CanAcceptCard(card))
             {
-                GameEvents.OnCardPlayed.AddListener(OnCardPlayed);
-                GameEvents.OnCardPlayedRequested.Invoke(card);
-                //drag.gameObject.SetActive(false);
+                drag.ReturnToOriginalPosition();
+
+                return;
             }
-            else
-            {
-                Debug.Log($"[CardDropHandler] Cannot accept card {card.Data.Name} in slot {slot.GetIndex()}");
-                // Return the card to its original position in hand
-                 drag.ReturnToOriginalPosition();
-            }
+
+            ApplyOptimistically(card, drag);
+
+            RequestAction(card);
         }
 
-        private void OnCardPlayed(ICard card)
+        // Applies the visual change IMMEDIATELY, before any server response.
+        // Extension point for subclasses (Discard renders differently: the
+        // slot shows the discarded card, not a played one).
+        protected virtual void ApplyOptimistically(ICard card, DraggableCard drag)
         {
-            // Handle the card discard event here if needed
-            Debug.Log($"[CardDropHandler] Card {card.Data.Name} has been played.");
-            GameObject go = PlayerController.Local.Context.HandManager.GetCardDisplayGO(card);
-            if (go != null)
-            {
-                // Remove the card from the hand and destroy it
-                PlayerController.Local.Context.HandManager.RemoveCard(go);
-                go.transform.DOKill(true);
-                Destroy(go);
+            GameObject handDisplay = GetHandDisplay(card);
 
-                // Display the card on the table
-                slot.Init(card, true, new TableCardClickHandler(slot.GetIndex()));
-            }
-            GameEvents.OnCardPlayed.RemoveListener(OnCardPlayed);
+            if (handDisplay != null)
+                handDisplay.SetActive(false);
+
+            slot.Init(card, true, new TableCardClickHandler(slot.GetIndex()));
+
+            _PendingCard = card;
         }
 
-        private void OnPlayRefused(ICard card)
+        // Sends the request to the server. Extension point (Discard routes
+        // through a different mechanism than Play).
+        protected virtual void RequestAction(ICard card)
         {
-            GameObject go = PlayerController.Local.Context.HandManager.GetCardDisplayGO(card);
-            if (go != null)
-            {
-                if (go.TryGetComponent<DraggableCard>(out var drag))
-                {
-                    drag.ReturnToOriginalPosition();
-                    drag.gameObject.SetActive(true);
-                }
-            }
-            GameEvents.OnCardPlayed.RemoveListener(OnCardPlayed);
+            GameEvents.OnCardPlayedRequested.Invoke(card);
         }
+
+        #endregion
+
+        #region Rollback on refusal
+
+        // Called when the server refuses the action. Rolls back the visual
+        // change applied by ApplyOptimistically, restoring the card to hand.
+        protected virtual void OnActionRefused(ICard card)
+        {
+            if (_PendingCard == null || card != _PendingCard)
+                return; // not our pending action: ignore
+
+            _PendingCard = null;
+
+            RestoreHandCard(card);
+            slot.ResetSlot();
+        }
+
+        // Re-displays the card in hand and returns it to its original
+        // position. Reused as-is by DiscardDropHandler.
+        protected void RestoreHandCard(ICard card)
+        {
+            GameObject handDisplay = GetHandDisplay(card);
+
+            if (handDisplay == null)
+                return;
+            handDisplay.SetActive(true);
+
+            if (handDisplay.TryGetComponent<DraggableCard>(out var drag))
+            {
+                drag.ReturnToOriginalPosition();
+                drag.gameObject.SetActive(true);
+            }
+        }
+
+        #endregion
     }
 }
