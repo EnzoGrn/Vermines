@@ -15,6 +15,8 @@ namespace Vermines.UI.Card
 
         #region Attributes
 
+        private PlayerController _localPlayer;
+
         [Header("References")]
         [SerializeField] private GameObject cardPrefab;
         [SerializeField] private Transform spawnPoint;
@@ -62,6 +64,9 @@ namespace Vermines.UI.Card
         {
             GameEvents.OnCardDrawn.RemoveListener(DrawCard);
 
+            if (_localPlayer != null)
+                _localPlayer.OnHandChanged -= HandleHandChanged;
+
             base.OnDeinitialize();
         }
 
@@ -69,9 +74,20 @@ namespace Vermines.UI.Card
         {
             base.OnActivate();
 
-            PlayerController player = Context.NetworkGame != null ? Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer) : null;
+            _localPlayer = Context.NetworkGame != null ? Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer) : null;
 
-            ResyncHand(player.Hand.ToList());
+            if (_localPlayer == null)
+                return;
+
+            _localPlayer.OnHandChanged += HandleHandChanged;
+
+            HandleHandChanged();
+        }
+
+        private void HandleHandChanged()
+        {
+            if (_localPlayer != null)
+                ResyncHand(_localPlayer.Hand.ToList());
         }
 
         #endregion
@@ -111,9 +127,13 @@ namespace Vermines.UI.Card
 
         public void DrawCard(ICard card)
         {
+            if (GetCardDisplayGO(card) != null)
+            {
+                return;
+            }
+
             if (handCards.Count >= maxHandSize)
                 return;
-            Debug.Log($"[HandManager] Drawing card: {card.Data.Name}");
 
             GameObject cardGO = CreateCard();
 
@@ -141,7 +161,7 @@ namespace Vermines.UI.Card
             handCards.Remove(card);
 
             card.transform.DOKill(true);
-
+            Destroy(card);
             RefreshHand();
         }
 

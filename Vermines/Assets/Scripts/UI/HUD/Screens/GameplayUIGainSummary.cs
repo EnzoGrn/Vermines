@@ -64,6 +64,11 @@ namespace Vermines.UI.Screen
             AwakeUser();
         }
 
+        private void OnDestroy()
+        {
+            GameEvents.OnGainPhaseResolved.RemoveListener(OnGainPhaseResolved);
+        }
+
         /// <summary>
         /// The screen init method.
         /// Calls partial method <see cref="InitUser"/> to be implemented on the SDK side.
@@ -73,6 +78,8 @@ namespace Vermines.UI.Screen
             base.Init();
 
             InitUser();
+
+            GameEvents.OnGainPhaseResolved.AddListenerAndReplay(OnGainPhaseResolved);
         }
 
         /// <summary>
@@ -144,13 +151,26 @@ namespace Vermines.UI.Screen
 
             List<ICard> playedCards = PlayerController.Local.PlayedCards.ToList();
 
-            if (playedCards.Find(c => c.Data.HasEffectOfType(EffectType.Activate)) == null) {
+            if (playedCards.Find(c => c.Data.HasEffectOfType(EffectType.Activate)) == null)
+            {
                 GameEvents.OnAttemptNextPhase.Invoke();
 
                 Controller.Hide<GameplayUIGainSummary>();
             }
             else
                 Controller.Show<GameplayUITable>();
+        }
+
+        private void OnGainPhaseResolved(PlayerRef player, GainSummaryData summary)
+        {
+            if (Controller == null)
+            {
+                Debug.LogError("[GameplayUIGainSummary] Controller not assigned.");
+                return;
+            }
+
+            Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
+            Controller.ShowWithParams<GameplayUIGainSummary, GainSummaryData>(summary, lastScreen);
         }
 
         #endregion

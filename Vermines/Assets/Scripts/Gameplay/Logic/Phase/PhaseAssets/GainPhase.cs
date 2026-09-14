@@ -69,17 +69,7 @@ namespace Vermines.Gameplay.Phases {
 
             if (_CurrentPlayer == _Context.Runner.LocalPlayer)
             {
-                GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>(FindObjectsInactive.Include);
-
-                if (gameplayUIController != null)
-                {
-                    gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
-                    gameplayUIController.ShowWithParams<GameplayUIGainSummary, GainSummaryData>(_gainSummary, lastScreen);
-                }
-                else
-                {
-                    Debug.LogError("[GainPhase] GameplayUIController introuvable — la popup de gain n'a pas pu s'afficher pour ce joueur.");
-                }
+                GameEvents.OnGainPhaseResolved.Invoke(_CurrentPlayer, _gainSummary);
             }
         }
 

@@ -60,7 +60,7 @@ namespace Vermines.Gameplay.Phases
             SetUpUI();
             SetUpEvents();
 
-            GameEvents.OnGameInitialized.AddListener(OnGameStart);
+            GameEvents.OnGameInitialized.AddListenerAndReplay(OnGameStart);
         }
 
         public void Deinitialize()

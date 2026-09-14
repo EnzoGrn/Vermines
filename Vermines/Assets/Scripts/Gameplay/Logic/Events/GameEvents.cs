@@ -1,19 +1,19 @@
+using Fusion;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines;
 using Vermines.CardSystem.Elements;
+using Vermines.Gameplay.Phases.Data;
 using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.Player;
 using Vermines.ShopSystem.Enumerations;
 using Vermines.UI.Screen;
-using Fusion;
 
 public static class GameEvents
 {
     // --- Initialize ---
-    public static readonly TrackedEvent OnGameInitialized = new("OnGameInitialized");
-
+    public static readonly LatestValueEvent OnGameInitialized = new("OnGameInitialized");
     // --- GENERAL ---
     public static readonly TrackedEvent OnAttemptNextPhase = new("OnAttemptNextPhase");
     public static readonly TrackedEvent<ICard> OnCardDrawn = new("OnCardDrawn");
@@ -22,6 +22,8 @@ public static class GameEvents
     public static readonly TrackedEvent OnPlayerInitialized = new("OnPlayerInitialized");
     public static readonly TrackedEvent<PlayerController> OnPlayerUpdated = new("OnPlayerUpdated");
     public static readonly TrackedEvent<PlayerRef, PlayerRef> OnPlayerWin = new("OnPlayerWin");
+
+    public static readonly LatestValueEvent<PlayerRef, GainSummaryData> OnGainPhaseResolved = new("OnGainPhaseResolved");
 
     // --- CARD PLAYING ---
     public static readonly TrackedEvent<ICard> OnCardPlayedRequested = new("OnCardPlayedRequested");

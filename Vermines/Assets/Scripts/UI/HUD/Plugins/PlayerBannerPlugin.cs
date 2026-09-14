@@ -1,11 +1,12 @@
 using Fusion;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Vermines.Core;
 using Vermines.Core.Player;
 using Vermines.Core.Scene;
 using Vermines.Player;
-using UnityEngine.UI;
 using Vermines.UI.Screen;
 
 namespace Vermines.UI.Plugin
@@ -32,6 +33,8 @@ namespace Vermines.UI.Plugin
         private Dictionary<int, PlayerStatistics> _players = new();
         private readonly List<PlayerBannerUI> _banners = new();
 
+        private bool _PendingInit;
+
         #region Override Methods
 
         /// <summary>
@@ -44,6 +47,12 @@ namespace Vermines.UI.Plugin
 
             GameEvents.OnTurnChanged.AddListener(NextTurn);
             GameEvents.OnPlayerUpdated.AddListener(UpdatePlayer);
+
+            if (_PendingInit)
+            {
+                _PendingInit = false;
+                StartCoroutine(InitWhenLocalPlayerReady());
+            }
         }
 
         /// <summary>
@@ -59,7 +68,7 @@ namespace Vermines.UI.Plugin
 
         public void Awake()
         {
-            GameEvents.OnGameInitialized.AddListener(Init);
+            GameEvents.OnGameInitialized.AddListenerAndReplay(Init);
         }
 
         #endregion
@@ -68,17 +77,32 @@ namespace Vermines.UI.Plugin
         {
             GameEvents.OnGameInitialized.RemoveListener(Init);
 
-            if (PlayerController.Local == null) {
-                Debug.LogWarning("[PlayerBannerPlugin] Init called but PlayerController.Local is null.");
+            if (gameObject.activeInHierarchy)
+                StartCoroutine(InitWhenLocalPlayerReady());
+            else
+                _PendingInit = true;
+        }
 
-                return;
+        private IEnumerator InitWhenLocalPlayerReady()
+        {
+            float timeout = 10f;
+            float elapsed = 0f;
+
+            while (PlayerController.Local == null && elapsed < timeout)
+            {
+                yield return null;
+                elapsed += Time.unscaledDeltaTime;
             }
+            if (PlayerController.Local == null)
+            {
+                Debug.LogError("[PlayerBannerPlugin] PlayerController.Local never became ready within timeout - player banners will not be created.");
 
-            GameEvents.OnGameInitialized.AddListener(ReorderBanners);
+                yield break;
+            }
+            GameEvents.OnGameInitialized.AddListenerAndReplay(ReorderBanners);
 
             _players.Clear();
 
-            // Clear any banners that may have been created already.
             foreach (PlayerBannerUI banner in _banners)
                 if (banner != null) Destroy(banner.gameObject);
             _banners.Clear();
@@ -97,7 +121,8 @@ namespace Vermines.UI.Plugin
                 return ia.CompareTo(ib);
             });
 
-            foreach (PlayerController player in players) {
+            foreach (PlayerController player in players)
+            {
                 _players[player.Object.InputAuthority.PlayerId] = player.Statistics;
 
                 CreateBanner(player);

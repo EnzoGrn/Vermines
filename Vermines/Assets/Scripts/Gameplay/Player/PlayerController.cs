@@ -345,6 +345,8 @@ namespace Vermines.Player {
             }
         }
 
+        public event System.Action OnHandChanged;
+
         private void RebuildHandCache()
         {
             _HandCache.Clear();
@@ -356,6 +358,8 @@ namespace Vermines.Player {
                 if (card != null)
                     _HandCache.Add(card);
             }
+
+            OnHandChanged?.Invoke();
         }
 
         private void WriteHand(List<ICard> hand)
