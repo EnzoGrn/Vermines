@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -196,29 +196,7 @@ namespace Vermines.UI
         /// <returns>When done</returns>
         private IEnumerator HideAnimCoroutine()
         {
-            #if UNITY_IOS || UNITY_ANDROID
-                var changedFramerate = false;
-                
-                if (Config.AdaptFramerateForMobilePlatform) {
-                    if (Application.targetFrameRate < 60) {
-                        Application.targetFrameRate = 60;
-                        changedFramerate            = true;
-                    }
-                }
-            #endif
-
-            _Animator.Play(HideAnimHash);
-
-            yield return null;
-
-            while (_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
-                yield return null;
-
-            #if UNITY_IOS || UNITY_ANDROID
-                  if (changedFramerate)
-                    new FusionMenuGraphicsSettings().Apply();
-            #endif
-
+            yield return AnimatedTransition.PlayAndWait(_Animator, HideAnimHash);
             gameObject.SetActive(false);
         }
 

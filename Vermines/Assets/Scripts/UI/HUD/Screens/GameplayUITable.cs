@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -299,24 +299,18 @@ namespace Vermines.UI.Screen
 
         public void SetDiscardZoneInteractable(bool value)
         {
-            Debug.Log($"[TableUI] Setting discard zone interactable to {value}.");
             discardSlot.SetInteractable(value);
         }
 
         public void AddCardToDiscardZone(ICard card)
         {
-            if (discardSlot == null)
-            {
-                Debug.LogError("[TableUI] Discard slot is not set up.");
-                return;
-            }
             if (discardSlot.CanAcceptCard(card))
             {
                 discardSlot.Init(card, true);
             }
             else
             {
-                Debug.LogError($"[TableUI] Card {card.Data.Name} cannot be added to discard zone.");
+                Debug.LogError($"[TableUI] Card {(card != null ? card.Data.Name : "null")} cannot be added to discard zone.");
             }
         }
 

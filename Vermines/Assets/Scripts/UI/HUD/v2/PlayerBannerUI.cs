@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Player;
@@ -14,34 +14,12 @@ namespace Vermines.UI
 
     public class PlayerBannerUI : MonoBehaviour
     {
-        /// <summary>
-        /// Cached 'Hide' animation hash.
-        /// </summary>
         protected static readonly int HideAnimHash = Animator.StringToHash("Hide");
-
-        /// <summary>
-        /// Cached 'Show' animation hash.
-        /// </summary>
         protected static readonly int ShowAnimHash = Animator.StringToHash("Show");
-
-        /// <summary>
-        /// Cached 'Active' animation hash.
-        /// </summary>
         protected static readonly int ActiveAnimHash = Animator.StringToHash("Active");
-
-        /// <summary>
-        /// Cached 'Idle' animation hash.
-        /// </summary>
         protected static readonly int IdleAnimHash = Animator.StringToHash("Idle");
 
-        /// <summary>
-        /// The animator component.
-        /// </summary>
         private Animator _animator;
-
-        /// <summary>
-        /// The hide animation coroutine.
-        /// </summary>
         private Coroutine _HideCoroutine;
 
         public UnityEvent onHideComplete;
@@ -51,13 +29,9 @@ namespace Vermines.UI
             onHideComplete?.Invoke();
         }
 
-        /// <summary>
-        /// The canvas group component for managing visibility and interaction.
-        /// </summary>
         private CanvasGroup _canvasGroup;
 
         [Header("UI References")]
-
         [SerializeField] private Text nicknameText;
         [SerializeField] private GameObject eloquenceText;
         [SerializeField] private GameObject soulsText;
@@ -72,12 +46,21 @@ namespace Vermines.UI
         private PlayerController _player;
         private int _playerId;
 
+        private AnimatedCountingTextNative _eloquenceScript;
+        private AnimatedCountingTextNative _soulsScript;
+
         private void Awake()
         {
             TryGetComponent(out _animator);
+
             if (!_animator)
                 Debug.LogErrorFormat(gameObject, "[{0}] {1} {2}", nameof(PlayerBannerUI), gameObject.name, "Animator component is missing.");
             TryGetComponent(out _canvasGroup);
+
+            if (eloquenceText != null)
+                _eloquenceScript = eloquenceText.GetComponent<AnimatedCountingTextNative>();
+            if (soulsText != null)
+                _soulsScript = soulsText.GetComponent<AnimatedCountingTextNative>();
         }
 
         public void OnDestroy()
@@ -87,8 +70,8 @@ namespace Vermines.UI
 
         public void Initialize(PlayerController player)
         {
-            _player           = player;
-            _playerId         = player.Object.InputAuthority.PlayerId;
+            _player = player;
+            _playerId = player.Object.InputAuthority.PlayerId;
             nicknameText.text = player.NetworkedNickname.Value;
 
             GameEvents.OnPlayerUpdated.AddListener(UpdateBanner);
@@ -100,8 +83,9 @@ namespace Vermines.UI
         {
             if (player.Object.InputAuthority.PlayerId != _playerId)
                 return;
-            if (player.Statistics.Family != CardFamily.None) {
-                avatarImage.sprite     = UISpriteLoader.GetDefaultSprite(CardType.Partisan, player.Statistics.Family, "Cultist");
+            if (player.Statistics.Family != CardFamily.None)
+            {
+                avatarImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, player.Statistics.Family, "Cultist");
                 backgroundImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, player.Statistics.Family, "Background");
             }
 
@@ -112,14 +96,10 @@ namespace Vermines.UI
 
         public void UpdateStats(PlayerStatistics playerData)
         {
-            AnimatedCountingTextNative eloquenceScript = eloquenceText.GetComponent<AnimatedCountingTextNative>();
-
-            if (eloquenceScript != null)
-                eloquenceScript.SetValue(playerData.Eloquence);
-
-            AnimatedCountingTextNative soulsScript = soulsText.GetComponent<AnimatedCountingTextNative>();
-            if (soulsScript != null)
-                soulsScript.SetValue(playerData.Souls);
+            if (_eloquenceScript != null)
+                _eloquenceScript.SetValue(playerData.Eloquence);
+            if (_soulsScript != null)
+                _soulsScript.SetValue(playerData.Souls);
         }
 
         public void SetActive(bool isActive)
@@ -129,7 +109,8 @@ namespace Vermines.UI
 
         public void Show()
         {
-            if (_HideCoroutine != null) {
+            if (_HideCoroutine != null)
+            {
                 StopCoroutine(_HideCoroutine);
 
                 if (_animator.gameObject.activeInHierarchy && _animator.HasState(0, ShowAnimHash))
@@ -141,9 +122,6 @@ namespace Vermines.UI
             _canvasGroup.blocksRaycasts = true;
         }
 
-        /// <summary>
-        /// The screen hide method.
-        /// </summary>
         public void Hide()
         {
             if (_animator != null && _animator.gameObject.activeInHierarchy && _animator.HasState(0, HideAnimHash))
@@ -170,40 +148,13 @@ namespace Vermines.UI
 
         public IEnumerator PlayHideAnimation(bool adjustFramerate = true)
         {
-#if UNITY_IOS || UNITY_ANDROID
-    bool changedFramerate = false;
-
-    if (adjustFramerate && Config.AdaptFramerateForMobilePlatform && Application.targetFrameRate < 60)
-    {
-        Application.targetFrameRate = 60;
-        changedFramerate = true;
-    }
-#endif
-
-            if (_animator != null && _animator.gameObject.activeInHierarchy && _animator.HasState(0, HideAnimHash))
-            {
-                _animator.Play(HideAnimHash, 0, 0f);
-
-                yield return null; // Wait one frame for animation to start
-
-                while (_animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
-                {
-                    yield return null;
-                }
-            }
-
-#if UNITY_IOS || UNITY_ANDROID
-    if (changedFramerate)
-    {
-        new FusionMenuGraphicsSettings().Apply();
-    }
-#endif
+            yield return AnimatedTransition.PlayAndWait(_animator, HideAnimHash, adjustFramerate);
 
             _canvasGroup.alpha = 0f;
             _canvasGroup.interactable = false;
             _canvasGroup.blocksRaycasts = false;
         }
 
-#endregion
+        #endregion
     }
 }

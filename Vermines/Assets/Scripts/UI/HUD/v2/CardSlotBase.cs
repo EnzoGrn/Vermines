@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
 using Vermines.UI.GameTable;
@@ -82,7 +82,7 @@ namespace Vermines.UI.Card
             }
             else
             {
-                Debug.LogWarning($"[{GetType().Name}] Cannot accept card {card.Data.Name} in slot {_SlotIndex}");
+                Debug.LogWarning($"[{GetType().Name}] Cannot accept card {(card != null ? card.Data.Name : "null")} in slot {_SlotIndex}");
             }
         }
 
