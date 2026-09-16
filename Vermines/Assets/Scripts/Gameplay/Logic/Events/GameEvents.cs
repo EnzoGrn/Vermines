@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines;
@@ -12,56 +12,60 @@ using Fusion;
 public static class GameEvents
 {
     // --- Initialize ---
-    public static TrackedEvent OnGameInitialized = new("OnGameInitialized");
+    public static readonly TrackedEvent OnGameInitialized = new("OnGameInitialized");
 
     // --- GENERAL ---
-    public static TrackedEvent OnAttemptNextPhase = new("OnAttemptNextPhase");
-    public static TrackedEvent<ICard> OnCardDrawn = new("OnCardDrawn");
-    public static TrackedEvent<PhaseType> OnPhaseChanged = new("OnPhaseChanged");
-    public static TrackedEvent<int> OnTurnChanged = new("OnTurnChanged");
-    public static TrackedEvent OnPlayerInitialized = new("OnPlayerInitialized");
-    public static TrackedEvent<PlayerController> OnPlayerUpdated = new("OnPlayerUpdated");
-    public static TrackedEvent<PlayerRef, PlayerRef> OnPlayerWin = new("OnPlayerWin");
+    public static readonly TrackedEvent OnAttemptNextPhase = new("OnAttemptNextPhase");
+    public static readonly TrackedEvent<ICard> OnCardDrawn = new("OnCardDrawn");
+    public static readonly TrackedEvent<PhaseType> OnPhaseChanged = new("OnPhaseChanged");
+    public static readonly TrackedEvent<int> OnTurnChanged = new("OnTurnChanged");
+    public static readonly TrackedEvent OnPlayerInitialized = new("OnPlayerInitialized");
+    public static readonly TrackedEvent<PlayerController> OnPlayerUpdated = new("OnPlayerUpdated");
+    public static readonly TrackedEvent<PlayerRef, PlayerRef> OnPlayerWin = new("OnPlayerWin");
 
     // --- CARD PLAYING ---
-    public static TrackedEvent<ICard> OnCardPlayedRequested = new("OnCardPlayedRequested");
-    public static TrackedEvent<ICard> OnCardPlayedRefused = new("OnCardPlayedRefused");
-    public static TrackedEvent<ICard> OnCardPlayed = new("OnCardPlayed");
+    public static readonly TrackedEvent<ICard> OnCardPlayedRequested = new("OnCardPlayedRequested");
+    public static readonly TrackedEvent<ICard> OnCardPlayedRefused = new("OnCardPlayedRefused");
+    public static readonly TrackedEvent<ICard> OnCardPlayed = new("OnCardPlayed");
 
     // --- CARD SACRIFICE ---
-    public static TrackedEvent<ICard> OnCardSacrificedRequested = new("OnCardSacrificedRequested");
-    public static TrackedEvent<ICard> OnCardSacrifiedRefused = new("OnCardSacrifiedRefused");
-    public static TrackedEvent<ICard> OnCardSacrified = new("OnCardSacrified");
+    // NOTE: OnCardSacrifiedRefused / OnCardSacrified contiennent une faute
+    // ("Sacrifi(c)ed") incohérente avec OnCardSacrificedRequested juste au-dessus.
+    // Pas corrigé ici : le rename touche 12 fichiers (RPC, effets, phases) et doit
+    // se faire dans un commit dédié isolé, pas mélangé à ce nettoyage rapide.
+    public static readonly TrackedEvent<ICard> OnCardSacrificedRequested = new("OnCardSacrificedRequested");
+    public static readonly TrackedEvent<ICard> OnCardSacrifiedRefused = new("OnCardSacrifiedRefused");
+    public static readonly TrackedEvent<ICard> OnCardSacrified = new("OnCardSacrified");
 
     // --- CARD RECYCLING ---
-    public static TrackedEvent<ICard> OnCardRecycled = new("OnCardRecycled");
+    public static readonly TrackedEvent<ICard> OnCardRecycled = new("OnCardRecycled");
 
     // --- CARD DISCARD ---
-    public static TrackedEvent<ICard> OnCardDiscardedRefused = new("OnCardDiscardedRefused");
-    public static TrackedEvent<ICard> OnCardDiscarded = new("OnCardDiscarded");
+    public static readonly TrackedEvent<ICard> OnCardDiscardedRefused = new("OnCardDiscardedRefused");
+    public static readonly TrackedEvent<ICard> OnCardDiscarded = new("OnCardDiscarded");
 
     // --- CARD UI EVENTS ---
-    public static TrackedEvent<ICard, int> OnCardClicked = new("OnCardClicked");
-    public static TrackedEvent<ShopType, int> OnCardClickedInShopWithSlotIndex = new("OnCardClickedInShopWithSlotIndex");
+    public static readonly TrackedEvent<ICard, int> OnCardClicked = new("OnCardClicked");
+    public static readonly TrackedEvent<ShopType, int> OnCardClickedInShopWithSlotIndex = new("OnCardClickedInShopWithSlotIndex");
 
     // --- SHOP EVENTS ---
-    public static Dictionary<ShopType, TrackedEvent<int, ICard>> OnShopsEvents = new();
-    public static TrackedEvent<ShopType, int> OnCardPurchaseRequested = new("OnCardPurchaseRequested");
-    public static TrackedEvent<ShopType, int> OnCardPurchased = new("OnCardPurchased");
-    public static TrackedEvent<ICard> OnEquipmentCardPurchased = new("OnEquipmentCardPurchased");
-    public static TrackedEvent<ShopType, int> OnShopCardReplaced = new("OnShopCardReplaced");
-    public static TrackedEvent<ShopType, List<ShopCardEntry>> OnShopUpdated = new("OnShopUpdated");
-    public static TrackedEvent<ShopType, Dictionary<int, ICard>> OnShopRefilled = new("OnShopRefilled");
+    public static readonly Dictionary<ShopType, TrackedEvent<int, ICard>> OnShopsEvents = new();
+    public static readonly TrackedEvent<ShopType, int> OnCardPurchaseRequested = new("OnCardPurchaseRequested");
+    public static readonly TrackedEvent<ShopType, int> OnCardPurchased = new("OnCardPurchased");
+    public static readonly TrackedEvent<ICard> OnEquipmentCardPurchased = new("OnEquipmentCardPurchased");
+    public static readonly TrackedEvent<ShopType, int> OnShopCardReplaced = new("OnShopCardReplaced");
+    public static readonly TrackedEvent<ShopType, List<ShopCardEntry>> OnShopUpdated = new("OnShopUpdated");
+    public static readonly TrackedEvent<ShopType, Dictionary<int, ICard>> OnShopRefilled = new("OnShopRefilled");
 
     // --- CARD EFFECTS ---
-    public static TrackedEvent<ICard> OnEffectSelectCard = new("OnEffectSelectCard");
-    public static TrackedEvent<ICard> OnCardReborned = new("OnCardReborned");
+    public static readonly TrackedEvent<ICard> OnEffectSelectCard = new("OnEffectSelectCard");
+    public static readonly TrackedEvent<ICard> OnCardReborned = new("OnCardReborned");
 
     // --- DISCARD PILE ---
-    public static TrackedEvent OnDiscardShuffled = new("OnDiscardShuffled");
+    public static readonly TrackedEvent OnDiscardShuffled = new("OnDiscardShuffled");
 
     // --- TABLE ---
-    public static TrackedEvent<int> OnPartisanAreaSlotChanged = new("OnPartisanAreaSlotChanged");
+    public static readonly TrackedEvent<int> OnPartisanAreaSlotChanged = new("OnPartisanAreaSlotChanged");
 
     static GameEvents()
     {
@@ -85,7 +89,6 @@ public static class GameEvents
 
     public static void InvokeOnPlayerWin(PlayerRef winnerRef, PlayerRef localPlayerRef)
     {
-        Debug.Log($"[FinalAnimation]: Cardfamily -> {winnerRef}");
         OnPlayerWin.Invoke(winnerRef, localPlayerRef);
     }
 }

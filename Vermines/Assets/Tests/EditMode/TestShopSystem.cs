@@ -26,15 +26,8 @@ using Vermines.CardSystem.Elements;
 #region Vermines Test namespace
 
 using Vermines.Test;
-using Vermines.Configuration;
 using Vermines.Player;
-using Vermines;
-using Vermines.ShopSystem;
-using UnityEditor.Graphs;
-using UnityEngine.PlayerLoop;
 using Vermines.Core.Scene;
-using Vermines.Core;
-using static System.Collections.Specialized.BitVector32;
 
 #endregion
 
@@ -63,9 +56,10 @@ namespace Test.Vermines.ShopSystem
 
             _Player = new();
 
-            _Player.UpdateDeck(new());
-
-            _Player.Deck.Initialize(Seed);
+            // NOTE: Deck/Discard/Hand/etc. sont désormais [Networked] sur
+            // PlayerController -- nécessitent un NetworkObject réellement spawné par
+            // Fusion (HasStateAuthority == false sur un `new PlayerController()` nu).
+            // Toute construction d'état de deck est donc retirée de ce Setup.
 
             // -- Active the test mode to bypass the HUD system
             TestMode.IsTesting = true;
@@ -220,10 +214,10 @@ namespace Test.Vermines.ShopSystem
             Assert.IsNull(cardAfterTheBuy);
 
             // -- Check that the player have now a new card in his discard deck
-            Assert.AreEqual(1, _Player.Deck.Discard.Count);
+            Assert.AreEqual(1, _Player.Discard.Count);
 
             // -- Check that the card store before buy is in the discard deck
-            Assert.AreEqual(cardBeforeTheBuy.ID, _Player.Deck.Discard[0].ID);
+            Assert.AreEqual(cardBeforeTheBuy.ID, _Player.Discard[0].ID);
 
             // -- Undo the command
             CommandInvoker.UndoCommand();
@@ -257,10 +251,10 @@ namespace Test.Vermines.ShopSystem
             Assert.IsTrue(cardBeforeTheBuy.Data.Name == cardAfterTheBuy.Data.Name);
 
             // -- Check that the player have now a new card in his discard deck
-            Assert.AreEqual(1, _Player.Deck.Discard.Count);
+            Assert.AreEqual(1, _Player.Discard.Count);
 
             // -- Check that the card store before buy is in the discard deck
-            Assert.AreEqual(cardBeforeTheBuy.ID, _Player.Deck.Discard[0].ID);
+            Assert.AreEqual(cardBeforeTheBuy.ID, _Player.Discard[0].ID);
 
             // -- Undo the command
             CommandInvoker.UndoCommand();

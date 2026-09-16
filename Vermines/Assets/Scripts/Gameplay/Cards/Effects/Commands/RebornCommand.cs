@@ -2,8 +2,9 @@ using OMGG.DesignPattern;
 
 namespace Vermines.Gameplay.Commands {
 
-    using Vermines.CardSystem.Elements;
     using Fusion;
+    using System.Linq;
+    using Vermines.CardSystem.Elements;
     using Vermines.Player;
 
     public class RebornCommand : ACommand {
@@ -20,12 +21,11 @@ namespace Vermines.Gameplay.Commands {
 
         public override CommandResponse Execute()
         {
-            PlayerDeck playerDeck =_Player.Deck;
-
-            if (!playerDeck.Graveyard.Contains(_CardToReborn))
+            if (!_Player.Graveyard.Contains(_CardToReborn))
                 return new CommandResponse(CommandStatus.Invalid, $"Card {_CardToReborn.ID} does not exist in the graveyard.");
-            playerDeck.Graveyard.Remove(_CardToReborn);
-            playerDeck.PlayedCards.Add(_CardToReborn);
+
+            _Player.RemoveCardFromGraveyard(_CardToReborn);
+            _Player.AddCardToPlayedCards(_CardToReborn);
 
             return new CommandResponse(CommandStatus.Success, "");
         }

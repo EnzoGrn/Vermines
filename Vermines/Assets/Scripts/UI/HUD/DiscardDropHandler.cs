@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -87,7 +87,6 @@ namespace Vermines.UI.Card
         {
             SceneContext context = PlayerController.Local.Context;
 
-            // Handle the discard refusal event here if needed
             Debug.Log($"[DiscardDropHandler] Card {card.Data.Name} discard refused.");
             GameObject go = context.HandManager.GetCardDisplayGO(card);
 
@@ -101,12 +100,9 @@ namespace Vermines.UI.Card
                 }
             }
 
-            // Reset the slot to the previous card or empty state
             slot.ResetSlot();
 
-            PlayerDeck deck = PlayerController.Local.Deck;
-
-            ICard previousCard = deck.Discard.LastOrDefault();
+            ICard previousCard = PlayerController.Local.Discard.LastOrDefault();
 
             if (previousCard != null)
             {

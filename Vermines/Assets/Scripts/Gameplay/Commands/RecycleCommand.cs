@@ -1,7 +1,8 @@
 using OMGG.DesignPattern;
 using UnityEngine;
 
-namespace Vermines.Gameplay.Commands {
+namespace Vermines.Gameplay.Commands
+{
 
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.CardSystem.Elements;
@@ -9,8 +10,10 @@ namespace Vermines.Gameplay.Commands {
     using Vermines.Player;
     using Vermines.CardSystem.Enumerations;
     using Vermines.ShopSystem.Data;
+    using System.Linq;
 
-    public class ADMIN_CheckRecycleCommand : ACommand {
+    public class ADMIN_CheckRecycleCommand : ACommand
+    {
 
         private PlayerController _Player;
 
@@ -21,10 +24,10 @@ namespace Vermines.Gameplay.Commands {
 
         public ADMIN_CheckRecycleCommand(PlayerController player, PhaseType currentPhase, int cardId)
         {
-            _Player       = player;
+            _Player = player;
             _CurrentPhase = currentPhase;
-            _Card         = CardSetDatabase.Instance.GetCardByID(cardId);
-            _CardId       = cardId;
+            _Card = CardSetDatabase.Instance.GetCardByID(cardId);
+            _CardId = cardId;
         }
 
         public override CommandResponse Execute()
@@ -46,7 +49,7 @@ namespace Vermines.Gameplay.Commands {
                 return new CommandResponse(CommandStatus.CriticalError, "Recycle_CardNotRecyclable", _CardId.ToString(), _Card.Data.Name);
 
             // 4. Check if the card is in the player hand.
-            if (!_Player.Deck.Hand.Contains(_Card))
+            if (!_Player.Hand.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Recycle_CardNotInHand", _CardId.ToString(), _Card.Data.Name);
             return new CommandResponse(CommandStatus.Success, "", _Card.Data.Name);
         }
@@ -54,34 +57,32 @@ namespace Vermines.Gameplay.Commands {
 
     public class CLIENT_CardRecycleCommand : ACommand
     {
-
         private PlayerController _Player;
 
         private readonly ICard _Card;
-        private readonly int   _CardId;
+        private readonly int _CardId;
 
         private ShopSectionBase _Shop;
 
         public CLIENT_CardRecycleCommand(PlayerController player, int cardID, ShopSectionBase section)
         {
             _Player = player;
-            _Card   = CardSetDatabase.Instance.GetCardByID(cardID);
+            _Card = CardSetDatabase.Instance.GetCardByID(cardID);
             _CardId = cardID;
-            _Shop   = section;
+            _Shop = section;
         }
 
         public override CommandResponse Execute()
         {
-            PlayerDeck deck = _Player.Deck;
+            if (!_Player.Hand.Contains(_Card))
+                return new CommandResponse(CommandStatus.CriticalError, "Recycle_CardNotInHand", _CardId.ToString());
 
-            deck.Hand.Remove(_Card);
-
-            _Player.UpdateDeck(deck);
+            _Player.RemoveCardFromHand(_Card);
             _Shop.ReturnCard(_Card);
 
             return new CommandResponse(CommandStatus.Success, "");
         }
 
-        public override void Undo() {}
+        public override void Undo() { }
     }
 }

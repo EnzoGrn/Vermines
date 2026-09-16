@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using OMGG.Network.Fusion;
 using System.Collections.Generic;
 using UnityEngine;
@@ -160,7 +160,7 @@ namespace Vermines.Gameplay.Phases
         {
             PlayerRef playerRef = Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex);
 
-            foreach (ICard card in Context.NetworkGame.GetPlayer(playerRef).Deck.PlayedCards)
+            foreach (ICard card in Context.NetworkGame.GetPlayer(playerRef).PlayedCards)
                 card.HasBeenActivatedThisTurn = false;
         }
 

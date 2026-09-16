@@ -1,17 +1,16 @@
 using OMGG.DesignPattern;
-using System.Linq;
 using Fusion;
 
-namespace Vermines.Gameplay.Commands.Deck {
+namespace Vermines.Gameplay.Commands.Deck
+{
 
     using Vermines.CardSystem.Elements;
     using Vermines.Player;
 
-    public class DrawCommand : ICommand {
+    public class DrawCommand : ICommand
+    {
 
         private PlayerController _Player;
-
-        private PlayerDeck? _OldDeck = null;
 
         public DrawCommand(PlayerController player)
         {
@@ -20,26 +19,21 @@ namespace Vermines.Gameplay.Commands.Deck {
 
         public CommandResponse Execute()
         {
-            PlayerDeck deck = _Player.Deck;
-
-            _OldDeck = deck.DeepCopy();
-
-            ICard card = deck.Draw();
+            ICard card = _Player.DrawOneCard();
 
             if (card == null)
                 return new CommandResponse(CommandStatus.Failure, $"Player {_Player.Object.InputAuthority} does not have any card left in his deck.");
 
-            _Player.UpdateDeck(deck);
-            _Player.NotifyDrawnToOwner(card.ID);
+            _Player.DrawCardToHand(card);
 
             return new CommandResponse(CommandStatus.Success, $"Player {_Player.Object.InputAuthority} drew a card.");
         }
 
-        public void Undo()
-        {
-            if (_OldDeck == null)
-                return;
-            _Player.UpdateDeck((PlayerDeck)_OldDeck);
-        }
+        public void Undo() { }
+
+        // Note : Undo n'est plus fonctionnel (nécessiterait de remettre la
+        // carte en tête de Deck ET de la retirer de Hand). CommandInvoker.
+        // UndoCommand() n'est appelé nulle part dans le projet (vérifié) --
+        // sans conséquence en l'état.
     }
 }

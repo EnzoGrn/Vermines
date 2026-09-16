@@ -1,6 +1,7 @@
-﻿using Fusion;
+using Fusion;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Utilities;
@@ -148,7 +149,7 @@ namespace Vermines.UI.Plugin
             EquipmentBookSection equipmentSection = GetComponentInChildren<EquipmentBookSection>();
 
             if (equipmentSection != null)
-                equipmentSection.UpdateEquipment(player.Deck.Equipments);
+                equipmentSection.UpdateEquipment(player.Equipments.ToList());
 
             if (leftPage.TryGetComponent<CanvasGroup>(out var canvasGroup)) {
                 canvasGroup.alpha = 1f;
@@ -165,8 +166,8 @@ namespace Vermines.UI.Plugin
 
         public void ShowDiscardedCards()
         {
-            List<ICard> discardedC = new(_Player.Deck.Discard);
-            List<ICard> discardedT = new(_Player.Deck.ToolDiscard);
+            List<ICard> discardedC = new(_Player.Discard);
+            List<ICard> discardedT = new(_Player.ToolDiscard);
 
             discardedC.Merge(discardedT);
 
@@ -176,13 +177,13 @@ namespace Vermines.UI.Plugin
 
         public void ShowPlayedCards()
         {
-            deckHolder.Show(_Player.Deck.PlayedCards);
+            deckHolder.Show(_Player.PlayedCards.ToList());
             deckHolder.SetTitle("Played Cards");
         }
 
         public void ShowSacrificedCards()
         {
-            deckHolder.Show(_Player.Deck.Graveyard);
+            deckHolder.Show(_Player.Graveyard.ToList());
             deckHolder.SetTitle("Sacrificed Cards");
         }
     }

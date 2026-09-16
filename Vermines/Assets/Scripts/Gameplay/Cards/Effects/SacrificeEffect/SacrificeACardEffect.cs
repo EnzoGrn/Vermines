@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -61,7 +61,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
             // Check if their is card to sacrifice.
-            if (player.Deck.PlayedCards.Count == 0) {
+            if (player.PlayedCards.Count == 0) {
                 base.Play(playerRef);
             } else if (playerRef == Context.Runner.LocalPlayer) {
                 UIContextManager.Instance.PushContext<SacrificeContext>();

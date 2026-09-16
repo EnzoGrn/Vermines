@@ -332,7 +332,7 @@ namespace Vermines.Gameplay.Core {
             // then for each other card from the same family sacrificed before,
             // they will earn a bonus of {BonusSoulsPerFamilyCardSacrified} additional souls.
             if (player.Statistics.Family == cardToSacrifice.Data.Family) {
-                foreach (var sacrifiedCard in player.Deck.Graveyard) {
+                foreach (var sacrifiedCard in player.Graveyard) {
                     if (sacrifiedCard.Data.Family == player.Statistics.Family)
                         __ObservedSouls += BonusSoulsPerFamilyCardSacrified;
                 }
@@ -351,7 +351,7 @@ namespace Vermines.Gameplay.Core {
                     effect.Stop(playerSource);
             }
 
-            foreach (ICard playedCard in player.Deck.PlayedCards) {
+            foreach (ICard playedCard in player.PlayedCards) {
                 if (playedCard.Data.Effects != null) {
                     foreach (AEffect effect in playedCard.Data.Effects) {
                         if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
@@ -363,7 +363,7 @@ namespace Vermines.Gameplay.Core {
             if (player.God.Effects != null) {
                 foreach (var effect in player.God.Effects) {
                     if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
-                        effect.Play(Object.InputAuthority);
+                        effect.Play(playerSource);
                 }
             }
 

@@ -78,27 +78,27 @@ namespace Vermines.Gameplay {
         private void InitializePlayerDecks(List<PlayerRef> players)
         {
             List<ICard> starterCards = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.IsStartingCard);
-            Dictionary<PlayerRef, PlayerDeck> decks = new();
+            Dictionary<PlayerRef, List<ICard>> decks = new();
 
-            foreach (PlayerRef playerRef in players) {
+            foreach (PlayerRef playerRef in players)
+            {
                 PlayerController player = NetworkGame.GetPlayer(playerRef);
 
-                if (player) {
-                    PlayerDeck deck = new();
-
-                    deck.Initialize(NetworkGame.Seed);
-
-                    decks[playerRef] = deck;
-                }
+                if (player)
+                    decks[playerRef] = new List<ICard>();
             }
 
-            foreach (ICard card in starterCards.ToList()) {
-                if (card.Data.IsFamilyCard) {
-                    foreach (PlayerRef playerRef in players) {
+            foreach (ICard card in starterCards.ToList())
+            {
+                if (card.Data.IsFamilyCard)
+                {
+                    foreach (PlayerRef playerRef in players)
+                    {
                         PlayerController player = NetworkGame.GetPlayer(playerRef);
 
-                        if (player && player.Statistics.Family == card.Data.Family) {
-                            decks[playerRef].Deck.Add(card);
+                        if (player && player.Statistics.Family == card.Data.Family)
+                        {
+                            decks[playerRef].Add(card);
                             starterCards.Remove(card);
 
                             break;
@@ -109,22 +109,25 @@ namespace Vermines.Gameplay {
 
             int starterDeckLength = starterCards.Count / players.Count;
 
-            foreach (PlayerRef playerRef in players) {
+            foreach (PlayerRef playerRef in players)
+            {
                 PlayerController player = NetworkGame.GetPlayer(playerRef);
 
-                if (player) {
-                    PlayerDeck deck = decks[playerRef];
+                if (player)
+                {
+                    List<ICard> deck = decks[playerRef];
 
-                    for (int i = 0; i < starterDeckLength; i++) {
-                        ICard card = starterCards[NetworkGame.Random.Next(starterDeckLength - deck.Deck.Count)];
+                    for (int i = 0; i < starterDeckLength; i++)
+                    {
+                        ICard card = starterCards[NetworkGame.Random.Next(starterDeckLength - deck.Count)];
 
-                        deck.Deck.Add(card);
+                        deck.Add(card);
                         starterCards.Remove(card);
                     }
 
-                    deck.Deck.Shuffle(NetworkGame.Seed);
+                    deck.Shuffle(NetworkGame.Seed);
 
-                    player.UpdateDeck(deck);
+                    player.InitializeDeck(NetworkGame.Seed, deck);
                 }
             }
         }

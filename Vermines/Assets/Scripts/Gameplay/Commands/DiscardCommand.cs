@@ -1,11 +1,13 @@
-﻿using OMGG.DesignPattern;
 using Fusion;
+using OMGG.DesignPattern;
 
 namespace Vermines.Gameplay.Commands {
 
-    using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.CardSystem.Elements;
+    using System.Linq;
     using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
+    using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
 
     public class ADMIN_CheckDiscardCommand : ACommand {
@@ -35,7 +37,7 @@ namespace Vermines.Gameplay.Commands {
                 return new CommandResponse(CommandStatus.CriticalError, "CardNotExist", _CardId.ToString());
 
             // 2. Check if the card is in the player hand.
-            if (!_Player.Deck.Hand.Contains(_Card))
+            if (!_Player.Hand.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Table_Discard_CardNotInHand", _CardId.ToString(), _Card.Data.Name);
 
             // 3. Check if the card is discardable.
@@ -61,10 +63,14 @@ namespace Vermines.Gameplay.Commands {
 
         public override CommandResponse Execute()
         {
-            PlayerDeck deck = _Player.Deck;
-            ICard      card = deck.DiscardCard(_CardId);
+            if (!_Player.Hand.Contains(_Card))
+                return new CommandResponse(CommandStatus.CriticalError, "Table_Discard_CardNotInHand", _CardId.ToString());
 
-            _Player.UpdateDeck(deck);
+            _Player.RemoveCardFromHand(_Card);
+            _Player.DiscardCardToDiscard(_Card);
+
+            if (_Card.Data.Type == CardType.Tools)
+                _Player.AddCardToToolDiscard(_Card);
 
             return new CommandResponse(CommandStatus.Success, "");
         }

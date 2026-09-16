@@ -1,4 +1,4 @@
-﻿using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Elements;
 using Vermines.ShopSystem.Data;
 using Vermines.UI.Screen;
 using Vermines;
@@ -15,7 +15,7 @@ public class CopyEffectPartisanPlugin : CopyEffectPlugin {
         List<PlayerController> players = context.Runner.GetAllBehaviours<PlayerController>();
 
         foreach (PlayerController player in players) {
-            foreach (ICard card in player.Deck.PlayedCards) {
+            foreach (ICard card in player.PlayedCards) {
                 if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
                     currentEntries.Add(new ShopCardEntry(card));
             }
