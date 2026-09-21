@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -57,6 +57,12 @@ public class UIContextManager : MonoBehaviour
             foreach (Transform child in _bannerContainer)
                 Destroy(child.gameObject);
         }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 
     /// <summary>
