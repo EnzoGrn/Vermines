@@ -66,9 +66,6 @@ public static class GameEvents
     // --- DISCARD PILE ---
     public static readonly TrackedEvent OnDiscardShuffled = new("OnDiscardShuffled");
 
-    // --- TABLE ---
-    public static readonly TrackedEvent<int> OnPartisanAreaSlotChanged = new("OnPartisanAreaSlotChanged");
-
     static GameEvents()
     {
         foreach (ShopType shopType in Enum.GetValues(typeof(ShopType)))
