@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using UnityEngine;
 using UnityEngine.Localization;
 using Vermines.Gameplay.Phases;
@@ -151,6 +151,20 @@ namespace Vermines.UI.Screen
             return localized.GetLocalizedString();
         }
 
+        // Deduplicates OnTableButtonPressed/OnBookButtonPressed/
+        // OnRecycleButtonPressed, which all did the identical "show this
+        // screen unless already showing it" sequence, differing only by
+        // target type.
+        private void ShowScreenIfNotAlreadyShown<T>() where T : GameplayUIScreen
+        {
+            Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
+
+            if (lastScreen is T)
+                return;
+
+            Controller.Show<T>(lastScreen);
+        }
+
         #endregion
 
         #region Events
@@ -162,16 +176,26 @@ namespace Vermines.UI.Screen
         {
             //UIContextManager.Instance.ClearContext();
 
-            SceneContext context      = PlayerController.Local.Context;
+            // FIX: was missing this guard, unlike UpdateTurnButton right
+            // above which guards the exact same PlayerController.Local
+            // dependency. Without it, a turn button that was never properly
+            // initialized (see header comment) could crash this handler with
+            // an NRE on click.
+            if (!PlayerController.Local)
+                return;
+
+            SceneContext context = PlayerController.Local.Context;
             PhaseManager phaseManager = context.GameplayMode.PhaseManager;
 
-            if (phaseManager.CurrentPhase == PhaseType.Sacrifice) {
+            if (phaseManager.CurrentPhase == PhaseType.Sacrifice)
+            {
                 Controller.ShowDualPopup(new SacrificeSkipStrategy());
 
                 return;
             }
 
-            if (context.HandManager.HasCards(true) && phaseManager.CurrentPhase == PhaseType.Action) {
+            if (context.HandManager.HasCards(true) && phaseManager.CurrentPhase == PhaseType.Action)
+            {
                 Controller.ShowDualPopup(new DefaultDiscardStrategy());
 
                 return;
@@ -182,52 +206,38 @@ namespace Vermines.UI.Screen
 
         /// <summary>
         /// Is called when the <see cref="_TableButton"/> is pressed using SendMessage() from the UI object.
-        /// Intitiates the connection and expects the connection object to set further screen states.
         /// </summary>
         protected virtual void OnTableButtonPressed()
         {
-            Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
-            if (lastScreen != null)
-            {
-                // If we are already on the table, do nothing.
-                if (lastScreen is GameplayUITable)
-                    return;
-            }
-            Controller.Show<GameplayUITable>(lastScreen);
+            ShowScreenIfNotAlreadyShown<GameplayUITable>();
         }
 
         /// <summary>
         /// Is called when the <see cref="_BookButton"/> is pressed using SendMessage() from the UI object.
-        /// Intitiates the connection and expects the connection object to set further screen states.
         /// </summary>
         protected virtual void OnBookButtonPressed()
         {
-            Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
-            if (lastScreen != null)
-            {
-                // If we are already on the book, do nothing.
-                if (lastScreen is GameplayUIBook)
-                    return;
-            }
-            Controller.Show<GameplayUIBook>(lastScreen);
+            ShowScreenIfNotAlreadyShown<GameplayUIBook>();
         }
 
         /// <summary>
         /// Is called when the <see cref="_RecycleButton"/> is pressed using SendMessage() from the UI object.
-        /// Intitiates the connection and expects the connection object to set further screen states.
         /// </summary>
         protected virtual void OnRecycleButtonPressed()
         {
-            Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
-            if (lastScreen != null)
-            {
-                // If we are already on the recycle, do nothing.
-                if (lastScreen is GameplayUIRecycle)
-                    return;
-            }
-            Controller.Show<GameplayUIRecycle>(lastScreen);
+            ShowScreenIfNotAlreadyShown<GameplayUIRecycle>();
         }
 
+        // NOTE: GameEvents.OnCardClicked is shared between this screen and
+        // GameplayUITable - both subscribe to the same event independently.
+        // slotId acts as a dispatch sentinel: >= 0 means a real table slot
+        // click, handled by GameplayUITable's own listener; -1 means "no
+        // slot" (e.g. a hand-card click), handled here instead to show card
+        // info. Not enforced by any shared contract, just a convention - if a
+        // future click source ever emits a real card+slot combo without
+        // meaning "table interaction", it would incorrectly also trigger this
+        // handler. Documented here since it wasn't obvious from this file
+        // alone; not changed.
         protected virtual void OnCardButtonPressed(ICard card, int slotId)
         {
             if (card == null || slotId > -1)
