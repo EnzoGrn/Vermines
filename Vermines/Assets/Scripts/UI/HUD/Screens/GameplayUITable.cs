@@ -23,38 +23,25 @@ namespace Vermines.UI.Screen
 
         [Header("Navigation Buttons")]
 
-        /// <summary>
-        /// The close button.
-        /// </summary>
         [InlineHelp, SerializeField]
         protected UnityEngine.UI.Button _CloseButton;
 
         [Header("Close View")]
 
-        /// <summary>
-        /// The discard all view.
-        /// </summary>
         [InlineHelp, SerializeField]
         protected GameObject _CloseView;
 
         [Header("Zone Containers")]
 
         [SerializeField] protected Transform partisanSlotsContainer;
-        //[SerializeField] protected Transform equipmentSlotsContainer;
 
         [SerializeField] protected GameTableCardSlotPool _Pool;
         protected List<TableCardSlot> partisanSlots = new();
-        protected List<TableCardSlot> equipmentSlots = new();
         [SerializeField] protected CardSlotBase discardSlot;
 
         [Header("Texts")]
         [InlineHelp, SerializeField]
         protected Text tableText;
-
-        [Header("Config")]
-
-        [SerializeField] private int defaultPartisanSlotCount = 3;
-        [SerializeField] private int defaultEquipmentSlotCount = 3;
 
         #endregion
 
@@ -65,10 +52,6 @@ namespace Vermines.UI.Screen
 
         #region Override Methods
 
-        /// <summary>
-        /// The Unity awake method.
-        /// Calls partial method <see cref="AwakeUser"/> to be implemented on the SDK side.
-        /// </summary>
         public override void Awake()
         {
             base.Awake();
@@ -107,16 +90,6 @@ namespace Vermines.UI.Screen
                 return;
             }
 
-            //if (equipmentSlotsContainer == null)
-            //{
-            //    Debug.LogErrorFormat(
-            //        gameObject,
-            //        "GameplayUITable Critical Error: Missing 'Transform' reference on GameObject '{0}'. This component is required to render the equipment slots. Please assign a valid Transform in the Inspector.",
-            //        gameObject.name
-            //    );
-            //    return;
-            //}
-
             if (_Pool == null)
             {
                 Debug.LogErrorFormat(
@@ -133,10 +106,6 @@ namespace Vermines.UI.Screen
             GameEvents.OnCardReborned.AddListener(OnCardReborned);
         }
 
-        /// <summary>
-        /// The screen init method.
-        /// Calls partial method <see cref="InitUser"/> to be implemented on the SDK side.
-        /// </summary>
         public override void Init()
         {
             base.Init();
@@ -145,15 +114,12 @@ namespace Vermines.UI.Screen
 
             ClearAllSlots();
 
-            if (partisanSlots.Count == 0)
-                SetupPartisanSlots(defaultPartisanSlotCount); // TODO: make this dynamic based on player count or game settings
-            //SetupEquipmentSlots(defaultEquipmentSlotCount); // TODO: make this dynamic based on player count or game settings
             SetupDiscardZone();
 
+            GameEvents.OnPlayerUpdated.AddListener(OnLocalPlayerStatsChanged);
+
             GameEvents.OnPhaseChanged.AddListener(UpdateUIForPhase);
-            GameEvents.OnEquipmentCardPurchased.AddListener(AddEquipment);
             GameEvents.OnDiscardShuffled.AddListener(ClearDiscard);
-            GameEvents.OnPartisanAreaSlotChanged.AddListener(OnNumberOfPartisanSlotsChanged);
 
             SetupCloseViewPopup();
         }
@@ -185,11 +151,6 @@ namespace Vermines.UI.Screen
             _CloseView.SetActive(false);
         }
 
-        /// <summary>
-        /// The screen show method.
-        /// Calls partial method <see cref="ShowUser"/> to be implemented on the SDK side.
-        /// Will check is the session code is compatible with the party code to toggle the session UI part.
-        /// </summary>
         public override void Show()
         {
             base.Show();
@@ -199,10 +160,6 @@ namespace Vermines.UI.Screen
             GameEvents.OnCardClicked.AddListener(OnCardClicked);
         }
 
-        /// <summary>
-        /// The screen hide method.
-        /// Calls partial method <see cref="HideUser"/> to be implemented on the SDK side.
-        /// </summary>
         public override void Hide()
         {
             base.Hide();
@@ -216,13 +173,12 @@ namespace Vermines.UI.Screen
 
         #region Methods
 
-        private void SetupPartisanSlots(int count)
+        private void OnLocalPlayerStatsChanged(PlayerController player)
         {
-            for (int i = 0; i < count; i++)
-            {
-                var slot = CreateSlot(i, partisanSlotsContainer, CardType.Partisan);
-                partisanSlots.Add(slot);
-            }
+            if (!IsLocalPlayer(player))
+                return;
+
+            OnNumberOfPartisanSlotsChanged(player.Statistics.NumberOfSlotInTable);
         }
 
         private void OnNumberOfPartisanSlotsChanged(int newCount)
@@ -233,14 +189,19 @@ namespace Vermines.UI.Screen
 
             if (currentCount == newCount)
                 return;
-            if (newCount > currentCount) {
-                for (int i = currentCount; i < newCount; i++) {
+            if (newCount > currentCount)
+            {
+                for (int i = currentCount; i < newCount; i++)
+                {
                     var slot = CreateSlot(i, partisanSlotsContainer, CardType.Partisan);
 
                     partisanSlots.Add(slot);
                 }
-            } else {
-                for (int i = currentCount - 1; i >= newCount; i--) {
+            }
+            else
+            {
+                for (int i = currentCount - 1; i >= newCount; i--)
+                {
                     var slot = partisanSlots[i];
 
                     slot.ResetSlot();
@@ -254,15 +215,6 @@ namespace Vermines.UI.Screen
             for (int i = 0; i < partisanSlots.Count; i++)
                 partisanSlots[i].SetIndex(i);
         }
-
-        //private void SetupEquipmentSlots(int count)
-        //{
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        var slot = CreateSlot(i, equipmentSlotsContainer, CardType.Equipment);
-        //        equipmentSlots.Add(slot);
-        //    }
-        //}
 
         private TableCardSlot CreateSlot(int index, Transform parent, CardType acceptedType)
         {
@@ -285,10 +237,6 @@ namespace Vermines.UI.Screen
                 _Pool.ReturnSlot(slot);
             partisanSlots.Clear();
 
-            foreach (var slot in equipmentSlots)
-                _Pool.ReturnSlot(slot);
-            equipmentSlots.Clear();
-
             discardSlot.ResetSlot();
         }
 
@@ -304,6 +252,11 @@ namespace Vermines.UI.Screen
 
         public void AddCardToDiscardZone(ICard card)
         {
+            if (discardSlot == null)
+            {
+                Debug.LogError("[TableUI] Discard slot is not set up.");
+                return;
+            }
             if (discardSlot.CanAcceptCard(card))
             {
                 discardSlot.Init(card, true);
@@ -325,22 +278,9 @@ namespace Vermines.UI.Screen
             slot.ResetSlot();
         }
 
-        public void RemoveCardFromEquipmentSlot(int index)
-        {
-            if (index < 0 || index >= equipmentSlots.Count)
-            {
-                Debug.LogError($"[TableUI] Invalid index {index} for equipment slots.");
-                return;
-            }
-            var slot = equipmentSlots[index];
-            slot.ResetSlot();
-        }
-
         public void UpdateUIForPhase(PhaseType phase)
         {
-            SceneContext context = PlayerController.Local.Context;
-
-            if (phase == PhaseType.Sacrifice && !context.GameplayMode.IsMyTurn)
+            if (phase == PhaseType.Sacrifice && !IsMyTurn())
                 return;
             string key = phase switch
             {
@@ -360,61 +300,56 @@ namespace Vermines.UI.Screen
             return localizedString.GetLocalizedString();
         }
 
-        /// <summary>
-        /// Add 
-        /// </summary>
-        private void AddEquipment(ICard card)
+        private bool IsMyTurn()
         {
-            // Get the first free slot in the equipment slots, don't use the slotIndex parameter
-            for (int i = 0; i < equipmentSlots.Count; i++)
-            {
-                if (equipmentSlots[i].CardDisplay == null)
-                {
-                    equipmentSlots[i].Init(card, true);
-                    return;
-                }
-            }
+            return PlayerController.Local != null && PlayerController.Local.Context.GameplayMode.IsMyTurn;
+        }
+
+        private bool IsLocalPlayer(PlayerController player)
+        {
+            return PlayerController.Local != null && player != null
+                && player.Object.InputAuthority == PlayerController.Local.Object.InputAuthority;
         }
 
         #endregion
 
         #region Events
 
-        /// <summary>
-        /// Is called when the <see cref="_CloseButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
         public virtual void OnBackButtonPressed()
         {
             Controller.Hide();
         }
 
-        public void OnCardClicked(ICard card, int slodId)
+        public void OnCardClicked(ICard card, int slotId)
         {
-            SceneContext context = PlayerController.Local.Context;
-
-            if (card == null || !context.GameplayMode.IsMyTurn)
+            if (card == null || !IsMyTurn())
                 return;
+
+            SceneContext context = PlayerController.Local.Context;
             PhaseManager phaseManager = context.GameplayMode.PhaseManager;
+
             if (phaseManager.CurrentPhase == PhaseType.Sacrifice || UIContextManager.Instance.IsInContext<SacrificeContext>())
                 Controller.ShowDualPopup(new SacrificeStrategy(card));
-            if (phaseManager.CurrentPhase == PhaseType.Gain) {
-                foreach (AEffect effect in card.Data.Effects) {
+
+            if (phaseManager.CurrentPhase == PhaseType.Gain)
+            {
+                foreach (AEffect effect in card.Data.Effects)
+                {
                     if ((effect.Type & EffectType.Activate) == 0)
-                        return;
+                        continue;
                     if (card.HasBeenActivatedThisTurn)
                         return;
                     Controller.ShowDualPopup(new PlayCardEffectStrategy(effect, card));
+
+                    return;
                 }
             }
         }
 
         private void OnCardSacrified(ICard card)
         {
-            SceneContext context = PlayerController.Local.Context;
-
-            if (card == null || !context.GameplayMode.IsMyTurn)
+            if (card == null || !IsMyTurn())
                 return;
-            Debug.Log($"[TableUI] Card {card.Data.Name} has been sacrificed.");
 
             for (int i = 0; i < partisanSlots.Count; i++)
             {
@@ -431,13 +366,9 @@ namespace Vermines.UI.Screen
 
         private void OnCardReborned(ICard card)
         {
-            SceneContext context = PlayerController.Local.Context;
-
-            if (card == null || !context.GameplayMode.IsMyTurn)
+            if (card == null || !IsMyTurn())
                 return;
-            Debug.Log($"[TableUI] Card {card.Data.Name} has been reborned.");
 
-            // Find the first empty partisan slot and add the card there
             for (int i = 0; i < partisanSlots.Count; i++)
             {
                 var slot = partisanSlots[i];
