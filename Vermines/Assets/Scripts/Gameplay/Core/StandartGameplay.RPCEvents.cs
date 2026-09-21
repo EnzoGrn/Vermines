@@ -137,6 +137,7 @@ namespace Vermines.Gameplay.Core {
 
         public override void OnCardAddInCourtyard(PlayerRef playerSource, int level)
         {
+            Debug.Log($"[CHAIN] StandartGameplay.OnCardAddInCourtyard. playerSource={playerSource} CurrentPlayer={CurrentPlayer} match={playerSource == CurrentPlayer} level={level}");
             PlayerController player = Context.NetworkGame.GetPlayer(playerSource);
 
             if (playerSource != CurrentPlayer) {
@@ -154,7 +155,7 @@ namespace Vermines.Gameplay.Core {
             CourtyardSection courtyard = Context.GameplayMode.Shop.Sections[ShopType.Courtyard] as CourtyardSection;
 
             ICard cardAdded = courtyard.NextCard(level);
-
+            Debug.Log($"[CHAIN] courtyard.NextCard({level}) returned: {(cardAdded == null ? "NULL" : cardAdded.Data.Name)}");
             if (cardAdded != null) {
                 ChronicleEntry entry = new() {
                     Id = KeyGen.UUID(),
@@ -555,6 +556,7 @@ namespace Vermines.Gameplay.Core {
 
         public override void OnNetworkEventCardEffect(PlayerRef playerSource, int cardID, string data)
         {
+            Debug.Log($"[CHAIN] StandartGameplay.OnNetworkEventCardEffect. playerSource={playerSource} CurrentPlayer={CurrentPlayer} cardID={cardID} data={data}");
             PlayerController player = Context.NetworkGame.GetPlayer(playerSource);
 
             if (playerSource != CurrentPlayer) {

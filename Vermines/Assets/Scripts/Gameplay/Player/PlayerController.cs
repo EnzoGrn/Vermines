@@ -885,6 +885,7 @@ namespace Vermines.Player {
 
         public void OnRequestNewCardInCourtyard(int level)
         {
+            Debug.Log($"[CHAIN] OnRequestNewCardInCourtyard about to call RPC. Context={(Context == null ? "NULL" : "OK")} NetworkGame={(Context?.NetworkGame == null ? "NULL" : "OK")}");
             Context.NetworkGame.RPC_AddCardInCourtyard(Object.InputAuthority.RawEncoded, level);
         }
 

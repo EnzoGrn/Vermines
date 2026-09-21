@@ -70,7 +70,7 @@ namespace Vermines.Gameplay.Commands {
             if (_Effect == null)
                 return new CommandResponse(CommandStatus.CriticalError, "EffectNotExist", _CardId.ToString(), _EffectIndex.ToString());
 
-            // 3. Vérifier que la carte à un effet à choix.
+            // 3. Check if the effect is a choice effect.
             if (!_Card.Data.HasChoiceEffect())
                 return new CommandResponse(CommandStatus.CriticalError, "NotAChoiceEffect", _CardId.ToString(), _EffectIndex.ToString());
             return new CommandResponse(CommandStatus.Success, "");
