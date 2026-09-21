@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Vermines.ShopSystem.Enumerations;
@@ -32,6 +32,12 @@ namespace Vermines.UI.Shop
         [SerializeField] private TMP_Text _PageIndicator;
 
         [Header("Dependencies")]
+        // TODO (pending confirmation): this field is always overwritten by
+        // CardSlotPool.Instance in Init() below, regardless of what's
+        // assigned here in the Inspector. Either the field is vestigial (in
+        // which case remove it), or the intent was
+        // `_CardPool ??= CardSlotPool.Instance;` to allow a manual override -
+        // not changed until confirmed which one is correct.
         [SerializeField] private CardSlotPool _CardPool;
 
         public ShopType ShopType { get; private set; }
@@ -175,9 +181,6 @@ namespace Vermines.UI.Shop
         {
             _currentEntries = entries ?? new List<Vermines.UI.Screen.ShopCardEntry>();
 
-            foreach (var e in _currentEntries)
-                Debug.Log($"[ShopUIController] SetEntries — card {e.Data?.ID} stackCount={e.StackCount}");
-
             if (_currentPage >= TotalPages)
                 _currentPage = 0;
 
@@ -282,7 +285,12 @@ namespace Vermines.UI.Shop
         {
             foreach (var slot in _activeSlots)
             {
-                if (slot == null) return;
+                // FIX: was `return` here - a single null slot mid-list
+                // silently aborted the ENTIRE method, skipping cleanup of
+                // every slot after it AND skipping _activeSlots.Clear()
+                // below, leaking stale references. Same class of bug already
+                // found once in GameplayUITable.OnCardClicked.
+                if (slot == null) continue;
 
                 slot.gameObject.SetActive(false);
                 slot.transform.SetParent(_CardPool.transform, false);

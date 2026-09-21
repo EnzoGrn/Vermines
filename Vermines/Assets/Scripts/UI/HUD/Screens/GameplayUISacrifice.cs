@@ -95,7 +95,7 @@ namespace Vermines.UI.Screen
             PopulateSlots();
 
             base.Show();
-            
+
             ShowUser();
             _nextPageButton.onClick.AddListener(NextPage);
         }
@@ -118,7 +118,6 @@ namespace Vermines.UI.Screen
         /// <param name="cardType">The type of shop to load.</param>
         public void SetParam(CardType cardType)
         {
-            Debug.Log($"[GameplayUIShop] SetParam called with {cardType}.");
             _deckType = cardType;
         }
 
@@ -178,6 +177,15 @@ namespace Vermines.UI.Screen
         private void NextPage()
         {
             int maxPage = Mathf.CeilToInt((float)currentEntries.Count / entriesPerPage);
+
+            // FIX: guard against division by zero - not proven reachable
+            // today (the button is only active when there are more entries
+            // than fit one page), but the button's active state is the only
+            // thing preventing this, which is fragile. Cheap to guard here
+            // directly instead of relying solely on that.
+            if (maxPage <= 0)
+                return;
+
             currentPage = (currentPage + 1) % maxPage;
             PopulateSlots();
         }
@@ -195,17 +203,20 @@ namespace Vermines.UI.Screen
                     currentEntries.Add(new ShopCardEntry(card));
             }
 
-            foreach (var card in player.Equipments) {
+            foreach (var card in player.Equipments)
+            {
                 if (card.Data.Type == type)
                     currentEntries.Add(new ShopCardEntry(card));
             }
 
-            foreach (var card in player.PlayedCards) {
+            foreach (var card in player.PlayedCards)
+            {
                 if (card.Data.Type == type)
                     currentEntries.Add(new ShopCardEntry(card));
             }
 
-            foreach (var card in player.Discard) {
+            foreach (var card in player.Discard)
+            {
                 if (card.Data.Type == type)
                     currentEntries.Add(new ShopCardEntry(card));
             }
@@ -223,7 +234,7 @@ namespace Vermines.UI.Screen
             Controller.ShowDualPopup(new CancelEffectStrategy());
         }
 
-        public void OnCardClicked(ICard card, int slodId)
+        public void OnCardClicked(ICard card, int slotId)
         {
             SceneContext context = PlayerController.Local.Context;
 
@@ -251,7 +262,7 @@ namespace Vermines.UI.Screen
 
     public interface ICardClickReceiver
     {
-        void OnCardClicked(ICard card, int slodId);
+        void OnCardClicked(ICard card, int slotId);
     }
 
     public class CardClickHandler : ICardClickHandler

@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +49,6 @@ namespace Vermines.UI.Screen
         protected Dictionary<ShopType, ShopUIConfig> shopConfigs = new();
         protected Dictionary<ShopType, List<ICard>> previousShopStates = new();
 
-
         /// <summary>
         /// The button to close the shop UI.
         /// Can't be null.
@@ -73,16 +72,9 @@ namespace Vermines.UI.Screen
             }
         }
 
-        private GameplayUIController _cachedUIController;
-        private GameplayUIController UIController
-        {
-            get
-            {
-                if (_cachedUIController == null)
-                    _cachedUIController = FindAnyObjectByType<GameplayUIController>();
-                return _cachedUIController;
-            }
-        }
+        // Removed: a second cached GameplayUIController lookup (UIController)
+        // that duplicated the base class's own `Controller` property via
+        // FindAnyObjectByType, for a single use site. Just use `Controller`.
 
         #endregion
 
@@ -219,7 +211,6 @@ namespace Vermines.UI.Screen
         /// <param name="shopType">The type of shop to load.</param>
         public void SetParam(ShopType shopType)
         {
-            Debug.Log($"[{nameof(GameplayUIShop)}] SetParam called with {shopType}.");
             _shopType = shopType;
         }
 
@@ -301,6 +292,13 @@ namespace Vermines.UI.Screen
 
         #region Events
 
+        // NOTE (fragile, not fixed here - see header comment): this relies on
+        // "IsMyTurn" as a stand-in for "did I just buy this card", correct
+        // only because the game rules currently prevent buying out of turn.
+        // If that rule ever changes, this would silently misbehave for a
+        // player who legitimately buys outside their own turn. The proper
+        // fix is adding the buyer's PlayerRef to GameEvents.OnCardPurchased
+        // itself - a cross-cutting change beyond this file's scope.
         public void OnCardPurchased(ShopType shopType, int cardId)
         {
             if (!previousShopStates.TryGetValue(shopType, out var shopList))
@@ -341,6 +339,12 @@ namespace Vermines.UI.Screen
 
         private void RemoveCardFromShop(ShopType shopType, List<ICard> shopList, ICard card)
         {
+            // Deliberate optimistic-UI move: null out the purchased slot
+            // locally BEFORE the server-confirmed refill arrives. This isn't
+            // dead/pointless code - it guarantees BuildShopEntries' "isNew"
+            // comparison detects a real change at this index even if the
+            // eventual replacement card happens to be identical, instead of
+            // silently treating "same ID at same slot" as "nothing changed".
             int index = shopList.FindIndex(c => c != null && c.ID == card.ID);
             if (index >= 0)
                 shopList[index] = null;
@@ -349,8 +353,7 @@ namespace Vermines.UI.Screen
             ReceiveFullShopList(shopType, displayCards);
         }
 
-
-        public void OnCardClicked(ICard card, int slodId)
+        public void OnCardClicked(ICard card, int slotId)
         {
             if (card == null) return;
 
@@ -381,7 +384,8 @@ namespace Vermines.UI.Screen
             plugin.Setup(_ =>
             {
                 GameEvents.OnCardClickedInShopWithSlotIndex.Invoke(_shopType, card.ID);
-                if (UIController) UIController.ShowLast();
+
+                Controller.ShowLast();
             }, isReplace: true, _shopType);
         }
 
@@ -401,6 +405,6 @@ namespace Vermines.UI.Screen
             Controller.Hide();
         }
 
-            #endregion
-        }
+        #endregion
+    }
 }
