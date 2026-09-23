@@ -86,7 +86,12 @@ namespace Vermines.UI.Screen
         private void GenerateEffectButtons()
         {
             ClearButtons();
+
+            // Kept active on purpose - diagnostic log for the still-open,
+            // never-reproduced gain-summary double-show bug (see cadrage
+            // doc). Do not remove until that's confirmed resolved.
             Debug.Log($"[CHOICE-UI] Generating buttons for card={_card?.ID} effectCount={_card?.Data?.Effects?.Count}");
+
             if (_card == null || _card.Data == null || _card.Data.Effects == null)
             {
                 Debug.LogWarning("[UIChoiceEffect] Card or effects missing.");
@@ -101,7 +106,6 @@ namespace Vermines.UI.Screen
                 var label = newButton.GetComponentInChildren<TextMeshProUGUI>(true);
                 if (label != null)
                 {
-                    Debug.Log("[UIChoiceEffect] Setting button label: " + effect.Description);
                     label.text = effect.Description;
                 }
                 else
@@ -138,6 +142,12 @@ namespace Vermines.UI.Screen
             if (_card == null || effect == null)
             {
                 Debug.LogWarning("[UIChoiceEffect] Invalid button press - missing card or effect.");
+                return;
+            }
+
+            if (!PlayerController.Local)
+            {
+                Debug.LogWarning("[UIChoiceEffect] PlayerController.Local not ready - ignoring button press.");
                 return;
             }
 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Vermines.CardSystem.Data;
@@ -6,6 +6,7 @@ using Vermines.CardSystem.Enumerations;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Data.Effect;
+using Vermines.UI.Utils;
 
 namespace Vermines.UI.Card
 {
@@ -69,15 +70,7 @@ namespace Vermines.UI.Card
             }
 
             // --- Load visuals
-            string family = data.Type switch
-            {
-                CardType.Partisan => data.Family.ToString(),
-                CardType.Equipment => "Equipment",
-                CardType.Tools => "Tools",
-                _ => "Unknown"
-            };
-
-            string type = data.Type switch
+            string cardType = data.Type switch
             {
                 CardType.Partisan => "Partisan",
                 CardType.Equipment => "Item",
@@ -85,25 +78,31 @@ namespace Vermines.UI.Card
                 _ => "Unknown"
             };
 
-            LoadVisuals(data.Sprite, data.SpriteName, family, type);
+            LoadVisuals(data, cardType);
         }
 
-        private void LoadVisuals(Sprite sprite, string characterName, string family, string cardType)
+        private void LoadVisuals(CardData data, string cardType)
         {
-            string basePath = $"Sprites/Card/{family}";
-            string characterPath = $"{basePath}/{characterName}";
-            string backgroundPath = $"{basePath}/Background";
+            // Character/background lookups go through the shared
+            // UISpriteLoader utility (same path convention already used by
+            // PlayerBannerUI/CardPopupBase/BookPagePlugin/etc:
+            // Sprites/Card/{family-or-type}/{name}) instead of rebuilding
+            // the path string here.
+            _characterImage.sprite = data.Sprite != null
+                ? data.Sprite
+                : UISpriteLoader.GetDefaultSprite(data.Type, data.Family, data.SpriteName);
 
-            _characterImage.sprite = sprite == null ? Resources.Load<Sprite>(characterPath) : sprite;
-            _backgroundImage.sprite = Resources.Load<Sprite>(backgroundPath);
+            _backgroundImage.sprite = UISpriteLoader.GetDefaultSprite(data.Type, data.Family, "Background");
 
             if (!_characterImage.sprite)
-                Debug.LogError($"[CardDisplay] Character sprite not found: {characterPath}");
+                Debug.LogError($"[CardDisplay] Character sprite not found for {data.Name} ({data.Type}/{data.Family}).");
 
             if (!_backgroundImage.sprite)
-                Debug.LogError($"[CardDisplay] Background sprite not found: {backgroundPath}");
+                Debug.LogError($"[CardDisplay] Background sprite not found for {data.Type}/{data.Family}.");
 
-            // Set description image based on card type
+            // Description image uses a different folder/naming convention
+            // (Sprites/UI/Card/, not Sprites/Card/) that UISpriteLoader has
+            // no method for - left as its own lookup.
             string descriptionPath = $"Sprites/UI/Card/{cardType}_Card_Descriptor";
 
             _descriptionImage.sprite = Resources.Load<Sprite>(descriptionPath);
@@ -119,11 +118,30 @@ namespace Vermines.UI.Card
             _soulsText.text = string.Empty;
             _characterImage.sprite = null;
             _backgroundImage.sprite = null;
+
+            // FIX: the following were never reset, leaving a previous card's
+            // level, effect text, description image and lifted/selected
+            // position visually stuck on an otherwise "empty" slot.
+            _levelText.text = string.Empty;
+            _levelText.gameObject.SetActive(false);
+            _effectDescription.text = string.Empty;
+            _descriptionImage.sprite = null;
+
+            // NOTE: deliberately NOT nulling Card here. At least one known
+            // caller (GameplayUITable.OnCardSacrified) reads
+            // slot.CardDisplay.Card.ID after only checking that CardDisplay
+            // itself is truthy, not that .Card is non-null - nulling it here
+            // would introduce a new NullReferenceException on any table scan
+            // that reaches a reset/empty slot. Card stays stale (points to
+            // the last card shown) until Display() is called again - a
+            // narrower, pre-existing staleness that's out of scope to fix
+            // here without auditing every consumer first.
+            _clickHandler = null;
+            SetSelected(false);
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log($"[CardDisplay] Card {gameObject.name} clicked.");
             _clickHandler?.OnCardClicked(Card);
         }
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Vermines.UI.Card;
 
@@ -51,7 +51,7 @@ namespace Vermines.UI.GameTable
             if (slot == null) return;
 
             slot.ResetSlot();
-            //slot.gameObject.SetActive(false);
+            slot.gameObject.SetActive(false);
             _availableSlots.Push(slot);
         }
 

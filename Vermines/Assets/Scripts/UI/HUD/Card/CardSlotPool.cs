@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.UI.Card
@@ -41,14 +41,14 @@ namespace Vermines.UI.Card
                 slot = obj.GetComponent<ShopCardSlot>();
             }
 
-            //slot.transform.SetParent(parent, false);
+            slot.transform.SetParent(parent, false);
             return slot;
         }
 
         public void ReturnSlot(ShopCardSlot slot)
         {
             slot.ResetSlot();
-            //slot.gameObject.SetActive(false);
+            slot.gameObject.SetActive(false);
             availableSlots.Enqueue(slot);
         }
 
