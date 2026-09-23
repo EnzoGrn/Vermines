@@ -136,6 +136,22 @@ namespace Vermines.Gameplay.Phases
         {
             GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>(FindObjectsInactive.Include);
 
+            // Actively wait (bounded) for PlayerController.Local before showing the
+            // turn banner - without this, GameplayUITurn.Show() could fire before
+            // it's ready and just skip displaying the banner (see its own defensive
+            // guard) instead of actually showing it.
+            float waitElapsed = 0f;
+            const float waitTimeout = 5f;
+
+            while (!PlayerController.Local && waitElapsed < waitTimeout)
+            {
+                yield return null;
+                waitElapsed += Time.unscaledDeltaTime;
+            }
+
+            if (!PlayerController.Local)
+                Debug.LogWarning("[PhaseManager] SacrificeRoutine: PlayerController.Local never became ready within timeout - turn banner may not display correctly this time.");
+
             if (gameplayUIController != null)
                 gameplayUIController.Show<GameplayUITurn>();
 
