@@ -46,6 +46,7 @@ namespace Vermines.UI.Plugin
         [SerializeField] private Image cultistBgImage;
 
         private PlayerController _Player;
+        private EquipmentBookSection _EquipmentSection;
 
         [Header("Card Decks Buttons")]
 
@@ -81,19 +82,10 @@ namespace Vermines.UI.Plugin
         /// </summary>
         public virtual void Awake()
         {
-            if (leftPage.TryGetComponent<CanvasGroup>(out var canvasGroup))
-            {
-                canvasGroup.alpha = 0f;
-                canvasGroup.interactable = false;
-                canvasGroup.blocksRaycasts = false;
-            }
+            SetPageInteractable(leftPage, false);
+            SetPageInteractable(rightPage, false);
 
-            if (rightPage.TryGetComponent<CanvasGroup>(out var canvasGroupRight))
-            {
-                canvasGroupRight.alpha = 0f;
-                canvasGroupRight.interactable = false;
-                canvasGroupRight.blocksRaycasts = false;
-            }
+            _EquipmentSection = GetComponentInChildren<EquipmentBookSection>();
 
             // Set up button listeners
             discardedButton.onClick.AddListener(ShowDiscardedCards);
@@ -117,20 +109,23 @@ namespace Vermines.UI.Plugin
         /// </summary>
         public override void Hide()
         {
-            if (leftPage.TryGetComponent<CanvasGroup>(out var canvasGroup))
-            {
-                canvasGroup.alpha = 0f;
-                canvasGroup.interactable = false;
-                canvasGroup.blocksRaycasts = false;
-            }
+            SetPageInteractable(leftPage, false);
+            SetPageInteractable(rightPage, false);
 
-            if (rightPage.TryGetComponent<CanvasGroup>(out var canvasGroupRight))
-            {
-                canvasGroupRight.alpha = 0f;
-                canvasGroupRight.interactable = false;
-                canvasGroupRight.blocksRaycasts = false;
-            }
             base.Hide();
+        }
+
+        // Extracted: the same CanvasGroup alpha/interactable/blocksRaycasts
+        // toggle was duplicated identically in Awake()/Hide() and again
+        // (inverted) in ShowPlayerInfo().
+        private void SetPageInteractable(GameObject page, bool interactable)
+        {
+            if (page.TryGetComponent<CanvasGroup>(out var canvasGroup))
+            {
+                canvasGroup.alpha = interactable ? 1f : 0f;
+                canvasGroup.interactable = interactable;
+                canvasGroup.blocksRaycasts = interactable;
+            }
         }
 
         public void ShowPlayerInfo(PlayerController player)
@@ -138,34 +133,26 @@ namespace Vermines.UI.Plugin
             _Player = player;
 
             playerNameText.text = player.Object.InputAuthority == player.Context.Runner.LocalPlayer ? "You" : player.Nickname;
-            eloquenceText.text  = $"{player.Statistics.Eloquence} / {player.Context.GameplayMode.MaxEloquence}";
-            soulsText.text      = $"{player.Statistics.Souls} / {player.Context.GameplayMode.SoulsLimit}";
-            familyText.text     = $"{player.Statistics.Family}";
+            eloquenceText.text = $"{player.Statistics.Eloquence} / {player.Context.GameplayMode.MaxEloquence}";
+            soulsText.text = $"{player.Statistics.Souls} / {player.Context.GameplayMode.SoulsLimit}";
+            familyText.text = $"{player.Statistics.Family}";
 
-            familyIcon.sprite     = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Statistics.Family, "Icon");
-            cultistImage.sprite   = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Statistics.Family, "Cultist");
+            familyIcon.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Statistics.Family, "Icon");
+            cultistImage.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Statistics.Family, "Cultist");
             cultistBgImage.sprite = UISpriteLoader.GetDefaultSprite(CardSystem.Enumerations.CardType.Partisan, player.Statistics.Family, "Background");
 
-            EquipmentBookSection equipmentSection = GetComponentInChildren<EquipmentBookSection>();
+            if (_EquipmentSection != null)
+                _EquipmentSection.UpdateEquipment(player.Equipments.ToList());
 
-            if (equipmentSection != null)
-                equipmentSection.UpdateEquipment(player.Equipments.ToList());
-
-            if (leftPage.TryGetComponent<CanvasGroup>(out var canvasGroup)) {
-                canvasGroup.alpha = 1f;
-                canvasGroup.interactable = true;
-                canvasGroup.blocksRaycasts = true;
-            }
-
-            if (rightPage.TryGetComponent<CanvasGroup>(out var canvasGroupRight)) {
-                canvasGroupRight.alpha = 1f;
-                canvasGroupRight.interactable = true;
-                canvasGroupRight.blocksRaycasts = true;
-            }
+            SetPageInteractable(leftPage, true);
+            SetPageInteractable(rightPage, true);
         }
 
         public void ShowDiscardedCards()
         {
+            if (_Player == null)
+                return;
+
             List<ICard> discardedC = new(_Player.Discard);
             List<ICard> discardedT = new(_Player.ToolDiscard);
 
@@ -177,12 +164,18 @@ namespace Vermines.UI.Plugin
 
         public void ShowPlayedCards()
         {
+            if (_Player == null)
+                return;
+
             deckHolder.Show(_Player.PlayedCards.ToList());
             deckHolder.SetTitle("Played Cards");
         }
 
         public void ShowSacrificedCards()
         {
+            if (_Player == null)
+                return;
+
             deckHolder.Show(_Player.Graveyard.ToList());
             deckHolder.SetTitle("Sacrificed Cards");
         }

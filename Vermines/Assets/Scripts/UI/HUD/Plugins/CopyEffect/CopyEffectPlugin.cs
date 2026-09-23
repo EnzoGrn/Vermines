@@ -78,22 +78,22 @@ public class CopyEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginParam
         PlayerController player = PlayerController.Local;
 
         foreach (var card in player.Hand) {
-            if (card.Data.Type == CardTypeTrigger)
+            if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
                 currentEntries.Add(new ShopCardEntry(card));
         }
 
         foreach (var card in player.Equipments) {
-            if (card.Data.Type == CardTypeTrigger)
+            if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
                 currentEntries.Add(new ShopCardEntry(card));
         }
 
         foreach (var card in player.PlayedCards) {
-            if (card.Data.Type == CardTypeTrigger)
+            if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
                 currentEntries.Add(new ShopCardEntry(card));
         }
 
         foreach (var card in player.Discard) {
-            if (card.Data.Type == CardTypeTrigger)
+            if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
                 currentEntries.Add(new ShopCardEntry(card));
         }
 
