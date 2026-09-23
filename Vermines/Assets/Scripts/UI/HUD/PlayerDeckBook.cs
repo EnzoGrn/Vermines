@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Vermines.CardSystem.Elements;
@@ -10,24 +10,10 @@ namespace Vermines.UI
     {
         #region Attributes
 
-        /// <summary>
-        /// Cached 'Hide' animation hash.
-        /// </summary>
         protected static readonly int HideAnimHash = Animator.StringToHash("Hide");
-
-        /// <summary>
-        /// Cached 'Show' animation hash.
-        /// </summary>
         protected static readonly int ShowAnimHash = Animator.StringToHash("Show");
 
-        /// <summary>
-        /// The animator component.
-        /// </summary>
         private Animator _animator;
-
-        /// <summary>
-        /// The hide animation coroutine.
-        /// </summary>
         private Coroutine _HideCoroutine;
 
         [Header("UI References")]
@@ -51,8 +37,7 @@ namespace Vermines.UI
         {
             TryGetComponent(out _animator);
             if (!_animator)
-                Debug.LogErrorFormat(gameObject, "[{0}] {1} {2}", nameof(PlayerBookTab), gameObject.name, "PlayerBookTab is not properly initialized. Animator component is missing.");
-
+                Debug.LogErrorFormat(gameObject, "[{0}] {1} {2}", nameof(PlayerDeckBook), gameObject.name, "PlayerDeckBook is not properly initialized. Animator component is missing.");
 
             gameObject.SetActive(false);
         }
@@ -112,7 +97,6 @@ namespace Vermines.UI
         /// <param name="cardList">The list of cards to display.</param>
         public void SetCards(List<ICard> cardList)
         {
-            Debug.Log($"[{GetType().Name}] Setting cards for PlayerDeckBook. Total cards: {cardList?.Count ?? 0}");
             cards = cardList ?? new List<ICard>();
             currentPage = 0;
             RefreshPage();
@@ -147,8 +131,6 @@ namespace Vermines.UI
             int startIndex = currentPage * cardsPerPage;
             int endIndex = Mathf.Min(startIndex + cardsPerPage, cards.Count);
 
-            Debug.Log($"[{GetType().Name}] Refreshing page {currentPage + 1}. Cards from {startIndex} to {endIndex - 1}. Total cards: {cards.Count}");
-
             int cardIndex = 0;
 
             for (int i = startIndex; i < endIndex; i++)
@@ -177,7 +159,6 @@ namespace Vermines.UI
             nextPageButton.SetActive((currentPage + 1) * cardsPerPage < cards.Count);
         }
 
-
         #endregion
 
         #region Pooling
@@ -205,37 +186,9 @@ namespace Vermines.UI
 
         public IEnumerator PlayHideAnimation(bool adjustFramerate = true)
         {
-#if UNITY_IOS || UNITY_ANDROID
-    bool changedFramerate = false;
-
-    if (adjustFramerate && Config.AdaptFramerateForMobilePlatform && Application.targetFrameRate < 60)
-    {
-        Application.targetFrameRate = 60;
-        changedFramerate = true;
-    }
-#endif
-
-            if (_animator != null && _animator.gameObject.activeInHierarchy && _animator.HasState(0, HideAnimHash))
-            {
-                _animator.Play(HideAnimHash, 0, 0f);
-
-                yield return null; // Wait one frame for animation to start
-
-                while (_animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
-                {
-                    yield return null;
-                }
-            }
-
-#if UNITY_IOS || UNITY_ANDROID
-    if (changedFramerate)
-    {
-        new FusionMenuGraphicsSettings().Apply();
-    }
-#endif
+            yield return AnimatedTransition.PlayAndWait(_animator, HideAnimHash, adjustFramerate);
 
             gameObject.SetActive(false);
         }
-
     }
 }
