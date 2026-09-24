@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -94,7 +94,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
-            player.OnCardSacrified(card.ID);
+            player.OnCardSacrificed(card.ID);
             player.NetworkEventCardEffect(Card == null ? -1 : Card.ID);
         }
 

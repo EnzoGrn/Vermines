@@ -76,7 +76,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             GameEvents.OnCardSacrificedRequested.RemoveListener(OnSacrificed);
             UIContextManager.Instance.PopContext();
 
-            player.OnCardSacrified(card.ID);
+            player.OnCardSacrificed(card.ID);
             player.NetworkEventCardEffect(Card == null ? -1 : Card.ID);
         }
 

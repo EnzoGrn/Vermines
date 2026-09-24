@@ -102,7 +102,7 @@ namespace Vermines.UI.Screen
 
             #endregion
 
-            GameEvents.OnCardSacrified.AddListener(OnCardSacrified);
+            GameEvents.OnCardSacrificed.AddListener(OnCardSacrificed);
             GameEvents.OnCardReborned.AddListener(OnCardReborned);
         }
 
@@ -346,7 +346,7 @@ namespace Vermines.UI.Screen
             }
         }
 
-        private void OnCardSacrified(ICard card)
+        private void OnCardSacrificed(ICard card)
         {
             if (card == null || !IsMyTurn())
                 return;

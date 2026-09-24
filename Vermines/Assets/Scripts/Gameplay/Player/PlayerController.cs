@@ -839,7 +839,7 @@ namespace Vermines.Player {
 
         #region RPCs Ask to Server
 
-        public void OnCardSacrified(int cardId)
+        public void OnCardSacrificed(int cardId)
         {
             Context.NetworkGame.RPC_CardSacrified(Object.InputAuthority.RawEncoded, cardId);
         }

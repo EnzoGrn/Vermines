@@ -383,7 +383,7 @@ namespace Vermines.UI.Screen
         {
             plugin.Setup(_ =>
             {
-                GameEvents.OnCardClickedInShopWithSlotIndex.Invoke(_shopType, card.ID);
+                GameEvents.OnShopSlotClicked.Invoke(_shopType, card.ID);
 
                 Controller.ShowLast();
             }, isReplace: true, _shopType);

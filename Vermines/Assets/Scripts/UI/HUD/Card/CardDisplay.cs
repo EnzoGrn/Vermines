@@ -128,7 +128,7 @@ namespace Vermines.UI.Card
             _descriptionImage.sprite = null;
 
             // NOTE: deliberately NOT nulling Card here. At least one known
-            // caller (GameplayUITable.OnCardSacrified) reads
+            // caller (GameplayUITable.OnCardSacrificed) reads
             // slot.CardDisplay.Card.ID after only checking that CardDisplay
             // itself is truthy, not that .Card is non-null - nulling it here
             // would introduce a new NullReferenceException on any table scan

@@ -58,7 +58,7 @@ namespace Vermines.Core {
             if (!IsRpcSourceValid(info, playerID)) return;
             if (!IsGameplayReady()) return;
 
-            _Gameplay.OnCardSacrified(PlayerRef.FromEncoded(playerID), cardID);
+            _Gameplay.OnCardSacrificed(PlayerRef.FromEncoded(playerID), cardID);
         }
 
 

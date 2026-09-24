@@ -344,7 +344,7 @@ namespace Vermines.Core {
         public virtual void OnCardPlayed(PlayerRef player, int cardID) { }
         public virtual void OnDiscardCard(PlayerRef player, int cardID, bool hasEffect = true) { }
 
-        public virtual void OnCardSacrified(PlayerRef player, int cardID) { }
+        public virtual void OnCardSacrificed(PlayerRef player, int cardID) { }
 
         public virtual void OnCardRecycled(PlayerRef player, int cardID) { }
 

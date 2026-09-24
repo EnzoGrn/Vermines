@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Vermines;
 using Vermines.CardSystem.Elements;
+using Vermines.Gameplay.Errors;
 using Vermines.Gameplay.Phases.Data;
 using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.Player;
@@ -22,8 +23,8 @@ public static class GameEvents
     public static readonly TrackedEvent OnPlayerInitialized = new("OnPlayerInitialized");
     public static readonly TrackedEvent<PlayerController> OnPlayerUpdated = new("OnPlayerUpdated");
     public static readonly TrackedEvent<PlayerRef, PlayerRef> OnPlayerWin = new("OnPlayerWin");
-
     public static readonly LatestValueEvent<PlayerRef, GainSummaryData> OnGainPhaseResolved = new("OnGainPhaseResolved");
+    public static readonly TrackedEvent<GameActionError, string> OnActionRefused = new("OnActionRefused");
 
     // --- CARD PLAYING ---
     public static readonly TrackedEvent<ICard> OnCardPlayedRequested = new("OnCardPlayedRequested");
@@ -31,13 +32,9 @@ public static class GameEvents
     public static readonly TrackedEvent<ICard> OnCardPlayed = new("OnCardPlayed");
 
     // --- CARD SACRIFICE ---
-    // NOTE: OnCardSacrifiedRefused / OnCardSacrified contiennent une faute
-    // ("Sacrifi(c)ed") incohérente avec OnCardSacrificedRequested juste au-dessus.
-    // Pas corrigé ici : le rename touche 12 fichiers (RPC, effets, phases) et doit
-    // se faire dans un commit dédié isolé, pas mélangé à ce nettoyage rapide.
     public static readonly TrackedEvent<ICard> OnCardSacrificedRequested = new("OnCardSacrificedRequested");
-    public static readonly TrackedEvent<ICard> OnCardSacrifiedRefused = new("OnCardSacrifiedRefused");
-    public static readonly TrackedEvent<ICard> OnCardSacrified = new("OnCardSacrified");
+    public static readonly TrackedEvent<ICard> OnCardSacrificedRefused = new("OnCardSacrificedRefused");
+    public static readonly TrackedEvent<ICard> OnCardSacrificed = new("OnCardSacrificed");
 
     // --- CARD RECYCLING ---
     public static readonly TrackedEvent<ICard> OnCardRecycled = new("OnCardRecycled");
@@ -48,7 +45,7 @@ public static class GameEvents
 
     // --- CARD UI EVENTS ---
     public static readonly TrackedEvent<ICard, int> OnCardClicked = new("OnCardClicked");
-    public static readonly TrackedEvent<ShopType, int> OnCardClickedInShopWithSlotIndex = new("OnCardClickedInShopWithSlotIndex");
+    public static readonly TrackedEvent<ShopType, int> OnShopSlotClicked = new("OnShopSlotClicked");
 
     // --- SHOP EVENTS ---
     public static readonly Dictionary<ShopType, TrackedEvent<int, ICard>> OnShopsEvents = new();

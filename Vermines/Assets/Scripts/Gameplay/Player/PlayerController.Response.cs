@@ -1,25 +1,26 @@
-using OMGG.DesignPattern;
-using OMGG.Chronicle;
-using UnityEngine;
 using Fusion;
+using OMGG.Chronicle;
+using OMGG.DesignPattern;
+using UnityEngine;
 
 namespace Vermines.Player {
 
-    using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Gameplay.Commands;
-    using Vermines.ShopSystem.Commands;
-    using Vermines.ShopSystem.Enumerations;
-    using Vermines.ShopSystem;
-    using Vermines.UI.Card;
-    using Vermines.UI;
-    using Vermines.UI.Screen;
-    using Vermines.Core.Player;
     using Vermines.Core;
-    using Vermines.ShopSystem.Data;
+    using Vermines.Core.Player;
     using Vermines.Gameplay.Cards.Effect;
+    using Vermines.Gameplay.Commands;
+    using Vermines.Gameplay.Errors;
+    using Vermines.ShopSystem;
+    using Vermines.ShopSystem.Commands;
+    using Vermines.ShopSystem.Data;
+    using Vermines.ShopSystem.Enumerations;
+    using Vermines.UI;
+    using Vermines.UI.Card;
+    using Vermines.UI.Screen;
 
     public partial class PlayerController : ContextBehaviour, IPlayer {
 
@@ -103,7 +104,7 @@ namespace Vermines.Player {
                 }
             }
 
-            GameEvents.OnCardSacrified.Invoke(card);
+            GameEvents.OnCardSacrificed.Invoke(card);
 
             AddChronicle(nEntry.ToChronicleEntry());
         }
@@ -217,11 +218,26 @@ namespace Vermines.Player {
 
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
-            if (response.Status == CommandStatus.Invalid) {
+            if (response.Status == CommandStatus.Invalid)
+            {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
 
-                GameEvents.OnCardPlayedRefused.Invoke(card);
-            } else if (response.Status == CommandStatus.Success) {
+                GameActionError localError = new GameActionError
+                {
+                    Scope = ErrorScope.Local,
+                    Target = Object.InputAuthority,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Table,
+                    MessageKey = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
+                };
+
+                string localizedMessage = GameActionError.Localize(localError);
+
+                GameEvents.OnActionRefused.Invoke(localError, localizedMessage);
+            }
+            else if (response.Status == CommandStatus.Success)
+            {
                 GameEvents.OnCardPlayed.Invoke(card);
 
                 foreach (AEffect effect in card.Data.Effects)
