@@ -31,13 +31,6 @@ namespace Vermines.UI.Screen
         protected UnityEngine.UI.Button _TableButton;
 
         /// <summary>
-        /// The book button.
-        /// Can't be null, but can be disabled.
-        /// </summary>
-        [InlineHelp, SerializeField]
-        protected UnityEngine.UI.Button _BookButton;
-
-        /// <summary>
         /// The recycle button.
         /// Can't be null, but can be disabled.
         /// </summary>
@@ -210,14 +203,6 @@ namespace Vermines.UI.Screen
         protected virtual void OnTableButtonPressed()
         {
             ShowScreenIfNotAlreadyShown<GameplayUITable>();
-        }
-
-        /// <summary>
-        /// Is called when the <see cref="_BookButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
-        protected virtual void OnBookButtonPressed()
-        {
-            ShowScreenIfNotAlreadyShown<GameplayUIBook>();
         }
 
         /// <summary>
