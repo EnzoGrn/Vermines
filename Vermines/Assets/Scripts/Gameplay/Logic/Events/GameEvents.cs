@@ -1,15 +1,13 @@
 using Fusion;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using Vermines;
 using Vermines.CardSystem.Elements;
 using Vermines.Gameplay.Errors;
 using Vermines.Gameplay.Phases.Data;
 using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.Player;
 using Vermines.ShopSystem.Enumerations;
-using Vermines.UI.Screen;
+using Vermines.UI.Shop;
 
 public static class GameEvents
 {

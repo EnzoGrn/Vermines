@@ -1,5 +1,4 @@
 using Fusion;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,27 +14,6 @@ using Vermines.UI.Shop;
 
 namespace Vermines.UI.Screen
 {
-    [Serializable]
-    public class ShopUIConfigEntry
-    {
-        public ShopType shopType;
-        public ShopUIConfig config;
-    }
-
-    public class ShopCardEntry
-    {
-        public ICard Data;
-        public bool IsNew;
-        public int StackCount;
-
-        public ShopCardEntry(ICard data, bool isNew = false, int stackCount = 1)
-        {
-            Data = data;
-            IsNew = isNew;
-            StackCount = stackCount;
-        }
-    }
-
     public partial class GameplayUIShop : GameplayUIScreen, IParamReceiver<ShopType>
     {
         #region Attributes

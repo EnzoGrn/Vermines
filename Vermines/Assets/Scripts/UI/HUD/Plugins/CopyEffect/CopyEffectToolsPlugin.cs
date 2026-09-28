@@ -1,13 +1,12 @@
-﻿using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Elements;
 using Vermines.ShopSystem.Data;
-using Vermines.UI.Screen;
-using Vermines;
+using Vermines.UI.Shop;
 using System.Collections.Generic;
 using Vermines.Player;
 
 public class CopyEffectToolsPlugin : CopyEffectPlugin {
 
-    public override List<Vermines.UI.Screen.ShopCardEntry> GetEntries()
+    public override List<ShopCardEntry> GetEntries()
     {
         MarketSection market = (MarketSection)PlayerController.Local.Context.GameplayMode.Shop.Sections[Vermines.ShopSystem.Enumerations.ShopType.Market];
         

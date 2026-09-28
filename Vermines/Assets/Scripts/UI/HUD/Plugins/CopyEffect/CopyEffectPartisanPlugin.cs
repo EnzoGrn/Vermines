@@ -1,14 +1,13 @@
 using Vermines.CardSystem.Elements;
 using Vermines.ShopSystem.Data;
-using Vermines.UI.Screen;
-using Vermines;
+using Vermines.UI.Shop;
 using Vermines.Player;
 using System.Collections.Generic;
 using Vermines.Core.Scene;
 
 public class CopyEffectPartisanPlugin : CopyEffectPlugin {
 
-    public override List<Vermines.UI.Screen.ShopCardEntry> GetEntries()
+    public override List<ShopCardEntry> GetEntries()
     {
         SceneContext context = PlayerController.Local.Context;
 

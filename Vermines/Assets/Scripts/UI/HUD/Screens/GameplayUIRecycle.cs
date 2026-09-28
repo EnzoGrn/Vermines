@@ -1,10 +1,6 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Localization;
 using UnityEngine.UI;
-using Vermines.CardSystem.Data.Effect;
-using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Player;
 using Vermines.UI.Card;
@@ -12,7 +8,6 @@ using Vermines.UI.Utils;
 
 namespace Vermines.UI.Screen
 {
-    using Text = TMPro.TMP_Text;
 
     public class GameplayUIRecycle : GameplayUIScreen
     {
@@ -143,18 +138,6 @@ namespace Vermines.UI.Screen
             foreach (var card in _recycleHandler.SelectedCards)
             {
                 PlayerController.Local.OnRecycle(card.ID);
-
-                // REMOVED: PlayerController.Local.Context.HandManager.RemoveCard(card);
-                // This removed the card from the hand display unconditionally,
-                // before any server confirmation - there is no
-                // "recycle refused" rollback anywhere in the project (unlike
-                // Discard's OnCardDiscardedRefused), so a refused recycle
-                // would have silently lost the card visually forever.
-                // HandManager already resyncs the hand display from the
-                // networked Hand state whenever it actually changes
-                // (OnHandChanged -> ResyncHand), which already removes the
-                // card correctly on a real, confirmed recycle - and does
-                // nothing if the server refuses, which is the right behavior.
             }
 
             CleanupAndClose();

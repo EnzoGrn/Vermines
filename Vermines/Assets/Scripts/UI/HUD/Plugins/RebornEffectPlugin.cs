@@ -5,8 +5,7 @@ using Vermines.UI.Plugin;
 using Vermines.UI;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Player;
-using Vermines.UI.Screen;
-using Vermines;
+using Vermines.UI.Shop;
 using Vermines.CardSystem.Elements;
 
 public class RebornEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginParam<ICard> {
@@ -24,7 +23,7 @@ public class RebornEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginPar
     /// <summary>
     /// The list of entries currently displayed in the plugin.
     /// </summary>
-    protected List<Vermines.UI.Screen.ShopCardEntry> currentEntries = new();
+    protected List<ShopCardEntry> currentEntries = new();
 
     /// <summary>
     /// The card that is currently activated in the plugin.
@@ -69,7 +68,7 @@ public class RebornEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginPar
 
     #region Methods
 
-    public virtual List<Vermines.UI.Screen.ShopCardEntry> GetEntries()
+    public virtual List<ShopCardEntry> GetEntries()
     {
         foreach (var card in PlayerController.Local.Graveyard) {
             if (card.Data.Type == CardTypeTrigger)

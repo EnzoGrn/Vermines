@@ -7,6 +7,7 @@ using Vermines.UI.Card;
 using System.Collections.Generic;
 using Vermines.Player;
 using Vermines.Core.Scene;
+using Vermines.UI.Shop;
 
 namespace Vermines.UI.Screen
 {
@@ -28,7 +29,7 @@ namespace Vermines.UI.Screen
 
         protected List<ShopCardSlot> activeSlots = new();
 
-        protected List<Vermines.UI.Screen.ShopCardEntry> currentEntries = new();
+        protected List<ShopCardEntry> currentEntries = new();
 
         /// <summary>
         /// The banner holder that contains the card list.
