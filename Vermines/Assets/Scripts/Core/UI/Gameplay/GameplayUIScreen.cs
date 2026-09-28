@@ -1,13 +1,15 @@
 using Fusion;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.UI
 {
     using System.Collections;
+    using Vermines.Core.UI;
     using Vermines.UI.Plugin;
 
-    public abstract class GameplayUIScreen : MonoBehaviour
+    public abstract class GameplayUIScreen : MonoBehaviour, IBackHandler
     {
         #region Animation
 
@@ -70,6 +72,28 @@ namespace Vermines.UI
         /// </summary>
         public bool IsShowing { get; private set; }
 
+        // Fired once, then cleared - mirrors UIView's HasOpened/HasClosed.
+        // A generic, reusable "wait for the next open/close" hook, ported
+        // from UIView. NOT wired into SceneInput's IBackHandler dispatch:
+        // the gameplay screen system stays fully independent from the menu
+        // UIView/SceneUI system by design (not merged, only sharing the
+        // interface shape). If Escape should ever close a gameplay screen,
+        // that belongs to GameplayUIController's own input handling, not a
+        // shared SceneInput registration.
+        public event Action HasOpened;
+        public event Action HasClosed;
+
+        // Whether this screen currently reacts to a back action, if
+        // something in the gameplay UI ever calls OnBackAction() directly
+        // (e.g. a future dedicated Escape handler owned by
+        // GameplayUIController). Off by default: most screens shouldn't
+        // silently swallow a back action just by being shown.
+        [InlineHelp, SerializeField]
+        private bool _CanHandleBackAction;
+
+        [InlineHelp, SerializeField]
+        private int _Priority;
+
         #endregion
 
         /// <summary>
@@ -95,6 +119,11 @@ namespace Vermines.UI
         /// </summary>
         public virtual void Init() { }
 
+        public void SetPriority(int priority)
+        {
+            _Priority = priority;
+        }
+
         /// <summary>
         /// The screen hide method.
         /// </summary>
@@ -109,6 +138,11 @@ namespace Vermines.UI
                 return;
             }
 
+            HideImmediate();
+        }
+
+        private void HideImmediate()
+        {
             IsShowing = false;
 
             if (ShouldHidePlugins)
@@ -116,7 +150,14 @@ namespace Vermines.UI
                 foreach (GameplayScreenPlugin plugin in _Plugins)
                     plugin.Hide();
             }
+
             gameObject.SetActive(false);
+
+            if (HasClosed != null)
+            {
+                HasClosed.Invoke();
+                HasClosed = null;
+            }
         }
 
         /// <summary>
@@ -140,6 +181,12 @@ namespace Vermines.UI
             {
                 foreach (GameplayScreenPlugin plugin in _Plugins)
                     plugin.Show(this);
+            }
+
+            if (HasOpened != null)
+            {
+                HasOpened.Invoke();
+                HasOpened = null;
             }
         }
 
@@ -169,6 +216,12 @@ namespace Vermines.UI
                 foreach (GameplayScreenPlugin plugin in _Plugins)
                     plugin.Show(this);
             }
+
+            if (HasOpened != null)
+            {
+                HasOpened.Invoke();
+                HasOpened = null;
+            }
         }
 
 
@@ -197,7 +250,26 @@ namespace Vermines.UI
         private IEnumerator HideAnimCoroutine()
         {
             yield return AnimatedTransition.PlayAndWait(_Animator, HideAnimHash);
-            gameObject.SetActive(false);
+            HideImmediate();
+        }
+
+        #endregion
+
+        #region IBackHandler
+
+        int IBackHandler.Priority => _Priority;
+        bool IBackHandler.IsActive => IsShowing && _CanHandleBackAction;
+
+        bool IBackHandler.OnBackAction()
+        {
+            return OnBackAction();
+        }
+
+        protected virtual bool OnBackAction()
+        {
+            Hide();
+
+            return true;
         }
 
         #endregion
