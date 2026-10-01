@@ -1,3 +1,4 @@
+using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -87,19 +88,23 @@ namespace Vermines.UI.Screen
         {
             ClearButtons();
 
-            // Kept active on purpose - diagnostic log for the still-open,
-            // never-reproduced gain-summary double-show bug (see cadrage
-            // doc). Do not remove until that's confirmed resolved.
-            Debug.Log($"[CHOICE-UI] Generating buttons for card={_card?.ID} effectCount={_card?.Data?.Effects?.Count}");
-
             if (_card == null || _card.Data == null || _card.Data.Effects == null)
             {
                 Debug.LogWarning("[UIChoiceEffect] Card or effects missing.");
                 return;
             }
 
+            PlayerRef local = PlayerController.Local.Object.InputAuthority;
+            string lastReason = null;
+
             foreach (AEffect effect in _card.Data.Effects)
             {
+                if (!effect.CanBePlayed(local, out string reason))
+                {
+                    lastReason = reason;
+                    continue;
+                }
+
                 Button newButton = Instantiate(_buttonPrefab, _buttonContainer);
                 newButton.gameObject.SetActive(true);
 
@@ -115,6 +120,12 @@ namespace Vermines.UI.Screen
 
                 newButton.onClick.AddListener(() => OnButtonPressed(effect));
                 _spawnedButtons.Add(newButton);
+            }
+
+            if (_spawnedButtons.Count == 0)
+            {
+                GameEvents.OnEffectSkipped.Invoke(_card, lastReason);
+                Controller.Hide();
             }
         }
 

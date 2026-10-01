@@ -35,6 +35,22 @@ MonoBehaviour:
     m_Localized: Non
     m_Metadata:
       m_Items: []
+  - m_Id: 176400341853757440
+    m_Localized: "{0} : votre table est pleine, aucune carte ne peut rena\xEEtre."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 176400347566399488
+    m_Localized: "{0} : aucun partisan dans votre cimeti\xE8re."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 176400349973929984
+    m_Localized: "{0} : aucune carte \xE0 sacrifier."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 176400351827812352
+    m_Localized: "{0} : aucune carte \xE0 copier."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

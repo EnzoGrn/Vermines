@@ -56,6 +56,14 @@ public static class GameEvents
 
     // --- CARD EFFECTS ---
     public static readonly TrackedEvent<ICard> OnEffectSelectCard = new("OnEffectSelectCard");
+
+    /// <summary>
+    /// Raised when an effect resolves without doing anything because it has no
+    /// valid target. Arguments: the card whose effect was skipped, and the
+    /// EffectTable localization key of the reason.
+    /// </summary>
+    public static readonly TrackedEvent<ICard, string> OnEffectSkipped = new("OnEffectSkipped");
+
     public static readonly TrackedEvent<ICard> OnCardReborned = new("OnCardReborned");
 
     // --- DISCARD PILE ---

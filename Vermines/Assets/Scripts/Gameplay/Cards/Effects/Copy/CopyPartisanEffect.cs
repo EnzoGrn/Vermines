@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using OMGG.Chronicle;
 using UnityEngine;
@@ -48,10 +48,30 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        public override bool CanBePlayed(PlayerRef player, out string reasonKey)
+        {
+            PlayerController controller = Context.NetworkGame.GetPlayer(player);
+
+            if (EffectCandidates.ForCopyPartisan(Context, CardType.Partisan, Card).Count == 0)
+            {
+                reasonKey = "skipped.copy_no_target";
+
+                return false;
+            }
+
+            return base.CanBePlayed(player, out reasonKey);
+        }
+
         public override void Play(PlayerRef player)
         {
             if (player != Context.Runner.LocalPlayer)
                 return;
+            if (!CanBePlayed(player, out string reasonKey))
+            {
+                GameEvents.OnEffectSkipped.Invoke(Card, reasonKey);
+
+                return;
+            }
             if (UIContextManager.Instance) {
                 CardSelectedEffectContext cardCopyEffectContext = new(CardType.Partisan, Card);
                 CopyContext               copyContext           = new(cardCopyEffectContext);

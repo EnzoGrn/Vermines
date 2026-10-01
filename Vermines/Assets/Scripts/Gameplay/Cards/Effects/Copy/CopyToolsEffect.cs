@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -50,6 +50,11 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             if (player != Context.Runner.LocalPlayer)
                 return;
+            if (EffectCandidates.ForCopyTool(Context, CardType.Tools, Card).Count == 0)
+            {
+                GameEvents.OnEffectSkipped.Invoke(Card, "skipped.copy_no_target");
+                return;
+            }
             if (UIContextManager.Instance) {
                 CardSelectedEffectContext cardCopyEffectContext = new(CardType.Tools, Card);
 

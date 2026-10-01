@@ -1,12 +1,13 @@
 using Fusion;
-using UnityEngine;
 using System.Collections.Generic;
-using Vermines.UI.Plugin;
-using Vermines.UI;
-using Vermines.CardSystem.Enumerations;
-using Vermines.Player;
-using Vermines.UI.Shop;
+using UnityEngine;
 using Vermines.CardSystem.Elements;
+using Vermines.CardSystem.Enumerations;
+using Vermines.Gameplay.Cards.Effect;
+using Vermines.Player;
+using Vermines.UI;
+using Vermines.UI.Plugin;
+using Vermines.UI.Shop;
 
 public class RebornEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginParam<ICard> {
 
@@ -70,10 +71,8 @@ public class RebornEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginPar
 
     public virtual List<ShopCardEntry> GetEntries()
     {
-        foreach (var card in PlayerController.Local.Graveyard) {
-            if (card.Data.Type == CardTypeTrigger)
-                currentEntries.Add(new ShopCardEntry(card));
-        }
+        foreach (ICard card in EffectCandidates.ForReborn(PlayerController.Local, CardTypeTrigger))
+            currentEntries.Add(new ShopCardEntry(card));
 
         return currentEntries;
     }

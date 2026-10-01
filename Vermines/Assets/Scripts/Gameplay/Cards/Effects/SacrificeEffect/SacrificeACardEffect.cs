@@ -1,11 +1,12 @@
+using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
-using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Sacrifice/Sacrifice cards.")]
@@ -56,14 +57,29 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        public override bool CanBePlayed(PlayerRef player, out string reasonKey)
+        {
+            PlayerController controller = Context.NetworkGame.GetPlayer(player);
+            if (controller.PlayedCards.Count == 0)
+            {
+                reasonKey = "skipped.remove_no_target";
+                return false;
+            }
+            reasonKey = null;
+            return true;
+        }
+
         public override void Play(PlayerRef playerRef)
         {
             PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
-            // Check if their is card to sacrifice.
-            if (player.PlayedCards.Count == 0) {
-                base.Play(playerRef);
-            } else if (playerRef == Context.Runner.LocalPlayer) {
+            if (!CanBePlayed(playerRef, out string reasonKey)) {
+                GameEvents.OnEffectSkipped.Invoke(Card, reasonKey);
+
+                return;
+            }
+
+            if (playerRef == Context.Runner.LocalPlayer) {
                 UIContextManager.Instance.PushContext<SacrificeContext>();
                 GameEvents.OnCardSacrificedRequested.AddListener(OnSacrificed);
             }

@@ -1,12 +1,13 @@
+using Fusion;
+using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
-using Vermines.UI.Plugin;
-using Fusion;
 using Vermines.CardSystem.Enumerations;
-using Vermines.UI.Card;
-using System.Collections.Generic;
-using Vermines.Player;
 using Vermines.Core.Scene;
+using Vermines.Gameplay.Cards.Effect;
+using Vermines.Player;
+using Vermines.UI.Card;
+using Vermines.UI.Plugin;
 using Vermines.UI.Shop;
 
 namespace Vermines.UI.Screen
@@ -193,34 +194,11 @@ namespace Vermines.UI.Screen
 
         protected void GetCardFromType(CardType type)
         {
-            PlayerController player = PlayerController.Local;
-
             currentEntries.Clear();
             currentPage = 0;
 
-            foreach (var card in player.Hand)
-            {
-                if (card.Data.Type == type)
-                    currentEntries.Add(new ShopCardEntry(card));
-            }
-
-            foreach (var card in player.Equipments)
-            {
-                if (card.Data.Type == type)
-                    currentEntries.Add(new ShopCardEntry(card));
-            }
-
-            foreach (var card in player.PlayedCards)
-            {
-                if (card.Data.Type == type)
-                    currentEntries.Add(new ShopCardEntry(card));
-            }
-
-            foreach (var card in player.Discard)
-            {
-                if (card.Data.Type == type)
-                    currentEntries.Add(new ShopCardEntry(card));
-            }
+            foreach (ICard card in EffectCandidates.ForRemove(PlayerController.Local, type))
+                currentEntries.Add(new ShopCardEntry(card));
         }
 
         #endregion

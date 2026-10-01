@@ -1,19 +1,15 @@
-using Vermines.CardSystem.Elements;
-using Vermines.ShopSystem.Data;
-using Vermines.UI.Shop;
 using System.Collections.Generic;
+using Vermines.CardSystem.Elements;
+using Vermines.Gameplay.Cards.Effect;
 using Vermines.Player;
+using Vermines.UI.Shop;
 
 public class CopyEffectToolsPlugin : CopyEffectPlugin {
 
     public override List<ShopCardEntry> GetEntries()
     {
-        MarketSection market = (MarketSection)PlayerController.Local.Context.GameplayMode.Shop.Sections[Vermines.ShopSystem.Enumerations.ShopType.Market];
-        
-        foreach (ICard card in market) {
-            if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
-                currentEntries.Add(new ShopCardEntry(card));
-        }
+        foreach (ICard card in EffectCandidates.ForCopyTool(PlayerController.Local.Context, CardTypeTrigger, activatedCard))
+            currentEntries.Add(new ShopCardEntry(card));
 
         return currentEntries;
     }

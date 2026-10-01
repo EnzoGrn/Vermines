@@ -71,10 +71,30 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        public override bool CanBePlayed(PlayerRef player, out string reasonKey)
+        {
+            PlayerController controller = Context.NetworkGame.GetPlayer(player);
+
+            if (EffectCandidates.ForRemove(controller, _CardType).Count == 0)
+            {
+                reasonKey = "skipped.remove_no_target";
+
+                return false;
+            }
+
+            return base.CanBePlayed(player, out reasonKey);
+        }
+
         public override void Play(PlayerRef player)
         {
             if (player != Context.Runner.LocalPlayer)
                 return;
+            if (!CanBePlayed(player, out string reasonKey))
+            {
+                GameEvents.OnEffectSkipped.Invoke(Card, reasonKey);
+
+                return;
+            }
             if (UIContextManager.Instance != null)
                 UIContextManager.Instance.PushContext(new RemoveToEarnContext(_CardType));
             GameEvents.OnCardSacrificedRequested.AddListener(CardToRemove);

@@ -118,7 +118,7 @@ namespace Vermines.UI.Screen
 
             GameEvents.OnPlayerUpdated.AddListener(OnLocalPlayerStatsChanged);
 
-            GameEvents.OnPhaseChanged.AddListener(UpdateUIForPhase);
+            GameEvents.OnPhaseChanged.AddListener(OnPhaseChanged);
             GameEvents.OnDiscardShuffled.AddListener(ClearDiscard);
 
             SetupCloseViewPopup();
@@ -166,6 +166,16 @@ namespace Vermines.UI.Screen
 
             HideUser();
 
+            GameEvents.OnCardClicked.RemoveListener(OnCardClicked);
+        }
+
+        private void OnDestroy()
+        {
+            GameEvents.OnCardSacrificed.RemoveListener(OnCardSacrificed);
+            GameEvents.OnCardReborned.RemoveListener(OnCardReborned);
+            GameEvents.OnPlayerUpdated.RemoveListener(OnLocalPlayerStatsChanged);
+            GameEvents.OnPhaseChanged.RemoveListener(OnPhaseChanged);
+            GameEvents.OnDiscardShuffled.RemoveListener(ClearDiscard);
             GameEvents.OnCardClicked.RemoveListener(OnCardClicked);
         }
 
@@ -278,20 +288,25 @@ namespace Vermines.UI.Screen
             slot.ResetSlot();
         }
 
-        public void UpdateUIForPhase(PhaseType phase)
+        private void OnPhaseChanged(PhaseType phase)
         {
-            if (phase == PhaseType.Sacrifice && !IsMyTurn())
-                return;
-            string key = phase switch
-            {
-                PhaseType.Sacrifice => "table.sacrifice_text",
-                _ => "table.default_text"
-            };
+            // A phase change always returns the table to its default mode.
+            SetSacrificeMode(false);
+        }
 
-            string localizedText = LocalizePhase(key);
+        /// <summary>
+        /// Sacrifice is no longer a phase: it is a temporary table mode entered
+        /// by a sacrifice effect (currently through SacrificeContext).
+        /// </summary>
+        public void SetSacrificeMode(bool active)
+        {
+            if (active && !IsMyTurn())
+                return;
+
+            string localizedText = LocalizePhase(active ? "table.sacrifice_text" : "table.default_text");
             tableText.text = string.IsNullOrEmpty(localizedText) ? "Unknown" : localizedText;
 
-            SetDiscardZoneInteractable(phase != PhaseType.Sacrifice);
+            SetDiscardZoneInteractable(!active);
         }
 
         private string LocalizePhase(string key)
@@ -328,7 +343,7 @@ namespace Vermines.UI.Screen
             SceneContext context = PlayerController.Local.Context;
             PhaseManager phaseManager = context.GameplayMode.PhaseManager;
 
-            if (phaseManager.CurrentPhase == PhaseType.Sacrifice || UIContextManager.Instance.IsInContext<SacrificeContext>())
+            if (UIContextManager.Instance.IsInContext<SacrificeContext>())
                 Controller.ShowDualPopup(new SacrificeStrategy(card));
 
             if (phaseManager.CurrentPhase == PhaseType.Gain)
@@ -339,6 +354,13 @@ namespace Vermines.UI.Screen
                         continue;
                     if (card.HasBeenActivatedThisTurn)
                         return;
+                    if (!effect.CanBePlayed(PlayerController.Local.Object.InputAuthority, out string reason))
+                    {
+                        GameEvents.OnEffectSkipped.Invoke(card, reason);
+
+                        return;
+                    }
+
                     Controller.ShowDualPopup(new PlayCardEffectStrategy(effect, card));
 
                     return;

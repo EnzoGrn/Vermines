@@ -22,7 +22,7 @@
 ///
 /// 3. "Toggle state on an already-visible screen" - for contexts that piggy-
 ///    back on a screen that's shown independently of this context (e.g.
-///    SacrificeContext calls GameplayUITable.UpdateUIForPhase(...) rather
+///    SacrificeContext calls GameplayUITable.SetSacrificeMode(...) rather
 ///    than showing/hiding a screen itself). Rare - most cases fit #1 or #2.
 ///
 /// If a context needs no constructor arguments, it can be pushed via

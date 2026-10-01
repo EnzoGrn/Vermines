@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Vermines.UI.Screen;
 using Vermines.UI;
 
@@ -12,7 +12,7 @@ public class SacrificeContext : IUIContext
         if (gameplayUIController != null)
         {
             tableScreen = gameplayUIController.Get<GameplayUITable>();
-            tableScreen.UpdateUIForPhase(Vermines.Gameplay.Phases.Enumerations.PhaseType.Sacrifice);
+            tableScreen.SetSacrificeMode(true);
             gameplayUIController.Show(tableScreen);
         }
     }
@@ -25,7 +25,7 @@ public class SacrificeContext : IUIContext
         if (gameplayUIController != null)
         {
             tableScreen = gameplayUIController.Get<GameplayUITable>();
-            tableScreen.UpdateUIForPhase(Vermines.Gameplay.Phases.Enumerations.PhaseType.Action);
+            tableScreen.SetSacrificeMode(false);
         }
     }
 
