@@ -92,13 +92,12 @@ namespace Vermines.Gameplay.Phases
         public void OnGameStart()
         {
             CurrentPhase = _PhaseOrder[0];
+
             if (HasStateAuthority)
             {
-                if (_TurnTimer != null)
-                    _TurnTimer.Begin();
-
-                RPC_ProcessPhase(CurrentPhase, Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex));
+                RPC_TurnAnnounced();
             }
+
             GameEvents.OnGameInitialized.RemoveListener(OnGameStart);
         }
 

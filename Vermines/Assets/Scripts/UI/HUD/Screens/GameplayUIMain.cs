@@ -90,6 +90,9 @@ namespace Vermines.UI.Screen
 
             GameEvents.OnPhaseChanged.AddListener(UpdateTurnButton);
             GameEvents.OnCardClicked.AddListener(OnCardButtonPressed);
+
+            if (PlayerController.Local)
+                UpdateTurnButton(PlayerController.Local.Context.GameplayMode.PhaseManager.CurrentPhase);
         }
 
         /// <summary>
