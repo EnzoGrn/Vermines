@@ -41,8 +41,6 @@ namespace Vermines.Gameplay.Phases {
 
             StopEffects(player);
 
-            if (UIContextManager.Instance != null)
-                UIContextManager.Instance.ClearContext();
             OnPhaseEnding(playerRef, true); // Here true, because everyone know that the phase is over.
         }
 

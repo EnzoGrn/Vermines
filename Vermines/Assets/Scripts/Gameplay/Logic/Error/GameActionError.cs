@@ -1,11 +1,14 @@
 using UnityEngine;
 using Fusion;
 using System;
+using UnityEngine.Localization.Settings;
 
-namespace Vermines.Gameplay.Errors {
+namespace Vermines.Gameplay.Errors
+{
 
     [Serializable]
-    public struct GameActionError : INetworkStruct {
+    public struct GameActionError : INetworkStruct
+    {
 
         /// <summary>
         /// Error gravity (Minor, Major, Critical).
@@ -41,6 +44,15 @@ namespace Vermines.Gameplay.Errors {
         /// Concerned player (if applicable).
         /// </summary>
         public PlayerRef Target;
+
+        public static string Localize(GameActionError error)
+        {
+            return LocalizationSettings.StringDatabase.GetLocalizedString(
+                "Back-end Error",
+                error.MessageKey.ToString(),
+                error.MessageArgs.ToArray()
+            );
+        }
     }
 
     /// <summary>
@@ -48,7 +60,8 @@ namespace Vermines.Gameplay.Errors {
     /// This structure can hold up to 4 string arguments.
     /// </summary>
     [Serializable]
-    public struct GameActionErrorArgs : INetworkStruct {
+    public struct GameActionErrorArgs : INetworkStruct
+    {
 
         public NetworkString<_16> Arg0;
         public NetworkString<_16> Arg1;
@@ -57,7 +70,8 @@ namespace Vermines.Gameplay.Errors {
 
         public GameActionErrorArgs(string[] args)
         {
-            if (args.Length > 4) {
+            if (args.Length > 4)
+            {
                 Debug.LogWarning(
                     $"GameActionErrorArgs only supports up to 4 arguments, but {args.Length} were provided." +
                      " Extra arguments will be ignored."
@@ -90,7 +104,8 @@ namespace Vermines.Gameplay.Errors {
 
         public void Set(int index, string value)
         {
-            switch (index) {
+            switch (index)
+            {
                 case 0:
                     Arg0 = value;
                     break;

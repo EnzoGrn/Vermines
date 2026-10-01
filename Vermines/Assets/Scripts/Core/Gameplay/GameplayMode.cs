@@ -37,6 +37,9 @@ namespace Vermines.Core {
         public int MaxEloquence = 20;
         public int BonusSoulsPerFamilyCardSacrified = 2;
 
+        /// <summary>Seconds each player has per turn. 0 disables the timer.</summary>
+        public int TurnTimerSeconds = 120;
+
         private DefaultPlayerComparer _PlayerComparer = new();
 
         public PhaseManager PhaseManager;
@@ -344,7 +347,7 @@ namespace Vermines.Core {
         public virtual void OnCardPlayed(PlayerRef player, int cardID) { }
         public virtual void OnDiscardCard(PlayerRef player, int cardID, bool hasEffect = true) { }
 
-        public virtual void OnCardSacrified(PlayerRef player, int cardID) { }
+        public virtual void OnCardSacrificed(PlayerRef player, int cardID) { }
 
         public virtual void OnCardRecycled(PlayerRef player, int cardID) { }
 

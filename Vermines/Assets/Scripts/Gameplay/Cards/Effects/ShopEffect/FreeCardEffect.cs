@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -79,8 +79,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(true);
 
             if (player == PlayerController.Local.Object.InputAuthority) {
-                if (UIContextManager.Instance != null)
-                    UIContextManager.Instance.PushContext(new FreeCardContext(_ShopTarget));
+                GameEvents.OnShopOpenRequested.Invoke(_ShopTarget);
                 GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
                 GameEvents.OnCardPurchased.AddListener(OnBuy);
             }
@@ -106,7 +105,6 @@ namespace Vermines.Gameplay.Cards.Effect {
                 Stop(player);
 
                 if (player == PlayerController.Local.Object.InputAuthority) {
-                    UIContextManager.Instance.PopContext();
 
                     GameEvents.OnCardPurchaseRequested.RemoveListener(OnCardPurchaseRequested);
                     GameEvents.OnCardPurchased.RemoveListener(OnBuy);
@@ -117,6 +115,8 @@ namespace Vermines.Gameplay.Cards.Effect {
         public override void Stop(PlayerRef player)
         {
             Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(false);
+            GameEvents.OnCardPurchaseRequested.RemoveListener(OnCardPurchaseRequested);
+            GameEvents.OnCardPurchased.RemoveListener(OnBuy);
         }
 
         public override List<(string, Sprite)> Draw()

@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using UnityEngine;
 using Vermines.CardSystem.Data;
 using Vermines.CardSystem.Elements;
@@ -156,9 +156,6 @@ namespace Vermines.UI.Plugin
 
         #region Methods
 
-        /// <summary>
-        /// Clears all text fields in the popup.
-        /// </summary>
         private void ClearUI()
         {
             nameText.text = string.Empty;
@@ -183,6 +180,11 @@ namespace Vermines.UI.Plugin
 
             if (nameText) nameText.text = card.Data.Name;
 
+            // NOTE: concatenates ALL effect descriptions with no filtering by
+            // type - if a card mixes an actionable effect with passive/
+            // reactive ones (OnOtherSacrifice, OnOtherDiscard, etc.), all of
+            // them show up here together. Flagged, not changed - no concrete
+            // failing example confirmed yet.
             if (descriptionText)
             {
                 foreach (var effect in card.Data.Effects)
@@ -201,8 +203,6 @@ namespace Vermines.UI.Plugin
                 typeIcon.sprite = UISpriteLoader.GetDefaultSprite(card.Data.Type, card.Data.Family, "Icon");
 
             DisplayCard(card);
-
-            Debug.Log($"[CardPopupBase] Setting up with card: {card.Data.Name}");
         }
 
         protected virtual void OnConfirm() { }
@@ -216,7 +216,13 @@ namespace Vermines.UI.Plugin
             cancel.onClick.RemoveAllListeners();
             cancel.onClick.AddListener(OnCancel);
 
-            confirmButton.interactable = PlayerController.Local.Context.GameplayMode.IsMyTurn;
+            // FIX: was an unguarded PlayerController.Local.Context... chain -
+            // would NRE if this popup is ever shown before the local player
+            // is ready (same init-race family as GainPhase/PlayerBannerPlugin
+            // earlier this session), instead of just leaving the button in
+            // its default interactable state.
+            if (PlayerController.Local != null)
+                confirmButton.interactable = PlayerController.Local.Context.GameplayMode.IsMyTurn;
         }
 
         #endregion

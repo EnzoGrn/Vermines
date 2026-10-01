@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -81,7 +81,7 @@ namespace Vermines.UI.Screen
 
             ShowUser();
 
-            GameEvents.OnCardClickedInShopWithSlotIndex.AddListener(OnShopCardClicked);
+            GameEvents.OnShopSlotClicked.AddListener(OnShopCardClicked);
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Vermines.UI.Screen
         public void OnDoneButtonPressed()
         {
             onDoneCallback?.Invoke(shopReplacements);
-            GameEvents.OnCardClickedInShopWithSlotIndex.RemoveListener(OnShopCardClicked);
+            GameEvents.OnShopSlotClicked.RemoveListener(OnShopCardClicked);
             Controller.Hide();
         }
 

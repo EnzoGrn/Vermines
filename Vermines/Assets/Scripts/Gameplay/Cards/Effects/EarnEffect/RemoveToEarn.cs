@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -71,12 +71,31 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        public override bool CanBePlayed(PlayerRef player, out string reasonKey)
+        {
+            PlayerController controller = Context.NetworkGame.GetPlayer(player);
+
+            if (EffectCandidates.ForRemove(controller, _CardType).Count == 0)
+            {
+                reasonKey = "skipped.remove_no_target";
+
+                return false;
+            }
+
+            return base.CanBePlayed(player, out reasonKey);
+        }
+
         public override void Play(PlayerRef player)
         {
             if (player != Context.Runner.LocalPlayer)
                 return;
-            if (UIContextManager.Instance != null)
-                UIContextManager.Instance.PushContext(new RemoveToEarnContext(_CardType));
+            if (!CanBePlayed(player, out string reasonKey))
+            {
+                GameEvents.OnEffectSkipped.Invoke(Card, reasonKey);
+
+                return;
+            }
+            GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Remove, _CardType, Card));
             GameEvents.OnCardSacrificedRequested.AddListener(CardToRemove);
         }
 
@@ -88,13 +107,12 @@ namespace Vermines.Gameplay.Cards.Effect {
                 return;
             }
 
-            if (UIContextManager.Instance != null)
-                UIContextManager.Instance.PopContextOfType<RemoveToEarnContext>();
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Remove);
             GameEvents.OnCardSacrificedRequested.RemoveListener(CardToRemove);
 
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
-            player.OnCardSacrified(card.ID);
+            player.OnCardSacrificed(card.ID);
             player.NetworkEventCardEffect(Card == null ? -1 : Card.ID);
         }
 
