@@ -71,6 +71,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Play(PlayerRef playerRef)
         {
+            Debug.Log($"[SACRIFICE] Play player={playerRef} local={Context.Runner.LocalPlayer} played={Context.NetworkGame.GetPlayer(playerRef).PlayedCards.Count}");
             PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
             if (!CanBePlayed(playerRef, out string reasonKey))
@@ -83,6 +84,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
 
             if (playerRef == Context.Runner.LocalPlayer) {
+                Debug.Log("[SACRIFICE] raising prompt");
+                GameEvents.OnEffectPromptRequested.PrintListeners();
                 GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Sacrifice, CardType.None, Card));
                 GameEvents.OnCardSacrificedRequested.AddListener(OnSacrificed);
             }

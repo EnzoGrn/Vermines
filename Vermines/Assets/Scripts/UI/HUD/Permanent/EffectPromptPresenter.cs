@@ -54,13 +54,11 @@ namespace Vermines.UI
             switch (prompt.Kind)
             {
                 case EffectPromptKind.Reborn:
-                    _Controller.ShowWithParams<GameplayUIRebornEffect, CardSelectedEffectContext>(
-                        new CardSelectedEffectContext(prompt.CardType, prompt.Source), last);
+                    _Controller.ShowWithParams<GameplayUIRebornEffect, EffectPrompt>(prompt, last);
                     break;
 
                 case EffectPromptKind.Copy:
-                    _Controller.ShowWithParams<GameplayUICopyEffect, CardSelectedEffectContext>(
-                        new CardSelectedEffectContext(prompt.CardType, prompt.Source), last);
+                    _Controller.ShowWithParams<GameplayUICopyEffect, EffectPrompt>(prompt, last);
                     break;
 
                 case EffectPromptKind.Remove:

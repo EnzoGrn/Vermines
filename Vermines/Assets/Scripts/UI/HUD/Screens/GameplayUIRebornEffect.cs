@@ -4,6 +4,7 @@ using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Core.Scene;
+using Vermines.Gameplay.Cards.Effect;
 using Vermines.Player;
 using Vermines.UI.Card;
 using Vermines.UI.Plugin;
@@ -13,7 +14,7 @@ namespace Vermines.UI.Screen {
 
     using Button = UnityEngine.UI.Button;
 
-    public partial class GameplayUIRebornEffect : GameplayUIScreen, IParamReceiver<CardSelectedEffectContext>, ICardClickReceiver {
+    public partial class GameplayUIRebornEffect : GameplayUIScreen, IParamReceiver<EffectPrompt>, ICardClickReceiver {
 
         #region Attributes
 
@@ -129,13 +130,14 @@ namespace Vermines.UI.Screen {
         /// <summary>
         /// Set the callback to be called when the effect is done.
         /// </summary>
-        /// <param name="onDone">The callback to be called when the effect is done.</param>
-        public void SetParam(CardSelectedEffectContext cardContext)
+        /// <param name="prompt">The prompt containing the card type and source card.</param>
+        public void SetParam(EffectPrompt prompt)
         {
-            _deckType  = cardContext.Type;
-            activeCard = cardContext.Card;
+            _deckType = prompt.CardType;
+            activeCard = prompt.Source;
 
-            foreach (var plugin in Plugins) {
+            foreach (var plugin in Plugins)
+            {
                 if (plugin is RebornEffectPlugin rebornPlugin && rebornPlugin.CardTypeTrigger == _deckType)
                     rebornPlugin.SetParam(activeCard);
             }

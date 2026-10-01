@@ -170,13 +170,6 @@ namespace Vermines.UI.Screen
             SceneContext context = PlayerController.Local.Context;
             PhaseManager phaseManager = context.GameplayMode.PhaseManager;
 
-            if (phaseManager.CurrentPhase == PhaseType.Sacrifice)
-            {
-                Controller.ShowDualPopup(new SacrificeSkipStrategy());
-
-                return;
-            }
-
             if (context.HandManager.HasCards(true) && phaseManager.CurrentPhase == PhaseType.Action)
             {
                 Controller.ShowDualPopup(new DefaultDiscardStrategy());

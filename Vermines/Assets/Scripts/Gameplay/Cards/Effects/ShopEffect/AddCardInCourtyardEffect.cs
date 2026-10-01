@@ -62,10 +62,6 @@ namespace Vermines.Gameplay.Cards.Effect {
                 // In this context add a logic for when one of the deck is empty or both.
                 // 1 Deck empty can't be choosen
                 // Both deck empty, close context
-
-                // -- Example
-                // UIContextManager.Instance.PushContext(new AddCardInCourtyardContext(AddCard));
-
                 AddCard(1);
             }
         }

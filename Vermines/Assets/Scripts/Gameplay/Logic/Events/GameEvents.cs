@@ -32,14 +32,13 @@ public static class GameEvents
 
     // --- CARD SACRIFICE ---
     public static readonly TrackedEvent<ICard> OnCardSacrificedRequested = new("OnCardSacrificedRequested");
-    public static readonly TrackedEvent<ICard> OnCardSacrificedRefused = new("OnCardSacrificedRefused");
+
     public static readonly TrackedEvent<ICard> OnCardSacrificed = new("OnCardSacrificed");
 
     // --- CARD RECYCLING ---
     public static readonly TrackedEvent<ICard> OnCardRecycled = new("OnCardRecycled");
 
     // --- CARD DISCARD ---
-    public static readonly TrackedEvent<ICard> OnCardDiscardedRefused = new("OnCardDiscardedRefused");
     public static readonly TrackedEvent<ICard> OnCardDiscarded = new("OnCardDiscarded");
 
     // --- CARD UI EVENTS ---

@@ -26,16 +26,10 @@ namespace Vermines.UI.Card
         protected virtual void Awake()
         {
             slot = GetComponent<CardSlotBase>();
-
-            // Single, stable subscription: set up once, torn down once.
-            // Unlike the previous version, no more dynamic subscription
-            // inside OnDrop().
-            GameEvents.OnCardPlayedRefused.AddListener(OnActionRefused);
         }
 
         protected virtual void OnDestroy()
         {
-            GameEvents.OnCardPlayedRefused.RemoveListener(OnActionRefused);
         }
 
         #endregion

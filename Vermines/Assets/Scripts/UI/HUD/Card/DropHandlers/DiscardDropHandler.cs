@@ -15,15 +15,11 @@ namespace Vermines.UI.Card
             base.Awake();
 
             slot = GetComponent<CardSlotBase>();
-
-            GameEvents.OnCardDiscardedRefused.AddListener(OnDiscardActionRefused);
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-
-            GameEvents.OnCardDiscardedRefused.RemoveListener(OnDiscardActionRefused);
         }
 
         public override void OnDrop(PointerEventData eventData)
