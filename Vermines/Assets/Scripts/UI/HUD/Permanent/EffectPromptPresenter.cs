@@ -95,7 +95,10 @@ namespace Vermines.UI
         private void OnShopOpenRequested(ShopType shopType)
         {
             if (_Controller == null)
+            {
+                Debug.LogError("EffectPromptPresenter: GameplayUIController is null, cannot open shop.");
                 return;
+            }
 
             _Controller.GetActiveScreen(out GameplayUIScreen last);
             _Controller.ShowWithParams<GameplayUIShop, ShopType>(shopType, last);

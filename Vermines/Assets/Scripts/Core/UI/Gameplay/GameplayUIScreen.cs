@@ -129,7 +129,6 @@ namespace Vermines.UI
         /// </summary>
         public virtual void Hide()
         {
-            Debug.Log($"[HIDE] {GetType().Name}\n{StackTraceUtility.ExtractStackTrace()}", this);
             if (_Animator != null && _Animator.gameObject.activeInHierarchy && _Animator.HasState(0, HideAnimHash))
             {
                 if (_HideCoroutine != null)

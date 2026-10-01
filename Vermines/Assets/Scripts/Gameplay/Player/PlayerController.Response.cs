@@ -193,7 +193,6 @@ namespace Vermines.Player {
                 }
             }
 
-            Debug.Log($"[DISCARD] {UserID} card={cardId} hasChoice={card.Data.HasChoiceEffect(EffectType.Discard)} frame={Time.frameCount}");
             if (card.Data.HasChoiceEffect(EffectType.Discard)) {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {
                     GameplayUIController uiController = GameplayUI;
@@ -359,7 +358,6 @@ namespace Vermines.Player {
                 if (uiController != null)
                     uiController.Hide<GameplayUIChoiceEffect>();
             }
-            Debug.Log($"[EFFECT-CHOSEN] {UserID} card={cardId} index={effectIndex} effectType={card.Data.Effects[effectIndex].Type} frame={Time.frameCount}");
             card.Data.Effects[effectIndex].Play(Object.InputAuthority);
         }
     }

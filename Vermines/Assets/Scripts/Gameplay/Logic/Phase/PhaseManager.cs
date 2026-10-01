@@ -196,8 +196,6 @@ namespace Vermines.Gameplay.Phases
             } else {
                 CurrentPhase = GetNextPhase();
 
-                Debug.Log($"[SERVER]: Next phase is {CurrentPhase}.");
-
                 RPC_UpdatePhaseUI();
                 RPC_ProcessPhase(CurrentPhase, Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex));
             }

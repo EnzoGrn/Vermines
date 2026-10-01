@@ -821,8 +821,6 @@ namespace Vermines.Player {
             if (string.IsNullOrEmpty(ids))
                 return;
 
-            Debug.Log($"[REVEAL] {UserID} ids={ids} localPlayer={Runner.LocalPlayer}");
-
             string[] parts = ids.Split(',');
 
             for (int i = 0; i < parts.Length; i++)
@@ -885,7 +883,6 @@ namespace Vermines.Player {
 
         public void OnRequestNewCardInCourtyard(int level)
         {
-            Debug.Log($"[CHAIN] OnRequestNewCardInCourtyard about to call RPC. Context={(Context == null ? "NULL" : "OK")} NetworkGame={(Context?.NetworkGame == null ? "NULL" : "OK")}");
             Context.NetworkGame.RPC_AddCardInCourtyard(Object.InputAuthority.RawEncoded, level);
         }
 

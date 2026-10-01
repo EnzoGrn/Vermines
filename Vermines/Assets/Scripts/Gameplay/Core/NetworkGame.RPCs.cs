@@ -20,7 +20,6 @@ namespace Vermines.Core {
         [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
         public void RPC_AddCardInCourtyard(int playerID, int level, RpcInfo info = default)
         {
-            Debug.Log($"[CHAIN] NetworkGame.RPC_AddCardInCourtyard received. playerID={playerID} level={level}");
             if (!IsRpcSourceValid(info, playerID)) { Debug.Log("[CHAIN] REJECTED by IsRpcSourceValid"); return; }
             if (!IsGameplayReady()) { Debug.Log("[CHAIN] REJECTED by IsGameplayReady"); return; }
             _Gameplay.OnCardAddInCourtyard(PlayerRef.FromEncoded(playerID), level);
@@ -109,7 +108,6 @@ namespace Vermines.Core {
         [Rpc(RpcSources.All, RpcTargets.StateAuthority, Channel = RpcChannel.Reliable)]
         public void RPC_NetworkEventCardEffect(int playerID, int cardID, string data, RpcInfo info = default)
         {
-            Debug.Log($"[CHAIN] NetworkGame.RPC_NetworkEventCardEffect received. playerID={playerID} cardID={cardID} data={data}");
             if (!IsRpcSourceValid(info, playerID)) { Debug.Log("[CHAIN] REJECTED by IsRpcSourceValid"); return; }
             if (!IsGameplayReady()) { Debug.Log("[CHAIN] REJECTED by IsGameplayReady"); return; }
             _Gameplay.OnNetworkEventCardEffect(PlayerRef.FromEncoded(playerID), cardID, data);

@@ -27,11 +27,6 @@ namespace Vermines.UI.Screen
         [InlineHelp, SerializeField]
         protected UnityEngine.UI.Button _CloseButton;
 
-        [Header("Close View")]
-
-        [InlineHelp, SerializeField]
-        protected GameObject _CloseView;
-
         [Header("Zone Containers")]
 
         [SerializeField] protected Transform partisanSlotsContainer;
@@ -122,35 +117,6 @@ namespace Vermines.UI.Screen
 
             GameEvents.OnPhaseChanged.AddListener(OnPhaseChanged);
             GameEvents.OnDiscardShuffled.AddListener(ClearDiscard);
-
-            SetupCloseViewPopup();
-        }
-
-        private void SetupCloseViewPopup()
-        {
-            if (_CloseView == null)
-            {
-                Debug.LogErrorFormat(
-                    gameObject,
-                    "GameplayUIMain Critical Error: Missing 'DiscardAllView' reference on GameObject '{0}'.",
-                    gameObject.name
-                );
-                return;
-            }
-
-            PopupConfirm popupScript = _CloseView.GetComponent<PopupConfirm>();
-            popupScript.Setup(
-                "Pass the sacrifice phase?",
-                "Would you like to pass the sacrifice phase?",
-                onConfirm: () => {
-                    GameEvents.OnAttemptNextPhase.Invoke();
-                    popupScript.ForceClose();
-                },
-                onCancel: () => { }
-            );
-
-            popupScript.OnClosed += () => _CloseView.SetActive(false);
-            _CloseView.SetActive(false);
         }
 
         public override void Show()
@@ -160,6 +126,9 @@ namespace Vermines.UI.Screen
             ShowUser();
 
             GameEvents.OnCardClicked.AddListener(OnCardClicked);
+
+            // Catch up with a prompt that was raised before this screen was shown.
+            OnPromptStateChanged();
         }
 
         public override void Hide()
@@ -304,8 +273,8 @@ namespace Vermines.UI.Screen
 
 
         /// <summary>
-        /// Sacrifice is no longer a phase: it is a temporary table mode entered
-        /// by a sacrifice effect (currently through SacrificeContext).
+        /// Sacrifice is no longer a phase: it is a temporary table mode driven by
+        /// the pending Sacrifice prompt (see EffectPromptState).
         /// </summary>
         public void SetSacrificeMode(bool active)
         {
