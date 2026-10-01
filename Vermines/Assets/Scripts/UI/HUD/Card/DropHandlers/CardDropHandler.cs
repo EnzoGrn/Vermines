@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
+using Vermines.Gameplay.Cards.Effect;
 using Vermines.Player;
 using Vermines.UI.GameTable;
 
@@ -73,6 +74,14 @@ namespace Vermines.UI.Card
             if (card == null)
             {
                 drag.ReturnToOriginalPosition();
+
+                return;
+            }
+
+            if (EffectPromptState.IsActive(EffectPromptKind.Discard))
+            {
+                drag.ReturnToOriginalPosition();
+                EffectPromptState.BlockIfPending();
 
                 return;
             }

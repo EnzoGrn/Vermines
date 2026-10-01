@@ -72,9 +72,6 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         private void AddCard(int level)
         {
-            if (UIContextManager.Instance)
-                UIContextManager.Instance.PopContextOfType<ReplaceEffectContext>();
-
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
             player.StartCoroutine(DeferredAddCard(player, level));

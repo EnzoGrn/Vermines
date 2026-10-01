@@ -349,10 +349,9 @@ namespace Vermines.UI.Screen
 
             plugin.SetParam(card);
 
-            if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
-                SetupReplaceMode(plugin, card);
-            else
-                SetupPurchaseMode(plugin, card);
+            // TODO(old-rules): SetupReplaceMode is kept for a possible "old Vermines"
+            // mode but is not wired anymore (nothing enables it).
+            SetupPurchaseMode(plugin, card);
 
             plugin.Show(this);
         }

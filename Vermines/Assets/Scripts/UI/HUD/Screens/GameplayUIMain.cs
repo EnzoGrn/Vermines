@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.Localization;
 using Vermines.Gameplay.Phases;
 using Vermines.Gameplay.Phases.Enumerations;
-using Vermines.UI.Card;
 using Vermines.Player;
 using Vermines.CardSystem.Elements;
 using Vermines.Core.Scene;
@@ -144,10 +143,6 @@ namespace Vermines.UI.Screen
             return localized.GetLocalizedString();
         }
 
-        // Deduplicates OnTableButtonPressed/OnBookButtonPressed/
-        // OnRecycleButtonPressed, which all did the identical "show this
-        // screen unless already showing it" sequence, differing only by
-        // target type.
         private void ShowScreenIfNotAlreadyShown<T>() where T : GameplayUIScreen
         {
             Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
@@ -167,14 +162,9 @@ namespace Vermines.UI.Screen
         /// </summary>
         protected virtual void OnAttemptToNextPhase()
         {
-            //UIContextManager.Instance.ClearContext();
-
-            // FIX: was missing this guard, unlike UpdateTurnButton right
-            // above which guards the exact same PlayerController.Local
-            // dependency. Without it, a turn button that was never properly
-            // initialized (see header comment) could crash this handler with
-            // an NRE on click.
             if (!PlayerController.Local)
+                return;
+            if (EffectPromptState.BlockIfPending())
                 return;
 
             SceneContext context = PlayerController.Local.Context;

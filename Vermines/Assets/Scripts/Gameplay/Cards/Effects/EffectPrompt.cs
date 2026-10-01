@@ -3,15 +3,14 @@ using Vermines.CardSystem.Enumerations;
 
 namespace Vermines.Gameplay.Cards.Effect
 {
-    /// <summary>
-    /// The kind of choice an effect asks the local player to make.
-    /// One value per prompt screen; Copy and Remove will be added when migrated.
-    /// </summary>
     public enum EffectPromptKind
     {
         Reborn,
         Copy,
-        Remove
+        Remove,
+        Sacrifice,
+        Discard,
+        Spend
     }
 
     /// <summary>
@@ -24,11 +23,32 @@ namespace Vermines.Gameplay.Cards.Effect
         public readonly CardType CardType;
         public readonly ICard Source;
 
+        // Spend prompts only.
+        public readonly DataType DataToSpend;
+        public readonly DataType DataToEarn;
+        public readonly int Multiplicator;
+
         public EffectPrompt(EffectPromptKind kind, CardType cardType, ICard source)
         {
             Kind = kind;
             CardType = cardType;
             Source = source;
+            DataToSpend = default;
+            DataToEarn = default;
+            Multiplicator = 0;
         }
+
+        private EffectPrompt(ICard source, DataType dataToSpend, DataType dataToEarn, int multiplicator)
+        {
+            Kind = EffectPromptKind.Spend;
+            CardType = CardType.None;
+            Source = source;
+            DataToSpend = dataToSpend;
+            DataToEarn = dataToEarn;
+            Multiplicator = multiplicator;
+        }
+
+        public static EffectPrompt Spend(ICard source, DataType dataToSpend, DataType dataToEarn, int multiplicator)
+            => new EffectPrompt(source, dataToSpend, dataToEarn, multiplicator);
     }
 }

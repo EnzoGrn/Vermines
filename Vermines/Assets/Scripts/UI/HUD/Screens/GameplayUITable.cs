@@ -5,13 +5,14 @@ using UnityEngine.Localization;
 using Vermines.CardSystem.Data.Effect;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
+using Vermines.Core.Scene;
+using Vermines.Gameplay.Cards.Effect;
 using Vermines.Gameplay.Phases;
 using Vermines.Gameplay.Phases.Enumerations;
+using Vermines.Player;
 using Vermines.UI.Card;
 using Vermines.UI.GameTable;
 using Vermines.UI.Popup;
-using Vermines.Player;
-using Vermines.Core.Scene;
 
 namespace Vermines.UI.Screen
 {
@@ -104,6 +105,7 @@ namespace Vermines.UI.Screen
 
             GameEvents.OnCardSacrificed.AddListener(OnCardSacrificed);
             GameEvents.OnCardReborned.AddListener(OnCardReborned);
+            EffectPromptState.Changed += OnPromptStateChanged;
         }
 
         public override void Init()
@@ -177,6 +179,7 @@ namespace Vermines.UI.Screen
             GameEvents.OnPhaseChanged.RemoveListener(OnPhaseChanged);
             GameEvents.OnDiscardShuffled.RemoveListener(ClearDiscard);
             GameEvents.OnCardClicked.RemoveListener(OnCardClicked);
+            EffectPromptState.Changed -= OnPromptStateChanged;
         }
 
         #endregion
@@ -294,6 +297,12 @@ namespace Vermines.UI.Screen
             SetSacrificeMode(false);
         }
 
+        private void OnPromptStateChanged()
+        {
+            SetSacrificeMode(EffectPromptState.IsActive(EffectPromptKind.Sacrifice));
+        }
+
+
         /// <summary>
         /// Sacrifice is no longer a phase: it is a temporary table mode entered
         /// by a sacrifice effect (currently through SacrificeContext).
@@ -332,6 +341,9 @@ namespace Vermines.UI.Screen
 
         public virtual void OnBackButtonPressed()
         {
+            if (EffectPromptState.BlockIfPending())
+                return;
+
             Controller.Hide();
         }
 
@@ -343,8 +355,12 @@ namespace Vermines.UI.Screen
             SceneContext context = PlayerController.Local.Context;
             PhaseManager phaseManager = context.GameplayMode.PhaseManager;
 
-            if (UIContextManager.Instance.IsInContext<SacrificeContext>())
+            if (EffectPromptState.IsActive(EffectPromptKind.Sacrifice))
+            {
                 Controller.ShowDualPopup(new SacrificeStrategy(card));
+
+                return;
+            }
 
             if (phaseManager.CurrentPhase == PhaseType.Gain)
             {

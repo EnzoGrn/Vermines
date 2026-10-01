@@ -83,7 +83,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
 
             if (playerRef == Context.Runner.LocalPlayer) {
-                UIContextManager.Instance.PushContext<SacrificeContext>();
+                GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Sacrifice, CardType.None, Card));
                 GameEvents.OnCardSacrificedRequested.AddListener(OnSacrificed);
             }
         }
@@ -93,7 +93,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
             GameEvents.OnCardSacrificedRequested.RemoveListener(OnSacrificed);
-            UIContextManager.Instance.PopContext();
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Sacrifice);
 
             player.OnCardSacrificed(card.ID);
             player.NetworkEventCardEffect(Card == null ? -1 : Card.ID);

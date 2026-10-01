@@ -207,6 +207,9 @@ namespace Vermines.Player {
                         effect.Play(Object.InputAuthority);
                 }
             }
+            // Lets a pending forced-discard effect (DiscardCardEffect) continue.
+            if (Object.InputAuthority == Context.Runner.LocalPlayer)
+                GameEvents.OnCardDiscarded.Invoke(card);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

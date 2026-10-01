@@ -25,6 +25,9 @@ namespace Vermines.UI.Plugin
         /// </summary>
         public virtual void OnBackButtonPressed()
         {
+            if (EffectPromptState.BlockIfPending())
+                return;
+
             _ParentScreen.Controller.Hide();
 
             if (TryGetCamManager(out CamManager camManager))
@@ -35,11 +38,8 @@ namespace Vermines.UI.Plugin
 
         protected void TryNavigate(Action<CamManager> navigate)
         {
-            if (UIContextManager.Instance.IsInContext<ReplaceEffectContext>())
-            {
-                Debug.Log("[NavButtonPlugin] Ignoring nav button click while in ReplaceEffectContext.");
+            if (EffectPromptState.BlockIfPending())
                 return;
-            }
 
             _ParentScreen.Controller?.Hide();
 

@@ -72,7 +72,7 @@ namespace Vermines.UI.Plugin
             // TODO: This needs to be changed with Localization later, using SmartString
 
             // If we have a free context, we write "Free" instead of the cost
-            costText.text = UIContextManager.Instance.IsInContext<FreeCardContext>() && UIContextManager.Instance.GetContext<FreeCardContext>().ShopType == _shopType
+            costText.text = card.Data.IsFree
                 ? "Free"
                 : $"Cost: {card.Data.CurrentEloquence} eloquences";
 
@@ -88,11 +88,6 @@ namespace Vermines.UI.Plugin
             _onBuy?.Invoke(_cardData);
 
             Hide();
-
-            if (!_isReplace && UIContextManager.Instance.IsInContext<FreeCardContext>())
-            {
-                UIContextManager.Instance.PopContextOfType<FreeCardContext>();
-            }
 
             GetShopUIController()?.SetDialogueVisible(true);
         }

@@ -76,6 +76,19 @@ public static class GameEvents
     /// </summary>
     public static readonly TrackedEvent<EffectPromptKind> OnEffectPromptClosed = new("OnEffectPromptClosed");
 
+    /// <summary>
+    /// Raised by the Spend screen when the player presses Done, with the amount
+    /// typed. The effect validates it (the prompt stays open if it is invalid).
+    /// </summary>
+    public static readonly TrackedEvent<int> OnEffectSpendSubmitted = new("OnEffectSpendSubmitted");
+
+    /// <summary>
+    /// Raised by an effect that wants the local player to see a shop section
+    /// (e.g. a free card). Non-blocking: the player can leave the shop.
+    /// </summary>
+    public static readonly TrackedEvent<ShopType> OnShopOpenRequested = new("OnShopOpenRequested");
+
+
     public static readonly TrackedEvent<ICard> OnCardReborned = new("OnCardReborned");
 
     // --- DISCARD PILE ---
