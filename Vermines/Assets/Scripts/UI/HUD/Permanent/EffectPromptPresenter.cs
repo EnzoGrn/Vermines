@@ -27,6 +27,7 @@ namespace Vermines.UI
             GameEvents.OnEffectPromptClosed.AddListener(OnPromptClosed);
             GameEvents.OnShopOpenRequested.AddListener(OnShopOpenRequested);
             GameEvents.OnPhaseChanged.AddListener(OnPhaseChanged);
+            GameEvents.OnTurnTimerExpired.AddListener(OnTurnTimerExpired);
         }
 
         private void OnDestroy()
@@ -35,6 +36,7 @@ namespace Vermines.UI
             GameEvents.OnEffectPromptClosed.RemoveListener(OnPromptClosed);
             GameEvents.OnShopOpenRequested.RemoveListener(OnShopOpenRequested);
             GameEvents.OnPhaseChanged.RemoveListener(OnPhaseChanged);
+            GameEvents.OnTurnTimerExpired.RemoveListener(OnTurnTimerExpired);
 
             // The state is static: never let it leak across scene reloads.
             EffectPromptState.Clear();
@@ -110,5 +112,20 @@ namespace Vermines.UI
         {
             EffectPromptState.Clear();
         }
+
+        private void OnTurnTimerExpired()
+        {
+            bool pickerOpen = EffectPromptState.IsPending
+                && !EffectPromptState.IsActive(EffectPromptKind.Sacrifice)
+                && !EffectPromptState.IsActive(EffectPromptKind.Discard);
+
+            EffectPromptState.Clear();
+
+            // Board prompts live on the table (it stays open); picker prompts
+            // have their own screen, which must be closed.
+            if (pickerOpen && _Controller != null)
+                _Controller.Hide();
+        }
+
     }
 }

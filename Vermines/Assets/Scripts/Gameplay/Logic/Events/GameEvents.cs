@@ -25,6 +25,12 @@ public static class GameEvents
     public static readonly LatestValueEvent<PlayerRef, GainSummaryData> OnGainPhaseResolved = new("OnGainPhaseResolved");
     public static readonly TrackedEvent<GameActionError, string> OnActionRefused = new("OnActionRefused");
 
+    /// <summary>Whole seconds left in the current turn. -1 = no timer running.</summary>
+    public static readonly TrackedEvent<int> OnTurnTimerChanged = new("OnTurnTimerChanged");
+
+    /// <summary>Raised on every client when the turn is ended by the timer.</summary>
+    public static readonly TrackedEvent OnTurnTimerExpired = new("OnTurnTimerExpired");
+
     // --- CARD PLAYING ---
     public static readonly TrackedEvent<ICard> OnCardPlayedRequested = new("OnCardPlayedRequested");
     public static readonly TrackedEvent<ICard> OnCardPlayedRefused = new("OnCardPlayedRefused");

@@ -39,6 +39,8 @@ namespace Vermines.Gameplay.Phases
         private Dictionary<PhaseType, PhaseAsset> _Phases;
         public Dictionary<PhaseType, PhaseAsset> Phases => _Phases;
 
+        private TurnTimer _TurnTimer;
+
         #endregion
 
         #region Network Methods
@@ -56,6 +58,7 @@ namespace Vermines.Gameplay.Phases
 
         public void Initialize()
         {
+            _TurnTimer = GetComponent<TurnTimer>();
             SetUpPhases();
             SetUpUI();
             SetUpEvents();
@@ -91,6 +94,9 @@ namespace Vermines.Gameplay.Phases
             CurrentPhase = _PhaseOrder[0];
             if (HasStateAuthority)
             {
+                if (_TurnTimer != null)
+                    _TurnTimer.Begin();
+
                 RPC_ProcessPhase(CurrentPhase, Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex));
             }
             GameEvents.OnGameInitialized.RemoveListener(OnGameStart);
@@ -120,6 +126,9 @@ namespace Vermines.Gameplay.Phases
         public void NextTurn()
         {
             RPC_ResetCardActivations();
+
+            if (Runner.IsServer && _TurnTimer != null)
+                _TurnTimer.Stop();
 
             if (!Runner.IsServer)
                 return;
@@ -166,6 +175,8 @@ namespace Vermines.Gameplay.Phases
 
             if (!Runner.IsServer)
                 yield break;
+            if (_TurnTimer != null)
+                _TurnTimer.Begin();
             RPC_ProcessPhase(CurrentPhase, Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex));
         }
 
@@ -200,6 +211,29 @@ namespace Vermines.Gameplay.Phases
                 RPC_ProcessPhase(CurrentPhase, Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex));
             }
         }
+
+        /// <summary>
+        /// Server only. Called by the turn timer: jumps straight to the
+        /// Resolution phase so the turn still ends the normal way (end-of-turn
+        /// draw, effect cleanup, next player).
+        /// </summary>
+        public void ForceEndTurn()
+        {
+            if (!Runner.IsServer)
+                return;
+            // Resolution is instantaneous: if we are already there, the turn is ending.
+            if (CurrentPhase == PhaseType.None || CurrentPhase == PhaseType.Resolution)
+                return;
+
+            PlayerRef current = Context.GameplayMode.PlayerTurnOrder.Get(Context.GameplayMode.CurrentPlayerIndex);
+
+            CurrentPhase = PhaseType.Resolution;
+
+            RPC_TurnTimeExpired();
+            RPC_UpdatePhaseUI();
+            RPC_ProcessPhase(CurrentPhase, current);
+        }
+
 
         #region RPC
 
@@ -242,6 +276,19 @@ namespace Vermines.Gameplay.Phases
         public void RPC_ResetCardActivations()
         {
             ResetCardActivations();
+        }
+
+        [Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
+        public void RPC_TurnTimeExpired()
+        {
+            // The interrupted phase never reaches OnPhaseEnding: reset it here.
+            foreach (var phase in _Phases)
+            {
+                if (phase.Key != PhaseType.Resolution)
+                    phase.Value.Deinitialize();
+            }
+
+            GameEvents.OnTurnTimerExpired.Invoke();
         }
 
         #endregion
