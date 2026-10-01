@@ -79,13 +79,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
                 return;
             }
-            if (UIContextManager.Instance) {
-                CardSelectedEffectContext args = new(CardType.Partisan, Card);
-
-                CardRebornContext ctx = new(args);
-
-                UIContextManager.Instance.PushContext(ctx);
-            }
+            GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Reborn, CardType.Partisan, Card));
 
             GameEvents.OnEffectSelectCard.AddListener(Reborn);
         }
@@ -93,9 +87,8 @@ namespace Vermines.Gameplay.Cards.Effect {
         private void Reborn(ICard card)
         {
             GameEvents.OnEffectSelectCard.RemoveListener(Reborn);
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Reborn);
 
-            if (UIContextManager.Instance)
-                UIContextManager.Instance.PopContextOfType<CardRebornContext>();
             if (card.Data.Type != CardType.Partisan)
                 return;
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);

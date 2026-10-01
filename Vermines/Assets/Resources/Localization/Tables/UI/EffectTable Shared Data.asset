@@ -15,22 +15,6 @@ MonoBehaviour:
   m_TableCollectionName: EffectTable
   m_TableCollectionNameGuidString: 16d02b2cd5642754d91eabcf06221246
   m_Entries:
-  - m_Id: 90973626368
-    m_Key: cancel.title
-    m_Metadata:
-      m_Items: []
-  - m_Id: 209819230208
-    m_Key: cancel.message
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1153017536512
-    m_Key: cancel.confirmText
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1174404292608
-    m_Key: cancel.cancelText
-    m_Metadata:
-      m_Items: []
   - m_Id: 176400341853757440
     m_Key: skipped.table_full
     m_Metadata:

@@ -18,23 +18,6 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 90973626368
-    m_Localized: Cancel this effect?
-    m_Metadata:
-      m_Items: []
-  - m_Id: 209819230208
-    m_Localized: Are you sure you want to cancel this effect? You'll lose it this
-      round.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1174404292608
-    m_Localized: No
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1153017536512
-    m_Localized: Yes
-    m_Metadata:
-      m_Items: []
   - m_Id: 176400351827812352
     m_Localized: '{0}: No cards to copy.'
     m_Metadata:

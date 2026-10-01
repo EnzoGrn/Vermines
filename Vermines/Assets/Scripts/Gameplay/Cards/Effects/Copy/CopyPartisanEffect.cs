@@ -72,12 +72,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
                 return;
             }
-            if (UIContextManager.Instance) {
-                CardSelectedEffectContext cardCopyEffectContext = new(CardType.Partisan, Card);
-                CopyContext               copyContext           = new(cardCopyEffectContext);
-
-                UIContextManager.Instance.PushContext(copyContext);
-            }
+            GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Copy, CardType.Partisan, Card));
 
             GameEvents.OnEffectSelectCard.AddListener(CopiedEffect);
         }
@@ -99,7 +94,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         private void CopiedEffect(ICard card)
         {
             GameEvents.OnEffectSelectCard.RemoveListener(CopiedEffect);
-            UIContextManager.Instance.PopContext();
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Copy);
 
             if (card.Data.Type != CardType.Partisan)
                 return;

@@ -95,8 +95,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
                 return;
             }
-            if (UIContextManager.Instance != null)
-                UIContextManager.Instance.PushContext(new RemoveToEarnContext(_CardType));
+            GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Remove, _CardType, Card));
             GameEvents.OnCardSacrificedRequested.AddListener(CardToRemove);
         }
 
@@ -108,8 +107,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                 return;
             }
 
-            if (UIContextManager.Instance != null)
-                UIContextManager.Instance.PopContextOfType<RemoveToEarnContext>();
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Remove);
             GameEvents.OnCardSacrificedRequested.RemoveListener(CardToRemove);
 
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);

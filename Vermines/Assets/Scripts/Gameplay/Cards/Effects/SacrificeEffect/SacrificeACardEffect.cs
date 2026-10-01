@@ -73,11 +73,14 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
-            if (!CanBePlayed(playerRef, out string reasonKey)) {
-                GameEvents.OnEffectSkipped.Invoke(Card, reasonKey);
+            if (!CanBePlayed(playerRef, out string reasonKey))
+            {
+                if (playerRef == Context.Runner.LocalPlayer)
+                    GameEvents.OnEffectSkipped.Invoke(Card, reasonKey);
 
                 return;
             }
+
 
             if (playerRef == Context.Runner.LocalPlayer) {
                 UIContextManager.Instance.PushContext<SacrificeContext>();

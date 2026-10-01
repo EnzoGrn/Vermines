@@ -205,14 +205,6 @@ namespace Vermines.UI.Screen
 
         #region Events
 
-        /// <summary>
-        /// Is called when the <see cref="_CloseButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
-        public virtual void OnBackButtonPressed()
-        {
-            Controller.ShowDualPopup(new CancelEffectStrategy());
-        }
-
         public void OnCardClicked(ICard card, int slotId)
         {
             SceneContext context = PlayerController.Local.Context;

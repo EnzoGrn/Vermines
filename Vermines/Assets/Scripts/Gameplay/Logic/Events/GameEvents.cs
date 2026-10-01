@@ -2,6 +2,7 @@ using Fusion;
 using System;
 using System.Collections.Generic;
 using Vermines.CardSystem.Elements;
+using Vermines.Gameplay.Cards.Effect;
 using Vermines.Gameplay.Errors;
 using Vermines.Gameplay.Phases.Data;
 using Vermines.Gameplay.Phases.Enumerations;
@@ -63,6 +64,17 @@ public static class GameEvents
     /// EffectTable localization key of the reason.
     /// </summary>
     public static readonly TrackedEvent<ICard, string> OnEffectSkipped = new("OnEffectSkipped");
+
+    /// <summary>
+    /// Raised by an effect that needs a choice from the local player.
+    /// The UI (EffectPromptPresenter) decides which screen to show.
+    /// </summary>
+    public static readonly TrackedEvent<EffectPrompt> OnEffectPromptRequested = new("OnEffectPromptRequested");
+
+    /// <summary>
+    /// Raised by an effect once its choice is made, so the UI can close the prompt.
+    /// </summary>
+    public static readonly TrackedEvent<EffectPromptKind> OnEffectPromptClosed = new("OnEffectPromptClosed");
 
     public static readonly TrackedEvent<ICard> OnCardReborned = new("OnCardReborned");
 
