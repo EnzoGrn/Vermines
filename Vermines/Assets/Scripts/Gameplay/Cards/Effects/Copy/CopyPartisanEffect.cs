@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using OMGG.Chronicle;
 using UnityEngine;
@@ -48,16 +48,31 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        public override bool CanBePlayed(PlayerRef player, out string reasonKey)
+        {
+            PlayerController controller = Context.NetworkGame.GetPlayer(player);
+
+            if (EffectCandidates.ForCopyPartisan(Context, CardType.Partisan, Card).Count == 0)
+            {
+                reasonKey = "skipped.copy_no_target";
+
+                return false;
+            }
+
+            return base.CanBePlayed(player, out reasonKey);
+        }
+
         public override void Play(PlayerRef player)
         {
             if (player != Context.Runner.LocalPlayer)
                 return;
-            if (UIContextManager.Instance) {
-                CardSelectedEffectContext cardCopyEffectContext = new(CardType.Partisan, Card);
-                CopyContext               copyContext           = new(cardCopyEffectContext);
+            if (!CanBePlayed(player, out string reasonKey))
+            {
+                GameEvents.OnEffectSkipped.Invoke(Card, reasonKey);
 
-                UIContextManager.Instance.PushContext(copyContext);
+                return;
             }
+            GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Copy, CardType.Partisan, Card));
 
             GameEvents.OnEffectSelectCard.AddListener(CopiedEffect);
         }
@@ -79,7 +94,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         private void CopiedEffect(ICard card)
         {
             GameEvents.OnEffectSelectCard.RemoveListener(CopiedEffect);
-            UIContextManager.Instance.PopContext();
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Copy);
 
             if (card.Data.Type != CardType.Partisan)
                 return;

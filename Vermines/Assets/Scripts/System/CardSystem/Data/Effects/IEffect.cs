@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -124,6 +124,17 @@ namespace Vermines.CardSystem.Data.Effect {
         public virtual List<(string, Sprite)> Draw()
         {
             return new List<(string, Sprite)>();
+        }
+
+        /// <summary>
+        /// Whether this effect (and its sub-effect chain) currently has something to act on.
+        /// Used by the UI to hide unavailable choices, and by Play() as a safety net.
+        /// </summary>
+        public virtual bool CanBePlayed(PlayerRef player, out string reasonKey)
+        {
+            reasonKey = null;
+
+            return SubEffect == null || SubEffect.CanBePlayed(player, out reasonKey);
         }
 
         #endregion

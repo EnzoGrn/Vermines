@@ -37,22 +37,11 @@ namespace Vermines.Gameplay.Core {
 
         private void HandleError(GameActionError error)
         {
-            string localizedMessage = LocalizationSettings.StringDatabase.GetLocalizedString("Back-end Error", error.MessageKey.ToString(), error.MessageArgs.ToArray());
+            string localizedMessage = GameActionError.Localize(error);
 
             Debug.LogWarning($"[Error-{error.Scope}] {localizedMessage} (Loc: {error.Location}, Sev: {error.Severity})");
 
-            // TODO: Link to UI notification system
-
-            switch (error.Location) {
-                case ErrorLocation.Discard:
-                    ICard card = CardSetDatabase.Instance.GetCardByID(error.MessageArgs.Arg0.ToString());
-
-                    GameEvents.OnCardDiscardedRefused.Invoke(card);
-
-                    break;
-                default:
-                    break;
-            }
+            GameEvents.OnActionRefused.Invoke(error, localizedMessage);
         }
 
         private void SendError(GameActionError error)
@@ -282,7 +271,7 @@ namespace Vermines.Gameplay.Core {
                 __ObservedSouls += newValue - oldValue;
         }
 
-        public override void OnCardSacrified(PlayerRef playerSource, int cardID)
+        public override void OnCardSacrificed(PlayerRef playerSource, int cardID)
         {
             PlayerController player = Context.NetworkGame.GetPlayer(playerSource);
 

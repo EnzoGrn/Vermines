@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6596212885904025914}
   - component: {fileID: 2002843721064209688}
   - component: {fileID: 9082486691376895040}
+  - component: {fileID: 5978583981562275325}
   m_Layer: 0
   m_Name: StandartGameplay
   m_TagString: Untagged
@@ -96,3 +97,16 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 6596212885904025914}
   - {fileID: 2002843721064209688}
+  - {fileID: 5978583981562275325}
+--- !u!114 &5978583981562275325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6231132991491719529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7479d8b0fe738b4b9c45a96a6982410, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Vermines::Vermines.Gameplay.Phases.TurnTimer

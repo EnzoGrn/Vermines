@@ -1,19 +1,19 @@
+using Fusion;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using Vermines;
 using Vermines.CardSystem.Elements;
+using Vermines.Gameplay.Cards.Effect;
+using Vermines.Gameplay.Errors;
+using Vermines.Gameplay.Phases.Data;
 using Vermines.Gameplay.Phases.Enumerations;
 using Vermines.Player;
 using Vermines.ShopSystem.Enumerations;
-using Vermines.UI.Screen;
-using Fusion;
+using Vermines.UI.Shop;
 
 public static class GameEvents
 {
     // --- Initialize ---
-    public static readonly TrackedEvent OnGameInitialized = new("OnGameInitialized");
-
+    public static readonly LatestValueEvent OnGameInitialized = new("OnGameInitialized");
     // --- GENERAL ---
     public static readonly TrackedEvent OnAttemptNextPhase = new("OnAttemptNextPhase");
     public static readonly TrackedEvent<ICard> OnCardDrawn = new("OnCardDrawn");
@@ -22,6 +22,14 @@ public static class GameEvents
     public static readonly TrackedEvent OnPlayerInitialized = new("OnPlayerInitialized");
     public static readonly TrackedEvent<PlayerController> OnPlayerUpdated = new("OnPlayerUpdated");
     public static readonly TrackedEvent<PlayerRef, PlayerRef> OnPlayerWin = new("OnPlayerWin");
+    public static readonly LatestValueEvent<PlayerRef, GainSummaryData> OnGainPhaseResolved = new("OnGainPhaseResolved");
+    public static readonly TrackedEvent<GameActionError, string> OnActionRefused = new("OnActionRefused");
+
+    /// <summary>Whole seconds left in the current turn. -1 = no timer running.</summary>
+    public static readonly TrackedEvent<int> OnTurnTimerChanged = new("OnTurnTimerChanged");
+
+    /// <summary>Raised on every client when the turn is ended by the timer.</summary>
+    public static readonly TrackedEvent OnTurnTimerExpired = new("OnTurnTimerExpired");
 
     // --- CARD PLAYING ---
     public static readonly TrackedEvent<ICard> OnCardPlayedRequested = new("OnCardPlayedRequested");
@@ -29,24 +37,19 @@ public static class GameEvents
     public static readonly TrackedEvent<ICard> OnCardPlayed = new("OnCardPlayed");
 
     // --- CARD SACRIFICE ---
-    // NOTE: OnCardSacrifiedRefused / OnCardSacrified contiennent une faute
-    // ("Sacrifi(c)ed") incohérente avec OnCardSacrificedRequested juste au-dessus.
-    // Pas corrigé ici : le rename touche 12 fichiers (RPC, effets, phases) et doit
-    // se faire dans un commit dédié isolé, pas mélangé à ce nettoyage rapide.
     public static readonly TrackedEvent<ICard> OnCardSacrificedRequested = new("OnCardSacrificedRequested");
-    public static readonly TrackedEvent<ICard> OnCardSacrifiedRefused = new("OnCardSacrifiedRefused");
-    public static readonly TrackedEvent<ICard> OnCardSacrified = new("OnCardSacrified");
+
+    public static readonly TrackedEvent<ICard> OnCardSacrificed = new("OnCardSacrificed");
 
     // --- CARD RECYCLING ---
     public static readonly TrackedEvent<ICard> OnCardRecycled = new("OnCardRecycled");
 
     // --- CARD DISCARD ---
-    public static readonly TrackedEvent<ICard> OnCardDiscardedRefused = new("OnCardDiscardedRefused");
     public static readonly TrackedEvent<ICard> OnCardDiscarded = new("OnCardDiscarded");
 
     // --- CARD UI EVENTS ---
     public static readonly TrackedEvent<ICard, int> OnCardClicked = new("OnCardClicked");
-    public static readonly TrackedEvent<ShopType, int> OnCardClickedInShopWithSlotIndex = new("OnCardClickedInShopWithSlotIndex");
+    public static readonly TrackedEvent<ShopType, int> OnShopSlotClicked = new("OnShopSlotClicked");
 
     // --- SHOP EVENTS ---
     public static readonly Dictionary<ShopType, TrackedEvent<int, ICard>> OnShopsEvents = new();
@@ -59,13 +62,42 @@ public static class GameEvents
 
     // --- CARD EFFECTS ---
     public static readonly TrackedEvent<ICard> OnEffectSelectCard = new("OnEffectSelectCard");
+
+    /// <summary>
+    /// Raised when an effect resolves without doing anything because it has no
+    /// valid target. Arguments: the card whose effect was skipped, and the
+    /// EffectTable localization key of the reason.
+    /// </summary>
+    public static readonly TrackedEvent<ICard, string> OnEffectSkipped = new("OnEffectSkipped");
+
+    /// <summary>
+    /// Raised by an effect that needs a choice from the local player.
+    /// The UI (EffectPromptPresenter) decides which screen to show.
+    /// </summary>
+    public static readonly TrackedEvent<EffectPrompt> OnEffectPromptRequested = new("OnEffectPromptRequested");
+
+    /// <summary>
+    /// Raised by an effect once its choice is made, so the UI can close the prompt.
+    /// </summary>
+    public static readonly TrackedEvent<EffectPromptKind> OnEffectPromptClosed = new("OnEffectPromptClosed");
+
+    /// <summary>
+    /// Raised by the Spend screen when the player presses Done, with the amount
+    /// typed. The effect validates it (the prompt stays open if it is invalid).
+    /// </summary>
+    public static readonly TrackedEvent<int> OnEffectSpendSubmitted = new("OnEffectSpendSubmitted");
+
+    /// <summary>
+    /// Raised by an effect that wants the local player to see a shop section
+    /// (e.g. a free card). Non-blocking: the player can leave the shop.
+    /// </summary>
+    public static readonly TrackedEvent<ShopType> OnShopOpenRequested = new("OnShopOpenRequested");
+
+
     public static readonly TrackedEvent<ICard> OnCardReborned = new("OnCardReborned");
 
     // --- DISCARD PILE ---
     public static readonly TrackedEvent OnDiscardShuffled = new("OnDiscardShuffled");
-
-    // --- TABLE ---
-    public static readonly TrackedEvent<int> OnPartisanAreaSlotChanged = new("OnPartisanAreaSlotChanged");
 
     static GameEvents()
     {

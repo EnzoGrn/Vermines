@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
@@ -46,24 +46,37 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        public override bool CanBePlayed(PlayerRef player, out string reasonKey)
+        {
+            if (EffectCandidates.ForCopyTool(Context, CardType.Tools, Card).Count == 0)
+            {
+                reasonKey = "skipped.copy_no_target";
+
+                return false;
+            }
+
+            return base.CanBePlayed(player, out reasonKey);
+        }
+
         public override void Play(PlayerRef player)
         {
             if (player != Context.Runner.LocalPlayer)
                 return;
-            if (UIContextManager.Instance) {
-                CardSelectedEffectContext cardCopyEffectContext = new(CardType.Tools, Card);
+            if (!CanBePlayed(player, out string reasonKey))
+            {
+                GameEvents.OnEffectSkipped.Invoke(Card, reasonKey);
 
-                CopyContext copyContext = new CopyContext(cardCopyEffectContext);
-                UIContextManager.Instance.PushContext(copyContext);
+                return;
             }
 
+            GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Copy, CardType.Tools, Card));
             GameEvents.OnEffectSelectCard.AddListener(OnCardCopied);
         }
 
         private void OnCardCopied(ICard card)
         {
             GameEvents.OnEffectSelectCard.RemoveListener(OnCardCopied);
-            UIContextManager.Instance.PopContext();
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Copy);
 
             if (card.Data.Type != CardType.Tools)
                 return;

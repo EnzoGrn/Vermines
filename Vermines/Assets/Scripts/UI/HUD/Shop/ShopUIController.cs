@@ -1,11 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Vermines.ShopSystem.Enumerations;
 using System.Collections.Generic;
 using Vermines.UI.Plugin;
 using Vermines.UI.Card;
-using System;
 
 namespace Vermines.UI.Shop
 {
@@ -32,13 +31,13 @@ namespace Vermines.UI.Shop
         [SerializeField] private TMP_Text _PageIndicator;
 
         [Header("Dependencies")]
-        [SerializeField] private CardSlotPool _CardPool;
+        private CardSlotPool _CardPool;
 
         public ShopType ShopType { get; private set; }
 
         private ShopUIConfig _config;
 
-        private List<Vermines.UI.Screen.ShopCardEntry> _currentEntries = new();
+        private List<ShopCardEntry> _currentEntries = new();
         private List<ShopCardSlot> _activeSlots = new();
 
         private int _currentPage = 0;
@@ -69,7 +68,7 @@ namespace Vermines.UI.Shop
 
         #endregion
 
-        public void Init(List<Vermines.UI.Screen.ShopCardEntry> entries, ShopUIConfig configSet)
+        public void Init(List<ShopCardEntry> entries, ShopUIConfig configSet)
         {
             _config = configSet;
             _CardPool = CardSlotPool.Instance;
@@ -165,18 +164,15 @@ namespace Vermines.UI.Shop
             image.transform.localScale = scale;
         }
 
-        private void HandleShopUpdate(ShopType type, List<Vermines.UI.Screen.ShopCardEntry> entries)
+        private void HandleShopUpdate(ShopType type, List<ShopCardEntry> entries)
         {
             if (type != ShopType) return;
             SetEntries(entries);
         }
 
-        public void SetEntries(List<Vermines.UI.Screen.ShopCardEntry> entries)
+        public void SetEntries(List<ShopCardEntry> entries)
         {
-            _currentEntries = entries ?? new List<Vermines.UI.Screen.ShopCardEntry>();
-
-            foreach (var e in _currentEntries)
-                Debug.Log($"[ShopUIController] SetEntries — card {e.Data?.ID} stackCount={e.StackCount}");
+            _currentEntries = entries ?? new List<ShopCardEntry>();
 
             if (_currentPage >= TotalPages)
                 _currentPage = 0;
@@ -282,7 +278,12 @@ namespace Vermines.UI.Shop
         {
             foreach (var slot in _activeSlots)
             {
-                if (slot == null) return;
+                // FIX: was `return` here - a single null slot mid-list
+                // silently aborted the ENTIRE method, skipping cleanup of
+                // every slot after it AND skipping _activeSlots.Clear()
+                // below, leaking stale references. Same class of bug already
+                // found once in GameplayUITable.OnCardClicked.
+                if (slot == null) continue;
 
                 slot.gameObject.SetActive(false);
                 slot.transform.SetParent(_CardPool.transform, false);

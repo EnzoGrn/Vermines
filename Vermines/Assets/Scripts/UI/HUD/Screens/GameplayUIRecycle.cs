@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Localization;
 using UnityEngine.UI;
-using Vermines.CardSystem.Data.Effect;
-using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Player;
 using Vermines.UI.Card;
@@ -12,7 +8,6 @@ using Vermines.UI.Utils;
 
 namespace Vermines.UI.Screen
 {
-    using Text = TMPro.TMP_Text;
 
     public class GameplayUIRecycle : GameplayUIScreen
     {
@@ -105,7 +100,6 @@ namespace Vermines.UI.Screen
             if (!_merchantImageInitialized)
             {
                 CardFamily family = PlayerController.Local.Statistics.Family;
-                Debug.Log("[GameplayUIRecycle] Setting merchant image for family: " + family);
                 merchantImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, family, "Merchant");
                 _merchantImageInitialized = true;
             }
@@ -144,7 +138,6 @@ namespace Vermines.UI.Screen
             foreach (var card in _recycleHandler.SelectedCards)
             {
                 PlayerController.Local.OnRecycle(card.ID);
-                PlayerController.Local.Context.HandManager.RemoveCard(card);
             }
 
             CleanupAndClose();

@@ -1,12 +1,14 @@
+using Fusion;
+using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
-using Vermines.UI.Plugin;
-using Fusion;
 using Vermines.CardSystem.Enumerations;
-using Vermines.UI.Card;
-using System.Collections.Generic;
-using Vermines.Player;
 using Vermines.Core.Scene;
+using Vermines.Gameplay.Cards.Effect;
+using Vermines.Player;
+using Vermines.UI.Card;
+using Vermines.UI.Plugin;
+using Vermines.UI.Shop;
 
 namespace Vermines.UI.Screen
 {
@@ -28,7 +30,7 @@ namespace Vermines.UI.Screen
 
         protected List<ShopCardSlot> activeSlots = new();
 
-        protected List<Vermines.UI.Screen.ShopCardEntry> currentEntries = new();
+        protected List<ShopCardEntry> currentEntries = new();
 
         /// <summary>
         /// The banner holder that contains the card list.
@@ -95,7 +97,7 @@ namespace Vermines.UI.Screen
             PopulateSlots();
 
             base.Show();
-            
+
             ShowUser();
             _nextPageButton.onClick.AddListener(NextPage);
         }
@@ -118,7 +120,6 @@ namespace Vermines.UI.Screen
         /// <param name="cardType">The type of shop to load.</param>
         public void SetParam(CardType cardType)
         {
-            Debug.Log($"[GameplayUIShop] SetParam called with {cardType}.");
             _deckType = cardType;
         }
 
@@ -178,52 +179,33 @@ namespace Vermines.UI.Screen
         private void NextPage()
         {
             int maxPage = Mathf.CeilToInt((float)currentEntries.Count / entriesPerPage);
+
+            // FIX: guard against division by zero - not proven reachable
+            // today (the button is only active when there are more entries
+            // than fit one page), but the button's active state is the only
+            // thing preventing this, which is fragile. Cheap to guard here
+            // directly instead of relying solely on that.
+            if (maxPage <= 0)
+                return;
+
             currentPage = (currentPage + 1) % maxPage;
             PopulateSlots();
         }
 
         protected void GetCardFromType(CardType type)
         {
-            PlayerController player = PlayerController.Local;
-
             currentEntries.Clear();
             currentPage = 0;
 
-            foreach (var card in player.Hand)
-            {
-                if (card.Data.Type == type)
-                    currentEntries.Add(new ShopCardEntry(card));
-            }
-
-            foreach (var card in player.Equipments) {
-                if (card.Data.Type == type)
-                    currentEntries.Add(new ShopCardEntry(card));
-            }
-
-            foreach (var card in player.PlayedCards) {
-                if (card.Data.Type == type)
-                    currentEntries.Add(new ShopCardEntry(card));
-            }
-
-            foreach (var card in player.Discard) {
-                if (card.Data.Type == type)
-                    currentEntries.Add(new ShopCardEntry(card));
-            }
+            foreach (ICard card in EffectCandidates.ForRemove(PlayerController.Local, type))
+                currentEntries.Add(new ShopCardEntry(card));
         }
 
         #endregion
 
         #region Events
 
-        /// <summary>
-        /// Is called when the <see cref="_CloseButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
-        public virtual void OnBackButtonPressed()
-        {
-            Controller.ShowDualPopup(new CancelEffectStrategy());
-        }
-
-        public void OnCardClicked(ICard card, int slodId)
+        public void OnCardClicked(ICard card, int slotId)
         {
             SceneContext context = PlayerController.Local.Context;
 
@@ -251,7 +233,7 @@ namespace Vermines.UI.Screen
 
     public interface ICardClickReceiver
     {
-        void OnCardClicked(ICard card, int slodId);
+        void OnCardClicked(ICard card, int slotId);
     }
 
     public class CardClickHandler : ICardClickHandler

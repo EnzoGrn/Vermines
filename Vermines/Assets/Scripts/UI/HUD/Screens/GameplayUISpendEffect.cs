@@ -1,14 +1,15 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Vermines.CardSystem.Enumerations;
+using Vermines.Gameplay.Cards.Effect;
 
 namespace Vermines.UI.Screen
 {
-    using Text = TMPro.TMP_Text;
     using InputField = TMPro.TMP_InputField;
+    using Text = TMPro.TMP_Text;
 
-    public class GameplayUISpendEffect : GameplayUIScreen, IParamReceiver<(Action<int> onDone, DataType dataToSpend, DataType dataToEarn, int multiplicator)>
+    public class GameplayUISpendEffect : GameplayUIScreen, IParamReceiver<EffectPrompt>
     {
         #region Attributes
 
@@ -18,7 +19,6 @@ namespace Vermines.UI.Screen
         [SerializeField] private Text earnPreviewLabel;
         [SerializeField] private Text spendLabel;
 
-        private Action<int> _onDoneCallback;
         private DataType _dataToSpend;
         private DataType _dataToEarn;
         private int _multiplicator;
@@ -47,12 +47,16 @@ namespace Vermines.UI.Screen
 
         #region Param Receiver
 
-        public void SetParam((Action<int> onDone, DataType dataToSpend, DataType dataToEarn, int multiplicator) param)
+        public void SetParam(EffectPrompt prompt)
         {
-            _onDoneCallback = param.onDone;
-            _dataToSpend = param.dataToSpend;
-            _dataToEarn = param.dataToEarn;
-            _multiplicator = param.multiplicator;
+            _dataToSpend = prompt.DataToSpend;
+            _dataToEarn = prompt.DataToEarn;
+            _multiplicator = prompt.Multiplicator;
+
+            _currentAmount = 0;
+
+            if (amountInputField != null)
+                amountInputField.text = string.Empty;
 
             UpdateEarnPreview();
         }
@@ -73,8 +77,7 @@ namespace Vermines.UI.Screen
 
         public void OnDoneButtonPressed()
         {
-            _onDoneCallback?.Invoke(_currentAmount);
-            Controller.Hide();
+            GameEvents.OnEffectSpendSubmitted.Invoke(_currentAmount);
         }
 
         #endregion

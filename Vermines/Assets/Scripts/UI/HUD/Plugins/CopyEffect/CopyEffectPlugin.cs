@@ -5,8 +5,7 @@ using Vermines.UI.Plugin;
 using Vermines.UI;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Player;
-using Vermines.UI.Screen;
-using Vermines;
+using Vermines.UI.Shop;
 using Vermines.CardSystem.Elements;
 
 public class CopyEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginParam<ICard>
@@ -24,7 +23,7 @@ public class CopyEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginParam
     /// <summary>
     /// The list of entries currently displayed in the plugin.
     /// </summary>
-    protected List<Vermines.UI.Screen.ShopCardEntry> currentEntries = new();
+    protected List<ShopCardEntry> currentEntries = new();
 
     /// <summary>
     /// The card that is currently activated in the plugin.
@@ -73,27 +72,27 @@ public class CopyEffectPlugin : GameplayScreenPlugin, IGameplayScreenPluginParam
 
     #region Methods
 
-    public virtual List<Vermines.UI.Screen.ShopCardEntry> GetEntries()
+    public virtual List<ShopCardEntry> GetEntries()
     {
         PlayerController player = PlayerController.Local;
 
         foreach (var card in player.Hand) {
-            if (card.Data.Type == CardTypeTrigger)
+            if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
                 currentEntries.Add(new ShopCardEntry(card));
         }
 
         foreach (var card in player.Equipments) {
-            if (card.Data.Type == CardTypeTrigger)
+            if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
                 currentEntries.Add(new ShopCardEntry(card));
         }
 
         foreach (var card in player.PlayedCards) {
-            if (card.Data.Type == CardTypeTrigger)
+            if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
                 currentEntries.Add(new ShopCardEntry(card));
         }
 
         foreach (var card in player.Discard) {
-            if (card.Data.Type == CardTypeTrigger)
+            if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
                 currentEntries.Add(new ShopCardEntry(card));
         }
 

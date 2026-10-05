@@ -15,20 +15,20 @@ MonoBehaviour:
   m_TableCollectionName: EffectTable
   m_TableCollectionNameGuidString: 16d02b2cd5642754d91eabcf06221246
   m_Entries:
-  - m_Id: 90973626368
-    m_Key: cancel.title
+  - m_Id: 176400341853757440
+    m_Key: skipped.table_full
     m_Metadata:
       m_Items: []
-  - m_Id: 209819230208
-    m_Key: cancel.message
+  - m_Id: 176400347566399488
+    m_Key: skipped.reborn_no_target
     m_Metadata:
       m_Items: []
-  - m_Id: 1153017536512
-    m_Key: cancel.confirmText
+  - m_Id: 176400349973929984
+    m_Key: skipped.remove_no_target
     m_Metadata:
       m_Items: []
-  - m_Id: 1174404292608
-    m_Key: cancel.cancelText
+  - m_Id: 176400351827812352
+    m_Key: skipped.copy_no_target
     m_Metadata:
       m_Items: []
   m_Metadata:
