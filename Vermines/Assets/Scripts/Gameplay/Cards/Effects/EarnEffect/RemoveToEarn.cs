@@ -97,6 +97,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
             GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Remove, _CardType, Card));
             GameEvents.OnCardSacrificedRequested.AddListener(CardToRemove);
+            GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
         }
 
         private void CardToRemove(ICard card)
@@ -109,11 +110,18 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Remove);
             GameEvents.OnCardSacrificedRequested.RemoveListener(CardToRemove);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
 
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
             player.OnCardSacrificed(card.ID);
             player.NetworkEventCardEffect(Card == null ? -1 : Card.ID);
+        }
+
+        private void CancelPrompt()
+        {
+            GameEvents.OnCardSacrificedRequested.RemoveListener(CardToRemove);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
         }
 
         public override void NetworkEventFunction(PlayerRef player, string data)
