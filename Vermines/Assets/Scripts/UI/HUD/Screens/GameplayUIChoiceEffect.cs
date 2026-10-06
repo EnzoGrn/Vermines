@@ -1,3 +1,4 @@
+using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -86,22 +87,30 @@ namespace Vermines.UI.Screen
         private void GenerateEffectButtons()
         {
             ClearButtons();
-            Debug.Log($"[CHOICE-UI] Generating buttons for card={_card?.ID} effectCount={_card?.Data?.Effects?.Count}");
+
             if (_card == null || _card.Data == null || _card.Data.Effects == null)
             {
                 Debug.LogWarning("[UIChoiceEffect] Card or effects missing.");
                 return;
             }
 
+            PlayerRef local = PlayerController.Local.Object.InputAuthority;
+            string lastReason = null;
+
             foreach (AEffect effect in _card.Data.Effects)
             {
+                if (!effect.CanBePlayed(local, out string reason))
+                {
+                    lastReason = reason;
+                    continue;
+                }
+
                 Button newButton = Instantiate(_buttonPrefab, _buttonContainer);
                 newButton.gameObject.SetActive(true);
 
                 var label = newButton.GetComponentInChildren<TextMeshProUGUI>(true);
                 if (label != null)
                 {
-                    Debug.Log("[UIChoiceEffect] Setting button label: " + effect.Description);
                     label.text = effect.Description;
                 }
                 else
@@ -111,6 +120,12 @@ namespace Vermines.UI.Screen
 
                 newButton.onClick.AddListener(() => OnButtonPressed(effect));
                 _spawnedButtons.Add(newButton);
+            }
+
+            if (_spawnedButtons.Count == 0)
+            {
+                GameEvents.OnEffectSkipped.Invoke(_card, lastReason);
+                Controller.Hide();
             }
         }
 
@@ -138,6 +153,12 @@ namespace Vermines.UI.Screen
             if (_card == null || effect == null)
             {
                 Debug.LogWarning("[UIChoiceEffect] Invalid button press - missing card or effect.");
+                return;
+            }
+
+            if (!PlayerController.Local)
+            {
+                Debug.LogWarning("[UIChoiceEffect] PlayerController.Local not ready - ignoring button press.");
                 return;
             }
 

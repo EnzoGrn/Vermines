@@ -52,17 +52,6 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
-        public override void Play(PlayerRef playerRef)
-        {
-            PlayerController originPlayer = Context.NetworkGame.GetPlayer(playerRef);
-
-            if (playerRef == Context.Runner.LocalPlayer) {
-                originPlayer.SetNumberOfSlotOnTable(Amount);
-
-                GameEvents.OnPartisanAreaSlotChanged.Invoke(Amount);
-            }
-        }
-
         public override List<(string, Sprite)> Draw()
         {
             List<(string, Sprite)> elements = new() {

@@ -1,32 +1,15 @@
-using Vermines.CardSystem.Elements;
-using Vermines.ShopSystem.Data;
-using Vermines.UI.Screen;
-using Vermines;
-using Vermines.Player;
 using System.Collections.Generic;
-using Vermines.Core.Scene;
+using Vermines.CardSystem.Elements;
+using Vermines.Gameplay.Cards.Effect;
+using Vermines.Player;
+using Vermines.UI.Shop;
 
 public class CopyEffectPartisanPlugin : CopyEffectPlugin {
 
-    public override List<Vermines.UI.Screen.ShopCardEntry> GetEntries()
+    public override List<ShopCardEntry> GetEntries()
     {
-        SceneContext context = PlayerController.Local.Context;
-
-        List<PlayerController> players = context.Runner.GetAllBehaviours<PlayerController>();
-
-        foreach (PlayerController player in players) {
-            foreach (ICard card in player.PlayedCards) {
-                if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
-                    currentEntries.Add(new ShopCardEntry(card));
-            }
-        }
-
-        CourtyardSection courtyard = (CourtyardSection)context.GameplayMode.Shop.Sections[Vermines.ShopSystem.Enumerations.ShopType.Courtyard];
-
-        foreach (ICard card in courtyard) {
-            if (card.Data.Type == CardTypeTrigger && card.ID != activatedCard.ID)
-                currentEntries.Add(new ShopCardEntry(card));
-        }
+        foreach (ICard card in EffectCandidates.ForCopyPartisan(PlayerController.Local.Context, CardTypeTrigger, activatedCard))
+            currentEntries.Add(new ShopCardEntry(card));
 
         return currentEntries;
     }

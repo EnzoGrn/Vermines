@@ -345,6 +345,8 @@ namespace Vermines.Player {
             }
         }
 
+        public event System.Action OnHandChanged;
+
         private void RebuildHandCache()
         {
             _HandCache.Clear();
@@ -356,6 +358,8 @@ namespace Vermines.Player {
                 if (card != null)
                     _HandCache.Add(card);
             }
+
+            OnHandChanged?.Invoke();
         }
 
         private void WriteHand(List<ICard> hand)
@@ -817,8 +821,6 @@ namespace Vermines.Player {
             if (string.IsNullOrEmpty(ids))
                 return;
 
-            Debug.Log($"[REVEAL] {UserID} ids={ids} localPlayer={Runner.LocalPlayer}");
-
             string[] parts = ids.Split(',');
 
             for (int i = 0; i < parts.Length; i++)
@@ -835,7 +837,7 @@ namespace Vermines.Player {
 
         #region RPCs Ask to Server
 
-        public void OnCardSacrified(int cardId)
+        public void OnCardSacrificed(int cardId)
         {
             Context.NetworkGame.RPC_CardSacrified(Object.InputAuthority.RawEncoded, cardId);
         }

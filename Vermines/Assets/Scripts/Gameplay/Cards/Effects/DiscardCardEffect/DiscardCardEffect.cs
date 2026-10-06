@@ -1,11 +1,12 @@
+using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
-using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Discard/Discard cards.")]
@@ -55,24 +56,49 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        // TODO(game-rule): this guard does not chain to the sub-effect, like
+        // SacrificeACardEffect. See the TODO in EffectCandidates.
+        public override bool CanBePlayed(PlayerRef player, out string reasonKey)
+        {
+            PlayerController controller = Context.NetworkGame.GetPlayer(player);
+
+            if (controller.Hand.Count == 0)
+            {
+                reasonKey = "skipped.discard_no_card";
+
+                return false;
+            }
+
+            reasonKey = null;
+
+            return true;
+        }
+
         public override void Play(PlayerRef player)
         {
-            if (player == Context.Runner.LocalPlayer) {
-                var context = new ForceDiscardContext(OnDiscarded);
-                UIContextManager.Instance.PushContext(context);
+            if (player != Context.Runner.LocalPlayer)
+                return;
+            if (!CanBePlayed(player, out string reasonKey))
+            {
+                GameEvents.OnEffectSkipped.Invoke(Card, reasonKey);
+
+                return;
             }
+
+            // The discard itself goes through the normal discard path (drop on
+            // the discard zone -> RPC_DiscardCard); we only wait for it.
+            GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Discard, CardType.None, Card));
+            GameEvents.OnCardDiscarded.AddListener(OnDiscarded);
         }
 
         public void OnDiscarded(ICard card)
         {
-            PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
+            GameEvents.OnCardDiscarded.RemoveListener(OnDiscarded);
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Discard);
 
-            player.OnDiscard(card.ID);
-
-            base.Play(player.Object.InputAuthority);
-
-            UIContextManager.Instance.PopContext();
+            base.Play(Context.Runner.LocalPlayer);
         }
+
 
         public override List<(string, Sprite)> Draw()
         {

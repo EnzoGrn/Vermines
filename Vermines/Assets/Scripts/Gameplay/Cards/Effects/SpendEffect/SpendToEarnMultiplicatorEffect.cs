@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
-using OMGG.DesignPattern;
-using UnityEngine;
 using Fusion;
+using OMGG.DesignPattern;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Vermines.Gameplay.Cards.Effect {
     using Newtonsoft.Json;
     using OMGG.Chronicle;
     using System;
     using Vermines.CardSystem.Data.Effect;
-    using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Chronicle;
     using Vermines.Gameplay.Commands.Cards.Effects;
+    using Vermines.Gameplay.Errors;
     using Vermines.Player;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Spend/Spend data and earn more.")]
@@ -115,28 +115,49 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             if (player != Context.Runner.LocalPlayer)
                 return;
-            if (UIContextManager.Instance) {
-                SpendEffectContext spendEffectContext = new(Spend, _DataToSpend, _DataToEarn, _Multiplicator);
 
-                UIContextManager.Instance.PushContext(spendEffectContext);
-            }
+            GameEvents.OnEffectPromptRequested.Invoke(EffectPrompt.Spend(Card, _DataToSpend, _DataToEarn, _Multiplicator));
+            GameEvents.OnEffectSpendSubmitted.AddListener(Spend);
         }
 
         private void Spend(int amount)
         {
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
-            if (_DataToSpend == DataType.Eloquence && player.Statistics.Eloquence < amount)
-                return;
-            else if (_DataToEarn == DataType.Soul && player.Statistics.Souls < amount)
-                return;
+            // NOTE: kept as it was, but the second test reads _DataToEarn where
+            // _DataToSpend looks intended (spending eloquence to earn souls is
+            // blocked when souls < amount). To confirm.
+            bool notEnough = (_DataToSpend == DataType.Eloquence && player.Statistics.Eloquence < amount)
+                          || (_DataToEarn == DataType.Soul && player.Statistics.Souls < amount);
+            bool overLimit = (_DataToSpend == DataType.Eloquence && amount > Context.GameplayMode.MaxEloquence)
+                          || (_DataToSpend == DataType.Soul && amount > Context.GameplayMode.SoulsLimit);
 
-            if (UIContextManager.Instance)
-                UIContextManager.Instance.PopContextOfType<SpendEffectContext>();
-            if (amount <= 0 || (_DataToSpend == DataType.Eloquence && amount > Context.GameplayMode.MaxEloquence) || (_DataToSpend == DataType.Soul && amount > Context.GameplayMode.SoulsLimit))
+            // Invalid amount: keep the prompt open and tell the player.
+            if (amount > 0 && (notEnough || overLimit))
+            {
+                GameActionError error = new GameActionError
+                {
+                    Scope = ErrorScope.Local,
+                    Target = Context.Runner.LocalPlayer,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Effect,
+                    MessageKey = "Effect_SpendInvalid"
+                };
+
+                GameEvents.OnActionRefused.Invoke(error, GameActionError.Localize(error));
+
+                return;
+            }
+
+            GameEvents.OnEffectSpendSubmitted.RemoveListener(Spend);
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Spend);
+
+            // Spending nothing is the way to decline the effect.
+            if (amount <= 0)
                 return;
             player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, amount.ToString());
         }
+
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)
         {
