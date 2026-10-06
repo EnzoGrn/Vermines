@@ -288,6 +288,15 @@ namespace Vermines.UI
             }
         }
 
+        /// <summary>
+        /// Cancels the dual-button confirm popup if one is waiting for an answer
+        /// (the strategy's OnCancel runs, never OnConfirm).
+        /// </summary>
+        public void CancelDualPopup()
+        {
+            if (_DualPopupHandler != null && _DualPopupHandler.IsOpen)
+                _DualPopupHandler.Cancel();
+        }
 
         /// <summary>
         /// Show the popup/notification.

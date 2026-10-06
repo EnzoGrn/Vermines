@@ -73,8 +73,8 @@ namespace Vermines.Gameplay.Cards.Effect {
                 return;
             }
             GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Copy, CardType.Partisan, Card));
-
             GameEvents.OnEffectSelectCard.AddListener(CopiedEffect);
+            GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
         }
 
         public override void Stop(PlayerRef player)
@@ -95,6 +95,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             GameEvents.OnEffectSelectCard.RemoveListener(CopiedEffect);
             GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Copy);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
 
             if (card.Data.Type != CardType.Partisan)
                 return;
@@ -105,6 +106,12 @@ namespace Vermines.Gameplay.Cards.Effect {
             RoundEventDispatcher.RegisterEvent(player.Object.InputAuthority, Stop);
 
             player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, card.ID.ToString());
+        }
+
+        private void CancelPrompt()
+        {
+            GameEvents.OnEffectSelectCard.RemoveListener(CopiedEffect);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)

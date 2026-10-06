@@ -71,18 +71,26 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Copy, CardType.Tools, Card));
             GameEvents.OnEffectSelectCard.AddListener(OnCardCopied);
+            GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
         }
 
         private void OnCardCopied(ICard card)
         {
             GameEvents.OnEffectSelectCard.RemoveListener(OnCardCopied);
             GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Copy);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
 
             if (card.Data.Type != CardType.Tools)
                 return;
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
             player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, card.ID.ToString());
+        }
+
+        private void CancelPrompt()
+        {
+            GameEvents.OnEffectSelectCard.RemoveListener(OnCardCopied);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)

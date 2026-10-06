@@ -80,7 +80,7 @@ namespace Vermines.Gameplay.Cards.Effect {
                 return;
             }
             GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Reborn, CardType.Partisan, Card));
-
+            GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
             GameEvents.OnEffectSelectCard.AddListener(Reborn);
         }
 
@@ -88,12 +88,19 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             GameEvents.OnEffectSelectCard.RemoveListener(Reborn);
             GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Reborn);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
 
             if (card.Data.Type != CardType.Partisan)
                 return;
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
             player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, card.ID.ToString());
+        }
+
+        private void CancelPrompt()
+        {
+            GameEvents.OnEffectSelectCard.RemoveListener(Reborn);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)
