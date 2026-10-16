@@ -77,6 +77,7 @@ namespace Vermines.Gameplay.Cards.Effect {
         public override void Play(PlayerRef player)
         {
             Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(true);
+            GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
 
             if (player == PlayerController.Local.Object.InputAuthority) {
                 GameEvents.OnShopOpenRequested.Invoke(_ShopTarget);
@@ -114,9 +115,20 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         public override void Stop(PlayerRef player)
         {
+            Cleanup();
+        }
+
+        private void CancelPrompt()
+        {
+            Cleanup();
+        }
+
+        private void Cleanup()
+        {
             Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(false);
             GameEvents.OnCardPurchaseRequested.RemoveListener(OnCardPurchaseRequested);
             GameEvents.OnCardPurchased.RemoveListener(OnBuy);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
         }
 
         public override List<(string, Sprite)> Draw()

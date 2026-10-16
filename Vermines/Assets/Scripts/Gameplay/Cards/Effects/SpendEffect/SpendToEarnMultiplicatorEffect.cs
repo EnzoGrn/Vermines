@@ -118,17 +118,15 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             GameEvents.OnEffectPromptRequested.Invoke(EffectPrompt.Spend(Card, _DataToSpend, _DataToEarn, _Multiplicator));
             GameEvents.OnEffectSpendSubmitted.AddListener(Spend);
+            GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
         }
 
         private void Spend(int amount)
         {
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
-            // NOTE: kept as it was, but the second test reads _DataToEarn where
-            // _DataToSpend looks intended (spending eloquence to earn souls is
-            // blocked when souls < amount). To confirm.
             bool notEnough = (_DataToSpend == DataType.Eloquence && player.Statistics.Eloquence < amount)
-                          || (_DataToEarn == DataType.Soul && player.Statistics.Souls < amount);
+                          || (_DataToSpend == DataType.Soul && player.Statistics.Souls < amount);
             bool overLimit = (_DataToSpend == DataType.Eloquence && amount > Context.GameplayMode.MaxEloquence)
                           || (_DataToSpend == DataType.Soul && amount > Context.GameplayMode.SoulsLimit);
 
@@ -151,6 +149,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             GameEvents.OnEffectSpendSubmitted.RemoveListener(Spend);
             GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Spend);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
 
             // Spending nothing is the way to decline the effect.
             if (amount <= 0)
@@ -158,6 +157,11 @@ namespace Vermines.Gameplay.Cards.Effect {
             player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, amount.ToString());
         }
 
+        private void CancelPrompt()
+        {
+            GameEvents.OnEffectSpendSubmitted.RemoveListener(Spend);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
+        }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)
         {

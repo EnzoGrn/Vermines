@@ -85,18 +85,24 @@ namespace Vermines.Gameplay.Cards.Effect {
                 return;
             }
 
-            // The discard itself goes through the normal discard path (drop on
-            // the discard zone -> RPC_DiscardCard); we only wait for it.
             GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Discard, CardType.None, Card));
             GameEvents.OnCardDiscarded.AddListener(OnDiscarded);
+            GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
         }
 
         public void OnDiscarded(ICard card)
         {
             GameEvents.OnCardDiscarded.RemoveListener(OnDiscarded);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
             GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Discard);
 
             base.Play(Context.Runner.LocalPlayer);
+        }
+
+        private void CancelPrompt()
+        {
+            GameEvents.OnCardDiscarded.RemoveListener(OnDiscarded);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
         }
 
 

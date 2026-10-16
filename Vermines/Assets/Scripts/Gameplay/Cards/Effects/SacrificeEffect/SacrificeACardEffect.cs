@@ -85,6 +85,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             if (playerRef == Context.Runner.LocalPlayer) {
                 GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Sacrifice, CardType.None, Card));
                 GameEvents.OnCardSacrificedRequested.AddListener(OnSacrificed);
+                GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
             }
         }
 
@@ -94,9 +95,16 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             GameEvents.OnCardSacrificedRequested.RemoveListener(OnSacrificed);
             GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Sacrifice);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
 
             player.OnCardSacrificed(card.ID);
             player.NetworkEventCardEffect(Card == null ? -1 : Card.ID);
+        }
+
+        private void CancelPrompt()
+        {
+            GameEvents.OnCardSacrificedRequested.RemoveListener(OnSacrificed);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
         }
 
         public override void NetworkEventFunction(PlayerRef player, string data)

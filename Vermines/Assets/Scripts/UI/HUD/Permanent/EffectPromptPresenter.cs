@@ -115,6 +115,11 @@ namespace Vermines.UI
 
         private void OnTurnTimerExpired()
         {
+            // A confirm popup (sacrifice, play effect...) must not outlive the
+            // turn, and must be CANCELLED, not confirmed.
+            if (_Controller != null)
+                _Controller.CancelDualPopup();
+
             bool pickerOpen = EffectPromptState.IsPending
                 && !EffectPromptState.IsActive(EffectPromptKind.Sacrifice)
                 && !EffectPromptState.IsActive(EffectPromptKind.Discard);

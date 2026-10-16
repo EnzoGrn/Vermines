@@ -51,6 +51,7 @@ MonoBehaviour:
   SoulsLimit: 100
   MaxEloquence: 20
   BonusSoulsPerFamilyCardSacrified: 2
+  TurnTimerSeconds: 10
   PhaseManager: {fileID: 2002843721064209688}
   _BaseShopData: {fileID: 11400000, guid: da984adf5b7938e4f8143513dfe0b094, type: 2}
   _PlayerTurnOrder: []

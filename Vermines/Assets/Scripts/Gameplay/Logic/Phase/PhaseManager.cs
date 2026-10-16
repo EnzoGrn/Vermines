@@ -229,6 +229,18 @@ namespace Vermines.Gameplay.Phases
             CurrentPhase = PhaseType.Resolution;
 
             RPC_TurnTimeExpired();
+
+            PlayerController player = Context.NetworkGame.GetPlayer(current);
+
+            if (player != null)
+            {
+                foreach (ICard card in player.Hand.ToList())
+                {
+                    if (card.Data.CanBeDiscard())
+                        player.RPC_DiscardCard(card.ID, false);
+                }
+            }
+
             RPC_UpdatePhaseUI();
             RPC_ProcessPhase(CurrentPhase, current);
         }
