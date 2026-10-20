@@ -52,6 +52,14 @@ namespace Vermines.UI.Card
                 return;
             }
 
+            // Tutorial: a card the current step doesn't allow goes back to the hand.
+            if (!Vermines.Tutorial.Integration.TutorialGameHooks.AllowCardDrop(card, true))
+            {
+                drag.ReturnToOriginalPosition();
+
+                return;
+            }
+
             if (!slot.CanAcceptCard(card))
             {
                 drag.ReturnToOriginalPosition();

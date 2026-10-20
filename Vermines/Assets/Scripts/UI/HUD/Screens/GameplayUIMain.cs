@@ -173,6 +173,8 @@ namespace Vermines.UI.Screen
             SceneContext context = PlayerController.Local.Context;
             PhaseManager phaseManager = context.GameplayMode.PhaseManager;
 
+            if (!Vermines.Tutorial.Integration.TutorialGameHooks.AllowNextPhase(phaseManager.CurrentPhase))
+                return;
             if (context.HandManager.HasCards(true) && phaseManager.CurrentPhase == PhaseType.Action)
             {
                 Controller.ShowDualPopup(new DefaultDiscardStrategy());

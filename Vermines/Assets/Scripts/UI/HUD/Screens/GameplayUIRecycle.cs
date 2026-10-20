@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Vermines.CardSystem.Enumerations;
@@ -19,9 +20,9 @@ namespace Vermines.UI.Screen
         [SerializeField] private Button validateButton;
         [SerializeField] private Button cancelButton;
 
-        [SerializeField] private Text eloquenceText;
-        [SerializeField] private Text soulsText;
-        [SerializeField] private Text cardCountText;
+        [SerializeField] private TMP_Text eloquenceText;
+        [SerializeField] private TMP_Text soulsText;
+        [SerializeField] private TMP_Text cardCountText;
 
         // Merchant Image depends on the player faction
         [SerializeField] private Image merchantImage;
@@ -109,9 +110,13 @@ namespace Vermines.UI.Screen
             int totalSouls = _recycleHandler.GetTotalSouls();
             int cardCount = _recycleHandler.SelectedCards.Count;
 
-            cardCountText.text = cardCount.ToString();
-            eloquenceText.text = totalEloquence.ToString();
-            soulsText.text = totalSouls.ToString();
+            // Skip a text that isn't assigned instead of stopping the screen.
+            if (cardCountText)
+                cardCountText.text = cardCount.ToString();
+            if (eloquenceText)
+                eloquenceText.text = totalEloquence.ToString();
+            if (soulsText)
+                soulsText.text = totalSouls.ToString();
         }
 
         private void CleanupAndClose()

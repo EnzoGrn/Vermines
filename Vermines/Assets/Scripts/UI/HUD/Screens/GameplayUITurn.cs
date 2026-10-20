@@ -67,6 +67,20 @@ namespace Vermines.UI.Screen
             SceneContext context = PlayerController.Local.Context;
             PlayerRef currentPlayer = context.GameplayMode.CurrentPlayer;
             PlayerController player = context.NetworkGame.GetPlayer(currentPlayer);
+
+            // Same reason as above: an exception here would stop SacrificeRoutine and the turn would never start.
+            if (!player)
+            {
+                Debug.LogWarning($"[GameplayUITurn] No PlayerController for {currentPlayer} - turn banner shown without the cultist.");
+
+                LocalizeMessage("Turn.text", string.Empty);
+
+                base.Show();
+                ShowUser();
+
+                return;
+            }
+
             PlayerStatistics stat = player.Statistics;
 
             _CultistImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, stat.Family, "Cultist");

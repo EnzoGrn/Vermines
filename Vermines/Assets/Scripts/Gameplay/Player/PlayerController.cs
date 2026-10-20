@@ -839,6 +839,8 @@ namespace Vermines.Player {
 
         public void OnCardSacrificed(int cardId)
         {
+            if (!TutorialAllows(Vermines.Tutorial.GameActionType.SacrificePartisan, cardId))
+                return;
             Context.NetworkGame.RPC_CardSacrified(Object.InputAuthority.RawEncoded, cardId);
         }
 
@@ -848,36 +850,50 @@ namespace Vermines.Player {
 
             if (index < 0)
                 return;
+            if (!Vermines.Tutorial.Integration.TutorialGameHooks.AllowEffectChoice(card, index))
+                return;
             Context.NetworkGame.RPC_EffectChosen(Object.InputAuthority.RawEncoded, card.ID, index);
         }
 
         public void OnPlay(int cardId)
         {
+            if (!TutorialAllows(Vermines.Tutorial.GameActionType.PlayCard, cardId))
+                return;
             Context.NetworkGame.RPC_CardPlayed(Object.InputAuthority.RawEncoded, cardId);
         }
 
         public void OnDiscard(int cardId)
         {
+            if (!TutorialAllows(Vermines.Tutorial.GameActionType.DiscardCard, cardId))
+                return;
             Context.NetworkGame.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, true);
         }
 
         public void OnRecycle(int cardId)
         {
+            if (!TutorialAllows(Vermines.Tutorial.GameActionType.RecycleCard, cardId))
+                return;
             Context.NetworkGame.RPC_CardRecycled(Object.InputAuthority.RawEncoded, cardId);
         }
 
         public void OnDiscardNoEffect(int cardId)
         {
+            if (!TutorialAllows(Vermines.Tutorial.GameActionType.DiscardCard, cardId))
+                return;
             Context.NetworkGame.RPC_DiscardCard(Object.InputAuthority.RawEncoded, cardId, false);
         }
 
         public void OnBuy(ShopType shopType, int cardId)
         {
+            if (!TutorialAllows(Vermines.Tutorial.GameActionType.BuyCard, cardId))
+                return;
             Context.NetworkGame.RPC_BuyCard(Object.InputAuthority.RawEncoded, shopType, cardId);
         }
 
         public void OnActiveEffectActivated(int cardID)
         {
+            if (!TutorialAllows(Vermines.Tutorial.GameActionType.ActivatePartisanEffect, cardID))
+                return;
             Context.NetworkGame.RPC_ActivateEffect(Object.InputAuthority.RawEncoded, cardID);
         }
 

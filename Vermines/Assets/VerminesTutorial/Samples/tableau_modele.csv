@@ -1,0 +1,11 @@
+lecon;id_etape;style;titre;texte;cibles;forme;pointeur;cible_depot;placement;condition;evenement;argument;nombre;actions_autorisees;commandes_debut;commandes_fin;notes
+lecon_01;l01_intro;narrateur;Bienvenue, cultiste;"Dans la cité des abeilles, chaque culte veut invoquer son dieu.\nPour cela, il vous faut des âmes : le premier à 100 âmes déclenche la fin de partie.";;;;;;bouton;;;;aucune;HideElement(target=market) | HideElement(target=court);;EXEMPLE à remplacer par le scénario
+lecon_01;l01_main;bulle;Votre main;Voici votre main : 3 cartes piochées dans votre deck.;hand_zone;;;;dessus;bouton;;;;aucune;;;
+lecon_01;l01_eloquence;bulle;L'éloquence;"Au début de chaque tour, vous gagnez 2 éloquences. C'est la monnaie qui sert à acheter des cartes (20 maximum).";eloquence_counter;cercle;;;;bouton;;;;aucune;;;
+lecon_01;l01_jouer;bulle;;Faites glisser l'Ouvrière dans votre zone partisan.;hand:ouvriere|partisan_zone;;glisser;partisan_zone;;evenement;card_played;ouvriere;1;jouer:ouvriere;;;
+lecon_01;l01_marche;bulle;Le marché;Le marché vend les cartes objet. Leur effet s'applique tout de suite quand vous les jouez.;market;;;;;bouton;;;;aucune;ShowElement(target=market);;
+lecon_01;l01_acheter;bulle;;Achetez une Missive royale.;market:missive_royale;;tapoter;;;evenement;card_bought;missive_royale;1;acheter:missive_royale;;;
+lecon_01;l01_fin_tour;bulle;;Vous avez fini. Terminez votre tour.;end_turn_button;;tapoter;;gauche;evenement;turn_ended;;1;fin_tour;PauseOpponent();;
+lecon_01;l01_adversaire;narrateur;;C'est au tour de votre adversaire. Observez ce qu'il fait.;;;;;;delai;;;;aucune;ResumeOpponent();;
+lecon_01;l01_retour;aucun;;;;;;;;evenement;turn_started;0;1;aucune;;;attend le retour au tour du joueur (argument 0 = joueur humain)
+lecon_01;l01_bravo;fenetre;Bravo !;Vous savez jouer une carte, acheter et finir votre tour. Prochaine leçon : la cour et les partisans.;;;;;;bouton;;;;aucune;;;

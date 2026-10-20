@@ -20,7 +20,7 @@ namespace Vermines.Gameplay.Core {
             base.Spawned();
 
             if (HasStateAuthority)
-                _Initializer = new StandartGameInitializer(this);
+                _Initializer = CreateInitializer();
         }
 
         protected override void CheckWinCondition()

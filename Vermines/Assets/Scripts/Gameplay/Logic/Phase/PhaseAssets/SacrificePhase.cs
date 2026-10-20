@@ -33,12 +33,15 @@ namespace Vermines.Gameplay.Phases {
 
             GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrificed);
 
-            if (playedCards.Count > 0 && _CurrentPlayer == _Context.Runner.LocalPlayer) {
+            // Tutorial lessons teach the sacrifice with the dagger: the phase ends by itself.
+            bool skipped = Vermines.Tutorial.Integration.TutorialGameHooks.SkipSacrificePhase;
+
+            if (playedCards.Count > 0 && _CurrentPlayer == _Context.Runner.LocalPlayer && !skipped) {
                 CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
 
                 if (camera != null)
                     camera.GoOnSacrificeLocation();
-            } else if (playedCards.Count == 0) {
+            } else if (playedCards.Count == 0 || skipped) {
                 OnPhaseEnding(_CurrentPlayer, true);
 
                 GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrificed);

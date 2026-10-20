@@ -133,7 +133,7 @@ namespace Vermines.Gameplay.Phases
                 return;
             CurrentPhase = _PhaseOrder[0];
 
-            Context.GameplayMode.CurrentPlayerIndex = (Context.GameplayMode.CurrentPlayerIndex + 1) % Context.Runner.ActivePlayers.Count();
+            Context.GameplayMode.CurrentPlayerIndex = (Context.GameplayMode.CurrentPlayerIndex + 1) % Context.GameplayMode.TurnPlayerCount;
 
             if (Context.GameplayMode.CurrentPlayerIndex == 0)
                 Context.GameplayMode.TotalTurnPlayed++;
@@ -187,10 +187,17 @@ namespace Vermines.Gameplay.Phases
                 card.HasBeenActivatedThisTurn = false;
         }
 
+        /// <summary>
+        /// Raised on every peer when a phase starts running for a player.
+        /// </summary>
+        public static event System.Action<PhaseType, PlayerRef> PhaseProcessed;
+
         public void ProcessPhase(PhaseType currentPhase, PlayerRef playerRef)
         {
             if (currentPhase == PhaseType.None || !playerRef.IsRealPlayer)
                 return;
+            PhaseProcessed?.Invoke(currentPhase, playerRef);
+
             _Phases[currentPhase].Run(playerRef);
         }
 

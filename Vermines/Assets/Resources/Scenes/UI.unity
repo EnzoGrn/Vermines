@@ -31845,9 +31845,9 @@ MonoBehaviour:
   _Priority: 0
   validateButton: {fileID: 2079677679}
   cancelButton: {fileID: 1143906228}
-  eloquenceText: {fileID: 0}
-  soulsText: {fileID: 0}
-  cardCountText: {fileID: 0}
+  eloquenceText: {fileID: 539553485}
+  soulsText: {fileID: 2070775664}
+  cardCountText: {fileID: 1991657835}
   merchantImage: {fileID: 707581163}
 --- !u!114 &2030104116
 MonoBehaviour:

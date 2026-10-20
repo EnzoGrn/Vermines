@@ -1,0 +1,56 @@
+lecon;id_etape;style;titre;texte;cibles;forme;voile;bloquer_clics;pointeur;cible_depot;placement;condition;evenement;argument;nombre;delai;actions_autorisees;commandes_debut;commandes_fin;notes
+lecon_01;l01_lore_1;narrateur;Bienvenue dans Vermines;[LORE À ÉCRIRE] Dans les profondeurs de la terre, les cultes d'insectes se disputent l'attention de leurs dieux oubliés.;;;;;;;;bouton;;;;;aucune;;;Texte de lore provisoire : à remplacer
+lecon_01;l01_lore_2;narrateur;;[LORE À ÉCRIRE] Tu diriges l'un de ces cultes. Pour réveiller ton dieu, il te faudra des fidèles... et des âmes.;;;;;;;;bouton;;;;;aucune;;;Texte de lore provisoire : à remplacer
+lecon_01;l01_eloquence;bulle;L'éloquence;Voici ton éloquence : c'est la monnaie du jeu, elle sert à acheter des cartes.\nTu en gagnes 2 au début de chaque tour, et certaines cartes en rapportent grâce à leur pouvoir.;my_eloquence;;;;;;;bouton;;;;;aucune;;;
+lecon_01;l01_recap;bulle;;Au début de ton tour, ce récapitulatif te montre ce que tu as gagné. Ferme-le pour commencer à jouer.;gain_summary_close;;;;tapoter;;;evenement;phase_changed;Action;1;;phase_suivante;;;Le récapitulatif apparaît après la bannière de tour
+lecon_01;l01_cour;bulle;La cour;Va dans la cour.;court_button;;;non;tapoter;;;evenement;shop_opened;courtyard;1;;autre;;;shop_opened / shop_closed : courtyard ou market
+lecon_01;l01_pretre;bulle;;Achète ce prêtre : clique dessus.;court:antistes;;;non;tapoter;;;evenement;card_clicked;antistes;1;;autre;;;
+lecon_01;l01_achat;bulle;;Confirme l'achat : il coûte 5 d'éloquence.;popup_confirm;;;;tapoter;;;evenement;card_bought;antistes;1;;acheter:antistes;;;
+lecon_01;l01_achat_defausse;narrateur;;Les cartes achetées vont dans ta défausse, pas dans ta main.;;;;;;;;bouton;;;;;aucune;;;
+lecon_01;l01_retour;bulle;;Reviens à ton plateau.;back_button;;;non;tapoter;;;evenement;shop_closed;courtyard;1;;autre;;;
+lecon_01;l01_table;bulle;Ta table;Ouvre ta table de jeu : c'est ici que tu joueras tes cartes.;table_button;;;;tapoter;;;clic_cible;;;;;aucune;;;
+lecon_01;l01_scriptum;bulle;;Dans ta main, il n'y a que le Scriptum Insanum. Défausse-le : fais-le glisser sur ta défausse.;hand:scriptum_insanum|discard_slot;;;non;glisser;discard_slot;;evenement;card_discarded;scriptum_insanum;1;;defausser:scriptum_insanum;;;bloquer_clics=non : la carte doit pouvoir être glissée
+lecon_01;l01_scriptum_effet;bulle;;Défausser une carte déclenche son pouvoir : le Scriptum t'a rapporté 2 d'éloquence et t'a fait piocher une carte.\nTa pioche était vide : ta défausse a été mélangée pour la reformer, et tu as pioché le prêtre que tu viens d'acheter !;my_eloquence;;;;;;;bouton;;;;;aucune;;;
+lecon_01;l01_poser;bulle;;Pose le prêtre sur ta table. Les pouvoirs des partisans posés se déclenchent au début de ton tour.;hand:antistes|table_slot:0;;;non;glisser;table_slot:0;;evenement;partisan_placed;antistes;1;;jouer:antistes;;;
+lecon_01;l01_fermer_table;bulle;;Ferme ta table.;table_close;;;;tapoter;;;clic_cible;;;;;aucune;;;
+lecon_01;l01_fin_tour;bulle;;Maintenant, passe ton tour.;turn_button;;;;tapoter;;;evenement;turn_ended;0;1;;fin_tour|defausser;;;
+lecon_01;l01_adversaire;narrateur;;Au tour de ton adversaire...;;;non;oui;;;;evenement;turn_started;0;1;;aucune;;;L'adversaire ne fait rien : son tour passe vite
+lecon_01;l01_recap_pretre;bulle;;C'est de nouveau ton tour. Regarde le récapitulatif : 2 d'éloquence de début de tour, + 2 grâce au prêtre posé sur ta table.;gain_summary;;;;;;;bouton;;;;;aucune;;;
+lecon_01;l01_bravo;fenetre;Bravo !;Tu sais gagner de l'éloquence, acheter une carte, défausser un objet et poser un partisan.\nProchaine leçon : gagner la partie.;;;;;;;;bouton;;;;;aucune;;;
+lecon_02;l02_intro;narrateur;Gagner la partie;Dans la première leçon, tu as découvert comment gagner de l'éloquence. Acheter des cartes, c'est bien, mais il faut gagner la partie ! Comment ?;;;;;;;;bouton;;;;;aucune;Custom(arg=skip_to_action) | Custom(arg=open_table);;La leçon démarre en phase d'action, table ouverte
+lecon_02;l02_ames;bulle;Les âmes;Pour gagner, il faut accumuler 100 âmes.\nPour en gagner, il faut sacrifier des partisans.;my_souls;;;;;;;bouton;;;;;aucune;;;
+lecon_02;l02_dague;bulle;;Défausse ta dague sacrificielle pour sacrifier un partisan de ta table.;hand:pugionem_sacrificialem|discard_slot;;;non;glisser;discard_slot;;evenement;card_discarded;pugionem_sacrificialem;1;;defausser:pugionem_sacrificialem;;;
+lecon_02;l02_effet;bulle;;La dague a deux effets. Choisis celui-ci : sacrifier un partisan.;effect_choice:0;;;;tapoter;;;evenement;effect_prompt;Sacrifice;1;;choisir:pugionem_sacrificialem#0;;;"effect_choice:0 = premier effet de la carte ; l'autre effet est refusé"
+lecon_02;l02_choix_pretre;bulle;;Choisis maintenant le prêtre.;table:antistes;;;;tapoter;;;evenement;card_clicked;antistes;1;;autre;;;
+lecon_02;l02_confirmer;bulle;;Confirme le sacrifice.;popup_confirm;;;;tapoter;;;evenement;partisan_sacrificed;antistes;1;;sacrifier:antistes;;;
+lecon_02;l02_gain;bulle;;Tu as gagné 8 âmes !\nChaque partisan rapporte un nombre d'âmes différent, mais ceux de ta famille d'insectes en rapportent plus, car ils sont de ton espèce.;my_souls;;;;;;;bouton;;;;;aucune;;;
+lecon_02;l02_villageois;bulle;;Ce villageois (Vicanus) est de ta famille. Sur sa carte, il vaut 4 âmes.;hand:vicanus;;;;;;;bouton;;;;;aucune;;;
+lecon_02;l02_poser;bulle;;Pose le villageois sur ta table.;hand:vicanus|table_slot:0;;;non;glisser;table_slot:0;;evenement;partisan_placed;vicanus;1;;jouer:vicanus;Custom(arg=open_table);;
+lecon_02;l02_dague_2;bulle;;Défausse à nouveau ta dague sacrificielle.;hand:pugionem_sacrificialem|discard_slot;;;non;glisser;discard_slot;;evenement;card_discarded;pugionem_sacrificialem;1;;defausser:pugionem_sacrificialem;;;
+lecon_02;l02_effet_2;bulle;;Choisis l'effet de sacrifice.;effect_choice:0;;;;tapoter;;;evenement;effect_prompt;Sacrifice;1;;choisir:pugionem_sacrificialem#0;;;
+lecon_02;l02_choix_villageois;bulle;;Sélectionne le villageois.;table:vicanus;;;;tapoter;;;evenement;card_clicked;vicanus;1;;autre;;;
+lecon_02;l02_confirmer_2;bulle;;Confirme le sacrifice.;popup_confirm;;;;tapoter;;;evenement;partisan_sacrificed;vicanus;1;;sacrifier:vicanus;;;
+lecon_02;l02_bonus;bulle;;Tu as vu ? Ce sacrifice t'a rapporté 6 âmes, et non 4 : les partisans de ta famille donnent un bonus d'âmes quand tu les sacrifies.;my_souls;;;;;;;bouton;;;;;aucune;;;Bonus actuel du jeu : +2 par carte de ta famille au cimetière (BonusSoulsPerFamilyCardSacrified)
+lecon_02;l02_bravo;fenetre;Bravo !;Tu sais gagner des âmes en sacrifiant tes partisans.\nProchaine leçon : les boutiques.;;;;;;;;bouton;;;;;aucune;;;
+lecon_03;l03_intro;narrateur;Les boutiques;Tu as appris les bases du jeu. Que dirais-tu d'apprendre à manier les boutiques ? Dans Vermines, il en existe deux : la cour et le marché.;;;;;;;;bouton;;;;;aucune;Custom(arg=skip_to_action);;
+lecon_03;l03_marche;bulle;Le marché;Va au marché.;market_button;;;non;tapoter;;;evenement;shop_opened;market;1;;autre;;;
+lecon_03;l03_objets;narrateur;;Cette boutique propose surtout des cartes objet : chacune s'utilise une fois par tour (par exemplaire), et pour la jouer il faut la défausser.\nIci, chaque carte a un nombre d'exemplaires limité.;;;;;;;;bouton;;;;;aucune;;;
+lecon_03;l03_idole;bulle;;Achète cette carte : clique dessus.;market:idolum_maledictum;;;non;tapoter;;;evenement;card_clicked;idolum_maledictum;1;;autre;;;
+lecon_03;l03_achat;bulle;;Confirme l'achat.;popup_confirm;;;;tapoter;;;evenement;card_bought;idolum_maledictum;1;;acheter:idolum_maledictum;;;
+lecon_03;l03_disparu;narrateur;;Tu vois ? Elle a disparu : il n'y en a plus.\nMais tu peux toujours rajouter des exemplaires en revendant l'un de tes objets.;;;;;;;;bouton;;;;;aucune;;;La pile d'idoles du marché ne contient qu'un exemplaire (idolum_maledictum*1)
+lecon_03;l03_retour;bulle;;Reviens à ton plateau.;back_button;;;non;tapoter;;;evenement;shop_closed;market;1;;autre;;;
+lecon_03;l03_recycler;bulle;Le recyclage;Clique sur Recycler.;recycle_button;;;;tapoter;;;clic_cible;;;;;aucune;;;
+lecon_03;l03_choisir_idole;bulle;;Choisis ton idole.;hand:idolum_maledictum;;;;tapoter;;;clic_cible;;;;;aucune;;;
+lecon_03;l03_valider;bulle;;Valide.;recycle_validate;;;;tapoter;;;evenement;card_recycled;idolum_maledictum;1;;recycler:idolum_maledictum;;;
+lecon_03;l03_recycle;bulle;;En faisant ça, l'idole est retournée au marché et tu as gagné 6 d'éloquence.;my_eloquence;;;;;;;bouton;;;;;aucune;;;
+lecon_03;l03_cour;bulle;La cour;Va maintenant dans la cour.;court_button;;;non;tapoter;;;evenement;shop_opened;courtyard;1;;autre;;;
+lecon_03;l03_partisans;narrateur;;Cette boutique propose surtout des partisans : des cartes à sacrifier pour gagner des âmes.\nElle est séparée en deux niveaux. Les cartes de niveau 2 sont plus puissantes que celles de niveau 1, mais aussi plus chères.;;;non;;;;;bouton;;;;;aucune;;;
+lecon_03;l03_remplir;narrateur;;Tu as remarqué ? La cour ne contient qu'une seule carte. Contrairement au marché, une carte achetée dans la cour n'est pas remplacée : c'est aux joueurs de la remplir à nouveau !\nComment ? Certaines cartes de ta main le permettent.;;;non;;;;;bouton;;;;;aucune;;;
+lecon_03;l03_retour_2;bulle;;Reviens à ton plateau.;back_button;;;non;tapoter;;;evenement;shop_closed;courtyard;1;;autre;;;
+lecon_03;l03_cartes_cour;bulle;;L'Epistula Regia, l'Armiger et la Militia permettent toutes de rajouter de nouvelles cartes dans la cour.\nAttention : cela peut aussi avantager les autres joueurs si tu les utilises au mauvais moment !;hand:epistula_regia|hand:armiger|hand:militia;;;;;;;bouton;;;;;aucune;;;
+lecon_03;l03_table;bulle;;Ouvre ta table.;table_button;;;;tapoter;;;clic_cible;;;;;aucune;;;
+lecon_03;l03_defausser;bulle;;Défausse l'Epistula Regia ou l'Armiger : fais glisser l'une des deux sur ta défausse.;hand:epistula_regia|hand:armiger|discard_slot;;;non;glisser;discard_slot;;evenement;card_discarded;;1;;defausser:epistula_regia|defausser:armiger;;;Argument vide : l'une ou l'autre des deux cartes
+lecon_03;l03_fermer_table;bulle;;Ferme ta table.;table_close;;;;tapoter;;;clic_cible;;;;;aucune;;;
+lecon_03;l03_cour_2;bulle;;Retourne dans la cour.;court_button;;;non;tapoter;;;evenement;shop_opened;courtyard;1;;autre;;;
+lecon_03;l03_nouvelle_carte;narrateur;;Le pouvoir de la carte que tu viens de défausser a ajouté une nouvelle carte dans la cour : elle est de nouveau disponible à l'achat.;;;non;;;;;bouton;;;;;aucune;;;La cour de départ ne contient qu'une carte (courtOverride = latro)
+lecon_03;l03_bravo;fenetre;Bravo !;Tu sais utiliser le marché, recycler un objet et remplir la cour.;;;;;;;;bouton;;;;;aucune;;;
