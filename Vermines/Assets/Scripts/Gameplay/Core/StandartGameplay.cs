@@ -51,8 +51,10 @@ namespace Vermines.Gameplay.Core {
 
             CheckWinCondition();
 
+            // The players after the one who triggered the end game play their last turn,
+            // the game ends when the round is over so everyone played the same number of turns.
             if (EndGameTriggerPlayer != PlayerRef.None) {
-                if (CurrentPlayer == EndGameTriggerPlayer && TotalTurnPlayed > EndGameTriggerTurn) {
+                if (TotalTurnPlayed > EndGameTriggerTurn) {
                     List<PlayerController> players = Context.Runner.GetAllBehaviours<PlayerController>();
 
                     PlayerController winner = players.OrderByDescending(p => p.Statistics.Souls).ThenByDescending(p => p.Object.InputAuthority == EndGameTriggerPlayer).First();

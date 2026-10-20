@@ -10,6 +10,7 @@ namespace Vermines.Tutorial.Integration {
 
     using Vermines.CardSystem.Data;
     using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Core;
     using Vermines.Core.Network;
     using Vermines.Gameplay.Phases;
@@ -149,6 +150,7 @@ namespace Vermines.Tutorial.Integration {
             }
 
             TutorialMatch.Begin(setup);
+            TutorialFreePlayCoach.Begin(VerminesTutorialContent.FreePlayRules(TutorialSession.LessonId));
             _Relay.Subscribe();
 
             string userID = Global.PlayerService?.PlayerData?.UserID;
@@ -350,6 +352,8 @@ namespace Vermines.Tutorial.Integration {
             _Relay.Unsubscribe();
             StopAllCoroutines();
 
+            TutorialFreePlayCoach.End();
+
             bool stillInGame = _MatchRunning && Gameplay != null;
 
             _MatchRunning = false;
@@ -407,7 +411,7 @@ namespace Vermines.Tutorial.Integration {
                     break;
                 case PhaseType.Action:
                     if (useAI)
-                        actions.AddRange(SimpleAITurn(index));
+                        yield return PlayAITurn(index);
                     else {
                         foreach (ScriptedGameAction action in turn) {
                             if (action.action == GameActionType.EndTurn)
@@ -426,6 +430,8 @@ namespace Vermines.Tutorial.Integration {
                 yield return TutorialSession.PlayScriptedTurn(this, index, actions);
             if (phase == PhaseType.Action)
                 DiscardHand(index);
+            if (useAI)
+                CapAISouls(index);
             yield return Wait(quick ? 0f : _OpponentEndPhaseDelay);
 
             if (!IsCurrent(player, phase))
@@ -466,16 +472,129 @@ namespace Vermines.Tutorial.Integration {
         }
 
         /// <summary>
-        /// Unscripted turn: play every card of the hand, nothing else.
+        /// Discard powers the AI can use: they only give eloquence, souls or cards, without a choice to make
+        /// (the effect prompts only exist on the human's screen).
         /// </summary>
-        private static IEnumerable<ScriptedGameAction> SimpleAITurn(int index)
+        private static readonly HashSet<string> _AIDiscardCards = new() {
+            "operarius", "vicanus", "latro", "scriptum_insanum", "insectonomicon"
+        };
+
+        /// <summary>
+        /// Cards whose discard power adds a card to the court. The power only works for the local player,
+        /// so the AI discards them, then adds the card itself (GameplayMode.OnCardAddInCourtyard), as the power would.
+        /// </summary>
+        private static readonly HashSet<string> _AIRefillCards = new() {
+            "epistula_regia", "armiger"
+        };
+
+        /// <summary>
+        /// Unscripted turn of an opponent, one action at a time (each one changes what the next can do):
+        ///     1. discard the cards whose power gives eloquence (Operarius...), except partisans that still fit on the table;
+        ///     2. court with 2 cards or less: refill it with an Epistula Regia or an Armiger of its hand;
+        ///     3. table full: sacrifice the partisan worth the most souls, if the soul cap allows it;
+        ///     4. place its partisans on the table;
+        ///     5. buy the partisan worth the most souls it can afford, as long as the court keeps 2 cards for the player;
+        ///        with a court too small, buy an Epistula Regia at the market to refill it later.
+        /// It plays fair enough to win a whole match, without combos nor long-term plans.
+        /// </summary>
+        private IEnumerator PlayAITurn(int index)
         {
+            const float actionDelay = 0.8f;
+            const int   courtToKeep = 2;
+
             PlayerController player = GetPlayer(index);
 
             if (player == null)
                 yield break;
-            foreach (ICard card in player.Hand.ToList())
-                yield return new ScriptedGameAction(GameActionType.PlayCard, TutorialCardIds.Key(card), 0.8f);
+            int slots = Mathf.Max(1, player.Statistics.NumberOfSlotInTable);
+
+            foreach (ICard card in player.Hand.ToList()) {
+                bool fitsOnTable = card.Data.Type == CardType.Partisan && player.PlayedCards.Count < slots;
+
+                if (fitsOnTable || !_AIDiscardCards.Contains(TutorialCardIds.Key(card)) || !card.Data.CanBeDiscard())
+                    continue;
+                yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.DiscardCard, TutorialCardIds.Key(card), actionDelay));
+            }
+
+            ICard refill = player.Hand.FirstOrDefault(card => _AIRefillCards.Contains(TutorialCardIds.Key(card)));
+
+            if (refill != null && CourtCards().Count <= courtToKeep) {
+                yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.DiscardCard, TutorialCardIds.Key(refill), actionDelay));
+
+                GameplayMode gameplay = Gameplay;
+
+                if (gameplay != null && player.Object != null)
+                    gameplay.OnCardAddInCourtyard(player.Object.InputAuthority, 1);
+            }
+
+            int  partisansInHand = player.Hand.Count(card => card.Data.Type == CardType.Partisan);
+            ICard        victim = player.PlayedCards.OrderByDescending(card => card.Data.CurrentSouls).FirstOrDefault();
+
+            if (partisansInHand > 0 && player.PlayedCards.Count >= slots && victim != null && CanAIEarnSouls(index, player, victim.Data.CurrentSouls))
+                yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.SacrificePartisan, TutorialCardIds.Key(victim), actionDelay));
+            foreach (ICard card in player.Hand.Where(card => card.Data.Type == CardType.Partisan).ToList()) {
+                if (player.PlayedCards.Count >= slots)
+                    break;
+                yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.PlayCard, TutorialCardIds.Key(card), actionDelay));
+            }
+
+            List<ICard> shown = CourtCards();
+            ICard      choice = shown.Where(card => card.Data.CurrentEloquence <= player.Statistics.Eloquence).OrderByDescending(card => card.Data.CurrentSouls).FirstOrDefault();
+
+            if (shown.Count > courtToKeep && choice != null)
+                yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.BuyCard, TutorialCardIds.Key(choice), actionDelay));
+            else if (shown.Count <= courtToKeep && !player.Deck.Concat(player.Discard).Concat(player.Hand).Any(card => _AIRefillCards.Contains(TutorialCardIds.Key(card)))) {
+                GameplayMode gameplay = Gameplay;
+
+                if (gameplay != null && TryFindInShop(gameplay, "epistula_regia", out ShopType shopType, out ICard epistula) && shopType == ShopType.Market && epistula.Data.CurrentEloquence <= player.Statistics.Eloquence)
+                    yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.BuyCard, "epistula_regia", actionDelay));
+            }
+        }
+
+        /// <summary>
+        /// Cards shown in the court.
+        /// </summary>
+        private static List<ICard> CourtCards()
+        {
+            GameplayMode gameplay = Gameplay;
+
+            if (gameplay == null || !gameplay.Shop.Sections.TryGetValue(ShopType.Courtyard, out var section) || section is not CourtyardSection court)
+                return new List<ICard>();
+            return court.AvailableCards.Values.Where(card => card != null).ToList();
+        }
+
+        private IEnumerator PlayAIAction(int index, ScriptedGameAction action)
+        {
+            yield return TutorialSession.PlayScriptedTurn(this, index, new[] { action });
+        }
+
+        private static int AISoulCap(int index)
+        {
+            OpponentScript script = TutorialSession.Opponent;
+
+            return script != null && script.playerIndex == index ? script.aiMaxSouls : 0;
+        }
+
+        private static bool CanAIEarnSouls(int index, PlayerController player, int souls)
+        {
+            int cap = AISoulCap(index);
+
+            return cap <= 0 || player.Statistics.Souls + souls <= cap;
+        }
+
+        /// <summary>
+        /// Powers can still give souls to the AI (Latro, effects at the start of its turn): above the cap, its souls go back to the cap.
+        /// </summary>
+        private static void CapAISouls(int index)
+        {
+            PlayerController player = GetPlayer(index);
+            int                 cap = AISoulCap(index);
+
+            if (player == null || cap <= 0 || player.Statistics.Souls <= cap)
+                return;
+            player.SetSouls(cap);
+
+            Debug.Log($"[Tutorial] Opponent {index}: souls brought back to the lesson's cap ({cap}).");
         }
 
         /// <summary>

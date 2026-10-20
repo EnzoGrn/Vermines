@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -37,6 +38,9 @@ namespace Vermines.Tutorial
         public List<TutorialStepData> steps = new List<TutorialStepData>();
         public LessonEndCondition endCondition = LessonEndCondition.AfterLastStep;
 
+        [Tooltip("Petites suites d'étapes que le jeu demande pendant la leçon (TutorialManager.PlayInterlude) : aide après un coup interdit, carte proposée... Elles passent par-dessus l'étape en cours.")]
+        public List<TutorialInterlude> interludes = new List<TutorialInterlude>();
+
         [Tooltip("Le joueur peut passer cette leçon.")]
         public bool allowSkip = true;
 
@@ -50,5 +54,22 @@ namespace Vermines.Tutorial
                     return s;
             return null;
         }
+
+        public TutorialInterlude FindInterlude(string interludeId)
+        {
+            foreach (var i in interludes)
+                if (i != null && i.interludeId == interludeId)
+                    return i;
+            return null;
+        }
+    }
+
+    /// Une séquence annexe d'une leçon. Dans le tableau CSV, ses lignes ont pour leçon
+    /// "id_leçon/id_séquence" (ex : lecon_04/trop_cher).
+    [Serializable]
+    public class TutorialInterlude
+    {
+        public string interludeId;
+        public List<TutorialStepData> steps = new List<TutorialStepData>();
     }
 }

@@ -71,8 +71,8 @@ namespace Vermines.UI.Screen
 
                 if (card.Card?.Data.Type == CardType.Tools && card.Card?.Data.CanBeRecycled() == true)
                     card.SetClickHandler(_recycleHandler);
-                else
-                    card.SetClickHandler(null);
+                else // Tutorial: a click on a card that cannot be recycled is explained (null outside a lesson).
+                    card.SetClickHandler(Vermines.Tutorial.Integration.TutorialGameHooks.RefusedRecycleClickHandler(card.Card));
             }
 
             validateButton.onClick.AddListener(OnButtonValidate);

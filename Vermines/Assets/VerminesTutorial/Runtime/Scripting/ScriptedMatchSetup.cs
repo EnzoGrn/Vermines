@@ -35,7 +35,7 @@ namespace Vermines.Tutorial
         [Tooltip("ID du plateau cultiste (détermine la famille).")]
         public string cultistId;
 
-        [Tooltip("ID du plateau divinité.")]
+        [Tooltip("ID ou nom du plateau divinité. Vide = un dieu sans pouvoir ; \"aleatoire\" = tiré au hasard comme dans une partie normale.")]
         public string godId;
 
         public int startingEloquence;
@@ -139,6 +139,9 @@ namespace Vermines.Tutorial
 
         [Tooltip("Faux = un tour non scripté se résume à \"fin de tour\".")]
         public bool useAIForUnscriptedTurns;
+
+        [Tooltip("L'IA ne dépasse jamais ce nombre d'âmes (0 = pas de limite), pour qu'elle ne gagne pas la leçon.")]
+        public int aiMaxSouls;
 
         public bool TryGetTurn(int turnNumber, out IReadOnlyList<ScriptedGameAction> actions)
         {

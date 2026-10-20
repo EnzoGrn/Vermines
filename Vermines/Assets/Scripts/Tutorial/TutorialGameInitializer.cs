@@ -248,17 +248,50 @@ namespace Vermines.Tutorial.Integration {
             }
         }
 
+        /// <summary>
+        /// A lesson keeps gods out of the way: without godId, a player gets a god without power.
+        /// godId "random" (or "aleatoire") draws a god as a normal match does, any other value picks that god.
+        /// </summary>
         private void InitializeGods(ScriptedMatchSetup setup, List<PlayerController> controllers)
         {
-            God[] gods = Global.Settings.Gods.GetAllGods();
+            God[] gods = Global.Settings.Gods.GetAllGods() ?? new God[0];
 
-            if (gods == null || gods.Length == 0)
-                return;
             for (int i = 0; i < controllers.Count; i++) {
-                God god = ResolveGod(setup.players[i].godId, gods) ?? gods[NetworkGame.Random.Next(0, gods.Length)];
+                string godId = setup.players[i].godId;
+
+                God god = IsRandomGod(godId) && gods.Length > 0 ? gods[NetworkGame.Random.Next(0, gods.Length)] : ResolveGod(godId, gods);
+
+                if (god == null) {
+                    // Set on this peer only: a lesson is an offline match, the host is the only client.
+                    controllers[i].SetGod(BlankGod());
+
+                    continue;
+                }
 
                 Mode.RPC_InitializeGod(controllers[i].Object.InputAuthority.RawEncoded, god.ID);
             }
+        }
+
+        private static bool IsRandomGod(string godId)
+        {
+            string key = TutorialCardIds.Key(godId ?? string.Empty);
+
+            return key == "random" || key == "aleatoire";
+        }
+
+        /// <summary>
+        /// A god without effect: the phases read God.Effects without null check, so the list exists but stays empty.
+        /// </summary>
+        private static God BlankGod()
+        {
+            God god = ScriptableObject.CreateInstance<God>();
+
+            god.name    = "Tutorial Blank God";
+            god.ID      = -1;
+            god.Name    = "Aucun dieu";
+            god.Effects = new List<Vermines.CardSystem.Data.Effect.AEffect>();
+
+            return god;
         }
 
         private static God ResolveGod(string godId, God[] gods)
@@ -279,7 +312,7 @@ namespace Vermines.Tutorial.Integration {
                     return god;
             }
 
-            Debug.LogWarning($"[Tutorial] God \"{godId}\" unknown: default god used.");
+            Debug.LogWarning($"[Tutorial] God \"{godId}\" unknown: god without power used.");
 
             return null;
         }
@@ -451,6 +484,9 @@ namespace Vermines.Tutorial.Integration {
             const int level2Slots = 2;
 
             CourtyardSection section = new(level1Slots, level2Slots);
+
+            // Strong cards a free-play lesson offers later: nobody gets them before.
+            TutorialFreePlayCoach.Current?.ReserveOfferedCards(id => Take(id, CardFamily.None, false));
 
             List<ICard> scripted1 = new();
             List<ICard> scripted2 = new();

@@ -42,6 +42,18 @@ namespace Vermines.UI.Card
         // player instant feedback without a network round-trip.
         protected bool IsMyTurn => PlayerController.Local.Context.GameplayMode.IsMyTurn;
 
+        protected bool IsSlotTaken => slot.CardDisplay != null && slot.CardDisplay.gameObject.activeSelf;
+
+        protected bool IsTableFull
+        {
+            get
+            {
+                PlayerController player = PlayerController.Local;
+
+                return player != null && player.PlayedCards.Count >= player.Statistics.NumberOfSlotInTable;
+            }
+        }
+
         protected GameObject GetHandDisplay(ICard card)
             => PlayerController.Local.Context.HandManager.GetCardDisplayGO(card);
 
@@ -91,6 +103,19 @@ namespace Vermines.UI.Card
             if (!slot.CanAcceptCard(card))
             {
                 drag.ReturnToOriginalPosition();
+
+                // Tutorial: explains why the card cannot go there (tool on the table, table full).
+                Vermines.Tutorial.Integration.TutorialGameHooks.ReportRefusedDrop(card, false);
+
+                return;
+            }
+
+            // A slot already showing a card, or a full table: the card would cover a partisan already placed.
+            if (IsSlotTaken || IsTableFull)
+            {
+                drag.ReturnToOriginalPosition();
+
+                Vermines.Tutorial.Integration.TutorialGameHooks.ReportRefusedDrop(card, false);
 
                 return;
             }

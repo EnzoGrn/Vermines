@@ -69,6 +69,54 @@ namespace Vermines.Tutorial.Integration {
         }
 
         /// <summary>
+        /// A card the drop handlers send back to the hand without asking the game (so the game shows nothing):
+        /// published as "action_refused" with a key of the same style as the game's errors, so a lesson can explain why.
+        ///     Table_Discard_CardNotDiscardable  a partisan without discard power dropped on the discard;
+        ///     Table_Play_ToolOnTable            a tool dropped on a table slot;
+        ///     Table_Play_TableFull              a partisan dropped while every table slot is taken.
+        /// </summary>
+        public static void ReportRefusedDrop(ICard card, bool discard)
+        {
+            if (!TutorialMatch.IsActive || card?.Data == null)
+                return;
+            string key = null;
+
+            if (discard) {
+                if (!card.Data.CanBeDiscard())
+                    key = "Table_Discard_CardNotDiscardable";
+            } else if (card.Data.Type != CardType.Partisan) {
+                key = "Table_Play_ToolOnTable";
+            } else {
+                PlayerController player = PlayerController.Local;
+
+                if (player != null && player.PlayedCards.Count >= player.Statistics.NumberOfSlotInTable)
+                    key = "Table_Play_TableFull";
+            }
+
+            if (key != null)
+                TutorialEventBus.Publish(TutorialGameEventRelay.ActionRefused, key);
+        }
+
+        /// <summary>
+        /// Recycle screen: the click handler of a hand card that cannot be recycled (null outside a lesson, as before).
+        /// A tool that cannot be recycled (the Pugionem Sacrificialem) publishes "action_refused Recycle_CardNotRecyclable" when clicked.
+        /// </summary>
+        public static ICardClickHandler RefusedRecycleClickHandler(ICard card)
+        {
+            if (!TutorialMatch.IsActive || card?.Data == null || card.Data.Type != CardType.Tools)
+                return null;
+            return new RefusedRecycleClick();
+        }
+
+        private sealed class RefusedRecycleClick : ICardClickHandler {
+
+            public void OnCardClicked(ICard card)
+            {
+                TutorialEventBus.Publish(TutorialGameEventRelay.ActionRefused, "Recycle_CardNotRecyclable");
+            }
+        }
+
+        /// <summary>
         /// The lessons teach the sacrifice with the dagger: during a lesson, the Sacrifice phase ends by itself (SacrificePhase.Run).
         /// </summary>
         public static bool SkipSacrificePhase => TutorialMatch.IsActive;
@@ -91,7 +139,13 @@ namespace Vermines.Tutorial.Integration {
         public const string CardClicked    = "card_clicked";
         public const string ShopOpened     = "shop_opened";
         public const string ShopClosed     = "shop_closed";
+        public const string SoulsReached   = "souls_reached";
         public const string OpponentPrefix = "opponent_";
+
+        /// <summary>
+        /// "souls_reached" is published for every multiple of this value the player's souls go past (arg = the threshold, "25").
+        /// </summary>
+        private const int SoulsStep = 5;
 
         private bool _Subscribed;
 
@@ -308,8 +362,15 @@ namespace Vermines.Tutorial.Integration {
             }
 
             if (souls != _LastSouls) {
-                if (_LastSouls != int.MinValue)
+                if (_LastSouls != int.MinValue) {
                     TutorialEventBus.Publish(TutorialEvents.SoulsChanged, null, souls);
+
+                    // A step can wait for "souls_reached 25": the player has at least 25 souls.
+                    for (int threshold = (_LastSouls / SoulsStep + 1) * SoulsStep; threshold <= souls; threshold += SoulsStep) {
+                        if (threshold > 0)
+                            TutorialEventBus.Publish(SoulsReached, threshold.ToString(), souls);
+                    }
+                }
                 _LastSouls = souls;
             }
         }

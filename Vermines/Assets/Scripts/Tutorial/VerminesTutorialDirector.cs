@@ -92,6 +92,7 @@ namespace Vermines.Tutorial.Integration {
             _Manager.Initialize(new PlayerPrefsTutorialProgressStore(), ProfileId());
 
             _Manager.StepStarted     += OnStepStarted;
+            _Manager.StepResumed     += OnStepResumed;
             _Manager.LessonCompleted += OnLessonCompleted;
             _Manager.LessonAborted   += OnLessonAborted;
 
@@ -237,6 +238,14 @@ namespace Vermines.Tutorial.Integration {
 
             if (!string.IsNullOrEmpty(step.pointerDropTargetId))
                 _Binder.ResolveNamedTargets(new[] { step.pointerDropTargetId });
+        }
+
+        /// <summary>
+        /// A step shown again after an interlude: the screen may have changed meanwhile, its targets are looked for again.
+        /// </summary>
+        private void OnStepResumed(TutorialStepData step)
+        {
+            OnStepStarted(step, -1);
         }
 
         private void OnLessonCompleted(TutorialLessonData lesson, bool skipped)
