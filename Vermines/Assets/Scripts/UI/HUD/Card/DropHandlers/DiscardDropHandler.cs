@@ -49,6 +49,17 @@ namespace Vermines.UI.Card
             {
                 drag.ReturnToOriginalPosition();
 
+                // Tutorial: explains why this card cannot be discarded.
+                Vermines.Tutorial.Integration.TutorialGameHooks.ReportRefusedDrop(card, true);
+
+                return;
+            }
+
+            // Tutorial: a card the current step doesn't allow goes back to the hand.
+            if (!Vermines.Tutorial.Integration.TutorialGameHooks.AllowCardDrop(card, true))
+            {
+                drag.ReturnToOriginalPosition();
+
                 return;
             }
 

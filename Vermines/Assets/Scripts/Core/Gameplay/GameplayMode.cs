@@ -97,6 +97,11 @@ namespace Vermines.Core {
 
         public bool IsMyTurn => PlayerTurnOrder.Get(CurrentPlayerIndex) == Runner.LocalPlayer;
 
+        /// <summary>
+        /// Number of players taking turns. Overridden by the tutorial, whose scripted opponents have no client.
+        /// </summary>
+        public virtual int TurnPlayerCount => Runner.ActivePlayers.Count();
+
         public void SetPlayerTurnOrder(List<PlayerRef> orderedPlayers)
         {
             if (!HasStateAuthority)

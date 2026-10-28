@@ -41,6 +41,10 @@ namespace Vermines.Gameplay.Commands
             // 2. Check if the card is in the player hand.
             if (!_Player.Hand.Contains(_Card))
                 return new CommandResponse(CommandStatus.CriticalError, "Table_Play_CardNotInHand", _CardId.ToString(), _Card.Data.Name);
+
+            // 3. Check if there is a free slot in the partisan zone.
+            if (_Card.Data.Type == CardSystem.Enumerations.CardType.Partisan && _Player.PlayedCards.Count >= _Player.Statistics.NumberOfSlotInTable)
+                return new CommandResponse(CommandStatus.Invalid, "Table_Play_TableFull", _CardId.ToString(), _Card.Data.Name);
             return new CommandResponse(CommandStatus.Success, "", _Card.Data.Name);
         }
     }

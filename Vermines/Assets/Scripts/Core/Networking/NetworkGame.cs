@@ -295,7 +295,7 @@ namespace Vermines.Core {
             foreach (PlayerController player in _SpawnedPlayers) {
                 PlayerRef input = player.Object.InputAuthority;
 
-                if (!Runner.ActivePlayers.Contains(input))
+                if (!Runner.ActivePlayers.Contains(input) && !IsTutorialPlayer(player))
                     Runner.Despawn(player.Object);
             }
         }
@@ -315,7 +315,7 @@ namespace Vermines.Core {
             foreach (PlayerController player in _SpawnedPlayers)
                 if (player.Object.InputAuthority == playerRef)
                     return player;
-            return default;
+            return FindTutorialPlayer(playerRef);
         }
 
         public bool IsCustomGame()

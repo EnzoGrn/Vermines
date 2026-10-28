@@ -2,7 +2,6 @@
     "name": "Vermines",
     "rootNamespace": "",
     "references": [
-        "GUID:5798b9832166caa4e90b062de4d6fb0f",
         "GUID:95e4d3a7dbb68a746967d50e128f521c",
         "GUID:ccf32771fe516bc489a368d08f2fd759",
         "GUID:3c1f93b5f0ed3a14dbf26aa5c700583b",
@@ -33,7 +32,8 @@
         "GUID:72f79b615af733349b4cea3a0c53d788",
         "GUID:fe25561d224ed4743af4c60938a59d0b",
         "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:37e17ffe38d86ae48bc3207e83ffef88"
+        "GUID:37e17ffe38d86ae48bc3207e83ffef88",
+        "GUID:c75401226fab4a8f9471631e23a269a0"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
