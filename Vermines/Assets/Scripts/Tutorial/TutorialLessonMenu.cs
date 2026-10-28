@@ -1,21 +1,47 @@
+using CelticEdge.Tutorial;
+using UnityEngine.UI;
+using UnityEngine;
 using System;
 using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Vermines.Tutorial.Integration {
 
     /// <summary>
     /// The lesson list opened by the Tutorial button of the main menu.
-    /// Built by code (same look as the tutorial bubbles), to be replaced by a real view of the game later.
+    /// Its look is the prefab of VerminesTutorialConfig (LessonMenuPrefab): one row (TutorialLessonRow) is created per lesson.
     /// </summary>
     public class TutorialLessonMenu : MonoBehaviour {
 
         #region Attributes
 
+        [SerializeField]
+        [Tooltip("Enabled while the list is open.")]
         private Canvas _Canvas;
+
+        [SerializeField]
+        [Tooltip("Parent of the lesson rows (usually with a VerticalLayoutGroup).")]
         private RectTransform _List;
+
+        [SerializeField]
+        [Tooltip("The row created for each lesson.")]
+        private TutorialLessonRow _RowPrefab;
+
+        [SerializeField]
+        [Tooltip("Completion of the campaign.")]
         private TMP_Text _Progress;
+
+        [SerializeField]
+        [Tooltip("Closes the list.")]
+        private Button _BackButton;
+
+        [Header("Texts")]
+
+        [SerializeField]
+        [Tooltip("{0} = completion of the campaign, in percent.")]
+        private string _ProgressFormat = "Progression : {0} %";
+
+        [SerializeField]
+        private string _NoLessonText = "Aucune leçon disponible.";
 
         public event Action<TutorialLessonData> LessonChosen;
         public event Action Closed;
@@ -24,89 +50,16 @@ namespace Vermines.Tutorial.Integration {
 
         #endregion
 
-        #region Build
+        #region MonoBehaviour
 
-        public static TutorialLessonMenu Create(Transform parent)
+        private void Awake()
         {
-            GameObject root = new("TutorialLessonMenu", typeof(RectTransform));
-
-            root.transform.SetParent(parent, false);
-
-            TutorialLessonMenu menu = root.AddComponent<TutorialLessonMenu>();
-
-            menu.Build();
-            menu._Canvas.enabled = false;
-
-            return menu;
-        }
-
-        private void Build()
-        {
-            _Canvas = gameObject.AddComponent<Canvas>();
-            _Canvas.renderMode   = RenderMode.ScreenSpaceOverlay;
-            _Canvas.sortingOrder = 900;
-
-            CanvasScaler scaler = gameObject.AddComponent<CanvasScaler>();
-
-            scaler.uiScaleMode         = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920, 1080);
-            scaler.matchWidthOrHeight  = 0.5f;
-
-            gameObject.AddComponent<GraphicRaycaster>();
-
-            // Dark background: blocks clicks on the menu behind.
-            GameObject blocker = TutorialUIBuilder.NewUI("Blocker", transform);
-
-            TutorialUIBuilder.Stretch((RectTransform)blocker.transform);
-            blocker.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.6f);
-
-            GameObject panel = TutorialUIBuilder.NewUI("Panel", transform);
-            RectTransform panelRT = (RectTransform)panel.transform;
-
-            panelRT.anchorMin = panelRT.anchorMax = panelRT.pivot = new Vector2(0.5f, 0.5f);
-            panelRT.sizeDelta = new Vector2(820, 0);
-
-            panel.AddComponent<Image>().color = TutorialUIBuilder.PanelColor;
-
-            VerticalLayoutGroup layout = panel.AddComponent<VerticalLayoutGroup>();
-
-            layout.padding                = new RectOffset(32, 32, 28, 28);
-            layout.spacing                = 16;
-            layout.childControlHeight     = true;
-            layout.childControlWidth      = true;
-            layout.childForceExpandHeight = false;
-
-            panel.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            TMP_Text title = TutorialUIBuilder.NewText("Title", panel.transform, 40, true);
-
-            title.text      = "Didacticiel";
-            title.alignment = TextAlignmentOptions.Center;
-
-            _Progress = TutorialUIBuilder.NewText("Progress", panel.transform, 22, false);
-            _Progress.alignment = TextAlignmentOptions.Center;
-
-            GameObject list = TutorialUIBuilder.NewUI("Lessons", panel.transform);
-            VerticalLayoutGroup listLayout = list.AddComponent<VerticalLayoutGroup>();
-
-            listLayout.spacing                = 10;
-            listLayout.childControlHeight     = true;
-            listLayout.childControlWidth      = true;
-            listLayout.childForceExpandHeight = false;
-
-            _List = (RectTransform)list.transform;
-
-            GameObject footer = TutorialUIBuilder.NewUI("Footer", panel.transform);
-            HorizontalLayoutGroup footerLayout = footer.AddComponent<HorizontalLayoutGroup>();
-
-            footerLayout.childAlignment        = TextAnchor.MiddleCenter;
-            footerLayout.childForceExpandWidth = false;
-            footerLayout.childControlWidth     = true;
-            footerLayout.childControlHeight    = true;
-
-            Button back = TutorialUIBuilder.NewButton("Back", footer.transform, "Retour", new Color(0.3f, 0.3f, 0.3f), 220);
-
-            back.onClick.AddListener(Hide);
+            if (_Canvas == null)
+                _Canvas = GetComponent<Canvas>();
+            if (_BackButton != null)
+                _BackButton.onClick.AddListener(Hide);
+            if (_Canvas != null)
+                _Canvas.enabled = false;
         }
 
         #endregion
@@ -129,7 +82,9 @@ namespace Vermines.Tutorial.Integration {
             Closed?.Invoke();
         }
 
-        /// <summary>Hides without raising Closed (a lesson is starting).</summary>
+        /// <summary>
+        /// Hides without raising Closed (a lesson is starting).
+        /// </summary>
         private void HideForLesson(TutorialLessonData lesson)
         {
             _Canvas.enabled = false;
@@ -143,47 +98,35 @@ namespace Vermines.Tutorial.Integration {
                 Destroy(_List.GetChild(i).gameObject);
             TutorialCampaignData campaign = manager != null ? manager.Campaign : null;
 
-            if (campaign == null || campaign.lessons.Count == 0) {
-                _Progress.text = "Aucune leçon disponible.";
+            if (campaign == null || campaign.Lessons.Count == 0) {
+                SetProgress(_NoLessonText);
 
                 return;
             }
 
-            _Progress.text = $"Progression : {Mathf.RoundToInt(campaign.CompletionRatio(manager.Progress) * 100f)} %";
+            SetProgress(string.Format(_ProgressFormat, Mathf.RoundToInt(campaign.CompletionRatio(manager.Progress) * 100f)));
+
+            if (_RowPrefab == null) {
+                Debug.LogError("[Tutorial] TutorialLessonMenu has no row prefab: the lessons can't be listed.", this);
+
+                return;
+            }
 
             int index = 1;
 
-            foreach (TutorialLessonData lesson in campaign.lessons) {
+            foreach (TutorialLessonData lesson in campaign.Lessons) {
                 if (lesson == null)
                     continue;
-                bool completed = manager.Progress.IsCompleted(lesson.lessonId);
-                bool unlocked  = manager.IsUnlocked(lesson);
+                TutorialLessonRow row = Instantiate(_RowPrefab, _List);
 
-                AddLessonRow(index++, lesson, completed, unlocked);
+                row.Setup(index++, lesson, manager.Progress.IsCompleted(lesson.LessonId), manager.IsUnlocked(lesson), HideForLesson);
             }
         }
 
-        private void AddLessonRow(int index, TutorialLessonData lesson, bool completed, bool unlocked)
+        private void SetProgress(string text)
         {
-            string state = completed ? "<color=#8FD18F>Terminée</color>" : unlocked ? string.Empty : "<color=#999999>Verrouillée</color>";
-            Color color = unlocked ? (completed ? new Color(0.22f, 0.30f, 0.22f) : TutorialUIBuilder.AccentColor) : new Color(0.25f, 0.25f, 0.25f);
-
-            Button button = TutorialUIBuilder.NewButton($"Lesson_{lesson.lessonId}", _List, string.Empty, color, 0);
-            LayoutElement element = button.GetComponent<LayoutElement>();
-
-            element.minHeight       = 84;
-            element.flexibleWidth   = 1;
-
-            TMP_Text label = button.GetComponentInChildren<TMP_Text>();
-
-            label.richText  = true;
-            label.fontSize  = 24;
-            label.alignment = TextAlignmentOptions.Left;
-            label.margin    = new Vector4(20, 6, 20, 6);
-            label.text      = $"<b>{index}. {lesson.displayName.Resolve()}</b>  {state}\n<size=19>{lesson.description.Resolve()}</size>";
-
-            button.interactable = unlocked;
-            button.onClick.AddListener(() => HideForLesson(lesson));
+            if (_Progress != null)
+                _Progress.text = text;
         }
 
         #endregion

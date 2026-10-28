@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
+using CelticEdge.Tutorial;
 
 namespace Vermines.Player {
 
-    using Vermines.CardSystem.Data;
-    using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Core.Player;
-    using Vermines.Tutorial;
+    using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Data;
     using Vermines.Tutorial.Integration;
+    using Vermines.Core.Player;
 
     public partial class PlayerController {
 
@@ -36,10 +36,11 @@ namespace Vermines.Player {
 
         /// <summary>
         /// During a tutorial step that restricts actions, refuses the local player's requests the step doesn't allow.
+        /// action = an ID of VerminesTutorialActions.
         /// 
         /// Always true outside the tutorial.
         /// </summary>
-        private static bool TutorialAllows(GameActionType action, int cardId)
+        private static bool TutorialAllows(string action, int cardId)
         {
             if (!TutorialMatch.IsActive)
                 return true;

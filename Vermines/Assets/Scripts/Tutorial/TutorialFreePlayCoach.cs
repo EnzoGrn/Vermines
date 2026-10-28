@@ -1,99 +1,98 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using CelticEdge.Tutorial;
 using UnityEngine;
 
 namespace Vermines.Tutorial.Integration {
 
-    using Vermines.CardSystem.Elements;
-    using Vermines.Core;
-    using Vermines.Player;
-    using Vermines.ShopSystem.Data;
     using Vermines.ShopSystem.Enumerations;
+    using Vermines.ShopSystem.Data;
+    using Vermines.CardSystem.Elements;
+    using Vermines.Player;
+    using Vermines.Core;
 
     /// <summary>
     /// What a free-play lesson does around the player (VerminesTutorialContent.FreePlayRules):
-    /// hints after a forbidden move, and strong cards offered in the court at the right moment.
+    /// strong cards offered in the court at the right moment, and advice on some cards.
+    /// The hints after a forbidden move are the lesson's TutorialHintSet, played by the package (TutorialManager.Hints).
+    /// Set in VerminesTutorialConfig (VerminesLessonDefinition.FreePlay).
     /// </summary>
+    [Serializable]
     public sealed class TutorialFreePlayRules {
-
-        public List<TutorialHint> hints = new();
 
         /// <summary>
         /// Kept out of the court and the decks at the start, then offered one by one, in this order.
         /// </summary>
-        public List<TutorialCourtOffer> offers = new();
+        public List<TutorialCourtOffer> Offers = new();
 
         /// <summary>
         /// Player turns between two offers.
         /// </summary>
-        public int turnsBetweenOffers = 2;
+        public int TurnsBetweenOffers = 2;
 
         /// <summary>
         /// Cards worth a word of advice the first time the player sees them in the court (no forced purchase).
         /// </summary>
-        public List<TutorialCardTip> tips = new();
+        public List<TutorialCardTip> Tips = new();
 
         /// <summary>
         /// The lesson is only passed by winning the match: a lost match plays this interlude, then the lesson fails (empty = it fails at once).
-        /// Null or empty with requireWin false: the end of the match is not watched.
+        /// Null or empty with RequireWin false: the end of the match is not watched.
         /// </summary>
-        public bool   requireWin;
-        public string defeatInterludeId;
-    }
-
-    public sealed class TutorialCardTip {
-
-        public string cardId;
-
-        public string interludeId;
-    }
-
-    public sealed class TutorialHint {
+        public bool   RequireWin;
+        public string DefeatInterludeId;
 
         /// <summary>
-        /// A key of the game's errors (Shop_Buy_NotEnoughEloquence...), a key raised by the tutorial for the refusals the game makes silently
-        /// (Table_Play_ToolOnTable, Table_Play_TableFull), or "court_incomplete" (the player opened a court with missing cards).
+        /// Nothing to do: a guided lesson.
         /// </summary>
-        public string trigger;
+        public bool IsEmpty => Offers.Count == 0 && Tips.Count == 0 && !RequireWin;
+    }
+
+    /// <summary>
+    /// Advice on a card, played the first time the player sees it in the court.
+    /// </summary>
+    [Serializable]
+    public sealed class TutorialCardTip {
+
+        public string CardId;
 
         /// <summary>
         /// Interlude of the lesson, written in the table with the lesson "lecon_04/&lt;id&gt;".
         /// </summary>
-        public string interludeId;
-
-        /// <summary>
-        /// Player turns before the same hint can show again (1 = once per turn).
-        /// </summary>
-        public int cooldownTurns = 1;
-
-        /// <summary>
-        /// Shown the first time only.
-        /// </summary>
-        public bool once;
+        public string InterludeId;
     }
 
+    /// <summary>
+    /// When the power of an offered card shows (TutorialCourtOffer.EffectMoment).
+    /// </summary>
     public enum TutorialOfferEffect {
+
         /// <summary>A power that works at the start of the turn (Play effect): shown at the next turn of the player.</summary>
         NextTurnStart,
+
         /// <summary>A power that works when a card is added to the court (Cruce Signatus).</summary>
         CourtCardAdded
     }
 
+    /// <summary>
+    /// A strong card offered in the court during a free-play lesson.
+    /// </summary>
+    [Serializable]
     public sealed class TutorialCourtOffer {
 
-        public string cardId;
+        public string CardId;
 
         /// <summary>The card arrives in the court, the player is guided to buy it.</summary>
-        public string offerInterludeId;
+        public string OfferInterludeId;
 
         /// <summary>The player placed it on the table: what its power will do.</summary>
-        public string placedInterludeId;
+        public string PlacedInterludeId;
 
         /// <summary>Its power just worked.</summary>
-        public string effectInterludeId;
+        public string EffectInterludeId;
 
-        public TutorialOfferEffect effectMoment;
+        public TutorialOfferEffect EffectMoment;
     }
 
     /// <summary>
@@ -116,10 +115,8 @@ namespace Vermines.Tutorial.Integration {
         private readonly Dictionary<string, ICard> _Reserved = new();
 
         /// <summary>
-        /// Last player turn each hint was shown.
+        /// Turns of the player since the start of the lesson.
         /// </summary>
-        private readonly Dictionary<string, int> _HintTurns = new();
-
         private int _PlayerTurn;
 
         private int _NextOffer;
@@ -128,8 +125,8 @@ namespace Vermines.Tutorial.Integration {
         /// <summary>
         /// Offered cards the player bought, then placed, then saw working.
         /// </summary>
-        private readonly HashSet<string> _Bought = new();
-        private readonly HashSet<string> _Placed = new();
+        private readonly HashSet<string> _Bought      = new();
+        private readonly HashSet<string> _Placed      = new();
         private readonly HashSet<string> _EffectShown = new();
 
         private bool _Offering;
@@ -141,6 +138,9 @@ namespace Vermines.Tutorial.Integration {
         /// </summary>
         public const string EloquenceMaxTrigger = "eloquence_max";
 
+        /// <summary>
+        /// "court_incomplete": the player opened a court with missing cards.
+        /// </summary>
         public const string CourtIncompleteTrigger = "court_incomplete";
 
         /// <summary>
@@ -177,6 +177,7 @@ namespace Vermines.Tutorial.Integration {
             Current = new TutorialFreePlayCoach(rules);
 
             TutorialEventBus.OnEvent += Current.OnTutorialEvent;
+
             GameEvents.OnShopRefilled.AddListener(Current.OnShopRefilled);
             GameEvents.OnPlayerUpdated.AddListener(Current.OnPlayerUpdated);
 
@@ -189,6 +190,7 @@ namespace Vermines.Tutorial.Integration {
             if (Current == null)
                 return;
             TutorialEventBus.OnEvent -= Current.OnTutorialEvent;
+
             GameEvents.OnShopRefilled.RemoveListener(Current.OnShopRefilled);
             GameEvents.OnPlayerUpdated.RemoveListener(Current.OnPlayerUpdated);
 
@@ -204,11 +206,11 @@ namespace Vermines.Tutorial.Integration {
         {
             _Reserved.Clear();
 
-            foreach (TutorialCourtOffer offer in _Rules.offers) {
-                ICard card = take(offer.cardId);
+            foreach (TutorialCourtOffer offer in _Rules.Offers) {
+                ICard card = take(offer.CardId);
 
                 if (card != null)
-                    _Reserved[TutorialCardIds.Key(offer.cardId)] = card;
+                    _Reserved[TutorialCardIds.Key(offer.CardId)] = card;
             }
         }
 
@@ -258,7 +260,7 @@ namespace Vermines.Tutorial.Integration {
 
         private TutorialCourtOffer FindOffer(string cardId)
         {
-            return _Rules.offers.FirstOrDefault(offer => TutorialCardIds.Key(offer.cardId) == cardId);
+            return _Rules.Offers.FirstOrDefault(offer => TutorialCardIds.Key(offer.CardId) == cardId);
         }
 
         #endregion
@@ -268,26 +270,27 @@ namespace Vermines.Tutorial.Integration {
         private void OnTutorialEvent(TutorialEvent e)
         {
             switch (e.Id) {
-                case TutorialGameEventRelay.ActionRefused:
+                case VerminesTutorialEvents.ActionRefused:
                     // The errors of the opponents' actions are not the player's.
                     if (IsHumanTurn())
                         ShowHint(e.Arg);
 
                     break;
-                case TutorialGameEventRelay.ShopOpened:
+                case VerminesTutorialEvents.ShopOpened:
                     // Not during an interlude (an offer opens the court): the next visit will show them.
                     if (e.Arg == "courtyard" && !IsInterludeRunning) {
                         CheckCourt();
                         ShowCardTips();
                     }
+
                     break;
-                case TutorialEvents.EloquenceChanged:
+                case VerminesTutorialEvents.EloquenceChanged:
                     GameplayMode gameplay = Gameplay;
 
                     if (gameplay != null && e.Value >= gameplay.MaxEloquence)
                         ShowHint(EloquenceMaxTrigger);
                     break;
-                case TutorialEvents.MatchEnded:
+                case VerminesTutorialEvents.MatchEnded:
                     OnMatchEnded(e.Arg == "win");
 
                     break;
@@ -295,15 +298,15 @@ namespace Vermines.Tutorial.Integration {
                     if (e.Arg == "0")
                         OnPlayerTurnStarted();
                     break;
-                case TutorialGameEventRelay.PhaseChanged:
+                case VerminesTutorialEvents.PhaseChanged:
                     if (e.Arg == "Action" && IsHumanTurn())
                         TryOffer();
                     break;
-                case TutorialEvents.CardBought:
+                case VerminesTutorialEvents.CardBought:
                     OnCardBought(e.Arg);
 
                     break;
-                case TutorialEvents.PartisanPlaced:
+                case VerminesTutorialEvents.PartisanPlaced:
                     OnPartisanPlaced(e.Arg);
 
                     break;
@@ -322,9 +325,9 @@ namespace Vermines.Tutorial.Integration {
             foreach (string cardId in _Placed) {
                 TutorialCourtOffer offer = FindOffer(cardId);
 
-                if (offer == null || offer.effectMoment != TutorialOfferEffect.NextTurnStart || _EffectShown.Contains(cardId))
+                if (offer == null || offer.EffectMoment != TutorialOfferEffect.NextTurnStart || _EffectShown.Contains(cardId))
                     continue;
-                if (human.PlayedCards.Any(card => TutorialCardIds.Is(card, cardId)) && PlayInterlude(offer.effectInterludeId))
+                if (human.PlayedCards.Any(card => TutorialCardIds.Is(card, cardId)) && PlayInterlude(offer.EffectInterludeId))
                     _EffectShown.Add(cardId);
             }
         }
@@ -345,7 +348,7 @@ namespace Vermines.Tutorial.Integration {
 
             if (offer == null || !_Bought.Contains(cardId) || !_Placed.Add(cardId))
                 return;
-            PlayInterlude(offer.placedInterludeId);
+            PlayInterlude(offer.PlacedInterludeId);
         }
 
         /// <summary>
@@ -362,9 +365,9 @@ namespace Vermines.Tutorial.Integration {
             foreach (string cardId in _Placed) {
                 TutorialCourtOffer offer = FindOffer(cardId);
 
-                if (offer == null || offer.effectMoment != TutorialOfferEffect.CourtCardAdded || _EffectShown.Contains(cardId))
+                if (offer == null || offer.EffectMoment != TutorialOfferEffect.CourtCardAdded || _EffectShown.Contains(cardId))
                     continue;
-                if (human.PlayedCards.Any(card => TutorialCardIds.Is(card, cardId)) && PlayInterlude(offer.effectInterludeId))
+                if (human.PlayedCards.Any(card => TutorialCardIds.Is(card, cardId)) && PlayInterlude(offer.EffectInterludeId))
                     _EffectShown.Add(cardId);
             }
         }
@@ -387,20 +390,15 @@ namespace Vermines.Tutorial.Integration {
 
         #region Hints
 
-        private void ShowHint(string trigger)
+        /// <summary>
+        /// Sends a trigger to the lesson's hints (TutorialLessonData.Hints): the package plays the matching interlude, with its cooldown.
+        /// </summary>
+        private static void ShowHint(string trigger)
         {
-            if (string.IsNullOrEmpty(trigger))
-                return;
-            foreach (TutorialHint hint in _Rules.hints) {
-                if (!string.Equals(hint.trigger, trigger, StringComparison.OrdinalIgnoreCase))
-                    continue;
-                // Hints sharing an interlude share their cooldown.
-                if (_HintTurns.TryGetValue(hint.interludeId, out int turn) && (hint.once || _PlayerTurn - turn < Mathf.Max(1, hint.cooldownTurns)))
-                    return;
-                if (PlayInterlude(hint.interludeId))
-                    _HintTurns[hint.interludeId] = _PlayerTurn;
-                return;
-            }
+            TutorialManager manager = TutorialManager.Instance;
+
+            if (manager != null && manager.Hints != null)
+                manager.Hints.Trigger(trigger);
         }
 
         private void CheckCourt()
@@ -424,12 +422,12 @@ namespace Vermines.Tutorial.Integration {
 
             if (court == null)
                 return;
-            foreach (TutorialCardTip tip in _Rules.tips) {
-                string cardId = TutorialCardIds.Key(tip.cardId);
+            foreach (TutorialCardTip tip in _Rules.Tips) {
+                string cardId = TutorialCardIds.Key(tip.CardId);
 
                 if (_TipsShown.Contains(cardId) || !court.AvailableCards.Values.Any(card => card != null && TutorialCardIds.Is(card, cardId)))
                     continue;
-                if (PlayInterlude(tip.interludeId))
+                if (PlayInterlude(tip.InterludeId))
                     _TipsShown.Add(cardId);
             }
         }
@@ -448,23 +446,23 @@ namespace Vermines.Tutorial.Integration {
         {
             TutorialManager manager = TutorialManager.Instance;
 
-            if (!_Rules.requireWin || manager == null || manager.CurrentLesson == null)
+            if (!_Rules.RequireWin || manager == null || manager.CurrentLesson == null)
                 return;
             if (won) {
-                manager.Progress?.MarkCompleted(manager.CurrentLesson.lessonId);
+                manager.Progress?.MarkCompleted(manager.CurrentLesson.LessonId);
 
                 return;
             }
 
             _Lost = true;
 
-            if (!PlayInterlude(_Rules.defeatInterludeId))
+            if (!PlayInterlude(_Rules.DefeatInterludeId))
                 manager.FailCurrentLesson();
         }
 
         private void OnInterludeFinished(string interludeId)
         {
-            if (_Lost && interludeId == _Rules.defeatInterludeId && TutorialManager.Instance != null)
+            if (_Lost && interludeId == _Rules.DefeatInterludeId && TutorialManager.Instance != null)
                 TutorialManager.Instance.FailCurrentLesson();
         }
 
@@ -477,12 +475,12 @@ namespace Vermines.Tutorial.Integration {
         /// </summary>
         private void TryOffer()
         {
-            if (_NextOffer >= _Rules.offers.Count || _PlayerTurn - _LastOfferTurn < Mathf.Max(1, _Rules.turnsBetweenOffers))
+            if (_NextOffer >= _Rules.Offers.Count || _PlayerTurn - _LastOfferTurn < Mathf.Max(1, _Rules.TurnsBetweenOffers))
                 return;
-            TutorialCourtOffer offer = _Rules.offers[_NextOffer];
+            TutorialCourtOffer offer = _Rules.Offers[_NextOffer];
 
-            if (!_Reserved.TryGetValue(TutorialCardIds.Key(offer.cardId), out ICard card)) {
-                Debug.LogWarning($"[Tutorial] Offer \"{offer.cardId}\": card not reserved, offer skipped.");
+            if (!_Reserved.TryGetValue(TutorialCardIds.Key(offer.CardId), out ICard card)) {
+                Debug.LogWarning($"[Tutorial] Offer \"{offer.CardId}\": card not reserved, offer skipped.");
 
                 _NextOffer++;
 
@@ -499,9 +497,9 @@ namespace Vermines.Tutorial.Integration {
             _NextOffer++;
             _LastOfferTurn = _PlayerTurn;
 
-            _Reserved.Remove(TutorialCardIds.Key(offer.cardId));
+            _Reserved.Remove(TutorialCardIds.Key(offer.CardId));
 
-            PlayInterlude(offer.offerInterludeId);
+            PlayInterlude(offer.OfferInterludeId);
         }
 
         /// <summary>

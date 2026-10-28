@@ -1,18 +1,19 @@
 using System.Collections.Generic;
+using CelticEdge.Tutorial;
 using UnityEngine;
 using Fusion;
 
 namespace Vermines.Tutorial.Integration {
 
-    using Vermines.CardSystem.Data;
-    using Vermines.CardSystem.Elements;
-    using Vermines.CardSystem.Enumerations;
-    using Vermines.Core;
+    using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Gameplay.Errors;
     using Vermines.Gameplay.Phases;
-    using Vermines.Gameplay.Phases.Enumerations;
-    using Vermines.Player;
+    using Vermines.CardSystem.Enumerations;
+    using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Data;
     using Vermines.ShopSystem.Enumerations;
+    using Vermines.Player;
+    using Vermines.Core;
 
     /// <summary>
     /// Small entry points called from the game code.
@@ -32,14 +33,14 @@ namespace Vermines.Tutorial.Integration {
 
             // "fin_tour" in the table also allows the button during the Action phase (it ends the turn).
             foreach (AllowedAction allowed in TutorialInputGate.Allowed) {
-                if (allowed.Allows(GameActionType.NextPhase, phase))
+                if (allowed.Allows(VerminesTutorialActions.NextPhase, phase))
                     return true;
-                if (currentPhase == PhaseType.Action && allowed.Allows(GameActionType.EndTurn, null))
+                if (currentPhase == PhaseType.Action && allowed.Allows(VerminesTutorialActions.EndTurn, null))
                     return true;
             }
 
             // Not allowed: lets the gate tell the UI (the bubble shakes).
-            return TutorialInputGate.IsAllowed(GameActionType.NextPhase, phase);
+            return TutorialInputGate.IsAllowed(VerminesTutorialActions.NextPhase, phase);
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Vermines.Tutorial.Integration {
         {
             if (!TutorialMatch.IsActive || card == null)
                 return true;
-            return TutorialInputGate.IsAllowed(discard ? GameActionType.DiscardCard : GameActionType.PlayCard, TutorialCardIds.Key(card));
+            return TutorialInputGate.IsAllowed(discard ? VerminesTutorialActions.DiscardCard : VerminesTutorialActions.PlayCard, TutorialCardIds.Key(card));
         }
 
         /// <summary>
@@ -63,9 +64,9 @@ namespace Vermines.Tutorial.Integration {
                 return true;
             string key = TutorialCardIds.Key(card);
 
-            if (TutorialInputGate.WouldAllow(GameActionType.ChooseEffect, key))
+            if (TutorialInputGate.WouldAllow(VerminesTutorialActions.ChooseEffect, key))
                 return true;
-            return TutorialInputGate.IsAllowed(GameActionType.ChooseEffect, $"{key}#{effectIndex}");
+            return TutorialInputGate.IsAllowed(VerminesTutorialActions.ChooseEffect, $"{key}#{effectIndex}");
         }
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace Vermines.Tutorial.Integration {
             }
 
             if (key != null)
-                TutorialEventBus.Publish(TutorialGameEventRelay.ActionRefused, key);
+                TutorialEventBus.Publish(VerminesTutorialEvents.ActionRefused, key);
         }
 
         /// <summary>
@@ -112,7 +113,7 @@ namespace Vermines.Tutorial.Integration {
 
             public void OnCardClicked(ICard card)
             {
-                TutorialEventBus.Publish(TutorialGameEventRelay.ActionRefused, "Recycle_CardNotRecyclable");
+                TutorialEventBus.Publish(VerminesTutorialEvents.ActionRefused, "Recycle_CardNotRecyclable");
             }
         }
 
@@ -126,21 +127,11 @@ namespace Vermines.Tutorial.Integration {
     /// Translates the game's GameEvents into TutorialEventBus events,
     /// the vocabulary used by the steps ("wait for card_played operarius").
     /// 
-    /// Actions of the human use the standard IDs (TutorialEvents.*);
+    /// The IDs are in VerminesTutorialEvents (turn_started and turn_ended come from the package's TutorialEvents);
     /// the same actions of a scripted opponent are published with the "opponent_" prefix,
     /// so that a step waiting for the player is never validated by the opponent.
     /// </summary>
     public sealed class TutorialGameEventRelay {
-
-        public const string PhaseChanged   = "phase_changed";
-        public const string EffectPrompt   = "effect_prompt";
-        public const string ActionRefused  = "action_refused";
-        public const string CameraLocation = "camera_location";
-        public const string CardClicked    = "card_clicked";
-        public const string ShopOpened     = "shop_opened";
-        public const string ShopClosed     = "shop_closed";
-        public const string SoulsReached   = "souls_reached";
-        public const string OpponentPrefix = "opponent_";
 
         /// <summary>
         /// "souls_reached" is published for every multiple of this value the player's souls go past (arg = the threshold, "25").
@@ -252,7 +243,7 @@ namespace Vermines.Tutorial.Integration {
 
         private static void Publish(string id, int playerIndex, string arg = null, int value = 0)
         {
-            TutorialEventBus.Publish(playerIndex > 0 ? OpponentPrefix + id : id, arg, value);
+            TutorialEventBus.Publish(playerIndex > 0 ? VerminesTutorialEvents.OpponentPrefix + id : id, arg, value);
         }
 
         #endregion
@@ -275,7 +266,7 @@ namespace Vermines.Tutorial.Integration {
             if (turnStarted) {
                 _TurnCounts[index] = TurnCount(index) + 1;
 
-                // Arg = player index (as in TutorialEvents), not prefixed: steps can wait for "turn_started 1".
+                // Arg = player index, not prefixed: steps can wait for "turn_started 1".
                 TutorialEventBus.Publish(TutorialEvents.TurnStarted, index.ToString(), TurnCount(index));
             }
             if (phase == PhaseType.Resolution) {
@@ -285,17 +276,17 @@ namespace Vermines.Tutorial.Integration {
 
         private void OnCardDrawn(ICard card)
         {
-            Publish(TutorialEvents.CardDrawn, 0, TutorialCardIds.Key(card));
+            Publish(VerminesTutorialEvents.CardDrawn, 0, TutorialCardIds.Key(card));
         }
 
         private void OnCardPlayed(ICard card)
         {
             int index = CurrentIndex();
 
-            Publish(TutorialEvents.CardPlayed, index, TutorialCardIds.Key(card), index);
+            Publish(VerminesTutorialEvents.CardPlayed, index, TutorialCardIds.Key(card), index);
 
             if (card?.Data != null && card.Data.Type == CardType.Partisan)
-                Publish(TutorialEvents.PartisanPlaced, index, TutorialCardIds.Key(card), index);
+                Publish(VerminesTutorialEvents.PartisanPlaced, index, TutorialCardIds.Key(card), index);
         }
 
         private void OnCardPurchased(ShopType shopType, int cardId)
@@ -303,27 +294,27 @@ namespace Vermines.Tutorial.Integration {
             int  index = CurrentIndex();
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
-            Publish(TutorialEvents.CardBought, index, TutorialCardIds.Key(card), index);
+            Publish(VerminesTutorialEvents.CardBought, index, TutorialCardIds.Key(card), index);
         }
 
         private void OnCardSacrificed(ICard card)
         {
             int index = CurrentIndex();
 
-            Publish(TutorialEvents.PartisanSacrificed, index, TutorialCardIds.Key(card), index);
+            Publish(VerminesTutorialEvents.PartisanSacrificed, index, TutorialCardIds.Key(card), index);
         }
 
         private void OnCardRecycled(ICard card)
         {
             int index = CurrentIndex();
 
-            Publish(TutorialEvents.CardRecycled, index, TutorialCardIds.Key(card), index);
+            Publish(VerminesTutorialEvents.CardRecycled, index, TutorialCardIds.Key(card), index);
         }
 
         private void OnCardDiscarded(ICard card)
         {
             // Raised for the local player only by the game.
-            Publish(TutorialEvents.CardDiscarded, 0, TutorialCardIds.Key(card));
+            Publish(VerminesTutorialEvents.CardDiscarded, 0, TutorialCardIds.Key(card));
         }
 
         /// <summary>
@@ -331,17 +322,17 @@ namespace Vermines.Tutorial.Integration {
         /// </summary>
         private void OnCardClicked(ICard card, int slotId)
         {
-            TutorialEventBus.Publish(CardClicked, TutorialCardIds.Key(card), slotId);
+            TutorialEventBus.Publish(VerminesTutorialEvents.CardClicked, TutorialCardIds.Key(card), slotId);
         }
 
         private void OnDiscardShuffled()
         {
-            TutorialEventBus.Publish(TutorialEvents.DeckReshuffled);
+            TutorialEventBus.Publish(VerminesTutorialEvents.DeckReshuffled);
         }
 
         private void OnPhaseChanged(PhaseType phase)
         {
-            TutorialEventBus.Publish(PhaseChanged, phase.ToString(), CurrentIndex());
+            TutorialEventBus.Publish(VerminesTutorialEvents.PhaseChanged, phase.ToString(), CurrentIndex());
         }
 
         private void OnPlayerUpdated(PlayerController player)
@@ -357,18 +348,18 @@ namespace Vermines.Tutorial.Integration {
 
             if (eloquence != _LastEloquence) {
                 if (_LastEloquence != int.MinValue)
-                    TutorialEventBus.Publish(TutorialEvents.EloquenceChanged, null, eloquence);
+                    TutorialEventBus.Publish(VerminesTutorialEvents.EloquenceChanged, null, eloquence);
                 _LastEloquence = eloquence;
             }
 
             if (souls != _LastSouls) {
                 if (_LastSouls != int.MinValue) {
-                    TutorialEventBus.Publish(TutorialEvents.SoulsChanged, null, souls);
+                    TutorialEventBus.Publish(VerminesTutorialEvents.SoulsChanged, null, souls);
 
                     // A step can wait for "souls_reached 25": the player has at least 25 souls.
                     for (int threshold = (_LastSouls / SoulsStep + 1) * SoulsStep; threshold <= souls; threshold += SoulsStep) {
                         if (threshold > 0)
-                            TutorialEventBus.Publish(SoulsReached, threshold.ToString(), souls);
+                            TutorialEventBus.Publish(VerminesTutorialEvents.SoulsReached, threshold.ToString(), souls);
                     }
                 }
                 _LastSouls = souls;
@@ -377,12 +368,12 @@ namespace Vermines.Tutorial.Integration {
 
         private void OnPlayerWin(PlayerRef winner, PlayerRef local)
         {
-            TutorialEventBus.Publish(TutorialEvents.MatchEnded, winner == local ? "win" : "lose", TutorialMatch.IndexOf(winner));
+            TutorialEventBus.Publish(VerminesTutorialEvents.MatchEnded, winner == local ? "win" : "lose", TutorialMatch.IndexOf(winner));
         }
 
         private void OnEffectPromptRequested(Vermines.Gameplay.Cards.Effect.EffectPrompt prompt)
         {
-            TutorialEventBus.Publish(EffectPrompt, prompt.Kind.ToString());
+            TutorialEventBus.Publish(VerminesTutorialEvents.EffectPrompt, prompt.Kind.ToString());
         }
 
         /// <summary>
@@ -398,14 +389,14 @@ namespace Vermines.Tutorial.Integration {
                 _                                                                    => "main"
             };
 
-            TutorialEventBus.Publish(CameraLocation, arg);
+            TutorialEventBus.Publish(VerminesTutorialEvents.CameraLocation, arg);
         }
 
         private void OnActionRefused(GameActionError error, string message)
         {
-            TutorialEventBus.Publish(ActionRefused, error.MessageKey.ToString());
+            TutorialEventBus.Publish(VerminesTutorialEvents.ActionRefused, error.MessageKey.ToString());
 
-            Debug.Log($"[Tutoriel] Action refusée par le jeu : {message}");
+            Debug.Log($"[Tutorial] Action refused by the game: {message}");
         }
 
         #endregion

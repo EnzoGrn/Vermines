@@ -27,6 +27,10 @@ namespace Vermines.Menu.View {
         [SerializeField]
         private GameObject SignGameObject;
 
+        [SerializeField]
+        [Tooltip("The lessons of the tutorial and its scenario table.")]
+        private Vermines.Tutorial.Integration.VerminesTutorialConfig _TutorialConfig;
+
         #endregion
 
         #region Methods
@@ -127,7 +131,7 @@ namespace Vermines.Menu.View {
 
         private void OnTutorialButton()
         {
-            Vermines.Tutorial.Integration.VerminesTutorialDirector.OpenLessonMenu(this, Context.GameScenePath);
+            Vermines.Tutorial.Integration.VerminesTutorialDirector.OpenLessonMenu(this, Context.GameScenePath, _TutorialConfig);
         }
 
         private void OnSettingsButton()

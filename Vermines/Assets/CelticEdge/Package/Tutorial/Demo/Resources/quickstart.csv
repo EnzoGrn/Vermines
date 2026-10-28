@@ -1,0 +1,10 @@
+﻿lesson;step_id;style;title;text;targets;dim;block_clicks;shape;pointer;placement;condition;event;arg;count;allowed_actions;on_enter;on_exit;notes
+lesson_01;l01_welcome;Narrator;Welcome;This little game shows the tutorial module: bubbles, veil, filtered actions and interludes.;;;;;;;WaitForButton;;;;none;HideElement(target=buy_button);;The Buy button is hidden during this lesson
+lesson_01;l01_gold;Bubble;Your gold;This is your gold. You use it to buy items.;gold_counter;;;;;Below;WaitForButton;;;;none;;;
+lesson_01;l01_harvest;Bubble;;Click Harvest to earn a coin.;harvest_button;;;;Tap;Right;WaitForEvent;harvested;;1;harvest;;;Only the harvest action is allowed
+lesson_01;l01_again;Bubble;;Two more times!;harvest_button;;;;;Right;WaitForEvent;harvested;;2;harvest;;;
+lesson_01;l01_well_done;Modal;Well done!;You have 3 coins. The Buy button appears.;;;;;;;WaitForButton;;;;none;ShowElement(target=buy_button);;
+lesson_02;l02_intro;Narrator;Free play;Buy a sword. You start with 1 coin: if you are short, a hint will show up.;;;;;;;WaitForButton;;;;none;;;
+lesson_02;l02_free;None;;;;no;no;;;;WaitForEvent;item_bought;sword;1;all;;;No veil and no restriction: the player plays freely
+lesson_02;l02_end;Modal;Sword bought!;That's it. Pick a lesson from the list to start again.;;;;;;;WaitForButton;;;;none;;;
+lesson_02/too_expensive;too_expensive_1;Bubble;Not enough gold;You need 3 coins: harvest a little more.;gold_counter;;;;;Below;WaitForButton;;;;none;;;Interlude played by the not_enough_gold hint

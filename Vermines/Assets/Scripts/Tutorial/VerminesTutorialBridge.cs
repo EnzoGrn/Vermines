@@ -20,6 +20,7 @@ namespace Vermines.Tutorial.Integration {
     using Vermines.ShopSystem.Enumerations;
     using Vermines.UI;
     using Vermines.UI.Screen;
+    using CelticEdge.Tutorial;
 
     /// <summary>
     /// The game side of the tutorial (ITutorialGameBridge) for Vermines:
@@ -141,8 +142,15 @@ namespace Vermines.Tutorial.Integration {
 
         #region ITutorialGameBridge
 
-        public IEnumerator StartScriptedMatch(ScriptedMatchSetup setup)
+        public IEnumerator PrepareLesson(TutorialLessonData lesson)
         {
+            VerminesLessonSetup setup = lesson.Setup as VerminesLessonSetup;
+
+            if (setup == null) {
+                Debug.LogError($"[Tutorial] Lesson \"{lesson.LessonId}\" has no VerminesLessonSetup: cannot start it.");
+
+                yield break;
+            }
             if (string.IsNullOrEmpty(GameScenePath)) {
                 Debug.LogError("[Tutorial] Unknown game scene path: cannot start the lesson.");
 
@@ -150,20 +158,22 @@ namespace Vermines.Tutorial.Integration {
             }
 
             TutorialMatch.Begin(setup);
-            TutorialFreePlayCoach.Begin(VerminesTutorialContent.FreePlayRules(TutorialSession.LessonId));
+            TutorialFreePlayCoach.Begin(VerminesTutorialContent.FreePlayRules(lesson.LessonId));
             _Relay.Subscribe();
 
             string userID = Global.PlayerService?.PlayerData?.UserID;
 
+            // ReturnToMainMenu: the lesson list is reopened over the main menu, not the tavern of a multiplayer match.
             SessionRequest request = new() {
-                UserID          = string.IsNullOrEmpty(userID) ? "tutorial-player" : userID,
-                GameMode        = GameMode.Single,
-                GameplayType    = GameplayType.Standart,
-                SessionName     = $"tutorial-{Guid.NewGuid():N}",
-                ScenePath       = GameScenePath,
-                ExpectedPlayers = 1,
-                IsCustom        = false,
-                IsGameSession   = true
+                UserID           = string.IsNullOrEmpty(userID) ? "tutorial-player" : userID,
+                GameMode         = GameMode.Single,
+                GameplayType     = GameplayType.Standart,
+                SessionName      = $"tutorial-{Guid.NewGuid():N}",
+                ScenePath        = GameScenePath,
+                ExpectedPlayers  = 1,
+                IsCustom         = false,
+                IsGameSession    = true,
+                ReturnToMainMenu = true
             };
 
             _MatchRunning = true;
@@ -184,13 +194,15 @@ namespace Vermines.Tutorial.Integration {
                 yield return null;
             }
 
-            TutorialEventBus.Publish(TutorialEvents.MatchStarted);
+            TutorialEventBus.Publish(VerminesTutorialEvents.MatchStarted);
         }
 
         public IEnumerator ExecuteCommand(TutorialCommand command)
         {
             GameplayMode   gameplay = Gameplay;
-            PlayerController player = GetPlayer(command.player);
+            PlayerController player = GetPlayer(command.GetInt(VerminesTutorialCommands.PlayerKeys));
+            string             card = command.Get(VerminesTutorialCommands.CardKeys);
+            int              amount = command.GetInt(VerminesTutorialCommands.AmountKeys);
 
             if (gameplay == null || !gameplay.HasStateAuthority) {
                 Debug.LogWarning($"[Tutorial] Command {command} ignored: no active game.");
@@ -198,71 +210,65 @@ namespace Vermines.Tutorial.Integration {
                 yield break;
             }
 
-            switch (command.type) {
-                case TutorialCommandType.SetEloquence:
-                    player?.SetEloquence(command.amount);
+            switch (command.Name) {
+                case VerminesTutorialCommands.SetEloquence:
+                    player?.SetEloquence(amount);
 
                     break;
-                case TutorialCommandType.AddEloquence:
+                case VerminesTutorialCommands.AddEloquence:
                     if (player != null)
-                        player.SetEloquence(player.Statistics.Eloquence + command.amount);
+                        player.SetEloquence(player.Statistics.Eloquence + amount);
                     break;
-                case TutorialCommandType.AddSouls:
+                case VerminesTutorialCommands.AddSouls:
                     if (player != null)
-                        player.SetSouls(player.Statistics.Souls + command.amount);
+                        player.SetSouls(player.Statistics.Souls + amount);
                     break;
-                case TutorialCommandType.DrawCards:
-                    player?.DrawAuthoritative(Mathf.Max(1, command.amount));
+                case VerminesTutorialCommands.DrawCards:
+                    player?.DrawAuthoritative(Mathf.Max(1, amount));
 
                     break;
-                case TutorialCommandType.GiveCardToHand:
+                case VerminesTutorialCommands.GiveCardToHand:
                     if (player != null) {
-                        ICard card = player.TutorialTakeFromDeck(command.card) ?? FindFreeCard(command.card);
+                        ICard given = player.TutorialTakeFromDeck(card) ?? FindFreeCard(card);
 
-                        if (card != null)
-                            player.DrawCardToHand(card);
+                        if (given != null)
+                            player.DrawCardToHand(given);
                         else
-                            Debug.LogWarning($"[Tutorial] GiveCardToHand: no card \"{command.card}\" available.");
+                            Debug.LogWarning($"[Tutorial] GiveCardToHand: no card \"{card}\" available.");
                     }
 
                     break;
-                case TutorialCommandType.PutCardOnTopOfDeck:
+                case VerminesTutorialCommands.PutCardOnTopOfDeck:
                     if (player != null) {
-                        ICard card = player.TutorialTakeFromDeck(command.card) ?? FindFreeCard(command.card);
+                        ICard given = player.TutorialTakeFromDeck(card) ?? FindFreeCard(card);
 
-                        if (card != null)
-                            player.TutorialPutOnTopOfDeck(card);
+                        if (given != null)
+                            player.TutorialPutOnTopOfDeck(given);
                     }
 
                     break;
-                case TutorialCommandType.AddCardToCourt:
-                    AddCardToCourt(gameplay, command.card);
+                case VerminesTutorialCommands.AddCardToCourt:
+                    AddCardToCourt(gameplay, card);
 
                     break;
-                case TutorialCommandType.RemoveCardFromCourt:
-                    RemoveCardFromCourt(gameplay, command.card);
+                case VerminesTutorialCommands.RemoveCardFromCourt:
+                    RemoveCardFromCourt(gameplay, card);
 
                     break;
-                case TutorialCommandType.EndCurrentTurn:
+                case VerminesTutorialCommands.EndCurrentTurn:
                     gameplay.PhaseManager.ForceEndTurn();
 
                     break;
-                case TutorialCommandType.PlayOpponentTurn:
-                    // The opponents play by themselves when their turn comes.
-                    break;
-                case TutorialCommandType.SetCameraFocus:
-                    FocusCamera(command.target);
+                case VerminesTutorialCommands.SetCameraFocus:
+                    FocusCamera(command.Get(VerminesTutorialCommands.TargetKeys));
 
                     break;
-                case TutorialCommandType.Custom:
-                    yield return RunCustom(command.arg);
+                case VerminesTutorialCommands.Custom:
+                    yield return RunCustom(command.Get(VerminesTutorialCommands.ArgKeys));
 
-                    break;
-                case TutorialCommandType.PauseOpponent:
-                case TutorialCommandType.ResumeOpponent:
                     break;
                 default:
-                    Debug.Log($"[Tutorial] Command {command.type} not handled by Vermines.");
+                    Debug.Log($"[Tutorial] Command {command.Name} not handled by Vermines.");
 
                     break;
             }
@@ -272,18 +278,18 @@ namespace Vermines.Tutorial.Integration {
             yield return null;
         }
 
-        public IEnumerator PerformScriptedAction(int playerIndex, ScriptedGameAction action)
+        public IEnumerator PerformScriptedAction(int agentIndex, ScriptedAction action)
         {
             GameplayMode   gameplay = Gameplay;
-            PlayerController player = GetPlayer(playerIndex);
+            PlayerController player = GetPlayer(agentIndex);
 
             if (gameplay == null || player == null || !gameplay.HasStateAuthority)
                 yield break;
             PlayerRef playerRef = player.Object.InputAuthority;
 
-            switch (action.action) {
-                case GameActionType.PlayCard: {
-                    ICard card = FindByName(player.Hand, action.cardId);
+            switch (action.Action) {
+                case VerminesTutorialActions.PlayCard: {
+                    ICard card = FindByName(player.Hand, action.Subject);
 
                     if (card != null)
                         gameplay.OnCardPlayed(playerRef, card.ID);
@@ -292,16 +298,16 @@ namespace Vermines.Tutorial.Integration {
                     break;
                 }
 
-                case GameActionType.BuyCard: {
-                    if (TryFindInShop(gameplay, action.cardId, out ShopType shopType, out ICard card))
+                case VerminesTutorialActions.BuyCard: {
+                    if (TryFindInShop(gameplay, action.Subject, out ShopType shopType, out ICard card))
                         gameplay.OnBuyCard(playerRef, shopType, card.ID);
                     else
                         WarnMissing(action, "in the courtyard or market");
                     break;
                 }
 
-                case GameActionType.SacrificePartisan: {
-                    ICard card = FindByName(player.PlayedCards, action.cardId);
+                case VerminesTutorialActions.SacrificePartisan: {
+                    ICard card = FindByName(player.PlayedCards, action.Subject);
 
                     if (card != null)
                         gameplay.OnCardSacrificed(playerRef, card.ID);
@@ -310,8 +316,8 @@ namespace Vermines.Tutorial.Integration {
                     break;
                 }
 
-                case GameActionType.RecycleCard: {
-                    ICard card = FindByName(player.Hand, action.cardId);
+                case VerminesTutorialActions.RecycleCard: {
+                    ICard card = FindByName(player.Hand, action.Subject);
 
                     if (card != null)
                         gameplay.OnCardRecycled(playerRef, card.ID);
@@ -320,8 +326,8 @@ namespace Vermines.Tutorial.Integration {
                     break;
                 }
 
-                case GameActionType.DiscardCard: {
-                    ICard card = FindByName(player.Hand, action.cardId);
+                case VerminesTutorialActions.DiscardCard: {
+                    ICard card = FindByName(player.Hand, action.Subject);
 
                     if (card != null)
                         gameplay.OnDiscardCard(playerRef, card.ID, true);
@@ -330,8 +336,8 @@ namespace Vermines.Tutorial.Integration {
                     break;
                 }
 
-                case GameActionType.ActivatePartisanEffect: {
-                    ICard card = FindByName(player.PlayedCards, action.cardId);
+                case VerminesTutorialActions.ActivateEffect: {
+                    ICard card = FindByName(player.PlayedCards, action.Subject);
 
                     if (card != null)
                         gameplay.OnActivateEffect(playerRef, card.ID);
@@ -347,7 +353,7 @@ namespace Vermines.Tutorial.Integration {
             yield return null;
         }
 
-        public void EndScriptedMatch(bool completed)
+        public void CleanupLesson(TutorialLessonData lesson, bool completed)
         {
             _Relay.Unsubscribe();
             StopAllCoroutines();
@@ -361,8 +367,23 @@ namespace Vermines.Tutorial.Integration {
 
             TutorialMatch.End();
 
+            // As at the end of a normal match (GameplayMode.StopGame): the NPCs of the environment stop.
+            StopNpcRoutine();
+
             if (stillInGame)
                 Global.Networking.StopGame();
+        }
+
+        /// <summary>
+        /// The NPC routine is started by GameplayMode when the lesson match starts, and only stopped by GameplayMode.StopGame,
+        /// which a lesson does not call (it stops the offline session itself).
+        /// </summary>
+        private static void StopNpcRoutine()
+        {
+            RoutineManager routine = FindFirstObjectByType<RoutineManager>(FindObjectsInactive.Include);
+
+            if (routine != null)
+                routine.StopRoutine();
         }
 
         #endregion
@@ -393,15 +414,15 @@ namespace Vermines.Tutorial.Integration {
 
             if (!IsCurrent(player, phase))
                 yield break;
-            List<ScriptedGameAction> turn    = OpponentActions(index, out bool useAI);
-            List<ScriptedGameAction> actions = new();
+            List<ScriptedAction> turn    = OpponentActions(index, out bool useAI);
+            List<ScriptedAction> actions = new();
 
             // A turn where the opponent does nothing is skipped without the pauses made to follow its actions.
-            bool quick = !useAI && turn.All(a => a.action == GameActionType.EndTurn || a.action == GameActionType.NextPhase);
+            bool quick = !useAI && turn.All(a => a.Action == VerminesTutorialActions.EndTurn || a.Action == VerminesTutorialActions.NextPhase);
 
             switch (phase) {
                 case PhaseType.Sacrifice:
-                    actions.AddRange(turn.Where(a => a.action == GameActionType.SacrificePartisan));
+                    actions.AddRange(turn.Where(a => a.Action == VerminesTutorialActions.SacrificePartisan));
 
                     break;
                 case PhaseType.Gain:
@@ -413,10 +434,10 @@ namespace Vermines.Tutorial.Integration {
                     if (useAI)
                         yield return PlayAITurn(index);
                     else {
-                        foreach (ScriptedGameAction action in turn) {
-                            if (action.action == GameActionType.EndTurn)
+                        foreach (ScriptedAction action in turn) {
+                            if (action.Action == VerminesTutorialActions.EndTurn)
                                 break;
-                            if (action.action != GameActionType.SacrificePartisan && action.action != GameActionType.NextPhase)
+                            if (action.Action != VerminesTutorialActions.SacrificePartisan && action.Action != VerminesTutorialActions.NextPhase)
                                 actions.Add(action);
                         }
                     }
@@ -455,20 +476,17 @@ namespace Vermines.Tutorial.Integration {
             Debug.LogError($"[Tutorial] Opponent {index} ({player}) has no PlayerController. Controllers: {string.Join(", ", controllers)}. Topology: {gameplay.Runner.Config.Simulation.Topology}.");
         }
 
-        private List<ScriptedGameAction> OpponentActions(int index, out bool useAI)
+        /// <summary>
+        /// The scripted actions of this turn of the opponent.
+        /// useAI = true when the game plays the turn instead (opponent not scripted, or unscripted turn of an opponent played by the AI).
+        /// </summary>
+        private List<ScriptedAction> OpponentActions(int index, out bool useAI)
         {
             int turnNumber = _Relay.TurnCount(index);
 
-            useAI = false;
+            useAI = !TutorialSession.TryGetScriptedTurn(index, turnNumber, out IReadOnlyList<ScriptedAction> actions);
 
-            if (TutorialSession.TryGetOpponentTurn(index, turnNumber, out IReadOnlyList<ScriptedGameAction> actions))
-                return actions.ToList();
-            // Not the scripted opponent, or an unscripted turn of the scripted one.
-            OpponentScript script = TutorialSession.Opponent;
-
-            useAI = script == null || script.playerIndex != index || script.useAIForUnscriptedTurns;
-
-            return new List<ScriptedGameAction>();
+            return useAI ? new List<ScriptedAction>() : actions.ToList();
         }
 
         /// <summary>
@@ -513,13 +531,13 @@ namespace Vermines.Tutorial.Integration {
 
                 if (fitsOnTable || !_AIDiscardCards.Contains(TutorialCardIds.Key(card)) || !card.Data.CanBeDiscard())
                     continue;
-                yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.DiscardCard, TutorialCardIds.Key(card), actionDelay));
+                yield return PlayAIAction(index, new ScriptedAction(VerminesTutorialActions.DiscardCard, TutorialCardIds.Key(card), actionDelay));
             }
 
             ICard refill = player.Hand.FirstOrDefault(card => _AIRefillCards.Contains(TutorialCardIds.Key(card)));
 
             if (refill != null && CourtCards().Count <= courtToKeep) {
-                yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.DiscardCard, TutorialCardIds.Key(refill), actionDelay));
+                yield return PlayAIAction(index, new ScriptedAction(VerminesTutorialActions.DiscardCard, TutorialCardIds.Key(refill), actionDelay));
 
                 GameplayMode gameplay = Gameplay;
 
@@ -531,23 +549,23 @@ namespace Vermines.Tutorial.Integration {
             ICard        victim = player.PlayedCards.OrderByDescending(card => card.Data.CurrentSouls).FirstOrDefault();
 
             if (partisansInHand > 0 && player.PlayedCards.Count >= slots && victim != null && CanAIEarnSouls(index, player, victim.Data.CurrentSouls))
-                yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.SacrificePartisan, TutorialCardIds.Key(victim), actionDelay));
+                yield return PlayAIAction(index, new ScriptedAction(VerminesTutorialActions.SacrificePartisan, TutorialCardIds.Key(victim), actionDelay));
             foreach (ICard card in player.Hand.Where(card => card.Data.Type == CardType.Partisan).ToList()) {
                 if (player.PlayedCards.Count >= slots)
                     break;
-                yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.PlayCard, TutorialCardIds.Key(card), actionDelay));
+                yield return PlayAIAction(index, new ScriptedAction(VerminesTutorialActions.PlayCard, TutorialCardIds.Key(card), actionDelay));
             }
 
             List<ICard> shown = CourtCards();
             ICard      choice = shown.Where(card => card.Data.CurrentEloquence <= player.Statistics.Eloquence).OrderByDescending(card => card.Data.CurrentSouls).FirstOrDefault();
 
             if (shown.Count > courtToKeep && choice != null)
-                yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.BuyCard, TutorialCardIds.Key(choice), actionDelay));
+                yield return PlayAIAction(index, new ScriptedAction(VerminesTutorialActions.BuyCard, TutorialCardIds.Key(choice), actionDelay));
             else if (shown.Count <= courtToKeep && !player.Deck.Concat(player.Discard).Concat(player.Hand).Any(card => _AIRefillCards.Contains(TutorialCardIds.Key(card)))) {
                 GameplayMode gameplay = Gameplay;
 
                 if (gameplay != null && TryFindInShop(gameplay, "epistula_regia", out ShopType shopType, out ICard epistula) && shopType == ShopType.Market && epistula.Data.CurrentEloquence <= player.Statistics.Eloquence)
-                    yield return PlayAIAction(index, new ScriptedGameAction(GameActionType.BuyCard, "epistula_regia", actionDelay));
+                    yield return PlayAIAction(index, new ScriptedAction(VerminesTutorialActions.BuyCard, "epistula_regia", actionDelay));
             }
         }
 
@@ -563,16 +581,16 @@ namespace Vermines.Tutorial.Integration {
             return court.AvailableCards.Values.Where(card => card != null).ToList();
         }
 
-        private IEnumerator PlayAIAction(int index, ScriptedGameAction action)
+        private IEnumerator PlayAIAction(int index, ScriptedAction action)
         {
             yield return TutorialSession.PlayScriptedTurn(this, index, new[] { action });
         }
 
         private static int AISoulCap(int index)
         {
-            OpponentScript script = TutorialSession.Opponent;
+            VerminesLessonSetup setup = TutorialMatch.Setup;
 
-            return script != null && script.playerIndex == index ? script.aiMaxSouls : 0;
+            return setup != null && index >= 0 && index < setup.Players.Count ? setup.Players[index].AIMaxSouls : 0;
         }
 
         private static bool CanAIEarnSouls(int index, PlayerController player, int souls)
@@ -622,7 +640,7 @@ namespace Vermines.Tutorial.Integration {
 
         private static IEnumerator Wait(float seconds)
         {
-            for (float t = 0f; t < seconds || TutorialSession.OpponentPaused; t += Time.deltaTime)
+            for (float t = 0f; t < seconds || TutorialSession.AgentsPaused; t += Time.deltaTime)
                 yield return null;
         }
 
@@ -635,9 +653,9 @@ namespace Vermines.Tutorial.Integration {
             return cards?.FirstOrDefault(card => TutorialCardIds.Is(card, cardId));
         }
 
-        private static void WarnMissing(ScriptedGameAction action, string where)
+        private static void WarnMissing(ScriptedAction action, string where)
         {
-            Debug.LogWarning($"[Tutorial] Opponent: {action} impossible, card \"{action.cardId}\" missing {where}.");
+            Debug.LogWarning($"[Tutorial] Opponent: {action} impossible, card \"{action.Subject}\" missing {where}.");
         }
 
         private static bool TryFindInShop(GameplayMode gameplay, string cardId, out ShopType shopType, out ICard card)

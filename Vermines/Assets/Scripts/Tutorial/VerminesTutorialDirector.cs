@@ -7,11 +7,12 @@ namespace Vermines.Tutorial.Integration {
     using Vermines.Menu.View;
     using Vermines.Player;
     using Vermines.UI.View;
+    using CelticEdge.Tutorial;
 
     /// <summary>
     /// Entry point of the tutorial in the game (Tutorial button of the main menu).
     /// Creates once, and keeps between scenes: the TutorialManager and its UI,
-    /// the bridge (VerminesTutorialBridge), the target binder and the lesson menu.
+    /// the bridge (VerminesTutorialBridge), the target binder (TutorialTargetBinder) and the lesson menu.
     /// </summary>
     public class VerminesTutorialDirector : MonoBehaviour {
 
@@ -29,7 +30,6 @@ namespace Vermines.Tutorial.Integration {
 
         private TutorialManager        _Manager;
         private VerminesTutorialBridge _Bridge;
-        private TutorialTargetBinder   _Binder;
         private TutorialLessonMenu     _Menu;
         private Canvas                 _TutorialCanvas;
         private UIView                 _MainView;
@@ -42,9 +42,15 @@ namespace Vermines.Tutorial.Integration {
 
         #region Entry points
 
-        public static void OpenLessonMenu(UIView mainView, string gameScenePath)
+        /// <summary>
+        /// Opens the lesson list. The tutorial is built from the configuration the first time.
+        /// </summary>
+        public static void OpenLessonMenu(UIView mainView, string gameScenePath, VerminesTutorialConfig config)
         {
             VerminesTutorialDirector director = Ensure();
+
+            if (director._Manager == null)
+                director.CreateManager(config);
 
             director._MainView      = mainView;
             director._GameScenePath = gameScenePath;
@@ -79,20 +85,43 @@ namespace Vermines.Tutorial.Integration {
             Instance = this;
 
             _Bridge = gameObject.AddComponent<VerminesTutorialBridge>();
-            _Binder = gameObject.AddComponent<TutorialTargetBinder>();
-            _Menu   = TutorialLessonMenu.Create(transform);
 
-            _Bridge.MatchLost  += OnMatchLost;
-            _Menu.LessonChosen += OnLessonChosen;
-            _Menu.Closed       += OnMenuClosed;
+            _Bridge.MatchLost += OnMatchLost;
 
-            _Manager = TutorialUIBuilder.BuildSystem(VerminesTutorialContent.Build());
+            TutorialTargetBinder.Register();
+        }
+
+        /// <summary>
+        /// The TutorialManager, its UI and the lesson menu (prefabs of the configuration), with the lessons of the configuration.
+        /// </summary>
+        private void CreateManager(VerminesTutorialConfig config)
+        {
+            GameObject root = new("TutorialSystem");
+
+            root.SetActive(false); // The Awake wait for the UI to be connected.
+
+            _Manager = root.AddComponent<TutorialManager>();
+
+            if (config != null && config.InterfacePrefab != null)
+                _Manager.SetUI(Instantiate(config.InterfacePrefab, root.transform));
+            else
+                Debug.LogError("[Tutorial] No interface prefab in the VerminesTutorialConfig (InterfacePrefab): the lessons won't be displayed.");
+            _Manager.SetCampaign(VerminesTutorialContent.Build(config));
+
+            root.SetActive(true);
+
+            if (config != null && config.LessonMenuPrefab != null) {
+                _Menu = Instantiate(config.LessonMenuPrefab, transform);
+
+                _Menu.LessonChosen += OnLessonChosen;
+                _Menu.Closed       += OnMenuClosed;
+            } else {
+                Debug.LogError("[Tutorial] No lesson menu prefab in the VerminesTutorialConfig (LessonMenuPrefab).");
+            }
 
             _Manager.SetBridge(_Bridge);
             _Manager.Initialize(new PlayerPrefsTutorialProgressStore(), ProfileId());
 
-            _Manager.StepStarted     += OnStepStarted;
-            _Manager.StepResumed     += OnStepResumed;
             _Manager.LessonCompleted += OnLessonCompleted;
             _Manager.LessonAborted   += OnLessonAborted;
 
@@ -106,6 +135,8 @@ namespace Vermines.Tutorial.Integration {
             if (Instance != this)
                 return;
             Instance = null;
+
+            TutorialTargetBinder.Unregister();
 
             if (_Manager != null)
                 Destroy(_Manager.gameObject);
@@ -125,10 +156,10 @@ namespace Vermines.Tutorial.Integration {
         {
             _VerboseLogs = value;
 
-            if (_Manager != null)
-                _Manager.VerboseLogs = value;
-            if (_Binder != null)
-                _Binder.LogNewIds = value;
+            if (_Manager != null) {
+                _Manager.VerboseLogs       = value;
+                _Manager.Scanner.LogNewIds = value;
+            }
         }
 
         private static string ProfileId()
@@ -140,6 +171,8 @@ namespace Vermines.Tutorial.Integration {
 
         private void ShowMenu()
         {
+            if (_Menu == null)
+                return;
             SetMainViewActive(false);
 
             _Menu.Show(_Manager);
@@ -229,23 +262,6 @@ namespace Vermines.Tutorial.Integration {
             SetMainViewActive(true);
 
             _MainView = null;
-        }
-
-        private void OnStepStarted(TutorialStepData step, int index)
-        {
-            _Binder.Scan();
-            _Binder.ResolveNamedTargets(step.targetIds);
-
-            if (!string.IsNullOrEmpty(step.pointerDropTargetId))
-                _Binder.ResolveNamedTargets(new[] { step.pointerDropTargetId });
-        }
-
-        /// <summary>
-        /// A step shown again after an interlude: the screen may have changed meanwhile, its targets are looked for again.
-        /// </summary>
-        private void OnStepResumed(TutorialStepData step)
-        {
-            OnStepStarted(step, -1);
         }
 
         private void OnLessonCompleted(TutorialLessonData lesson, bool skipped)

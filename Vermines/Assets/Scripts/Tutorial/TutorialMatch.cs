@@ -17,7 +17,7 @@ namespace Vermines.Tutorial.Integration {
 
         #region Attributes
 
-        public static ScriptedMatchSetup Setup { get; private set; }
+        public static VerminesLessonSetup Setup { get; private set; }
 
         public static bool IsActive => Setup != null;
 
@@ -38,7 +38,7 @@ namespace Vermines.Tutorial.Integration {
 
         #region Methods
 
-        public static void Begin(ScriptedMatchSetup setup)
+        public static void Begin(VerminesLessonSetup setup)
         {
             Setup         = setup;
             IsInitialized = false;

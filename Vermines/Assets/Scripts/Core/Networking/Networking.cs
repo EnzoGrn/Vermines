@@ -80,7 +80,7 @@ namespace Vermines.Core.Network {
                     Log($"Starting LoadMenuCoroutine().");
 
                     // Current session is finished and there is no pending session, let's go to menu.
-                    _Coroutine = StartCoroutine(LoadMenuCoroutine());
+                    _Coroutine = StartCoroutine(LoadMenuCoroutine(ReturnsToMainMenu(_CurrentSession)));
                 }
 
                 _CurrentSession = null;
@@ -896,7 +896,20 @@ namespace Vermines.Core.Network {
             Log($"EnterMatchmakingSearchCoroutine() finished.");
         }
 
-        private IEnumerator LoadMenuCoroutine()
+        /// <summary>
+        /// True = the session asked to come back to the main menu instead of the tavern (SessionRequest.ReturnToMainMenu).
+        /// </summary>
+        private static bool ReturnsToMainMenu(Session session)
+        {
+            if (session?.GamePeers == null || session.GamePeers.Length == 0 || session.GamePeers[0] == null)
+                return false;
+            return session.GamePeers[0].Request.ReturnToMainMenu;
+        }
+
+        /// <summary>
+        /// Unloads the gameplay scenes and loads the menu, opened in the tavern unless toMainMenu is true.
+        /// </summary>
+        private IEnumerator LoadMenuCoroutine(bool toMainMenu = false)
         {
             string menuSceneName = Global.Settings.MenuScene;
 
@@ -921,8 +934,8 @@ namespace Vermines.Core.Network {
             yield return PersistentSceneService.Instance.LoadSceneAdditive(menuSceneName);
             yield return ShowLoadingSceneCoroutine(false);
 
-            FindFirstObjectByType<UIMainMenuView>().GoDirectlyToTavern();
-
+            if (!toMainMenu)
+                FindFirstObjectByType<UIMainMenuView>().GoDirectlyToTavern();
             _Coroutine = null;
         }
 

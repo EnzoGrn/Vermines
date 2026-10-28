@@ -16,6 +16,11 @@ namespace Vermines.Core.Network {
         public bool IsCustom;
         public bool IsGameSession;
 
+        /// <summary>
+        /// True = the end of this session brings the player back to the main menu instead of the tavern (e.g., a tutorial lesson).
+        /// </summary>
+        public bool ReturnToMainMenu;
+
         public int MaxPlayers;
 
         /// <summary>

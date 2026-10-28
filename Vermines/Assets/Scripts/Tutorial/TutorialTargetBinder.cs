@@ -1,20 +1,21 @@
 using System.Collections.Generic;
 using System.Reflection;
-using TMPro;
-using UnityEngine;
+using CelticEdge.Tutorial;
 using UnityEngine.UI;
+using UnityEngine;
+using TMPro;
 
 namespace Vermines.Tutorial.Integration {
 
-    using Vermines.CardSystem.Elements;
-    using Vermines.Player;
-    using Vermines.UI;
-    using Vermines.UI.Card;
-    using Vermines.UI.Plugin;
-    using Vermines.UI.Popup;
-    using Vermines.UI.Screen;
-    using Vermines.UI.Shop;
     using Vermines.ShopSystem.Enumerations;
+    using Vermines.CardSystem.Elements;
+    using Vermines.UI.Plugin;
+    using Vermines.UI.Screen;
+    using Vermines.UI.Popup;
+    using Vermines.UI.Card;
+    using Vermines.UI.Shop;
+    using Vermines.UI;
+    using Vermines.Player;
 
     /// <summary>
     /// Puts TutorialTarget components on the game's UI at runtime, so that no prefab has to be edited.
@@ -28,52 +29,51 @@ namespace Vermines.Tutorial.Integration {
     ///   popup_confirm, popup_cancel (shop popup and yes/no popups), recycle_validate, recycle_cancel,
     ///   gain_summary, gain_summary_close, table_screen, table_close, discard_slot
     ///   (back_button is also the close button of the shops)
-    ///   go:&lt;GameObject name&gt; (any object of the scene, found by name when the step starts)
+    ///   go:&lt;GameObject name&gt; (any object of the scene, found by name by the package when the step starts)
     /// Card IDs are the card names in lowercase with '_' (see TutorialCardIds).
+    /// 
+    /// A provider of the package's TutorialTargetScanner: it runs at the start of each step and while a lesson runs.
     /// </summary>
-    public class TutorialTargetBinder : MonoBehaviour {
+    public static class TutorialTargetBinder {
 
         #region Attributes
 
-        [SerializeField]
-        private float _ScanInterval = 0.2f;
-
-        private float _NextScan;
-
-        private static readonly FieldInfo BannerPlayerField    = typeof(PlayerBannerUI).GetField("_player", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo BannerPlayerField    = typeof(PlayerBannerUI).GetField("_player"      , BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo BannerEloquenceField = typeof(PlayerBannerUI).GetField("eloquenceText", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo BannerSoulsField     = typeof(PlayerBannerUI).GetField("soulsText", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo BannerSoulsField     = typeof(PlayerBannerUI).GetField("soulsText"    , BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private static readonly FieldInfo ChoiceCardField       = typeof(GameplayUIChoiceEffect).GetField("_card", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo ChoiceCardField       = typeof(GameplayUIChoiceEffect).GetField("_card"          , BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo ChoiceButtonsField    = typeof(GameplayUIChoiceEffect).GetField("_spawnedButtons", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo PopupConfirmField     = typeof(CardPopupBase).GetField("confirmButton", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo PopupCancelField      = typeof(CardPopupBase).GetField("cancelButton", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo RecycleValidateField  = typeof(GameplayUIRecycle).GetField("validateButton", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo RecycleCancelField    = typeof(GameplayUIRecycle).GetField("cancelButton", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo PopupConfirmField     = typeof(CardPopupBase).GetField("confirmButton"           , BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo PopupCancelField      = typeof(CardPopupBase).GetField("cancelButton"            , BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo RecycleValidateField  = typeof(GameplayUIRecycle).GetField("validateButton"      , BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo RecycleCancelField    = typeof(GameplayUIRecycle).GetField("cancelButton"        , BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private readonly HashSet<string> _LoggedIds = new();
-
-        public bool LogNewIds { get; set; }
-
-        #endregion
-
-        #region MonoBehaviour
-
-        private void LateUpdate()
-        {
-            if (!TutorialMatch.IsInitialized || Time.unscaledTime < _NextScan)
-                return;
-            _NextScan = Time.unscaledTime + _ScanInterval;
-
-            Scan();
-        }
+        /// <summary>
+        /// The scanner of the scan in progress, which gives the IDs.
+        /// </summary>
+        private static TutorialTargetScanner _Scanner;
 
         #endregion
 
         #region Methods
 
-        public void Scan()
+        public static void Register()
         {
+            TutorialTargetScanner.AddProvider(Scan);
+        }
+
+        public static void Unregister()
+        {
+            TutorialTargetScanner.RemoveProvider(Scan);
+        }
+
+        private static void Scan(TutorialTargetScanner scanner)
+        {
+            if (!TutorialMatch.IsInitialized)
+                return;
+            _Scanner = scanner;
+
             ScanHand();
             ScanCardDisplays();
             ScanTableSlots();
@@ -81,39 +81,11 @@ namespace Vermines.Tutorial.Integration {
             ScanNavigation();
             ScanScreens();
             ScanEffectChoices();
+
+            _Scanner = null;
         }
 
-        /// <summary>
-        /// Called when a step starts: "go:Name" targets are looked up by GameObject name.
-        /// </summary>
-        public void ResolveNamedTargets(IEnumerable<string> targetIds)
-        {
-            if (targetIds == null)
-                return;
-            foreach (string id in targetIds) {
-                if (string.IsNullOrEmpty(id) || !id.StartsWith("go:") || TutorialTargetRegistry.Get(id) != null)
-                    continue;
-                string objectName = id.Substring(3);
-                GameObject  found = FindByName(objectName);
-
-                if (found != null)
-                    Tag(found, id);
-                else
-                    Debug.LogWarning($"[Tutorial] No object named \"{objectName}\" for target \"{id}\".");
-            }
-        }
-
-        private static GameObject FindByName(string objectName)
-        {
-            foreach (Transform t in FindObjectsByType<Transform>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
-                if (t.name == objectName)
-                    return t.gameObject;
-            }
-
-            return null;
-        }
-
-        private void ScanHand()
+        private static void ScanHand()
         {
             PlayerController local = PlayerController.Local;
             HandManager       hand = local != null ? local.Context?.HandManager : null;
@@ -130,14 +102,14 @@ namespace Vermines.Tutorial.Integration {
             }
         }
 
-        private void ScanCardDisplays()
+        private static void ScanCardDisplays()
         {
             PlayerController local = PlayerController.Local;
             HandManager       hand = local != null ? local.Context?.HandManager : null;
 
-            ShopUIController[] shops = FindObjectsByType<ShopUIController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            ShopUIController[] shops = Object.FindObjectsByType<ShopUIController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
-            foreach (CardDisplay display in FindObjectsByType<CardDisplay>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (CardDisplay display in Object.FindObjectsByType<CardDisplay>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 ICard card = display.Card;
 
                 if (card == null)
@@ -180,9 +152,9 @@ namespace Vermines.Tutorial.Integration {
             return false;
         }
 
-        private void ScanTableSlots()
+        private static void ScanTableSlots()
         {
-            foreach (TableCardSlot slot in FindObjectsByType<TableCardSlot>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (TableCardSlot slot in Object.FindObjectsByType<TableCardSlot>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 // The card display of a slot is tagged "table:<card>": only tag the slot when it is another object.
                 if (slot.CardDisplay != null && slot.CardDisplay.gameObject == slot.gameObject)
                     continue;
@@ -190,13 +162,13 @@ namespace Vermines.Tutorial.Integration {
             }
         }
 
-        private void ScanBanners()
+        private static void ScanBanners()
         {
             PlayerController local = PlayerController.Local;
 
             if (local == null || BannerPlayerField == null)
                 return;
-            foreach (PlayerBannerUI banner in FindObjectsByType<PlayerBannerUI>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (PlayerBannerUI banner in Object.FindObjectsByType<PlayerBannerUI>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 PlayerController player = BannerPlayerField.GetValue(banner) as PlayerController;
 
                 if (player == null)
@@ -212,31 +184,31 @@ namespace Vermines.Tutorial.Integration {
             }
         }
 
-        private void ScanNavigation()
+        private static void ScanNavigation()
         {
-            foreach (NavButtonPlugin nav in FindObjectsByType<NavButtonPlugin>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (NavButtonPlugin nav in Object.FindObjectsByType<NavButtonPlugin>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 foreach (Button button in nav.GetComponentsInChildren<Button>(false)) {
                     string name = TutorialCardIds.Key(button.gameObject.name);
-                    string id = name.Contains("court") ? "court_button" : name.Contains("market") ? "market_button" : name.Contains("back") || name.Contains("close") ? "back_button" : "nav:" + name;
+                    string id   = name.Contains("court") ? "court_button" : name.Contains("market") ? "market_button" : name.Contains("back") || name.Contains("close") ? "back_button" : "nav:" + name;
 
                     Tag(button.gameObject, id);
                 }
             }
         }
 
-        private void ScanScreens()
+        private static void ScanScreens()
         {
-            foreach (GameplayUIShop shop in FindObjectsByType<GameplayUIShop>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (GameplayUIShop shop in Object.FindObjectsByType<GameplayUIShop>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 if (shop.TutorialCloseButton != null)
                     Tag(shop.TutorialCloseButton, "back_button");
             }
 
-            foreach (GameplayUIGainSummary summary in FindObjectsByType<GameplayUIGainSummary>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (GameplayUIGainSummary summary in Object.FindObjectsByType<GameplayUIGainSummary>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 Tag(summary.gameObject, "gain_summary");
                 TagButton(summary.TutorialCloseButton, "gain_summary_close");
             }
 
-            foreach (GameplayUITable table in FindObjectsByType<GameplayUITable>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (GameplayUITable table in Object.FindObjectsByType<GameplayUITable>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 Tag(table.gameObject, "table_screen");
                 TagButton(table.TutorialCloseButton, "table_close");
 
@@ -244,17 +216,17 @@ namespace Vermines.Tutorial.Integration {
                     Tag(table.TutorialDiscardSlot.gameObject, "discard_slot");
             }
 
-            foreach (GameplayUIDualButtonPopup popup in FindObjectsByType<GameplayUIDualButtonPopup>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (GameplayUIDualButtonPopup popup in Object.FindObjectsByType<GameplayUIDualButtonPopup>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 TagButton(popup.TutorialConfirmButton, "popup_confirm");
                 TagButton(popup.TutorialCancelButton, "popup_cancel");
             }
 
-            foreach (CardPopupBase popup in FindObjectsByType<CardPopupBase>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (CardPopupBase popup in Object.FindObjectsByType<CardPopupBase>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 TagButton(PopupConfirmField?.GetValue(popup) as Button, "popup_confirm");
                 TagButton(PopupCancelField?.GetValue(popup) as Button, "popup_cancel");
             }
 
-            foreach (GameplayUIRecycle recycle in FindObjectsByType<GameplayUIRecycle>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (GameplayUIRecycle recycle in Object.FindObjectsByType<GameplayUIRecycle>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 TagButton(RecycleValidateField?.GetValue(recycle) as Button, "recycle_validate");
                 TagButton(RecycleCancelField?.GetValue(recycle) as Button, "recycle_cancel");
             }
@@ -264,11 +236,11 @@ namespace Vermines.Tutorial.Integration {
         /// The buttons of GameplayUIChoiceEffect only exist for the effects that can be played:
         /// each button is matched to its effect by its text, so "effect_choice:0" is always the first effect of the card.
         /// </summary>
-        private void ScanEffectChoices()
+        private static void ScanEffectChoices()
         {
             if (ChoiceCardField == null || ChoiceButtonsField == null)
                 return;
-            foreach (GameplayUIChoiceEffect screen in FindObjectsByType<GameplayUIChoiceEffect>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (GameplayUIChoiceEffect screen in Object.FindObjectsByType<GameplayUIChoiceEffect>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 ICard card = ChoiceCardField.GetValue(screen) as ICard;
 
                 if (card?.Data?.Effects == null || ChoiceButtonsField.GetValue(screen) is not List<Button> buttons)
@@ -301,7 +273,7 @@ namespace Vermines.Tutorial.Integration {
             }
         }
 
-        private void TagButton(Button button, string id)
+        private static void TagButton(Button button, string id)
         {
             if (button != null)
                 Tag(VisibleObject(button.gameObject), id);
@@ -365,18 +337,10 @@ namespace Vermines.Tutorial.Integration {
             return helperRect;
         }
 
-        private void Tag(GameObject target, string id)
+        private static void Tag(GameObject target, string id)
         {
-            if (target == null || string.IsNullOrEmpty(id))
-                return;
-            if (!target.TryGetComponent(out TutorialTarget tutorialTarget))
-                tutorialTarget = target.AddComponent<TutorialTarget>();
-            if (tutorialTarget.TargetId == id)
-                return;
-            tutorialTarget.SetTargetId(id);
-
-            if (LogNewIds && _LoggedIds.Add(id))
-                Debug.Log($"[Tutorial] Target available: {id} ({target.name})", target);
+            if (_Scanner != null)
+                _Scanner.Bind(target, id);
         }
 
         #endregion

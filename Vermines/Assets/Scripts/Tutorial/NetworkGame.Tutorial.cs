@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 using Fusion;
 
 namespace Vermines.Core {
@@ -19,8 +20,7 @@ namespace Vermines.Core {
 
         /// <summary>
         /// Tutorial only (state authority): spawns the PlayerController of a scripted opponent.
-        /// A tutorial match runs offline, so the opponent has no client behind its PlayerRef,
-        /// the tutorial bridge plays its turns on the host.
+        /// A tutorial match runs offline, so the opponent has no client behind its PlayerRef, the tutorial bridge plays its turns on the host.
         /// </summary>
         public PlayerController SpawnTutorialPlayer(PlayerRef playerRef)
         {
@@ -73,7 +73,7 @@ namespace Vermines.Core {
             if (player == null || player.Object == null || !player.Object.IsValid) {
                 _TutorialPlayers.Remove(playerRef);
 
-                UnityEngine.Debug.LogError($"[Tutorial] The scripted opponent {playerRef} was despawned (frame {UnityEngine.Time.frameCount}, tick {Runner.Tick}).");
+                Debug.LogError($"[Tutorial] The scripted opponent {playerRef} was despawned (frame {Time.frameCount}, tick {Runner.Tick}).");
 
                 return default;
             }
@@ -83,7 +83,7 @@ namespace Vermines.Core {
             if (current == playerRef)
                 return player;
             if (_ReportedTutorialPlayers.Add(playerRef))
-                UnityEngine.Debug.LogError($"[Tutorial] The scripted opponent {playerRef} lost its input authority: now {current} (frame {UnityEngine.Time.frameCount}, tick {Runner.Tick}, topology {Runner.Config.Simulation.Topology}).");
+                Debug.LogError($"[Tutorial] The scripted opponent {playerRef} lost its input authority: now {current} (frame {Time.frameCount}, tick {Runner.Tick}, topology {Runner.Config.Simulation.Topology}).");
             if (!HasStateAuthority)
                 return player;
             if (Runner.Config.Simulation.Topology != Topologies.ClientServer)

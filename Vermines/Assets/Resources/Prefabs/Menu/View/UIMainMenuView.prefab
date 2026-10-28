@@ -248,3 +248,4 @@ MonoBehaviour:
   _QuitButton: {fileID: 0}
   _ApplicationVersion: {fileID: 6682735398064729073}
   SignGameObject: {fileID: 0}
+  _TutorialConfig: {fileID: 11400000, guid: 9f93e932164f0d64080e77dca7e5096c, type: 2}
