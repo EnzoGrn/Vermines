@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2640760969800112244, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: _Key
+      value: scortopheles
+      objectReference: {fileID: 0}
     - target: {fileID: 4118065876687379515, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
       propertyPath: m_Sprite
       value: 

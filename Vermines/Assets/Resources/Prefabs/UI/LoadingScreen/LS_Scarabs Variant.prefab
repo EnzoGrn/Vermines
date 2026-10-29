@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 405676438617224077, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: _Key
+      value: scarabs
+      objectReference: {fileID: 0}
     - target: {fileID: 1739182851141367746, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
       propertyPath: m_Sprite
       value: 

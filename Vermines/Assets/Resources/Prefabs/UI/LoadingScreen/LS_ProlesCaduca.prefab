@@ -147,6 +147,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4228007629645473789}
+  - component: {fileID: 8470609017925759088}
   m_Layer: 5
   m_Name: LS_ProlesCaduca
   m_TagString: Untagged
@@ -174,6 +175,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &8470609017925759088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845883463219581154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b758afc1cd06ac741bb3f2fb36a14324, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Vermines::Vermines.Core.Scene.LoadingScreenLocalization
+  _Key: proles_caduca
+  _Title: {fileID: 2436754663944136915}
+  _Description: {fileID: 4092995144436167430}
 --- !u!1 &4442130102227077664
 GameObject:
   m_ObjectHideFlags: 0

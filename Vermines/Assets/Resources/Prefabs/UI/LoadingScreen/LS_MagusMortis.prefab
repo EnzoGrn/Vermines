@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1845883463219581154, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
       propertyPath: m_Name
-      value: LoadingScreen Variant
+      value: LS_MagusMortis
       objectReference: {fileID: 0}
     - target: {fileID: 1845883463219581154, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
       propertyPath: m_IsActive
@@ -125,6 +125,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: e2202b2e053ab144d9dcd39a4d46e9cd, type: 3}
+    - target: {fileID: 8470609017925759088, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: _Key
+      value: magus_mortis
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

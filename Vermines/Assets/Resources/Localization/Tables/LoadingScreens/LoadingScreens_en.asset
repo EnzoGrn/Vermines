@@ -1,0 +1,188 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: LoadingScreens_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 68e28738469fc1e47894c66d18f8b174, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 2431639552
+    m_Localized: Proles Caduca
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2570051584
+    m_Localized: 'Rejected by the Bee Kingdom,
+
+      this abomination makes even
+
+      the
+      bravest tremble.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3979337728
+    m_Localized: Dracoleon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3979337729
+    m_Localized: 'This creature, half dragon,
+
+      half chameleon, serves the
+
+      Bees.
+      Enlist it and you will be able
+
+      to copy the effects of other followers.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4944027648
+    m_Localized: Magus Mortis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4944027649
+    m_Localized: 'Eager to collect new souls,
+
+      it will give you some at the
+
+      right
+      moment.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5397012480
+    m_Localized: "Chilosmod\xE9e"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5397012481
+    m_Localized: The Elders say it hides within the Kingdom in the shape of a centipede.
+      Make offerings to it, swear to serve it, and perhaps it will show itself.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5824831488
+    m_Localized: The Bees
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5824831489
+    m_Localized: Rulers of the Kingdom, will they be able to defend themselves against
+      the threat you pose? Or will they let your words seduce them?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6491725824
+    m_Localized: Guide of Light
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6491725825
+    m_Localized: Of the Firefly family, the Guide of Light is a true warrior. Win
+      it over to your cause to earn many souls.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6814687232
+    m_Localized: "Scortoph\xE9l\xE8s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6814687233
+    m_Localized: "Hungry for destruction, Scortoph\xE9l\xE8s is eager to be summoned
+      to put the Kingdom to fire and sword."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7167008768
+    m_Localized: The Bees
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7167008769
+    m_Localized: Find a way to tame the Bee people and bring down their Kingdom.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7796154368
+    m_Localized: "Belz\xE9rocera"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7796154369
+    m_Localized: "Symbolic depiction of Belz\xE9rocera, God of the flying creatures.\nIt
+      will stand by your side in your quest if you swear allegiance to it."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8110727168
+    m_Localized: Mantislith
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8110727169
+    m_Localized: 'A female demon, she devours the hopes of new lives and terrorizes
+      the Kingdom. Keep your head on your shoulders: if you worship her, she will
+      grant you a certain power.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8442077184
+    m_Localized: The Fireflies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8442077185
+    m_Localized: Active at night, they let you add followers to the Courtyard.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9062834176
+    m_Localized: The Mosquitoes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9062834177
+    m_Localized: A band of mercenaries who will serve anyone, for a price.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9616482304
+    m_Localized: The Cultists
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9616482305
+    m_Localized: Longing to bring their Occult Gods back to life, the Cultists will
+      do anything to sacrifice souls.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10157547520
+    m_Localized: The Crickets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10157547521
+    m_Localized: Will your song be like the Crickets' song? Sing the praises of your
+      Occult Gods and enlist followers.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10635698176
+    m_Localized: The Scarabs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10635698177
+    m_Localized: Will your words pierce the hard shell of the scarabs all the way
+      to their heart?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11046739968
+    m_Localized: The Flies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11046739969
+    m_Localized: Approach them with caution, they will serve you if you know how
+      to talk to them.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11428421632
+    m_Localized: The Ladybugs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11428421633
+    m_Localized: A symbol of luck, the ladybug will guide you. May your words bring
+      you many followers.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

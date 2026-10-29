@@ -101,6 +101,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Les Mouches
       objectReference: {fileID: 0}
+    - target: {fileID: 6931169416312727919, guid: 9fe6493b4ad88fb4281f26f03d9b17d7, type: 3}
+      propertyPath: _Key
+      value: fly
+      objectReference: {fileID: 0}
     - target: {fileID: 9057834894106963232, guid: 9fe6493b4ad88fb4281f26f03d9b17d7, type: 3}
       propertyPath: m_Sprite
       value: 

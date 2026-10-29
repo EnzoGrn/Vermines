@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: ca6902620048cd045ba44ff8cd9aa377, type: 3}
+    - target: {fileID: 1271360190757783588, guid: 4b9e7df15c74e9e4698235a048a38d6b, type: 3}
+      propertyPath: _Key
+      value: firefly
+      objectReference: {fileID: 0}
     - target: {fileID: 5041909708189143175, guid: 4b9e7df15c74e9e4698235a048a38d6b, type: 3}
       propertyPath: m_text
       value: Les Lucioles

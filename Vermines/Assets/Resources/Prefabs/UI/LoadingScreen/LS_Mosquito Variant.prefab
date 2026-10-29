@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 00ae15de1a69f8d4fadca4c01374c839, type: 3}
+    - target: {fileID: 4129743417922244639, guid: 630b559938d1db049b6004b97c0f9057, type: 3}
+      propertyPath: _Key
+      value: mosquito
+      objectReference: {fileID: 0}
     - target: {fileID: 6151786236480893069, guid: 630b559938d1db049b6004b97c0f9057, type: 3}
       propertyPath: m_Name
       value: LS_Mosquito Variant

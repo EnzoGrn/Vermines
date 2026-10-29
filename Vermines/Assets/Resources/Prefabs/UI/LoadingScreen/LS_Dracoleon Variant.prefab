@@ -129,6 +129,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 133f82b0f904513468917c44371bd042, type: 3}
+    - target: {fileID: 8470609017925759088, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: _Key
+      value: dracoleon
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

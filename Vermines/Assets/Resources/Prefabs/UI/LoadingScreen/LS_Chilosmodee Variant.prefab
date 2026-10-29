@@ -110,6 +110,10 @@ PrefabInstance:
       propertyPath: m_text
       value: "Chilosmod\xE9e"
       objectReference: {fileID: 0}
+    - target: {fileID: 7463964039941521796, guid: 26cf4d4fdc5b579489448fe1c2450d29, type: 3}
+      propertyPath: _Key
+      value: chilosmodee
+      objectReference: {fileID: 0}
     - target: {fileID: 8797433032026621387, guid: 26cf4d4fdc5b579489448fe1c2450d29, type: 3}
       propertyPath: m_Sprite
       value: 
