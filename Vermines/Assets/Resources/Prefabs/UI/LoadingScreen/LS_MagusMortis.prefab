@@ -1,0 +1,136 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &5848056167544760324
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1845883463219581154, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_Name
+      value: LS_MagusMortis
+      objectReference: {fileID: 0}
+    - target: {fileID: 1845883463219581154, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2436754663944136915, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_text
+      value: Magus Mortis
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092995144436167430, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_text
+      value: "Avide de collecter de nouvelles \xE2mes,\nil saura vous en donner au
+        moment\nopportun."
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092995144436167430, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_fontSize
+      value: 27
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092995144436167430, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_lineSpacing
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092995144436167430, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 27
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092995144436167430, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228007629645473789, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497990907867853887, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e2202b2e053ab144d9dcd39a4d46e9cd, type: 3}
+    - target: {fileID: 8470609017925759088, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
+      propertyPath: _Key
+      value: magus_mortis
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f32295871eeb2b24fbc6878e4689639b, type: 3}
