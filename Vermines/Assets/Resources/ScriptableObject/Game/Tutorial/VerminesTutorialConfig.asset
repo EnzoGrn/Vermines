@@ -12,31 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cfffc4aef59b6f49951fed96cb291ae, type: 3}
   m_Name: VerminesTutorialConfig
   m_EditorClassIdentifier: Vermines::Vermines.Tutorial.Integration.VerminesTutorialConfig
-  _Scenario: {fileID: 4900000, guid: 3487d78320a5f624986da50c72361cb8, type: 3}
-  _CampaignId: "vermines"
+  _Scenario: {fileID: 4900000, guid: 62ac3d70c79911246b4c20326960be9b, type: 3}
+  _CampaignId: vermines
   _Lessons:
-  - LessonId: "lecon_01"
-    DisplayName: "D\u00E9couverte"
-    Description: "L'\u00E9loquence, acheter \u00E0 la cour, d\u00E9fausser un objet, poser un partisan."
-    RequiredLessonId:
+  - LessonId: lecon_01
+    DisplayName: "D\xE9couverte"
+    Description: "L'\xE9loquence, acheter \xE0 la cour, d\xE9fausser un objet, poser
+      un partisan."
+    RequiredLessonId: 
     Setup:
       Players:
-      - DisplayName: "Vous"
-        CultistId:
-        GodId:
+      - DisplayName: Vous
+        CultistId: 
+        GodId: 
         StartingEloquence: 3
         StartingSouls: 0
         DeckTopToBottom: []
         ExactDeck: 1
         StartingHand:
-        - "scriptum_insanum"
+        - scriptum_insanum
         StartingPartisans: []
         StartingDiscard: []
         StartingSacrificed: []
         AIMaxSouls: 0
-      - DisplayName: "Cultiste rival"
-        CultistId:
-        GodId:
+      - DisplayName: Cultiste rival
+        CultistId: 
+        GodId: 
         StartingEloquence: 0
         StartingSouls: 0
         DeckTopToBottom: []
@@ -48,7 +49,7 @@ MonoBehaviour:
         AIMaxSouls: 0
       FirstPlayerIndex: 0
       CourtPileI:
-      - "antistes"
+      - antistes
       CourtPileII: []
       CourtOverride: []
       MarketPiles: []
@@ -58,43 +59,43 @@ MonoBehaviour:
       AgentIndex: 1
       Turns: []
       UseGameAIForUnscriptedTurns: 0
-      UnscriptedTurnAction: "end_turn"
+      UnscriptedTurnAction: end_turn
     Hints:
       Hints: []
-      PeriodEventId: "turn_started"
-      PeriodEventArg: "0"
+      PeriodEventId: turn_started
+      PeriodEventArg: 0
     FreePlay:
       Offers: []
       TurnsBetweenOffers: 2
       Tips: []
       RequireWin: 0
-      DefeatInterludeId:
+      DefeatInterludeId: 
     Portraits: []
-  - LessonId: "lecon_02"
-    DisplayName: "Le sacrifice"
-    Description: "Gagner des \u00E2mes en sacrifiant des partisans, le bonus de famille."
-    RequiredLessonId: "lecon_01"
+  - LessonId: lecon_02
+    DisplayName: Le sacrifice
+    Description: "Gagner des \xE2mes en sacrifiant des partisans, le bonus de famille."
+    RequiredLessonId: lecon_01
     Setup:
       Players:
-      - DisplayName: "Vous"
-        CultistId:
-        GodId:
+      - DisplayName: Vous
+        CultistId: 
+        GodId: 
         StartingEloquence: 0
         StartingSouls: 0
         DeckTopToBottom: []
         ExactDeck: 1
         StartingHand:
-        - "pugionem_sacrificialem"
-        - "pugionem_sacrificialem"
-        - "vicanus"
+        - pugionem_sacrificialem
+        - pugionem_sacrificialem
+        - vicanus
         StartingPartisans:
-        - "antistes@opponent"
+        - antistes@opponent
         StartingDiscard: []
         StartingSacrificed: []
         AIMaxSouls: 0
-      - DisplayName: "Cultiste rival"
-        CultistId:
-        GodId:
+      - DisplayName: Cultiste rival
+        CultistId: 
+        GodId: 
         StartingEloquence: 0
         StartingSouls: 0
         DeckTopToBottom: []
@@ -115,43 +116,43 @@ MonoBehaviour:
       AgentIndex: 1
       Turns: []
       UseGameAIForUnscriptedTurns: 0
-      UnscriptedTurnAction: "end_turn"
+      UnscriptedTurnAction: end_turn
     Hints:
       Hints: []
-      PeriodEventId: "turn_started"
-      PeriodEventArg: "0"
+      PeriodEventId: turn_started
+      PeriodEventArg: 0
     FreePlay:
       Offers: []
       TurnsBetweenOffers: 2
       Tips: []
       RequireWin: 0
-      DefeatInterludeId:
+      DefeatInterludeId: 
     Portraits: []
-  - LessonId: "lecon_03"
-    DisplayName: "Les boutiques"
-    Description: "Le march\u00E9, le recyclage et la cour."
-    RequiredLessonId: "lecon_02"
+  - LessonId: lecon_03
+    DisplayName: Les boutiques
+    Description: "Le march\xE9, le recyclage et la cour."
+    RequiredLessonId: lecon_02
     Setup:
       Players:
-      - DisplayName: "Vous"
-        CultistId:
-        GodId:
+      - DisplayName: Vous
+        CultistId: 
+        GodId: 
         StartingEloquence: 5
         StartingSouls: 0
         DeckTopToBottom: []
         ExactDeck: 1
         StartingHand:
-        - "idolum_maledictum"
-        - "epistula_regia"
-        - "armiger"
-        - "militia"
+        - idolum_maledictum
+        - epistula_regia
+        - armiger
+        - militia
         StartingPartisans: []
         StartingDiscard: []
         StartingSacrificed: []
         AIMaxSouls: 0
-      - DisplayName: "Cultiste rival"
-        CultistId:
-        GodId:
+      - DisplayName: Cultiste rival
+        CultistId: 
+        GodId: 
         StartingEloquence: 0
         StartingSouls: 0
         DeckTopToBottom: []
@@ -165,37 +166,37 @@ MonoBehaviour:
       CourtPileI: []
       CourtPileII: []
       CourtOverride:
-      - "latro"
+      - latro
       MarketPiles:
-      - "idolum_maledictum*1"
-      - "*"
+      - idolum_maledictum*1
+      - '*'
       FallbackSeed: 13
       VictorySoulsOverride: 0
     Opponent:
       AgentIndex: 1
       Turns: []
       UseGameAIForUnscriptedTurns: 0
-      UnscriptedTurnAction: "end_turn"
+      UnscriptedTurnAction: end_turn
     Hints:
       Hints: []
-      PeriodEventId: "turn_started"
-      PeriodEventArg: "0"
+      PeriodEventId: turn_started
+      PeriodEventArg: 0
     FreePlay:
       Offers: []
       TurnsBetweenOffers: 2
       Tips: []
       RequireWin: 0
-      DefeatInterludeId:
+      DefeatInterludeId: 
     Portraits: []
-  - LessonId: "lecon_04"
-    DisplayName: "Premiers pas"
-    Description: "Une vraie partie : construire son deck et atteindre 25 \u00E2mes."
-    RequiredLessonId: "lecon_03"
+  - LessonId: lecon_04
+    DisplayName: Premiers pas
+    Description: "Une vraie partie : construire son deck et atteindre 25 \xE2mes."
+    RequiredLessonId: lecon_03
     Setup:
       Players:
-      - DisplayName: "Vous"
-        CultistId:
-        GodId:
+      - DisplayName: Vous
+        CultistId: 
+        GodId: 
         StartingEloquence: 0
         StartingSouls: 0
         DeckTopToBottom: []
@@ -205,9 +206,9 @@ MonoBehaviour:
         StartingDiscard: []
         StartingSacrificed: []
         AIMaxSouls: 0
-      - DisplayName: "Cultiste rival"
-        CultistId:
-        GodId:
+      - DisplayName: Cultiste rival
+        CultistId: 
+        GodId: 
         StartingEloquence: 0
         StartingSouls: 0
         DeckTopToBottom: []
@@ -219,8 +220,8 @@ MonoBehaviour:
         AIMaxSouls: 40
       FirstPlayerIndex: 0
       CourtPileI:
-      - "latro"
-      - "armiger"
+      - latro
+      - armiger
       CourtPileII: []
       CourtOverride: []
       MarketPiles: []
@@ -230,101 +231,102 @@ MonoBehaviour:
       AgentIndex: 1
       Turns: []
       UseGameAIForUnscriptedTurns: 1
-      UnscriptedTurnAction: "end_turn"
+      UnscriptedTurnAction: end_turn
     Hints:
       Hints:
-      - Trigger: "Shop_Buy_NotEnoughEloquence"
-        InterludeId: "trop_cher"
+      - Trigger: Shop_Buy_NotEnoughEloquence
+        InterludeId: trop_cher
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Table_Discard_CardNotDiscardable"
-        InterludeId: "pas_defaussable"
+      - Trigger: Table_Discard_CardNotDiscardable
+        InterludeId: pas_defaussable
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Table_Play_ToolOnTable"
-        InterludeId: "objet_sur_table"
+      - Trigger: Table_Play_ToolOnTable
+        InterludeId: objet_sur_table
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Table_Play_TableFull"
-        InterludeId: "table_pleine"
+      - Trigger: Table_Play_TableFull
+        InterludeId: table_pleine
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "court_incomplete"
-        InterludeId: "cour_vide"
+      - Trigger: court_incomplete
+        InterludeId: cour_vide
         Once: 1
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Shop_SlotEmpty"
-        InterludeId: "cour_vide"
+      - Trigger: Shop_SlotEmpty
+        InterludeId: cour_vide
         Once: 1
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "eloquence_max"
-        InterludeId: "eloquence_max"
+      - Trigger: eloquence_max
+        InterludeId: eloquence_max
         Once: 1
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "table_filled"
-        InterludeId: "table_remplie"
+      - Trigger: table_filled
+        InterludeId: table_remplie
         Once: 1
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Recycle_CardNotRecyclable"
-        InterludeId: "dague_recyclage"
+      - Trigger: Recycle_CardNotRecyclable
+        InterludeId: dague_recyclage
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Shop_Buy_WrongPhase"
-        InterludeId: "mauvaise_phase"
+      - Trigger: Shop_Buy_WrongPhase
+        InterludeId: mauvaise_phase
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Table_Play_WrongPhase"
-        InterludeId: "mauvaise_phase"
+      - Trigger: Table_Play_WrongPhase
+        InterludeId: mauvaise_phase
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Table_Discard_WrongPhase"
-        InterludeId: "mauvaise_phase"
+      - Trigger: Table_Discard_WrongPhase
+        InterludeId: mauvaise_phase
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      PeriodEventId: "turn_started"
-      PeriodEventArg: "0"
+      PeriodEventId: turn_started
+      PeriodEventArg: 0
     FreePlay:
       Offers:
-      - CardId: "nuntius_regius"
-        OfferInterludeId: "offre_nuntius_regius"
-        PlacedInterludeId: "pose_nuntius_regius"
-        EffectInterludeId: "effet_nuntius_regius"
+      - CardId: nuntius_regius
+        OfferInterludeId: offre_nuntius_regius
+        PlacedInterludeId: pose_nuntius_regius
+        EffectInterludeId: effet_nuntius_regius
         EffectMoment: 0
-      - CardId: "cruce_signatus"
-        OfferInterludeId: "offre_cruce_signatus"
-        PlacedInterludeId: "pose_cruce_signatus"
-        EffectInterludeId: "effet_cruce_signatus"
+      - CardId: cruce_signatus
+        OfferInterludeId: offre_cruce_signatus
+        PlacedInterludeId: pose_cruce_signatus
+        EffectInterludeId: effet_cruce_signatus
         EffectMoment: 1
       TurnsBetweenOffers: 2
       Tips:
-      - CardId: "latro"
-        InterludeId: "conseil_latro"
-      - CardId: "armiger"
-        InterludeId: "conseil_armiger"
+      - CardId: latro
+        InterludeId: conseil_latro
+      - CardId: armiger
+        InterludeId: conseil_armiger
       RequireWin: 0
-      DefeatInterludeId:
+      DefeatInterludeId: 
     Portraits: []
-  - LessonId: "lecon_05"
-    DisplayName: "La partie"
-    Description: "Une partie enti\u00E8re contre deux cultistes, avec ton dieu : \u00E0 toi de gagner !"
-    RequiredLessonId: "lecon_04"
+  - LessonId: lecon_05
+    DisplayName: La partie
+    Description: "Une partie enti\xE8re contre deux cultistes, avec ton dieu : \xE0
+      toi de gagner !"
+    RequiredLessonId: lecon_04
     Setup:
       Players:
-      - DisplayName: "Vous"
-        CultistId:
-        GodId: "3"
+      - DisplayName: Vous
+        CultistId: 
+        GodId: 3
         StartingEloquence: 0
         StartingSouls: 0
         DeckTopToBottom: []
@@ -334,9 +336,9 @@ MonoBehaviour:
         StartingDiscard: []
         StartingSacrificed: []
         AIMaxSouls: 0
-      - DisplayName: "Cultiste rival"
-        CultistId:
-        GodId: "aleatoire"
+      - DisplayName: Cultiste rival
+        CultistId: 
+        GodId: aleatoire
         StartingEloquence: 0
         StartingSouls: 0
         DeckTopToBottom: []
@@ -346,9 +348,9 @@ MonoBehaviour:
         StartingDiscard: []
         StartingSacrificed: []
         AIMaxSouls: 0
-      - DisplayName: "Second cultiste"
-        CultistId:
-        GodId: "aleatoire"
+      - DisplayName: Second cultiste
+        CultistId: 
+        GodId: aleatoire
         StartingEloquence: 0
         StartingSouls: 0
         DeckTopToBottom: []
@@ -369,90 +371,90 @@ MonoBehaviour:
       AgentIndex: 1
       Turns: []
       UseGameAIForUnscriptedTurns: 1
-      UnscriptedTurnAction: "end_turn"
+      UnscriptedTurnAction: end_turn
     Hints:
       Hints:
-      - Trigger: "Shop_Buy_NotEnoughEloquence"
-        InterludeId: "trop_cher"
+      - Trigger: Shop_Buy_NotEnoughEloquence
+        InterludeId: trop_cher
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Table_Discard_CardNotDiscardable"
-        InterludeId: "pas_defaussable"
+      - Trigger: Table_Discard_CardNotDiscardable
+        InterludeId: pas_defaussable
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Table_Play_ToolOnTable"
-        InterludeId: "objet_sur_table"
+      - Trigger: Table_Play_ToolOnTable
+        InterludeId: objet_sur_table
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Table_Play_TableFull"
-        InterludeId: "table_pleine"
+      - Trigger: Table_Play_TableFull
+        InterludeId: table_pleine
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "court_incomplete"
-        InterludeId: "cour_vide"
+      - Trigger: court_incomplete
+        InterludeId: cour_vide
         Once: 1
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Shop_SlotEmpty"
-        InterludeId: "cour_vide"
+      - Trigger: Shop_SlotEmpty
+        InterludeId: cour_vide
         Once: 1
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "eloquence_max"
-        InterludeId: "eloquence_max"
+      - Trigger: eloquence_max
+        InterludeId: eloquence_max
         Once: 1
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "table_filled"
-        InterludeId: "table_remplie"
+      - Trigger: table_filled
+        InterludeId: table_remplie
         Once: 1
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Recycle_CardNotRecyclable"
-        InterludeId: "dague_recyclage"
+      - Trigger: Recycle_CardNotRecyclable
+        InterludeId: dague_recyclage
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Shop_Buy_WrongPhase"
-        InterludeId: "mauvaise_phase"
+      - Trigger: Shop_Buy_WrongPhase
+        InterludeId: mauvaise_phase
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Table_Play_WrongPhase"
-        InterludeId: "mauvaise_phase"
+      - Trigger: Table_Play_WrongPhase
+        InterludeId: mauvaise_phase
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "Table_Discard_WrongPhase"
-        InterludeId: "mauvaise_phase"
+      - Trigger: Table_Discard_WrongPhase
+        InterludeId: mauvaise_phase
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "end_game_player"
-        InterludeId: "fin_partie_joueur"
+      - Trigger: end_game_player
+        InterludeId: fin_partie_joueur
         Once: 1
         CooldownPeriods: 1
         CooldownSeconds: 0
-      - Trigger: "end_game_rival"
-        InterludeId: "fin_partie_rival"
+      - Trigger: end_game_rival
+        InterludeId: fin_partie_rival
         Once: 1
         CooldownPeriods: 1
         CooldownSeconds: 0
-      PeriodEventId: "turn_started"
-      PeriodEventArg: "0"
+      PeriodEventId: turn_started
+      PeriodEventArg: 0
     FreePlay:
       Offers: []
       TurnsBetweenOffers: 2
       Tips: []
       RequireWin: 1
-      DefeatInterludeId: "defaite"
+      DefeatInterludeId: defaite
     Portraits:
-    - StepId: "l05_dieu"
-      GodId: "3"
+    - StepId: l05_dieu
+      GodId: 3
       Sprite: {fileID: 0}
   _InterfacePrefab: {fileID: 984486882648474788, guid: 72f09e718dc04fbda66b55b379b6b5c1, type: 3}
   _LessonMenuPrefab: {fileID: 5367331943358080776, guid: 1316f3a97e7e43888e50cdde2e5d0457, type: 3}
