@@ -33,7 +33,6 @@ public static class GameEvents
 
     // --- CARD PLAYING ---
     public static readonly TrackedEvent<ICard> OnCardPlayedRequested = new("OnCardPlayedRequested");
-    public static readonly TrackedEvent<ICard> OnCardPlayedRefused = new("OnCardPlayedRefused");
     public static readonly TrackedEvent<ICard> OnCardPlayed = new("OnCardPlayed");
 
     // --- CARD SACRIFICE ---
