@@ -16,7 +16,18 @@ namespace Vermines.Core.Network {
         public bool IsCustom;
         public bool IsGameSession;
 
+        /// <summary>
+        /// True = the end of this session brings the player back to the main menu instead of the tavern (e.g., a tutorial lesson).
+        /// </summary>
+        public bool ReturnToMainMenu;
+
         public int MaxPlayers;
+
+        /// <summary>
+        /// Number of players expected before gameplay initialization.
+        /// 0 keeps the current snapshot behaviour (custom lobby scene change).
+        /// </summary>
+        public int ExpectedPlayers;
         public int ExtraPeers;
 
         public string IPAddress;

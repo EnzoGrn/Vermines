@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -49,17 +49,46 @@ namespace Vermines.UI.Screen
 
         public override void Show()
         {
-            SceneContext    context = PlayerController.Local.Context;
+            // FIX: was reading PlayerController.Local.Context with no guard.
+            // This screen is shown from PhaseManager.SacrificeRoutine() - an
+            // unhandled exception here would kill that ENTIRE coroutine
+            // before it reaches its RPC_ProcessPhase(...) call at the end,
+            // not just fail silently. See header comment for the full chain.
+            if (!PlayerController.Local)
+            {
+                Debug.LogWarning("[GameplayUITurn] Show() called before PlayerController.Local was ready - skipping this turn banner.");
+
+                base.Show();
+                ShowUser();
+
+                return;
+            }
+
+            SceneContext context = PlayerController.Local.Context;
             PlayerRef currentPlayer = context.GameplayMode.CurrentPlayer;
             PlayerController player = context.NetworkGame.GetPlayer(currentPlayer);
-            PlayerStatistics stat   = player.Statistics;
+
+            // Same reason as above: an exception here would stop SacrificeRoutine and the turn would never start.
+            if (!player)
+            {
+                Debug.LogWarning($"[GameplayUITurn] No PlayerController for {currentPlayer} - turn banner shown without the cultist.");
+
+                LocalizeMessage("Turn.text", string.Empty);
+
+                base.Show();
+                ShowUser();
+
+                return;
+            }
+
+            PlayerStatistics stat = player.Statistics;
 
             _CultistImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, stat.Family, "Cultist");
 
-             if (currentPlayer == context.Runner.LocalPlayer)
+            if (currentPlayer == context.Runner.LocalPlayer)
                 LocalizeMessage("Turn.your");
             else
-                LocalizeMessage("Turn.text", player.Nickname);
+                LocalizeMessage("Turn.text", player.Statistics.Family.ToString());
 
             base.Show();
             ShowUser();

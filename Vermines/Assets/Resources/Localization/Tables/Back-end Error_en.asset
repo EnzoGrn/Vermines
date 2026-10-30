@@ -42,10 +42,6 @@ MonoBehaviour:
     m_Localized: You already has the {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 215561349881856
-    m_Localized: You cannot replace a card when it's not your turn.
-    m_Metadata:
-      m_Items: []
   - m_Id: 225365833277440
     m_Localized: The {0} is now empty.
     m_Metadata:
@@ -128,6 +124,18 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 9276500577607680
     m_Localized: The selected card does not exist in the shop.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60020162764464128
+    m_Localized: You cannot add a card in the courtyard when it's not your turn.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60091037064880128
+    m_Localized: You cannot recycle this card.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60183981075718144
+    m_Localized: You cannot discard a partisan card without a discard effect.
     m_Metadata:
       m_Items: []
   references:

@@ -1,0 +1,8 @@
+﻿lecon;id_etape;style;titre;texte;cle_texte;cibles;forme;marge;voile;bloquer_clics;pointeur;cible_depot;placement;condition;evenement;argument;nombre;delai;actions_autorisees;commandes_debut;commandes_fin;notes
+lecon_01;l01_intro;narrateur;Bienvenue;Une fenêtre de narrateur dans un coin de l'écran.\nLe \n fait un retour à la ligne.;;;;;;;;;;bouton;;;;;aucune;HideElement(target=shop_button);;EXEMPLE à remplacer : HideElement cache un élément sans le désactiver
+lecon_01;l01_bulle;bulle;Ton or;Une bulle accrochée à la cible, sous le voile.;;gold_counter;cercle;24;;;;;dessous;bouton;;;;;aucune;;;
+lecon_01;l01_glisser;bulle;;Fais glisser l'épée sur le plateau.;;hand:sword|board;;;;;glisser;board;;evenement;card_played;sword;1;;play:sword;;;Deux cibles éclairées ; seule l'action play sur sword est permise
+lecon_01;l01_clic;bulle;;Clique sur la boutique.;;shop_button;;;;;tapoter;;gauche;clic_cible;;;;;aucune;ShowElement(target=shop_button);;
+lecon_01;l01_attente;aucun;;;;;;;non;non;;;;delai;;;;1.5;aucune;AddGold(amount=5);;Commande propre au jeu, exécutée par son pont
+lecon_01;l01_fin;fenetre;Bravo !;Une fenêtre centrée pour les explications longues.;;;;;;;;;;bouton;;;;;aucune;;PublishEvent(event=lesson_one_done);
+lecon_01/trop_cher;l01_trop_cher;bulle;Pas assez d'or;Séquence annexe : jouée par une aide, puis l'étape en cours reprend.;;gold_counter;;;;;;;;bouton;;;;;aucune;;;Leçon "id_leçon/id_séquence"

@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -96,6 +96,25 @@ namespace Vermines.UI.Popup
         private void OnButtonClicked(bool rightButton)
         {
             _buttonCompletionSource?.TrySetResult(rightButton);
+            Hide();
+        }
+
+        /// <summary>True while the popup waits for an answer.</summary>
+        public bool IsOpen => _buttonCompletionSource != null;
+
+        /// <summary>
+        /// Closes the popup answering "cancel" (false), unlike Hide(), which
+        /// completes the task with true (= confirm).
+        /// </summary>
+        public void Cancel()
+        {
+            var completionSource = _buttonCompletionSource;
+
+            // Detach first: Hide() would otherwise complete the task with true.
+            _buttonCompletionSource = null;
+
+            completionSource?.TrySetResult(false);
+
             Hide();
         }
 

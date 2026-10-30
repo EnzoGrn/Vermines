@@ -58,12 +58,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6ed25c5af84d09e4d9aa07ec14aa600d
-    m_Address: CardName_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9850a463dcf513542b5181e8f8f9cde3
     m_Address: UIUtils_en
     m_ReadOnly: 1
@@ -79,6 +73,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b3be3276ef0ca914bb2eb129f2bdedf4
     m_Address: ServerStatus_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dbd136bf9121cf244b96e28b32944256
+    m_Address: LoadingScreens_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en

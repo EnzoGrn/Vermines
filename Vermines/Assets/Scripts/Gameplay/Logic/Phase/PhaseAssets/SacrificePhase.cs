@@ -1,10 +1,11 @@
-﻿using Fusion;
+using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Phases {
-
+    using System.Linq;
     using Vermines.CardSystem.Elements;
+    using Vermines.Gameplay.Errors;
     using Vermines.Gameplay.Phases.Enumerations;
     using Vermines.Player;
 
@@ -28,19 +29,22 @@ namespace Vermines.Gameplay.Phases {
             base.Run(playerRef);
 
             PlayerController player  = _Context.NetworkGame.GetPlayer(_CurrentPlayer);
-            List <ICard> playedCards = player.Deck.PlayedCards;
+            List <ICard> playedCards = player.PlayedCards.ToList();
 
-            GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrified);
+            GameEvents.OnCardSacrificedRequested.AddListener(OnCardSacrificed);
 
-            if (playedCards.Count > 0 && _CurrentPlayer == _Context.Runner.LocalPlayer) {
+            // Tutorial lessons teach the sacrifice with the dagger: the phase ends by itself.
+            bool skipped = Vermines.Tutorial.Integration.TutorialGameHooks.SkipSacrificePhase;
+
+            if (playedCards.Count > 0 && _CurrentPlayer == _Context.Runner.LocalPlayer && !skipped) {
                 CamManager camera = Object.FindFirstObjectByType<CamManager>(FindObjectsInactive.Include);
 
                 if (camera != null)
                     camera.GoOnSacrificeLocation();
-            } else if (playedCards.Count == 0) {
+            } else if (playedCards.Count == 0 || skipped) {
                 OnPhaseEnding(_CurrentPlayer, true);
 
-                GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
+                GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrificed);
             }
         }
 
@@ -55,14 +59,14 @@ namespace Vermines.Gameplay.Phases {
         {
             base.OnPhaseEnding(player, logic);
 
-            GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrified);
+            GameEvents.OnCardSacrificedRequested.RemoveListener(OnCardSacrificed);
         }
 
         #endregion
 
         #region Events
 
-        public void OnCardSacrified(ICard cardSacrified)
+        public void OnCardSacrificed(ICard cardSacrified)
         {
             if (Type != PhaseType.Sacrifice)
                 return;
@@ -73,16 +77,29 @@ namespace Vermines.Gameplay.Phases {
             PlayerController player = _Context.NetworkGame.GetPlayer(_CurrentPlayer);
 
             int cardId = cardSacrified.ID;
-            ICard card = player.Deck.PlayedCards.Find(c => c.ID == cardId);
+            ICard card = player.PlayedCards.ToList().Find(c => c.ID == cardId);
 
-            if (card != null) {
-                player.OnCardSacrified(card.ID);
+            if (card != null)
+            {
+                player.OnCardSacrificed(card.ID);
 
                 _NumberOfCardSacrified++;
-            } else {
+            }
+            else
+            {
                 Debug.LogWarning($"[Client]: Card {cardId} not found in played cards.");
 
-                GameEvents.OnCardSacrifiedRefused.Invoke(cardSacrified);
+                GameActionError localError = new GameActionError
+                {
+                    Scope = ErrorScope.Local,
+                    Target = _Context.Runner.LocalPlayer,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Sacrifice,
+                    MessageKey = "Sacrifice_CardNotInTable",
+                    MessageArgs = new GameActionErrorArgs(cardSacrified.Data.Name)
+                };
+
+                GameEvents.OnActionRefused.Invoke(localError, GameActionError.Localize(localError));
             }
         }
 

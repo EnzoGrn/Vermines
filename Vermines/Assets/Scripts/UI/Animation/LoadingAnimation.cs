@@ -1,14 +1,19 @@
 using System.Collections.Generic;
-using System.Collections;
 using UnityEngine;
 
 namespace Vermines.Animations {
 
+    /// <summary>
+    /// Makes the loading dots jump one after the other.
+    /// The pose of every dot is computed from the real time each frame, so after a frame hitch
+    /// the animation is back at the right place at once instead of restarting its coroutines.
+    /// </summary>
     public class LoadingAnimationPlugin : MonoBehaviour {
 
         #region Attributes
 
-        public List<RectTransform> _Dots;
+        [SerializeField]
+        private List<RectTransform> _Dots = new();
 
         [SerializeField]
         private float _JumpHeight = 20f;
@@ -25,19 +30,6 @@ namespace Vermines.Animations {
 
         #region MonoBehaviour Methods
 
-        protected void OnEnable()
-        {
-            StartCoroutine(AnimateDots());
-        }
-
-        protected void OnDisable()
-        {
-            StopAllCoroutines();
-
-            for (int i = 0; i < _Dots.Count; i++)
-                _Dots[i].anchoredPosition = _OriginalPositions[i];
-        }
-
         protected void Awake()
         {
             _OriginalPositions = new Vector2[_Dots.Count];
@@ -46,50 +38,31 @@ namespace Vermines.Animations {
                 _OriginalPositions[i] = _Dots[i].anchoredPosition;
         }
 
-        #endregion
-
-        #region Coroutine
-
-        IEnumerator AnimateDots()
+        protected void Update()
         {
-            while (true) {
-                for (int i = 0; i < _Dots.Count; i++) {
-                    StartCoroutine(Jump(_Dots[i], _OriginalPositions[i]));
+            if (_OriginalPositions == null || _JumpDuration <= 0f)
+                return;
+            float cycle = Mathf.Max(_Dots.Count * _DelayBetweenJumps, _JumpDuration);
+            float time  = Time.unscaledTime;
 
-                    yield return new WaitForSeconds(_DelayBetweenJumps);
-                }
+            for (int i = 0; i < _Dots.Count; i++) {
+                if (_Dots[i] == null)
+                    continue;
+                float phase  = Mathf.Repeat(time - i * _DelayBetweenJumps, cycle);
+                float height = phase < _JumpDuration ? Mathf.Sin(phase / _JumpDuration * Mathf.PI) * _JumpHeight : 0f;
+
+                _Dots[i].anchoredPosition = _OriginalPositions[i] + new Vector2(0f, height);
             }
         }
 
-        IEnumerator Jump(RectTransform dot, Vector2 originalPos)
+        protected void OnDisable()
         {
-            float timer = 0.0f;
-
-            while (timer < _JumpDuration / 2f) {
-                float t       = timer / (_JumpDuration / 2f);
-                float yOffset = Mathf.Lerp(0f, _JumpHeight, t);
-
-                dot.anchoredPosition = originalPos + new Vector2(0f, yOffset);
-
-                timer += Time.deltaTime;
-
-                yield return null;
+            if (_OriginalPositions == null)
+                return;
+            for (int i = 0; i < _Dots.Count; i++) {
+                if (_Dots[i] != null)
+                    _Dots[i].anchoredPosition = _OriginalPositions[i];
             }
-
-            timer = 0.0f;
-
-            while (timer < _JumpDuration / 2f) {
-                float t       = timer / (_JumpDuration / 2f);
-                float yOffset = Mathf.Lerp(_JumpHeight, 0f, t);
-
-                dot.anchoredPosition = originalPos + new Vector2(0f, yOffset);
-
-                timer += Time.deltaTime;
-
-                yield return null;
-            }
-
-            dot.anchoredPosition = originalPos;
         }
 
         #endregion

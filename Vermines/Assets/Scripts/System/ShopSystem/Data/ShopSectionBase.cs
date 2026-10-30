@@ -27,13 +27,6 @@ namespace Vermines.ShopSystem.Data {
         public abstract void ApplyReduction(int amount);
         public abstract void RemoveReduction(int amount);
 
-        public virtual ICard ChangeCard(ICard card)
-        {
-            return null;
-        }
-
-        public virtual void Refill() {}
-
         public virtual void ReturnCard(ICard card) {}
 
         #endregion

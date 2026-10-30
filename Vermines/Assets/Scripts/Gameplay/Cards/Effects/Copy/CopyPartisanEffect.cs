@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using OMGG.Chronicle;
 using UnityEngine;
@@ -48,18 +48,33 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        public override bool CanBePlayed(PlayerRef player, out string reasonKey)
+        {
+            PlayerController controller = Context.NetworkGame.GetPlayer(player);
+
+            if (EffectCandidates.ForCopyPartisan(Context, CardType.Partisan, Card).Count == 0)
+            {
+                reasonKey = "skipped.copy_no_target";
+
+                return false;
+            }
+
+            return base.CanBePlayed(player, out reasonKey);
+        }
+
         public override void Play(PlayerRef player)
         {
             if (player != Context.Runner.LocalPlayer)
                 return;
-            if (UIContextManager.Instance) {
-                CardSelectedEffectContext cardCopyEffectContext = new(CardType.Partisan, Card);
-                CopyContext               copyContext           = new(cardCopyEffectContext);
+            if (!CanBePlayed(player, out string reasonKey))
+            {
+                GameEvents.OnEffectSkipped.Invoke(Card, reasonKey);
 
-                UIContextManager.Instance.PushContext(copyContext);
+                return;
             }
-
+            GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Copy, CardType.Partisan, Card));
             GameEvents.OnEffectSelectCard.AddListener(CopiedEffect);
+            GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
         }
 
         public override void Stop(PlayerRef player)
@@ -79,7 +94,8 @@ namespace Vermines.Gameplay.Cards.Effect {
         private void CopiedEffect(ICard card)
         {
             GameEvents.OnEffectSelectCard.RemoveListener(CopiedEffect);
-            UIContextManager.Instance.PopContext();
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Copy);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
 
             if (card.Data.Type != CardType.Partisan)
                 return;
@@ -89,7 +105,13 @@ namespace Vermines.Gameplay.Cards.Effect {
 
             RoundEventDispatcher.RegisterEvent(player.Object.InputAuthority, Stop);
 
-            player.NetworkEventCardEffect(Card.ID, card.ID.ToString());
+            player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, card.ID.ToString());
+        }
+
+        private void CancelPrompt()
+        {
+            GameEvents.OnEffectSelectCard.RemoveListener(CopiedEffect);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)
@@ -101,7 +123,7 @@ namespace Vermines.Gameplay.Cards.Effect {
             Card.Data.CopyEffect(card.Data.Effects);
 
             foreach (var effect in card.Data.Effects) {
-                if ((effect.Type & EffectType.Sacrifice) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0)
+                if ((effect.Type & EffectType.Sacrifice) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0 || (effect.Type & EffectType.OnOtherDiscard) != 0 || (effect.Type & EffectType.OnCardAddedToCourtyard) != 0)
                     continue;
                 effect.Play(playerRef);
             }

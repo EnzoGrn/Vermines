@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using System;
 using Newtonsoft.Json;
-using WebSocketSharp;
 using UnityEngine;
 using Fusion;
 
@@ -34,9 +33,12 @@ namespace Vermines.Core {
         [SerializeField]
         private GameplayType _Type;
 
-        public int SoulsLimit         = 100;
-        public int MaxEloquence       = 20;
-        public int BonusSoulsOnFamily = 5;
+        public int SoulsLimit = 100;
+        public int MaxEloquence = 20;
+        public int BonusSoulsPerFamilyCardSacrified = 2;
+
+        /// <summary>Seconds each player has per turn. 0 disables the timer.</summary>
+        public int TurnTimerSeconds = 120;
 
         private DefaultPlayerComparer _PlayerComparer = new();
 
@@ -52,6 +54,7 @@ namespace Vermines.Core {
         protected GameModeInitializer _Initializer;
 
         private bool _IsInitialized;
+        private int _ExpectedPlayerCount;
 
         [SerializeField]
         private ShopData _BaseShopData;
@@ -66,6 +69,12 @@ namespace Vermines.Core {
 
         [Networked]
         public int TotalTurnPlayed { get; set; } = 0;
+
+        [Networked]
+        public PlayerRef EndGameTriggerPlayer { get; set; } = PlayerRef.None;
+
+        [Networked]
+        public int EndGameTriggerTurn { get; set; }
 
         public ChronicleManager Announcer = new();
 
@@ -87,6 +96,11 @@ namespace Vermines.Core {
         public PhaseType CurrentPhase => PhaseManager.CurrentPhase;
 
         public bool IsMyTurn => PlayerTurnOrder.Get(CurrentPlayerIndex) == Runner.LocalPlayer;
+
+        /// <summary>
+        /// Number of players taking turns. Overridden by the tutorial, whose scripted opponents have no client.
+        /// </summary>
+        public virtual int TurnPlayerCount => Runner.ActivePlayers.Count();
 
         public void SetPlayerTurnOrder(List<PlayerRef> orderedPlayers)
         {
@@ -153,19 +167,16 @@ namespace Vermines.Core {
         public void Initialize(string data)
         {
             _Initializer.Initialize(data);
-
-            _IsInitialized = true;
-
-            RPC_Initialized();
-
-            Activate();
         }
 
-        protected virtual void FixedUpdateNetwork_Active()
+        public void SetExpectedPlayerCount(int expectedPlayerCount)
         {
-            if (PhaseManager.CurrentPhase == PhaseType.None)
-                PhaseManager.OnGameStart();
+            _ExpectedPlayerCount = expectedPlayerCount;
+
+            TryInitializeGameplay();
         }
+
+        protected virtual void FixedUpdateNetwork_Active() {}
 
         protected virtual void FixedUpdateNetwork_Finished()
         {
@@ -234,8 +245,22 @@ namespace Vermines.Core {
 
         private void CheckAllPlayersInitialized()
         {
-            if (_IsInitialized || _PendingPlayers.Count > 0)
+            TryInitializeGameplay();
+        }
+
+        private void TryInitializeGameplay()
+        {
+            if (_IsInitialized)
                 return;
+            if (_ExpectedPlayerCount > 0) {
+                if (_PlayerFamilies.Count < _ExpectedPlayerCount)
+                    return;
+            } else if (_PendingPlayers.Count > 0) {
+                return;
+            }
+
+            _IsInitialized = true;
+
             string data = JsonConvert.SerializeObject(_PlayerFamilies.ToDictionary(
                 kvp => kvp.Key.RawEncoded, kvp => kvp.Value
             ));
@@ -284,6 +309,7 @@ namespace Vermines.Core {
 
         protected virtual void OnInitialize()
         {
+            Debug.Log($"[INIT] OnInitialize | hasAuth={HasStateAuthority} frame={Time.frameCount}");
             _RoutineManager = FindFirstObjectByType<RoutineManager>();
 
             if (_RoutineManager)
@@ -293,6 +319,16 @@ namespace Vermines.Core {
             State = GState.Active;
 
             GameEvents.OnGameInitialized.Invoke();
+
+            if (HasStateAuthority) {
+                _IsInitialized = true;
+
+                Activate();
+            }
+
+            //GameEvents.OnGameInitialized.Invoke();
+            // if (PhaseManager.CurrentPhase == PhaseType.None)
+            //    PhaseManager.OnGameStart();
         }
 
         protected virtual void OnActivate() {}
@@ -305,18 +341,18 @@ namespace Vermines.Core {
 
             _PendingPlayers.Remove(player);
 
-            CheckAllPlayersInitialized();
+            TryInitializeGameplay();
         }
 
         #region RPCs Events
 
         public virtual void OnBuyCard(PlayerRef player, ShopType shopType, int cardID) { }
-        public virtual void OnReplaceCardInShop(PlayerRef player, ShopType shopType, int cardID) { }
+        public virtual void OnCardAddInCourtyard(PlayerRef player, int level) { }
 
         public virtual void OnCardPlayed(PlayerRef player, int cardID) { }
         public virtual void OnDiscardCard(PlayerRef player, int cardID, bool hasEffect = true) { }
 
-        public virtual void OnCardSacrified(PlayerRef player, int cardID) { }
+        public virtual void OnCardSacrificed(PlayerRef player, int cardID) { }
 
         public virtual void OnCardRecycled(PlayerRef player, int cardID) { }
 
@@ -336,7 +372,7 @@ namespace Vermines.Core {
         #region RPCs
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
-        private void RPC_Initialized()
+        public void RPC_Initialized()
         {
             OnInitialize();
         }
@@ -359,7 +395,7 @@ namespace Vermines.Core {
             GameEvents.InvokeOnPlayerWin(player, Runner.LocalPlayer);
         }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.Proxies, Channel = RpcChannel.Reliable)]
+        [Rpc(RpcSources.StateAuthority, RpcTargets.Proxies, Channel = RpcChannel.Reliable)]
         private void RPC_StopPublicGame()
         {
             Global.Networking.StopGame(Networking.STATUS_SERVER_CLOSED);
@@ -388,6 +424,14 @@ namespace Vermines.Core {
             List<CardFamily> families = FamilyUtils.FamiliesIdsToList(familiesIds);
 
             OnInitializeCards(families);
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
+        public void RPC_InitializeGod(int playerID, int godID)
+        {
+            PlayerController player = Context.NetworkGame.GetPlayer(PlayerRef.FromEncoded(playerID));
+
+            player.SetGod(Global.Settings.Gods.GetGodByID(godID));
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]

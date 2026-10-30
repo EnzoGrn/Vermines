@@ -168,6 +168,15 @@ namespace Vermines.UI.Screen
                     _CardDescription.text += "- " + effect.Description + "\n";
                 }
             }
+            if (_CardSouls != null)
+            {
+                _CardSouls.text = cardContext.Data.Souls.ToString();
+            }
+
+            if (_CardEloquence != null)
+            {
+                _CardEloquence.text = cardContext.Data.Eloquence.ToString();
+            }
         }
 
         #endregion

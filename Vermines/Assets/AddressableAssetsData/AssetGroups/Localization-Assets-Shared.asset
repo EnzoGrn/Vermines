@@ -53,8 +53,9 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8dc13a3a49b1d5645ac9b152670ef3c9
-    m_Address: Assets/Resources/Localization/Tables/Card/CardName Shared Data.asset
+  - m_GUID: 68e28738469fc1e47894c66d18f8b174
+    m_Address: Assets/Resources/Localization/Tables/LoadingScreens/LoadingScreens
+      Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

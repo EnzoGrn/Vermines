@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using UnityEngine;
 using UnityEngine.Localization;
 using Vermines.Gameplay.Phases.Enumerations;
@@ -55,7 +55,7 @@ namespace Vermines.UI.Plugin
             }
         }
 
-        public void SetPhase(PhaseType newPhase = PhaseType.Sacrifice)
+        public void SetPhase(PhaseType newPhase)
         {
             string phaseKey = $"Phase.{newPhase}";
             string localizedText = LocalizePhase(phaseKey);

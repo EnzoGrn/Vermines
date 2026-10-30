@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b92f0f1327047c41be70537bc43eef9, type: 3}
+  m_Name: Regium Praesidium
+  m_EditorClassIdentifier: 
+  Name: Regium Praesidium
+  Exemplars: 2
+  IsStartingCard: 0
+  _DeckExemplars: 0
+  Type: 0
+  IsFamilyCard: 0
+  _Family: 0
+  _Level: 2
+  Effects:
+  - {fileID: 11400000, guid: f15ba1e32d2a94e4bb043640d5111058, type: 2}
+  - {fileID: 11400000, guid: 45a215d0d06a9bf4284c6a597c0298dc, type: 2}
+  ReduceInSilence: 0
+  _RecycleEloquence: 0
+  _Eloquence: 9
+  IsFree: 0
+  CurrentEloquence: 9
+  _Souls: 3
+  CurrentSouls: 3
+  _SpriteName: 
+  _Sprite: {fileID: 21300000, guid: dcf05c7d8c75e914b874dff93bbb6e4d, type: 3}

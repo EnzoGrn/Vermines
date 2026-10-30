@@ -10,6 +10,7 @@ namespace Vermines.Gameplay {
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.CardSystem.Utilities;
+    using Vermines.Characters;
     using Vermines.Core;
     using Vermines.Core.Player;
     using Vermines.Player;
@@ -43,6 +44,8 @@ namespace Vermines.Gameplay {
 
         private void InitializePlayers(List<PlayerRef> players)
         {
+            God[] gods = Global.Settings.Gods.GetAllGods();
+
             foreach (PlayerRef playerRef in players) {
                 PlayerController player = NetworkGame.GetPlayer(playerRef);
 
@@ -54,6 +57,13 @@ namespace Vermines.Gameplay {
                     stats.NumberOfSlotInTable = 3;
 
                     player.UpdateStatistics(stats);
+
+                    int randomIndex = NetworkGame.Random.Next(0, gods.Length);
+                    int randomGodID = gods[randomIndex].ID;
+
+                    Debug.Log($"Player {playerRef} has the {gods[randomIndex].Name} divinity.");
+
+                    Mode.RPC_InitializeGod(player.Object.InputAuthority.RawEncoded, randomGodID);
                 }
             }
         }
@@ -68,26 +78,56 @@ namespace Vermines.Gameplay {
         private void InitializePlayerDecks(List<PlayerRef> players)
         {
             List<ICard> starterCards = CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.IsStartingCard);
-            int    starterDeckLength = starterCards.Count / players.Count;
+            Dictionary<PlayerRef, List<ICard>> decks = new();
 
-            foreach (PlayerRef playerRef in players) {
+            foreach (PlayerRef playerRef in players)
+            {
                 PlayerController player = NetworkGame.GetPlayer(playerRef);
 
-                if (player) {
-                    PlayerDeck deck = new();
+                if (player)
+                    decks[playerRef] = new List<ICard>();
+            }
 
-                    deck.Initialize(NetworkGame.Seed);
+            foreach (ICard card in starterCards.ToList())
+            {
+                if (card.Data.IsFamilyCard)
+                {
+                    foreach (PlayerRef playerRef in players)
+                    {
+                        PlayerController player = NetworkGame.GetPlayer(playerRef);
 
-                    for (int i = 0; i < starterDeckLength; i++) {
-                        ICard card = starterCards[NetworkGame.Random.Next(starterDeckLength - deck.Deck.Count)];
+                        if (player && player.Statistics.Family == card.Data.Family)
+                        {
+                            decks[playerRef].Add(card);
+                            starterCards.Remove(card);
 
-                        deck.Deck.Add(card);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            int starterDeckLength = starterCards.Count / players.Count;
+
+            foreach (PlayerRef playerRef in players)
+            {
+                PlayerController player = NetworkGame.GetPlayer(playerRef);
+
+                if (player)
+                {
+                    List<ICard> deck = decks[playerRef];
+
+                    for (int i = 0; i < starterDeckLength; i++)
+                    {
+                        ICard card = starterCards[NetworkGame.Random.Next(starterDeckLength - deck.Count)];
+
+                        deck.Add(card);
                         starterCards.Remove(card);
                     }
 
-                    deck.Deck.Shuffle(NetworkGame.Seed);
+                    deck.Shuffle(NetworkGame.Seed);
 
-                    player.RPC_DeckResynchronization(deck.Serialize());
+                    player.InitializeDeck(NetworkGame.Seed, deck);
                 }
             }
         }
@@ -102,7 +142,10 @@ namespace Vermines.Gameplay {
 
         private void InitializeCourtyard(List<ICard> cards)
         {
-            CourtyardSection section = new(3, 2);
+            int level1Slot = 3;
+            int level2Slot = 2;
+
+            CourtyardSection section = new(level1Slot, level2Slot);
 
             List<ICard> partisan1Cards = cards.Where(card => card.Data.Level == 1).ToList();
             List<ICard> partisan2Cards = cards.Where(card => card.Data.Level == 2).ToList();
@@ -113,7 +156,10 @@ namespace Vermines.Gameplay {
             section.Deck1 = partisan1Cards;
             section.Deck2 = partisan2Cards;
 
-            section.Refill();
+            for (int i = 0; i < level1Slot; i++)
+                section.AddCard(1);
+            for (int i = 0; i < level2Slot; i++)
+                section.AddCard(2);
 
             Mode.Shop.AddSection(ShopType.Courtyard, section);
             Mode.RPC_InitializeShop(ShopType.Courtyard, Mode.Shop.SerializeSection(ShopType.Courtyard));
@@ -136,6 +182,7 @@ namespace Vermines.Gameplay {
 
             Mode.Shop.AddSection(ShopType.Market, section);
             Mode.RPC_InitializeShop(ShopType.Market, Mode.Shop.SerializeSection(ShopType.Market));
+            Debug.Log($"It's how the market has been initialized : {Mode.Shop.SerializeSection(ShopType.Market)}");
         }
 
         private void InitializeDeck(List<PlayerRef> playerRefs)
@@ -149,7 +196,7 @@ namespace Vermines.Gameplay {
                 if (player) {
                     int cardsToDraw = isFirst ? baseCardsToDraw - 1 : baseCardsToDraw;
 
-                    player.RPC_DrawCards(cardsToDraw);
+                    player.DrawAuthoritative(cardsToDraw);
                 }
 
                 isFirst = false;
@@ -174,6 +221,8 @@ namespace Vermines.Gameplay {
             InitializePlayerDecks(players);
             InitializeShop();
             InitializeDeck(players);
+
+            Mode.RPC_Initialized();
         }
 
         protected override void OnActivate() {}

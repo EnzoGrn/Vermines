@@ -18,21 +18,20 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 90973626368
-    m_Localized: Cancel this effect?
+  - m_Id: 176400351827812352
+    m_Localized: '{0}: No cards to copy.'
     m_Metadata:
       m_Items: []
-  - m_Id: 209819230208
-    m_Localized: Are you sure you want to cancel this effect? You'll lose it this
-      round.
+  - m_Id: 176400349973929984
+    m_Localized: '{0}: No cards to sacrifice.'
     m_Metadata:
       m_Items: []
-  - m_Id: 1174404292608
-    m_Localized: No
+  - m_Id: 176400347566399488
+    m_Localized: '{0}: No followers in your graveyard.'
     m_Metadata:
       m_Items: []
-  - m_Id: 1153017536512
-    m_Localized: Yes
+  - m_Id: 176400341853757440
+    m_Localized: '{0}: Your table is full; no cards can be reborn.'
     m_Metadata:
       m_Items: []
   references:

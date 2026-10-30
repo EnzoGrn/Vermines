@@ -1,5 +1,7 @@
 using System.Collections.Generic;
-using OMGG.DesignPattern;
+using System.Linq;
+using UnityEngine;
+using Fusion;
 
 namespace Vermines.Gameplay.Core {
 
@@ -7,7 +9,6 @@ namespace Vermines.Gameplay.Core {
     using Vermines.CardSystem.Enumerations;
     using Vermines.Core;
     using Vermines.Player;
-    using Vermines.ShopSystem.Commands;
     using Vermines.ShopSystem.Enumerations;
 
     public partial class StandartGameplay : GameplayMode {
@@ -19,20 +20,27 @@ namespace Vermines.Gameplay.Core {
             base.Spawned();
 
             if (HasStateAuthority)
-                _Initializer = new StandartGameInitializer(this);
+                _Initializer = CreateInitializer();
         }
 
         protected override void CheckWinCondition()
         {
-            if (Context.NetworkGame == null || Context.NetworkGame.ActivePlayers == null)
-                return;
-            foreach (PlayerController player in Context.NetworkGame.ActivePlayers) {
-                if (player == null)
-                    continue;
-                if (player.Statistics.Souls >= SoulsLimit) {
-                    FinishGameplay(player);
+            List<PlayerController> players = Context.Runner.GetAllBehaviours<PlayerController>();
 
-                    return;
+            if (Context.NetworkGame == null || players == null)
+                return;
+            if (EndGameTriggerPlayer == PlayerRef.None) {
+                foreach (PlayerController player in players) {
+                    if (player == null)
+                        continue;
+                    if (player.Statistics.Souls >= SoulsLimit) {
+                        EndGameTriggerPlayer = player.Object.InputAuthority;
+                        EndGameTriggerTurn   = TotalTurnPlayed;
+
+                        Debug.Log($"End game triggered by {player.Nickname}");
+
+                        return;
+                    }
                 }
             }
         }
@@ -42,6 +50,18 @@ namespace Vermines.Gameplay.Core {
             base.FixedUpdateNetwork_Active();
 
             CheckWinCondition();
+
+            // The players after the one who triggered the end game play their last turn,
+            // the game ends when the round is over so everyone played the same number of turns.
+            if (EndGameTriggerPlayer != PlayerRef.None) {
+                if (TotalTurnPlayed > EndGameTriggerTurn) {
+                    List<PlayerController> players = Context.Runner.GetAllBehaviours<PlayerController>();
+
+                    PlayerController winner = players.OrderByDescending(p => p.Statistics.Souls).ThenByDescending(p => p.Object.InputAuthority == EndGameTriggerPlayer).First();
+
+                    FinishGameplay(winner);
+                }
+            }
         }
 
         #endregion
@@ -55,11 +75,9 @@ namespace Vermines.Gameplay.Core {
 
         protected override void OnInitializeShop(ShopType shopType, string shopData)
         {
-            ICommand fillCommand = new FillShopCommand(Shop);
-
             Shop.DeserializeSection(shopType, shopData);
 
-            CommandInvoker.ExecuteCommand(fillCommand);
+            GameEvents.OnShopRefilled.Invoke(shopType, Shop.GetDisplayCards(shopType));
         }
 
         #endregion

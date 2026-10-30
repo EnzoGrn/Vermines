@@ -1,15 +1,15 @@
 using System.Threading.Tasks;
 using UnityEngine;
-using Fusion;
 
 namespace Vermines.Menu.View {
 
     using Vermines.Menu.Tavern;
+    using Vermines.UI.Dialog;
     using Vermines.UI.Core;
     using Vermines.UI;
-    using Vermines.Core.Network;
-    using Vermines.Core;
     using Vermines.Characters;
+    using Vermines.Extension;
+    using Vermines.Core;
 
     public class UITavernView : UICloseView {
 
@@ -85,9 +85,19 @@ namespace Vermines.Menu.View {
 
             Open<UIMainMenuView>();
 
-            if (camera)
+            if (camera == null)
+                return;
+
+            try
+            {
                 await OnCameraCloseAsync(camera);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[UITavernView] OnCameraCloseAsync a échoué : {ex}");
+            }
         }
+
 
         private async Task OnCameraCloseAsync(MainMenuCamera camera)
         {
@@ -114,14 +124,16 @@ namespace Vermines.Menu.View {
 
         private void OnQuickPlayButton()
         {
-            SessionRequest session = new() {
-                GameMode = GameMode.AutoHostOrClient,
-                GameplayType = GameplayType.Standart,
-                MaxPlayers = 4,
-                ScenePath = Context.MatchmakingScenePath
-            };
+            if (!Global.Settings.Cultists.IsValidCultistID(PlayerCultist)) {
+                var dialog = Open<UIYesNoDialog>();
 
-            Context.Matchmaking.CreateSession(session, isCustom: false);
+                dialog.Title.SetTextSafe("CULTIST REQUIRED");
+                dialog.Description.SetTextSafe("Select a cultist before searching for a match.");
+
+                return;
+            }
+
+            Global.Networking.EnterMatchmakingSearch(Context.MatchmakingScenePath);
         }
 
         public void OnCultistSelected(Cultist cultist)

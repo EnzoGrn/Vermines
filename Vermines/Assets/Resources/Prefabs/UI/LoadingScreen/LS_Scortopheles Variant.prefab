@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &8762469630051433504
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2640760969800112244, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: _Key
+      value: scortopheles
+      objectReference: {fileID: 0}
+    - target: {fileID: 4118065876687379515, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c38919ddc63ef3b4a9653b3ff2e10c44, type: 3}
+    - target: {fileID: 4694249024064367605, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 625
+      objectReference: {fileID: 0}
+    - target: {fileID: 5239266516321515750, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_Name
+      value: LS_Scortopheles Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 7630581544382208770, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_text
+      value: "Avide de destruction, Scortoph\xE9l\xE8s attends avec impatience d'\xEAtre
+        invoquer pour mettre le Royaume \xE0 feu et \xE0 sang."
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 211.26001
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747491601733210105, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8140660316601254103, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}
+      propertyPath: m_text
+      value: "Scortoph\xE9l\xE8s"
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0e3bcc3dd1ec8a84d8b33afc842145f1, type: 3}

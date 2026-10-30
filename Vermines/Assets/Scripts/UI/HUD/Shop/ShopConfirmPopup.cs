@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.ShopSystem.Enumerations;
@@ -72,7 +72,7 @@ namespace Vermines.UI.Plugin
             // TODO: This needs to be changed with Localization later, using SmartString
 
             // If we have a free context, we write "Free" instead of the cost
-            costText.text = UIContextManager.Instance.IsInContext<FreeCardContext>() && UIContextManager.Instance.GetContext<FreeCardContext>().ShopType == _shopType
+            costText.text = card.Data.IsFree
                 ? "Free"
                 : $"Cost: {card.Data.CurrentEloquence} eloquences";
 
@@ -80,12 +80,7 @@ namespace Vermines.UI.Plugin
                 ? $"Replace {card.Data.Name} ?"
                 : $"Buy {card.Data.Name} ?";
 
-            var activeShop = GameObject.FindAnyObjectByType<ShopUIController>();
-
-            if (activeShop != null)
-            {
-                activeShop.SetDialogueVisible(false);
-            }
+            GetShopUIController()?.SetDialogueVisible(false);
         }
 
         protected override void OnConfirm()
@@ -94,29 +89,26 @@ namespace Vermines.UI.Plugin
 
             Hide();
 
-            if (!_isReplace && UIContextManager.Instance.IsInContext<FreeCardContext>())
-            {
-                UIContextManager.Instance.PopContextOfType<FreeCardContext>();
-            }
-
-            var activeShop = GameObject.FindAnyObjectByType<ShopUIController>();
-
-            if (activeShop is ShopUIController controller)
-            {
-                controller.SetDialogueVisible(true);
-            }
+            GetShopUIController()?.SetDialogueVisible(true);
         }
 
         protected override void OnCancel()
         {
             Hide();
 
-            var activeShop = GameObject.FindAnyObjectByType<ShopUIController>();
+            GetShopUIController()?.SetDialogueVisible(true);
+        }
 
-            if (activeShop is ShopUIController controller)
-            {
-                controller.SetDialogueVisible(true);
-            }
+        // Replaces 3 separate FindAnyObjectByType<ShopUIController>() calls
+        // (one in each of SetupBase/OnConfirm/OnCancel) with the plugin-lookup
+        // mechanism already established on GameplayUIScreen - no scene-wide
+        // search needed, ShopUIController is a sibling plugin on the same
+        // parent screen. ⚠️ Not verified to compile: relies on _ParentScreen
+        // being accessible from this class via CardPopupBase/
+        // GameplayScreenPlugin - please confirm on first build.
+        private ShopUIController GetShopUIController()
+        {
+            return _ParentScreen != null ? _ParentScreen.Get<ShopUIController>() : null;
         }
 
         #endregion

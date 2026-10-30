@@ -5,7 +5,7 @@ using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
-
+    using System.Linq;
     using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
@@ -239,7 +239,7 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         static public int ScaleOnBeeSacrificedCondition(PlayerController player)
         {
-            List<ICard> sacrificed = player.Deck.Graveyard;
+            List<ICard> sacrificed = player.Graveyard.ToList();
             int count = 0;
 
             foreach (ICard card in sacrificed) {

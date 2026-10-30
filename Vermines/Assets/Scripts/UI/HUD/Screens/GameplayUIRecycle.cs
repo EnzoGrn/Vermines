@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Localization;
 using UnityEngine.UI;
-using Vermines.CardSystem.Data.Effect;
-using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Player;
 using Vermines.UI.Card;
@@ -12,7 +9,6 @@ using Vermines.UI.Utils;
 
 namespace Vermines.UI.Screen
 {
-    using Text = TMPro.TMP_Text;
 
     public class GameplayUIRecycle : GameplayUIScreen
     {
@@ -24,9 +20,9 @@ namespace Vermines.UI.Screen
         [SerializeField] private Button validateButton;
         [SerializeField] private Button cancelButton;
 
-        [SerializeField] private Text eloquenceText;
-        [SerializeField] private Text soulsText;
-        [SerializeField] private Text cardCountText;
+        [SerializeField] private TMP_Text eloquenceText;
+        [SerializeField] private TMP_Text soulsText;
+        [SerializeField] private TMP_Text cardCountText;
 
         // Merchant Image depends on the player faction
         [SerializeField] private Image merchantImage;
@@ -50,6 +46,8 @@ namespace Vermines.UI.Screen
         public override void Init()
         {
             base.Init();
+
+            _recycleHandler = new RecycleClickHandler();
         }
 
         /// <summary>
@@ -59,22 +57,22 @@ namespace Vermines.UI.Screen
         {
             base.Show();
 
-            _recycleHandler = new RecycleClickHandler();
             _recycleHandler.OnSelectionChanged += RefreshUI;
 
             List<GameObject> playerCards = PlayerController.Local.Context.HandManager.HandCards;
 
             // Get the previous click handler to restore it later
-            _previousClickHandler = playerCards[0].GetComponent<CardDisplay>().GetClickHandler();
+            if (playerCards.Count > 0)
+                _previousClickHandler = playerCards[0].GetComponent<CardDisplay>().GetClickHandler();
 
             foreach (var cardGO in playerCards)
             {
                 if (!cardGO.TryGetComponent<CardDisplay>(out var card)) continue;
 
-                if (card.Card?.Data.Type == CardType.Tools)
+                if (card.Card?.Data.Type == CardType.Tools && card.Card?.Data.CanBeRecycled() == true)
                     card.SetClickHandler(_recycleHandler);
-                else
-                    card.SetClickHandler(null);
+                else // Tutorial: a click on a card that cannot be recycled is explained (null outside a lesson).
+                    card.SetClickHandler(Vermines.Tutorial.Integration.TutorialGameHooks.RefusedRecycleClickHandler(card.Card));
             }
 
             validateButton.onClick.AddListener(OnButtonValidate);
@@ -103,7 +101,6 @@ namespace Vermines.UI.Screen
             if (!_merchantImageInitialized)
             {
                 CardFamily family = PlayerController.Local.Statistics.Family;
-                Debug.Log("[GameplayUIRecycle] Setting merchant image for family: " + family);
                 merchantImage.sprite = UISpriteLoader.GetDefaultSprite(CardType.Partisan, family, "Merchant");
                 _merchantImageInitialized = true;
             }
@@ -113,9 +110,13 @@ namespace Vermines.UI.Screen
             int totalSouls = _recycleHandler.GetTotalSouls();
             int cardCount = _recycleHandler.SelectedCards.Count;
 
-            cardCountText.text = cardCount.ToString();
-            eloquenceText.text = totalEloquence.ToString();
-            soulsText.text = totalSouls.ToString();
+            // Skip a text that isn't assigned instead of stopping the screen.
+            if (cardCountText)
+                cardCountText.text = cardCount.ToString();
+            if (eloquenceText)
+                eloquenceText.text = totalEloquence.ToString();
+            if (soulsText)
+                soulsText.text = totalSouls.ToString();
         }
 
         private void CleanupAndClose()
@@ -127,7 +128,9 @@ namespace Vermines.UI.Screen
                 card.SetSelected(false);
                 card.SetClickHandler(_previousClickHandler);
             }
+            _recycleHandler.ClearSelection();
             _recycleHandler.OnSelectionChanged -= RefreshUI;
+
             Controller.Hide();
         }
 
@@ -140,7 +143,6 @@ namespace Vermines.UI.Screen
             foreach (var card in _recycleHandler.SelectedCards)
             {
                 PlayerController.Local.OnRecycle(card.ID);
-                PlayerController.Local.Context.HandManager.RemoveCard(card);
             }
 
             CleanupAndClose();

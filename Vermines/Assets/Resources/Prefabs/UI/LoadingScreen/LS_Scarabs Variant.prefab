@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7318689479262821090
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 405676438617224077, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: _Key
+      value: scarabs
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739182851141367746, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 90f9ed024033f534e939595ecd425ba0, type: 3}
+    - target: {fileID: 5251720474709012731, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_text
+      value: "Votre paroles transperseront-elles la dure carapace des scarab\xE9s
+        jusqu'\xE0 leur coeur ?"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 211.26001
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5368290886042117120, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5908144244715137838, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_text
+      value: "Les Scarab\xE9s"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7615872487511921439, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}
+      propertyPath: m_Name
+      value: LS_Scarabs Variant
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b45d1484b5511ae40bfc702670a7e142, type: 3}

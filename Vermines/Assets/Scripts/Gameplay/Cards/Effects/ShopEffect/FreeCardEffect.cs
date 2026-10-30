@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
 namespace Vermines.Gameplay.Cards.Effect {
 
     using Vermines.CardSystem.Data.Effect;
+    using Vermines.CardSystem.Elements;
+    using Vermines.CardSystem.Enumerations;
     using Vermines.Player;
     using Vermines.ShopSystem.Enumerations;
 
@@ -75,32 +77,58 @@ namespace Vermines.Gameplay.Cards.Effect {
         public override void Play(PlayerRef player)
         {
             Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(true);
+            GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
 
             if (player == PlayerController.Local.Object.InputAuthority) {
-                if (UIContextManager.Instance != null)
-                    UIContextManager.Instance.PushContext(new FreeCardContext(_ShopTarget));
+                GameEvents.OnShopOpenRequested.Invoke(_ShopTarget);
+                GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
+                GameEvents.OnCardPurchased.AddListener(OnBuy);
             }
+        }
 
-            GameEvents.OnCardPurchased.AddListener(OnBuy);
+        private void OnCardPurchaseRequested(ShopType type, int id)
+        {
+            PlayerController.Local.OnBuy(type, id);
         }
 
         public void OnBuy(ShopType shopType, int cardId)
         {
             if (_ShopTarget != shopType)
                 return;
+            PlayerController.Local.NetworkEventCardEffect(Card.ID);
+        }
+
+        public override void NetworkEventFunction(PlayerRef player, string data)
+        {
             _CurrentBuy++;
 
             if (_CurrentBuy == _Amount) {
-                Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(false);
+                Stop(player);
 
-                UIContextManager.Instance.PopContext();
-                GameEvents.OnCardPurchased.RemoveListener(OnBuy);
+                if (player == PlayerController.Local.Object.InputAuthority) {
+
+                    GameEvents.OnCardPurchaseRequested.RemoveListener(OnCardPurchaseRequested);
+                    GameEvents.OnCardPurchased.RemoveListener(OnBuy);
+                }
             }
         }
 
         public override void Stop(PlayerRef player)
         {
+            Cleanup();
+        }
+
+        private void CancelPrompt()
+        {
+            Cleanup();
+        }
+
+        private void Cleanup()
+        {
             Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(false);
+            GameEvents.OnCardPurchaseRequested.RemoveListener(OnCardPurchaseRequested);
+            GameEvents.OnCardPurchased.RemoveListener(OnBuy);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
         }
 
         public override List<(string, Sprite)> Draw()

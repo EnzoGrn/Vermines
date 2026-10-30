@@ -39,10 +39,6 @@ MonoBehaviour:
     m_Key: Shop_Buy_AlreadyHasThisEquipment
     m_Metadata:
       m_Items: []
-  - m_Id: 215561349881856
-    m_Key: Shop_Replace_NotYourTurn
-    m_Metadata:
-      m_Items: []
   - m_Id: 225365833277440
     m_Key: Shop_Empty
     m_Metadata:
@@ -125,6 +121,18 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 9276500577607680
     m_Key: Shop_CardNotExist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60020162764464128
+    m_Key: Courtyard_Add_NotYourTurn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60091037064880128
+    m_Key: Recycle_CardNotRecyclable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60183981075718144
+    m_Key: Table_Discard_CardNotDiscardable
     m_Metadata:
       m_Items: []
   m_Metadata:

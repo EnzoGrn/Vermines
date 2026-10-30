@@ -12,6 +12,7 @@
     "com.unity.nuget.mono-cecil": "1.11.5",
     "com.unity.render-pipelines.universal": "17.2.0",
     "com.unity.services.authentication": "3.5.2",
+    "com.unity.services.multiplayer": "1.1.8",
     "com.unity.splines": "2.8.2",
     "com.unity.timeline": "1.8.9",
     "com.unity.ugui": "2.0.0",

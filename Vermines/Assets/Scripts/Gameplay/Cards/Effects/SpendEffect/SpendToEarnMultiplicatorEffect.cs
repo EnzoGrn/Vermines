@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
-using OMGG.DesignPattern;
-using UnityEngine;
 using Fusion;
+using OMGG.DesignPattern;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Vermines.Gameplay.Cards.Effect {
     using Newtonsoft.Json;
     using OMGG.Chronicle;
     using System;
     using Vermines.CardSystem.Data.Effect;
-    using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Chronicle;
     using Vermines.Gameplay.Commands.Cards.Effects;
+    using Vermines.Gameplay.Errors;
     using Vermines.Player;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Spend/Spend data and earn more.")]
@@ -26,6 +26,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         private static readonly string eloquenceEarnTemplate = "earn <b><color=purple>{0}xE</color></b>";
         private static readonly string soulEarnTemplate = "earn <b><color=red>{0}xA</color></b>";
+
+        private static readonly string linkerSubEffectTemplate = " then ";
 
         #endregion
 
@@ -85,12 +87,27 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
         }
 
+        [SerializeField]
+        private AEffect _SubEffect = null;
+
+        public override AEffect SubEffect
+        {
+            get => _SubEffect;
+            set
+            {
+                _SubEffect = value;
+
+                UpdateDescription();
+            }
+        }
+
         #endregion
 
         #region UI Elements
 
         public Sprite EloquenceIcon = null;
         public Sprite SoulIcon = null;
+        public Sprite ThenIcon = null;
 
         #endregion
 
@@ -98,27 +115,52 @@ namespace Vermines.Gameplay.Cards.Effect {
         {
             if (player != Context.Runner.LocalPlayer)
                 return;
-            if (UIContextManager.Instance) {
-                SpendEffectContext spendEffectContext = new(Spend, _DataToSpend, _DataToEarn, _Multiplicator);
 
-                UIContextManager.Instance.PushContext(spendEffectContext);
-            }
+            GameEvents.OnEffectPromptRequested.Invoke(EffectPrompt.Spend(Card, _DataToSpend, _DataToEarn, _Multiplicator));
+            GameEvents.OnEffectSpendSubmitted.AddListener(Spend);
+            GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
         }
 
         private void Spend(int amount)
         {
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
-            if (_DataToSpend == DataType.Eloquence && player.Statistics.Eloquence < amount)
-                return;
-            else if (_DataToEarn == DataType.Soul && player.Statistics.Souls < amount)
-                return;
+            bool notEnough = (_DataToSpend == DataType.Eloquence && player.Statistics.Eloquence < amount)
+                          || (_DataToSpend == DataType.Soul && player.Statistics.Souls < amount);
+            bool overLimit = (_DataToSpend == DataType.Eloquence && amount > Context.GameplayMode.MaxEloquence)
+                          || (_DataToSpend == DataType.Soul && amount > Context.GameplayMode.SoulsLimit);
 
-            if (UIContextManager.Instance)
-                UIContextManager.Instance.PopContextOfType<SpendEffectContext>();
-            if (amount <= 0 || (_DataToSpend == DataType.Eloquence && amount > Context.GameplayMode.MaxEloquence) || (_DataToSpend == DataType.Soul && amount > Context.GameplayMode.SoulsLimit))
+            // Invalid amount: keep the prompt open and tell the player.
+            if (amount > 0 && (notEnough || overLimit))
+            {
+                GameActionError error = new GameActionError
+                {
+                    Scope = ErrorScope.Local,
+                    Target = Context.Runner.LocalPlayer,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Effect,
+                    MessageKey = "Effect_SpendInvalid"
+                };
+
+                GameEvents.OnActionRefused.Invoke(error, GameActionError.Localize(error));
+
                 return;
-            player.NetworkEventCardEffect(Card.ID, amount.ToString());
+            }
+
+            GameEvents.OnEffectSpendSubmitted.RemoveListener(Spend);
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Spend);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
+
+            // Spending nothing is the way to decline the effect.
+            if (amount <= 0)
+                return;
+            player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, amount.ToString());
+        }
+
+        private void CancelPrompt()
+        {
+            GameEvents.OnEffectSpendSubmitted.RemoveListener(Spend);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)
@@ -169,6 +211,8 @@ namespace Vermines.Gameplay.Cards.Effect {
             entry.PayloadJson = payloadJson;
 
             player.AddChronicle(entry);
+
+            base.Play(playerRef);
         }
 
         public override List<(string, Sprite)> Draw()
@@ -184,12 +228,21 @@ namespace Vermines.Gameplay.Cards.Effect {
             }
 
             elements.Add((" : ", null));
-            elements.Add(($"+{Multiplicator}X", null));
+
+            if (Multiplicator != 1)
+                elements.Add(($"+{Multiplicator}X", null));
+            else
+                elements.Add(($"+X", null));
 
             if (DataToEarn == DataType.Eloquence) {
                 elements.Add((null, EloquenceIcon));
             } else if (DataToEarn == DataType.Soul) {
                 elements.Add((null, SoulIcon));
+            }
+
+            if (SubEffect != null) {
+                elements.Add((null, ThenIcon));
+                elements.AddRange(SubEffect.Draw());
             }
 
             return elements;
@@ -209,6 +262,14 @@ namespace Vermines.Gameplay.Cards.Effect {
             else if (DataToEarn == DataType.Soul)
                 descriptionTemplate += string.Format(soulEarnTemplate, Multiplicator);
             Description = descriptionTemplate;
+
+            if (SubEffect != null) {
+                string subDescription = SubEffect.Description;
+
+                if (!string.IsNullOrEmpty(subDescription))
+                    subDescription = char.ToLower(subDescription[0]) + subDescription[1..];
+                Description += $"{linkerSubEffectTemplate}{subDescription}";
+            }
         }
 
         private void OnEnable()
@@ -219,6 +280,8 @@ namespace Vermines.Gameplay.Cards.Effect {
                 EloquenceIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Eloquence");
             if (SoulIcon == null)
                 SoulIcon = Resources.Load<Sprite>("Sprites/UI/Icons/Souls");
+            if (ThenIcon == null)
+                ThenIcon = Resources.Load<Sprite>("Sprites/UI/Effects/Then");
         }
 
         #region Editor Editor

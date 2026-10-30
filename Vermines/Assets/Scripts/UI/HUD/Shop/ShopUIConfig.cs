@@ -20,6 +20,9 @@ public class ShopUIConfig : ScriptableObject
     //public LocalizedString leftDialogue;
     //public LocalizedString rightDialogue;
 
+    [Header("Pagination")]
+    public int slotsPerPage = 5;
+
     public Sprite portraitLeft;
     public bool flipLeft;
     public Sprite portraitRight;

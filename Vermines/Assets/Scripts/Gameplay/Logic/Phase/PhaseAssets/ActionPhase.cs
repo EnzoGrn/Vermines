@@ -1,9 +1,10 @@
-﻿using Fusion;
+using Fusion;
 using UnityEngine;
 
 namespace Vermines.Gameplay.Phases {
 
     using Vermines.CardSystem.Elements;
+    using Vermines.Gameplay.Errors;
     using Vermines.Player;
     using Vermines.ShopSystem.Enumerations;
 
@@ -18,8 +19,10 @@ namespace Vermines.Gameplay.Phases {
                 return;
             base.Run(player);
 
-            GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
-            GameEvents.OnCardPlayedRequested.AddListener(OnCardPlayed);
+            if (_Context.Runner.LocalPlayer == _CurrentPlayer) {
+                GameEvents.OnCardPurchaseRequested.AddListener(OnCardPurchaseRequested);
+                GameEvents.OnCardPlayedRequested.AddListener(OnCardPlayed);
+            }
         }
 
         public override void Deinitialize()
@@ -68,10 +71,21 @@ namespace Vermines.Gameplay.Phases {
 
             if (_Context.Runner.LocalPlayer == _CurrentPlayer)
                 player.OnPlay(card.ID);
-            else {
+            else
+            {
                 Debug.LogWarning("You can't play a card if it's not your turn.");
 
-                GameEvents.OnCardPlayedRefused.Invoke(card);
+                GameActionError localError = new GameActionError
+                {
+                    Scope = ErrorScope.Local,
+                    Target = _Context.Runner.LocalPlayer,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Table,
+                    MessageKey = "Table_Play_NotYourTurn",
+                    MessageArgs = new GameActionErrorArgs(card.ID.ToString())
+                };
+
+                GameEvents.OnActionRefused.Invoke(localError, GameActionError.Localize(localError));
             }
         }
         #endregion

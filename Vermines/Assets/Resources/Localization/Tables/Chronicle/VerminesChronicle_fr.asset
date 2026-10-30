@@ -127,6 +127,20 @@ MonoBehaviour:
     m_Localized: "{0} a remis <b>{1}</b> au march\xE9 et r\xE9cup\xE9r\xE9 <b><color=\"purple\">{2}E</color></b>."
     m_Metadata:
       m_Items: []
+  - m_Id: 55745208153792512
+    m_Localized: Nouvel arrivant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55745236691836928
+    m_Localized: "\xC0 la faveur d\u2019un discours inspir\xE9 ou d\u2019une rumeur
+      bien plac\xE9e, un nouveau visage rejoint les rangs de la cour."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55745288248221696
+    m_Localized: 'Les paroles de {0} portent leurs fruits : <b>{1}</b> rejoint la
+      cour.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

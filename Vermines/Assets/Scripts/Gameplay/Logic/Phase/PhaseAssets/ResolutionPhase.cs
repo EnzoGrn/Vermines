@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using OMGG.DesignPattern;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ namespace Vermines.Gameplay.Phases {
 
         #region Attributes
 
-        public int NumberOfCardsToDrawAtEndOfTurn = 3;
+        public int NumberOfCardsToHaveInHand = 3;
 
         #endregion
 
@@ -32,27 +32,15 @@ namespace Vermines.Gameplay.Phases {
 
             PlayerController player = _Context.NetworkGame.GetPlayer(playerRef);
 
-            ICommand refillShopCommand = new FillShopCommand(_Context.GameplayMode.Shop);
+            player.MergeToolDiscardIntoDiscard(_Context.NetworkGame.Seed, player.ToolDiscard.ToList());
+            player.ClearToolDiscard();
 
-            CommandInvoker.ExecuteCommand(refillShopCommand);
-
-            foreach (var shopSection in _Context.GameplayMode.Shop.Sections)
-                GameEvents.OnShopRefilled.Invoke(shopSection.Key, _Context.GameplayMode.Shop.GetDisplayCards(shopSection.Key));
-            player.Deck.MergeToolDiscard(_Context.NetworkGame.Seed);
-
-            for (int i = 0; i < NumberOfCardsToDrawAtEndOfTurn; i++) {
-                ICommand drawCardCommand = new DrawCommand(player);
-
-                CommandResponse command = CommandInvoker.ExecuteCommand(drawCardCommand);
-
-                if (command.Status == CommandStatus.Success && _Context.Runner.LocalPlayer == playerRef)
-                    GameEvents.InvokeOnDrawCard(player.Deck.Hand.Last());
+            for (int i = player.Hand.Count; i < NumberOfCardsToHaveInHand; i++) {
+                CommandInvoker.ExecuteCommand(new DrawCommand(player));
             }
 
             StopEffects(player);
 
-            if (UIContextManager.Instance != null)
-                UIContextManager.Instance.ClearContext();
             OnPhaseEnding(playerRef, true); // Here true, because everyone know that the phase is over.
         }
 
@@ -62,9 +50,16 @@ namespace Vermines.Gameplay.Phases {
 
         private void StopEffects(PlayerController player)
         {
-            foreach (ICard card in player.Deck.PlayedCards) {
+            foreach (ICard card in player.PlayedCards) {
                 foreach (AEffect effect in card.Data.Effects) {
-                    if ((effect.Type & EffectType.Passive) != 0)
+                    if ((effect.Type & EffectType.Passive) != 0 || (effect.Type & EffectType.Activate) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0 || (effect.Type & EffectType.OnOtherDiscard) != 0)
+                        effect.Stop(player.Object.InputAuthority);
+                }
+            }
+
+            if (player.God.Effects != null) {
+                foreach (AEffect effect in player.God.Effects) {
+                    if ((effect.Type & EffectType.Passive) != 0 || (effect.Type & EffectType.Activate) != 0 || (effect.Type & EffectType.OnOtherSacrifice) != 0 || (effect.Type & EffectType.OnOtherDiscard) != 0)
                         effect.Stop(player.Object.InputAuthority);
                 }
             }

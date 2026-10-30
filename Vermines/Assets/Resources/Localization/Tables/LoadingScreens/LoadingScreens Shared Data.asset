@@ -1,0 +1,164 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: LoadingScreens Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: LoadingScreens
+  m_TableCollectionNameGuidString: 68e28738469fc1e47894c66d18f8b174
+  m_Entries:
+  - m_Id: 2431639552
+    m_Key: loading.proles_caduca.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2570051584
+    m_Key: loading.proles_caduca.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3979337728
+    m_Key: loading.dracoleon.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3979337729
+    m_Key: loading.dracoleon.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4944027648
+    m_Key: loading.magus_mortis.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4944027649
+    m_Key: loading.magus_mortis.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5397012480
+    m_Key: loading.chilosmodee.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5397012481
+    m_Key: loading.chilosmodee.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5824831488
+    m_Key: loading.high_bees.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5824831489
+    m_Key: loading.high_bees.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6491725824
+    m_Key: loading.lux_dux.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6491725825
+    m_Key: loading.lux_dux.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6814687232
+    m_Key: loading.scortopheles.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6814687233
+    m_Key: loading.scortopheles.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7167008768
+    m_Key: loading.bees.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7167008769
+    m_Key: loading.bees.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7796154368
+    m_Key: loading.belzerocera.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7796154369
+    m_Key: loading.belzerocera.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8110727168
+    m_Key: loading.mantislith.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8110727169
+    m_Key: loading.mantislith.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8442077184
+    m_Key: loading.firefly.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8442077185
+    m_Key: loading.firefly.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9062834176
+    m_Key: loading.mosquito.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9062834177
+    m_Key: loading.mosquito.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9616482304
+    m_Key: loading.cultists.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9616482305
+    m_Key: loading.cultists.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10157547520
+    m_Key: loading.crickets.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10157547521
+    m_Key: loading.crickets.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10635698176
+    m_Key: loading.scarabs.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10635698177
+    m_Key: loading.scarabs.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11046739968
+    m_Key: loading.fly.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11046739969
+    m_Key: loading.fly.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11428421632
+    m_Key: loading.ladybugs.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11428421633
+    m_Key: loading.ladybugs.description
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3049816126541791316
+  references:
+    version: 2
+    RefIds:
+    - rid: 3049816126541791316
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1793282472779

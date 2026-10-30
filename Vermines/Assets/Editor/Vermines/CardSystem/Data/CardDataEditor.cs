@@ -81,7 +81,7 @@ namespace Vermines.CardSystem.Data {
                 // [Tooltip("The type of the card.")]
                 cardData.Type = (CardType)EditorGUILayout.EnumPopup(new GUIContent("Type", "The type of the card."), cardData.Type);
 
-                if (cardData.IsStartingCard == false && cardData.Type == CardType.Partisan) {
+                if (cardData.Type == CardType.Partisan) {
                     // [Tooltip("Did the card belongs to a family of a player?")]
                     cardData.IsFamilyCard = EditorGUILayout.Toggle(new GUIContent("Is Family Card", "Did the card belongs to a family of a player?"), cardData.IsFamilyCard);
                 } else {
@@ -96,12 +96,9 @@ namespace Vermines.CardSystem.Data {
                         cardData.Family = CardFamily.None;
                     }
 
-                    if (cardData.IsStartingCard == false) {
-                        // [Tooltip("Level of the card, only available for partisan cards.")]
-                        // [Range(1, 2)]
-                        cardData.Level = EditorGUILayout.IntSlider(new GUIContent("Level", "Level of the card, only available for partisan cards."), cardData.Level, 1, 2);
-                    } else
-                        cardData.Level = 0;
+                    // [Tooltip("Level of the card, only available for partisan cards.")]
+                    // [Range(1, 2)]
+                    cardData.Level = EditorGUILayout.IntSlider(new GUIContent("Level", "Level of the card, only available for partisan cards."), cardData.Level, 1, 2);
                 } else {
                     cardData.Family = CardFamily.None;
                     cardData.Level  = 0;
@@ -131,10 +128,7 @@ namespace Vermines.CardSystem.Data {
             if (_ShowStats) {
                 GUILayout.BeginVertical(EditorStyles.helpBox);
 
-                if (cardData.IsStartingCard && cardData.Type == CardType.Partisan)
-                    cardData.Eloquence = 0;
-                else
-                    cardData.Eloquence = EditorGUILayout.IntField(new GUIContent("Eloquence (cost)", "The cost of the card (with Eloquence as the currency)."), cardData.Eloquence);
+                cardData.Eloquence = EditorGUILayout.IntField(new GUIContent("Eloquence (cost)", "The cost of the card (with Eloquence as the currency)."), cardData.Eloquence);
 
                 if (cardData.Type == CardType.Partisan) {
                     // [Tooltip("The souls of the card (souls represent the points system of the game).")]
@@ -142,7 +136,7 @@ namespace Vermines.CardSystem.Data {
                 } else
                     cardData.Souls = 0;
 
-                if (cardData.Type == CardType.Tools) {
+                if (cardData.Type == CardType.Tools && cardData.Exemplars > 0) {
                     // [Tooltip("The amount of eloquence gained when the card is recycled.")]
                     cardData.RecycleEloquence = EditorGUILayout.IntField(new GUIContent("Recycle Eloquence", "The amount of eloquence gained when the card is recycled."), cardData.RecycleEloquence);
                 } else

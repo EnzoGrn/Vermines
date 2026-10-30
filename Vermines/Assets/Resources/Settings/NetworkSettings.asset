@@ -17,4 +17,4 @@ MonoBehaviour:
     Region: 
     Icon: {fileID: 0}
   _CodeGenerator: {fileID: 11400000, guid: 05a83dd833e73be429bacc85cf1c344f, type: 2}
-  QueueName: vermines
+  QueueName: default-queue

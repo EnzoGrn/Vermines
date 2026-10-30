@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using Newtonsoft.Json;
 using OMGG.Chronicle;
 using OMGG.DesignPattern;
@@ -16,9 +16,6 @@ namespace Vermines.Gameplay.Cards.Effect {
     using Vermines.Gameplay.Chronicle;
     using Vermines.Gameplay.Commands;
     using Vermines.Player;
-    using Vermines.UI;
-    using Vermines.UI.Card;
-    using Vermines.UI.Screen;
 
     [CreateAssetMenu(fileName = "New Effect", menuName = "Vermines/Card System/Card/Effects/Reborn/Reborn a partisan effect.")]
     public class RebornEffect : AEffect {
@@ -52,6 +49,22 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         #endregion
 
+        public override bool CanBePlayed(PlayerRef player, out string reasonKey)
+        {
+            PlayerController controller = Context.NetworkGame.GetPlayer(player);
+            if (controller.PlayedCards.Count >= controller.Statistics.NumberOfSlotInTable)
+            {
+                reasonKey = "skipped.table_full";
+                return false;
+            }
+            if (EffectCandidates.ForReborn(controller, CardType.Partisan).Count == 0)
+            {
+                reasonKey = "skipped.reborn_no_target";
+                return false;
+            }
+            reasonKey = null;
+            return true;
+        }
         public override void Play(PlayerRef playerRef)
         {
             if (playerRef != Context.Runner.LocalPlayer)
@@ -59,32 +72,35 @@ namespace Vermines.Gameplay.Cards.Effect {
             PlayerController player = Context.NetworkGame.GetPlayer(playerRef);
 
             PlayerStatistics stat = player.Statistics;
-            PlayerDeck       deck = player.Deck;
 
-            if (deck.PlayedCards.Count >= stat.NumberOfSlotInTable || deck.Graveyard.Count == 0)
+            if (!CanBePlayed(playerRef, out string reasonKey))
+            {
+                GameEvents.OnEffectSkipped.Invoke(Card, reasonKey);
+
                 return;
-            if (UIContextManager.Instance) {
-                CardSelectedEffectContext args = new(CardType.Partisan, Card);
-
-                CardRebornContext ctx = new(args);
-
-                UIContextManager.Instance.PushContext(ctx);
             }
-
+            GameEvents.OnEffectPromptRequested.Invoke(new EffectPrompt(EffectPromptKind.Reborn, CardType.Partisan, Card));
+            GameEvents.OnTurnTimerExpired.AddListener(CancelPrompt);
             GameEvents.OnEffectSelectCard.AddListener(Reborn);
         }
 
         private void Reborn(ICard card)
         {
             GameEvents.OnEffectSelectCard.RemoveListener(Reborn);
+            GameEvents.OnEffectPromptClosed.Invoke(EffectPromptKind.Reborn);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
 
-            if (UIContextManager.Instance)
-                UIContextManager.Instance.PopContextOfType<CardRebornContext>();
             if (card.Data.Type != CardType.Partisan)
                 return;
             PlayerController player = Context.NetworkGame.GetPlayer(Context.Runner.LocalPlayer);
 
-            player.NetworkEventCardEffect(Card.ID, card.ID.ToString());
+            player.NetworkEventCardEffect(Card == null ? -1 : Card.ID, card.ID.ToString());
+        }
+
+        private void CancelPrompt()
+        {
+            GameEvents.OnEffectSelectCard.RemoveListener(Reborn);
+            GameEvents.OnTurnTimerExpired.RemoveListener(CancelPrompt);
         }
 
         public override void NetworkEventFunction(PlayerRef playerRef, string data)

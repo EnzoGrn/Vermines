@@ -12,8 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46d14e123f0512b498926e3fe5af25e0, type: 3}
   m_Name: RoyalGardEffect2
   m_EditorClassIdentifier: 
+  Context:
+    PeerUserID: 
+    Audio: {fileID: 0}
+    UI: {fileID: 0}
+    ObjectCache: {fileID: 0}
+    SceneInput: {fileID: 0}
+    Settings: {fileID: 0}
+    CustomGameScenePath: 
+    MatchmakingScenePath: 
+    GameScenePath: 
+    IsVisible: 0
+    HasInput: 0
+    Runner: {fileID: 0}
+    SceneChangeController: {fileID: 0}
+    HandManager: {fileID: 0}
+    NetworkGame: {fileID: 0}
+    GameplayMode: {fileID: 0}
+    NetworkLobby: {fileID: 0}
+    Lobby: {fileID: 0}
+    NetworkMatchmaking: {fileID: 0}
+    Matchmaking: {fileID: 0}
   _Type: 4
   _Description: Sacrifice the <b>{card_name}</b> to earn <b><color=red>3A</color></b>
-    for each additional bee sacrificed.
-  _SubEffect: {fileID: 11400000, guid: 9d9036f25b0a22e4ead83126b8eb6c10, type: 2}
+    for each <b>Partisan</b> card played.
+  _SubEffect: {fileID: 11400000, guid: ddc4e6135acd72f4a9224a195c9ac299, type: 2}
   SacrificeIcon: {fileID: 21300000, guid: 329e614908730e64abb78148f0b0c090, type: 3}

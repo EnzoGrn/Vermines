@@ -1,18 +1,20 @@
-﻿using Fusion;
+using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 using Vermines.CardSystem.Elements;
 using Vermines.CardSystem.Enumerations;
 using Vermines.Core.Scene;
+using Vermines.Gameplay.Cards.Effect;
 using Vermines.Player;
 using Vermines.UI.Card;
 using Vermines.UI.Plugin;
+using Vermines.UI.Shop;
 
 namespace Vermines.UI.Screen
 {
     using Button = UnityEngine.UI.Button;
 
-    public partial class GameplayUICopyEffect : GameplayUIScreen, IParamReceiver<CardSelectedEffectContext>, ICardClickReceiver
+    public partial class GameplayUICopyEffect : GameplayUIScreen, IParamReceiver<EffectPrompt>, ICardClickReceiver
     {
         #region Attributes
 
@@ -23,7 +25,7 @@ namespace Vermines.UI.Screen
 
         protected List<ShopCardSlot> activeSlots = new();
 
-        protected List<Vermines.UI.Screen.ShopCardEntry> currentEntries = new();
+        protected List<ShopCardEntry> currentEntries = new();
 
         /// <summary>
         /// The banner holder that contains the card list.
@@ -133,11 +135,11 @@ namespace Vermines.UI.Screen
         /// <summary>
         /// Set the callback to be called when the effect is done.
         /// </summary>
-        /// <param name="onDone">The callback to be called when the effect is done.</param>
-        public void SetParam(CardSelectedEffectContext cardContext)
+        /// <param name="prompt">The effect prompt containing the card type and source card.</param>
+        public void SetParam(EffectPrompt prompt)
         {
-            _deckType = cardContext.Type;
-            activeCard = cardContext.Card;
+            _deckType = prompt.CardType;
+            activeCard = prompt.Source;
 
             Debug.Log($"[{nameof(GameplayUICopyEffect)}] SetParam called with deck type: {_deckType} and card: {activeCard?.Data.Name}");
 
@@ -219,15 +221,6 @@ namespace Vermines.UI.Screen
         #endregion
 
         #region Events
-
-        /// <summary>
-        /// Is called when the <see cref="_CloseButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
-        public virtual void OnBackButtonPressed()
-        {
-            Controller.Hide();
-            UIContextManager.Instance.PopContext();
-        }
 
         public void OnCardClicked(ICard card, int slodId)
         {

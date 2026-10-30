@@ -8,7 +8,6 @@ namespace Vermines.Core.Scene {
     using Vermines.Core.Settings;
     using Vermines.Core.UI;
     using Vermines.Menu.CustomLobby;
-    using Vermines.Menu.Matchmaking;
     using Vermines.UI.Card;
 
     [System.Serializable]
@@ -75,8 +74,6 @@ namespace Vermines.Core.Scene {
         public NetworkLobby NetworkLobby;
         [HideInInspector]
         public LobbyManager Lobby;
-
-        public NetworkMatchmaking NetworkMatchmaking;
 
         #endregion
 

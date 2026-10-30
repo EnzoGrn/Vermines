@@ -43,4 +43,10 @@ public class RecycleClickHandler : ICardClickHandler
             total += card.Data.Souls;
         return total;
     }
+
+    public void ClearSelection()
+    {
+        _selectedCards.Clear();
+        OnSelectionChanged?.Invoke();
+    }
 }

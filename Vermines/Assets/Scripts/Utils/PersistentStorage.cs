@@ -1,7 +1,7 @@
 using UnityEngine;
-using WebSocketSharp;
 
 namespace Vermines.Utils {
+    using Vermines.Extension;
 
     public static class PersistentStorage {
 

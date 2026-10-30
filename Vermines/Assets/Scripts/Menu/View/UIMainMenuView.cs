@@ -16,6 +16,9 @@ namespace Vermines.Menu.View {
         private ButtonSignInteraction _PlayButton;
 
         [SerializeField]
+        private ButtonSignInteraction _TutorialButton;
+
+        [SerializeField]
         private ButtonSignInteraction _SettingsButton;
 
         [SerializeField]
@@ -24,6 +27,10 @@ namespace Vermines.Menu.View {
         [SerializeField]
         private GameObject SignGameObject;
 
+        [SerializeField]
+        [Tooltip("The lessons of the tutorial and its scenario table.")]
+        private Vermines.Tutorial.Integration.VerminesTutorialConfig _TutorialConfig;
+
         #endregion
 
         #region Methods
@@ -31,6 +38,7 @@ namespace Vermines.Menu.View {
         public void ActiveButton()
         {
             _PlayButton.onClick.AddListener(OnPlayButton);
+            _TutorialButton.onClick.AddListener(OnTutorialButton);
             _SettingsButton.onClick.AddListener(OnSettingsButton);
             _QuitButton.onClick.AddListener(OnQuitButton);
         }
@@ -38,6 +46,7 @@ namespace Vermines.Menu.View {
         public void DeactiveButton()
         {
             _PlayButton.onClick.RemoveListener(OnPlayButton);
+            _TutorialButton.onClick.RemoveListener(OnTutorialButton);
             _SettingsButton.onClick.RemoveListener(OnSettingsButton);
             _QuitButton.onClick.RemoveListener(OnQuitButton);
         }
@@ -118,6 +127,11 @@ namespace Vermines.Menu.View {
 
                 InTavern();
             }
+        }
+
+        private void OnTutorialButton()
+        {
+            Vermines.Tutorial.Integration.VerminesTutorialDirector.OpenLessonMenu(this, Context.GameScenePath, _TutorialConfig);
         }
 
         private void OnSettingsButton()

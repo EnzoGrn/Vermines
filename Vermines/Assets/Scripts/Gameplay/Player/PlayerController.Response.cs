@@ -1,23 +1,26 @@
-﻿using OMGG.DesignPattern;
-using OMGG.Chronicle;
-using UnityEngine;
 using Fusion;
+using OMGG.Chronicle;
+using OMGG.DesignPattern;
+using UnityEngine;
 
 namespace Vermines.Player {
 
-    using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Data;
+    using Vermines.CardSystem.Data.Effect;
     using Vermines.CardSystem.Elements;
     using Vermines.CardSystem.Enumerations;
-    using Vermines.Gameplay.Commands;
-    using Vermines.ShopSystem.Commands;
-    using Vermines.ShopSystem.Enumerations;
-    using Vermines.ShopSystem;
-    using Vermines.UI.Card;
-    using Vermines.UI;
-    using Vermines.UI.Screen;
-    using Vermines.Core.Player;
     using Vermines.Core;
+    using Vermines.Core.Player;
+    using Vermines.Gameplay.Cards.Effect;
+    using Vermines.Gameplay.Commands;
+    using Vermines.Gameplay.Errors;
+    using Vermines.ShopSystem;
+    using Vermines.ShopSystem.Commands;
+    using Vermines.ShopSystem.Data;
+    using Vermines.ShopSystem.Enumerations;
+    using Vermines.UI;
+    using Vermines.UI.Card;
+    using Vermines.UI.Screen;
 
     public partial class PlayerController : ContextBehaviour, IPlayer {
 
@@ -40,13 +43,23 @@ namespace Vermines.Player {
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        public void RPC_ReplaceCardInShop(NetworkChronicleEntry nEntry, ShopType shopType, int cardId)
+        public void RPC_AddCardInCourtyard(NetworkChronicleEntry nEntry, int level)
         {
-            ICommand replaceCommand = new CLIENT_ChangeCardCommand(new ShopArgs(Context.GameplayMode.Shop, shopType, cardId));
+            ShopData              shop = Context.GameplayMode.Shop;
+            CourtyardSection courtyard = shop.Sections[ShopType.Courtyard] as CourtyardSection;
 
-            CommandInvoker.ExecuteCommand(replaceCommand);
+            courtyard.AddCard(level);
 
-            GameEvents.OnShopRefilled.Invoke(shopType, Context.GameplayMode.Shop.GetDisplayCards(shopType));
+            GameEvents.OnShopRefilled.Invoke(ShopType.Courtyard, shop.GetDisplayCards(ShopType.Courtyard));
+
+            foreach (var card in PlayedCards) {
+                if (card.Data.Effects != null) {
+                    foreach (var effect in card.Data.Effects) {
+                        if ((effect.Type & EffectType.OnCardAddedToCourtyard) != 0)
+                            effect.Play(Object.InputAuthority);
+                    }
+                }
+            }
 
             AddChronicle(nEntry.ToChronicleEntry());
         }
@@ -72,7 +85,9 @@ namespace Vermines.Player {
                         effect.Stop(Object.InputAuthority);
                 }
 
-                foreach (ICard playedCard in Deck.PlayedCards) {
+                foreach (ICard playedCard in PlayedCards) {
+                    if (playedCard == card)
+                        continue;
                     if (playedCard.Data.Effects != null) {
                         foreach (AEffect effect in playedCard.Data.Effects) {
                             if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
@@ -80,9 +95,16 @@ namespace Vermines.Player {
                         }
                     }
                 }
+
+                if (God.Effects != null) {
+                    foreach (var effect in God.Effects) {
+                        if ((effect.Type & EffectType.OnOtherSacrifice) != 0)
+                            effect.Play(Object.InputAuthority);
+                    }
+                }
             }
 
-            GameEvents.OnCardSacrified.Invoke(card);
+            GameEvents.OnCardSacrificed.Invoke(card);
 
             AddChronicle(nEntry.ToChronicleEntry());
         }
@@ -96,7 +118,7 @@ namespace Vermines.Player {
         {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
-            if (!HasInputAuthority) {
+            if (!HasStateAuthority) {
                 ICommand cardSacrifiedCommand = new CLIENT_CardRecycleCommand(this, cardId, Context.GameplayMode.Shop.Sections[ShopType.Market]);
 
                 CommandInvoker.ExecuteCommand(cardSacrifiedCommand);
@@ -107,7 +129,9 @@ namespace Vermines.Player {
                     effect.Play(Object.InputAuthority);
             }
 
-            foreach (ICard playedCard in Deck.PlayedCards) {
+            foreach (ICard playedCard in PlayedCards) {
+                if (playedCard == card)
+                    continue;
                 if (playedCard.Data.Effects != null) {
                     foreach (AEffect effect in playedCard.Data.Effects) {
                         if ((effect.Type & EffectType.OnOtherRecycle) != 0)
@@ -138,7 +162,7 @@ namespace Vermines.Player {
 
             if (!hasEffect) {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {
-                    DiscardDropHandler discardDropHandler = FindFirstObjectByType<DiscardDropHandler>();
+                    DiscardDropHandler discardDropHandler = DiscardDrop;
 
                     if (discardDropHandler != null)
                         discardDropHandler.SetLatestDiscardedCard(card);
@@ -147,9 +171,31 @@ namespace Vermines.Player {
                 return;
             }
 
+            foreach (ICard playedCard in PlayedCards) {
+                if (playedCard == card)
+                    continue;
+                if (playedCard.Data.Effects != null) {
+                    foreach (AEffect effect in playedCard.Data.Effects) {
+                        if ((effect.Type & EffectType.OnOtherDiscard) != 0 && effect is OtherDiscardEffect discard) {
+                            if (discard.TargetType == card.Data.Type || discard.TargetType == CardType.None)
+                                effect.Play(Object.InputAuthority);
+                        }
+                    }
+                }
+            }
+
+            if (God.Effects != null) {
+                foreach (var effect in God.Effects) {
+                    if ((effect.Type & EffectType.OnOtherDiscard) != 0 && effect is OtherDiscardEffect discard) {
+                        if (discard.TargetType == card.Data.Type || discard.TargetType == CardType.None)
+                            effect.Play(Object.InputAuthority);
+                    }
+                }
+            }
+
             if (card.Data.HasChoiceEffect(EffectType.Discard)) {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {
-                    GameplayUIController uiController = FindFirstObjectByType<GameplayUIController>();
+                    GameplayUIController uiController = GameplayUI;
 
                     if (uiController != null)
                         uiController.ShowWithParams<GameplayUIChoiceEffect, ICard>(card);
@@ -160,6 +206,9 @@ namespace Vermines.Player {
                         effect.Play(Object.InputAuthority);
                 }
             }
+            // Lets a pending forced-discard effect (DiscardCardEffect) continue.
+            if (Object.InputAuthority == Context.Runner.LocalPlayer)
+                GameEvents.OnCardDiscarded.Invoke(card);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -171,11 +220,26 @@ namespace Vermines.Player {
 
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
-            if (response.Status == CommandStatus.Invalid) {
+            if (response.Status == CommandStatus.Invalid)
+            {
                 Debug.LogWarning($"[SERVER]: {response.Message}");
 
-                GameEvents.OnCardPlayedRefused.Invoke(card);
-            } else if (response.Status == CommandStatus.Success) {
+                GameActionError localError = new GameActionError
+                {
+                    Scope = ErrorScope.Local,
+                    Target = Object.InputAuthority,
+                    Severity = ErrorSeverity.Minor,
+                    Location = ErrorLocation.Table,
+                    MessageKey = response.Message,
+                    MessageArgs = new GameActionErrorArgs(response.Args)
+                };
+
+                string localizedMessage = GameActionError.Localize(localError);
+
+                GameEvents.OnActionRefused.Invoke(localError, localizedMessage);
+            }
+            else if (response.Status == CommandStatus.Success)
+            {
                 GameEvents.OnCardPlayed.Invoke(card);
 
                 foreach (AEffect effect in card.Data.Effects)
@@ -272,10 +336,15 @@ namespace Vermines.Player {
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void RPC_NetworkEventCardEffect(int cardID, string data)
         {
-            ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
+            if (cardID == -1) {
+                foreach (AEffect effect in God.Effects)
+                    effect.NetworkEventFunction(Object.InputAuthority, data);
+            } else {
+                ICard card = CardSetDatabase.Instance.GetCardByID(cardID);
 
-            foreach (AEffect effect in card.Data.Effects)
-                effect.NetworkEventFunction(Object.InputAuthority, data);
+                foreach (AEffect effect in card.Data.Effects)
+                    effect.NetworkEventFunction(Object.InputAuthority, data);
+            }
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -284,12 +353,11 @@ namespace Vermines.Player {
             ICard card = CardSetDatabase.Instance.GetCardByID(cardId);
 
             if (Object.InputAuthority == Context.Runner.LocalPlayer) {
-                GameplayUIController uiController = FindFirstObjectByType<GameplayUIController>();
+                GameplayUIController uiController = GameplayUI;
 
                 if (uiController != null)
                     uiController.Hide<GameplayUIChoiceEffect>();
             }
-
             card.Data.Effects[effectIndex].Play(Object.InputAuthority);
         }
     }

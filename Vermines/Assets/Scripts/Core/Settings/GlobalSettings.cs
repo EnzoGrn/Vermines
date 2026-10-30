@@ -15,6 +15,7 @@ namespace Vermines.Core.Settings {
         public string MenuScene = "Menu";
 
         public CultistDatabase Cultists;
+        public GodDatabase Gods;
 
         public NetworkSettings Network;
         public OptionsData DefaultOptions;

@@ -18,21 +18,20 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 90973626368
-    m_Localized: Annuler cet effet ?
+  - m_Id: 176400341853757440
+    m_Localized: "{0} : votre table est pleine, aucune carte ne peut rena\xEEtre."
     m_Metadata:
       m_Items: []
-  - m_Id: 209819230208
-    m_Localized: "\xCAtes-vous s\xFBr de vouloir annuler cet effet ? Vous le perdrez
-      pour ce tour."
+  - m_Id: 176400347566399488
+    m_Localized: "{0} : aucun partisan dans votre cimeti\xE8re."
     m_Metadata:
       m_Items: []
-  - m_Id: 1153017536512
-    m_Localized: Oui
+  - m_Id: 176400349973929984
+    m_Localized: "{0} : aucune carte \xE0 sacrifier."
     m_Metadata:
       m_Items: []
-  - m_Id: 1174404292608
-    m_Localized: Non
+  - m_Id: 176400351827812352
+    m_Localized: "{0} : aucune carte \xE0 copier."
     m_Metadata:
       m_Items: []
   references:

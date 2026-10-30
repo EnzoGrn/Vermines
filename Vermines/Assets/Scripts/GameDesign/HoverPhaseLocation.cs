@@ -75,9 +75,15 @@ public class HoverPhaseLocation : IGGD_Behaviour {
         };
 
         List<RaycastResult> results = new();
+
+        if (_raycaster == null && (_raycaster = FindFirstObjectByType<GraphicRaycaster>()) == null)
+        {
+            Debug.LogError("[IsPointerOverUI]: Cannot get the raycaster");
+            return false;
+        }
+
         _raycaster.Raycast(_pointerEventData, results);
 
-        // On ignore les raycasts si ce ne sont que des éléments transparents / non interactifs
         return results.Count > 0;
     }
 

@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using OMGG.DesignPattern;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +14,7 @@ namespace Vermines.Gameplay.Phases {
     using Vermines.UI.Screen;
     using Vermines.CardSystem.Enumerations;
     using Vermines.Gameplay.Phases.Data;
+    using System.Linq;
 
     [CreateAssetMenu(menuName = "Vermines/Phases/GainPhase")]
     public class GainPhaseAsset : PhaseAsset {
@@ -24,28 +25,41 @@ namespace Vermines.Gameplay.Phases {
 
         private GainSummaryData _gainSummary;
 
+        private bool isFirstTurn = true;
+
         #endregion
 
         #region Override Methods
 
         public override void Run(PlayerRef playerRef)
         {
-            GameplayUIController gameplayUIController = GameObject.FindAnyObjectByType<GameplayUIController>();
-            
-            if (_Context.GameplayMode.State != Vermines.Core.GameplayMode.GState.Active || gameplayUIController == null) {
-                _Context.GameplayMode.PhaseManager.CurrentPhase = Enumerations.PhaseType.None;
-
+            if (_Context.GameplayMode.State != Vermines.Core.GameplayMode.GState.Active)
                 return;
-            }
 
             base.Run(playerRef);
 
             PlayerController player = _Context.NetworkGame.GetPlayer(playerRef);
 
+            if (isFirstTurn)
+            {
+                List<PlayerController> players = _Context.Runner.GetAllBehaviours<PlayerController>();
+
+                foreach (var p in players)
+                {
+                    foreach (var effect in p.God.Effects)
+                    {
+                        if ((effect.Type & EffectType.OnGameStart) != 0)
+                            effect.Play(p.Object.InputAuthority);
+                    }
+                }
+
+                isFirstTurn = false;
+            }
+
             ExecuteCardEffect(player);
 
-            _gainSummary.BaseValue     = EloquenceToEarn;
-            _gainSummary.FollowerValue = CalculateFollowerBonus(player.Deck.PlayedCards);
+            _gainSummary.BaseValue = EloquenceToEarn;
+            _gainSummary.FollowerValue = CalculateFollowerBonus(player.PlayedCards.ToList());
 
             ICommand earnCommand = new EarnCommand(player, _gainSummary.BaseValue, DataType.Eloquence);
 
@@ -53,9 +67,9 @@ namespace Vermines.Gameplay.Phases {
 
             GameEvents.OnPlayerUpdated.Invoke(player);
 
-            if (_CurrentPlayer == _Context.Runner.LocalPlayer) {
-                gameplayUIController.GetActiveScreen(out GameplayUIScreen lastScreen);
-                gameplayUIController.ShowWithParams<GameplayUIGainSummary, GainSummaryData>(_gainSummary, lastScreen);
+            if (_CurrentPlayer == _Context.Runner.LocalPlayer)
+            {
+                GameEvents.OnGainPhaseResolved.Invoke(_CurrentPlayer, _gainSummary);
             }
         }
 
@@ -79,8 +93,8 @@ namespace Vermines.Gameplay.Phases {
 
         private void ExecuteCardEffect(PlayerController player)
         {
-            List<ICard> equipmentCards = player.Deck.Equipments;
-            List<ICard> playedCards    = player.Deck.PlayedCards;
+            List<ICard> equipmentCards = player.Equipments.ToList();
+            List<ICard> playedCards    = player.PlayedCards.ToList();
 
             foreach (ICard card in equipmentCards) {
                 foreach (IEffect effect in card.Data.Effects) {
