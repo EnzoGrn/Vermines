@@ -125,6 +125,8 @@ namespace Vermines.Gameplay.Cards.Effect {
 
         private void Cleanup()
         {
+            _CurrentBuy = 0;
+
             Context.GameplayMode.Shop.Sections[_ShopTarget].SetFree(false);
             GameEvents.OnCardPurchaseRequested.RemoveListener(OnCardPurchaseRequested);
             GameEvents.OnCardPurchased.RemoveListener(OnBuy);
