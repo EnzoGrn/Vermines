@@ -186,7 +186,7 @@ namespace Vermines.Tutorial.Integration {
 
         private static void ScanNavigation()
         {
-            foreach (NavButtonPlugin nav in Object.FindObjectsByType<NavButtonPlugin>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+            foreach (NavBarWidget nav in Object.FindObjectsByType<NavBarWidget>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 foreach (Button button in nav.GetComponentsInChildren<Button>(false)) {
                     string name = TutorialCardIds.Key(button.gameObject.name);
                     string id   = name.Contains("court") ? "court_button" : name.Contains("market") ? "market_button" : name.Contains("back") || name.Contains("close") ? "back_button" : "nav:" + name;

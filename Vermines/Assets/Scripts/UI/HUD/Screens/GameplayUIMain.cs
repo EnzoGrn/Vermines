@@ -88,11 +88,7 @@ namespace Vermines.UI.Screen
 
             ShowUser();
 
-            GameEvents.OnPhaseChanged.AddListener(UpdateTurnButton);
             GameEvents.OnCardClicked.AddListener(OnCardButtonPressed);
-
-            if (PlayerController.Local)
-                UpdateTurnButton(PlayerController.Local.Context.GameplayMode.PhaseManager.CurrentPhase);
         }
 
         /// <summary>
@@ -105,101 +101,16 @@ namespace Vermines.UI.Screen
 
             HideUser();
 
-            GameEvents.OnPhaseChanged.RemoveListener(UpdateTurnButton);
             GameEvents.OnCardClicked.RemoveListener(OnCardButtonPressed);
         }
 
         #endregion
 
         #region Methods
-
-        protected void UpdateTurnButton(PhaseType phase)
-        {
-            if (_TurnButton == null || !PlayerController.Local)
-                return;
-            SceneContext context = PlayerController.Local.Context;
-
-            bool isMyTurn = context.GameplayMode.IsMyTurn;
-
-            _TurnButton.interactable = isMyTurn;
-
-            var labelKey = isMyTurn ? GetButtonTranslationKey(context.GameplayMode.PhaseManager.CurrentPhase) : "ui.button.wait_your_turn";
-
-            _TurnButton.GetComponentInChildren<Text>().text = Translate(labelKey);
-        }
-
-        protected string GetButtonTranslationKey(PhaseType phase)
-        {
-            return phase switch
-            {
-                PhaseType.Sacrifice => "ui.button.next_gain",
-                PhaseType.Gain => "ui.button.next_action",
-                PhaseType.Action => "ui.button.next_resolution",
-                PhaseType.Resolution => "ui.button.next_player",
-                _ => "ui.button.unknown_phase"
-            };
-        }
-
-        protected string Translate(string key)
-        {
-            LocalizedString localized = new LocalizedString("UIUtils", key);
-            return localized.GetLocalizedString();
-        }
-
-        private void ShowScreenIfNotAlreadyShown<T>() where T : GameplayUIScreen
-        {
-            Controller.GetActiveScreen(out GameplayUIScreen lastScreen);
-
-            if (lastScreen is T)
-                return;
-
-            Controller.Show<T>(lastScreen);
-        }
-
         #endregion
 
         #region Events
 
-        /// <summary>
-        /// Is called when the <see cref="_TurnButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
-        protected virtual void OnAttemptToNextPhase()
-        {
-            if (!PlayerController.Local)
-                return;
-            if (EffectPromptState.BlockIfPending())
-                return;
-
-            SceneContext context = PlayerController.Local.Context;
-            PhaseManager phaseManager = context.GameplayMode.PhaseManager;
-
-            if (!Vermines.Tutorial.Integration.TutorialGameHooks.AllowNextPhase(phaseManager.CurrentPhase))
-                return;
-            if (context.HandManager.HasCards(true) && phaseManager.CurrentPhase == PhaseType.Action)
-            {
-                Controller.ShowDualPopup(new DefaultDiscardStrategy());
-
-                return;
-            }
-
-            phaseManager.Phases[phaseManager.CurrentPhase].OnPhaseEnding(context.Runner.LocalPlayer, false);
-        }
-
-        /// <summary>
-        /// Is called when the <see cref="_TableButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
-        protected virtual void OnTableButtonPressed()
-        {
-            ShowScreenIfNotAlreadyShown<GameplayUITable>();
-        }
-
-        /// <summary>
-        /// Is called when the <see cref="_RecycleButton"/> is pressed using SendMessage() from the UI object.
-        /// </summary>
-        protected virtual void OnRecycleButtonPressed()
-        {
-            ShowScreenIfNotAlreadyShown<GameplayUIRecycle>();
-        }
 
         // NOTE: GameEvents.OnCardClicked is shared between this screen and
         // GameplayUITable - both subscribe to the same event independently.
