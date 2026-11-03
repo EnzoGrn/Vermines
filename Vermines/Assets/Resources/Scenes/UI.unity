@@ -361,7 +361,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 4
+  m_SortingOrder: 30
   m_TargetDisplay: 0
 --- !u!95 &19365907
 Animator:
@@ -938,7 +938,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 40
   m_TargetDisplay: 0
 --- !u!95 &51661685
 Animator:
@@ -1342,7 +1342,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 116776262252877855, guid: 3c0d9e6b45b69bb459c2fff2ef852e8d, type: 3}
       propertyPath: m_SortingOrder
-      value: 26
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 691098978711227936, guid: 3c0d9e6b45b69bb459c2fff2ef852e8d, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3414,7 +3414,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 50
   m_TargetDisplay: 0
 --- !u!224 &180223455
 RectTransform:
@@ -3605,8 +3605,8 @@ Transform:
   m_Children:
   - {fileID: 2050789318}
   - {fileID: 1893903297}
-  - {fileID: 8152092}
   - {fileID: 487858835}
+  - {fileID: 8152092}
   - {fileID: 505450871}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4829,7 +4829,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 10
   m_TargetDisplay: 0
 --- !u!95 &297013239
 Animator:
@@ -4860,7 +4860,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 297013233}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
@@ -6643,7 +6643,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 25
+  m_SortingOrder: 70
   m_TargetDisplay: 0
 --- !u!114 &411990301
 MonoBehaviour:
@@ -8128,7 +8128,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 50
   m_TargetDisplay: 0
 --- !u!1 &492827735
 GameObject:
@@ -8460,7 +8460,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 40
   m_TargetDisplay: 0
 --- !u!95 &498155050
 Animator:
@@ -12249,7 +12249,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &761664717
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12660,7 +12660,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 65
+  m_SortingOrder: 90
   m_TargetDisplay: 0
 --- !u!1 &780962746
 GameObject:
@@ -12816,7 +12816,7 @@ PrefabInstance:
       objectReference: {fileID: 784630803}
     - target: {fileID: 5920365614186031758, guid: eec06d1475afc9d41ba2fd608df68912, type: 3}
       propertyPath: m_SortingOrder
-      value: 27
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 8355405997374870854, guid: eec06d1475afc9d41ba2fd608df68912, type: 3}
       propertyPath: m_Name
@@ -13442,7 +13442,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 4
+  m_SortingOrder: 30
   m_TargetDisplay: 0
 --- !u!1 &822702104
 GameObject:
@@ -14069,7 +14069,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 40
   m_TargetDisplay: 0
 --- !u!95 &867571007
 Animator:
@@ -20353,7 +20353,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 20
   m_TargetDisplay: 0
 --- !u!95 &1251628412
 Animator:
@@ -21009,7 +21009,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 40
   m_TargetDisplay: 0
 --- !u!95 &1305520345
 Animator:
@@ -23152,7 +23152,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 40
   m_TargetDisplay: 0
 --- !u!95 &1476125441
 Animator:
@@ -26715,7 +26715,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 4
+  m_SortingOrder: 30
   m_TargetDisplay: 0
 --- !u!1 &1693692110
 GameObject:
@@ -27197,7 +27197,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 40
   m_TargetDisplay: 0
 --- !u!95 &1718360329
 Animator:
@@ -29078,7 +29078,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 4
+  m_SortingOrder: 30
   m_TargetDisplay: 0
 --- !u!95 &1845527273
 Animator:
@@ -29215,7 +29215,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 11
+  m_SortingOrder: 60
   m_TargetDisplay: 0
 --- !u!95 &1853500301
 Animator:
@@ -43865,7 +43865,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 50
   m_TargetDisplay: 0
 --- !u!225 &8327874716710148945
 CanvasGroup:
