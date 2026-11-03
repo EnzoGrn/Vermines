@@ -102,28 +102,6 @@ namespace Vermines.UI.Plugin {
             GameEvents.OnGameInitialized.RemoveListener(Reorder);
         }
 
-        private void LateUpdate()
-        {
-            if (!_Initialized)
-                return;
-            // A player who left the game: his banner goes away.
-            for (int i = _Banners.Count - 1; i >= 0; i--) {
-                PUI_PlayerBanner banner = _Banners[i];
-
-                if (banner == null) {
-                    _Banners.RemoveAt(i);
-
-                    continue;
-                }
-
-                if (banner.Player != null && banner.Player.Object != null && banner.Player.Object.IsValid)
-                    continue;
-                _Banners.RemoveAt(i);
-
-                Destroy(banner.gameObject);
-            }
-        }
-
         #endregion
 
         #region Init
