@@ -39,6 +39,9 @@ namespace Vermines.Tutorial.Integration {
         [Tooltip("Souls that trigger the end of the match (100 in the base game). 0 = normal rule.")]
         public int VictorySoulsOverride;
 
+        [Tooltip("Plays the game intro (players, cultists and gods) before the first turn of the lesson.")]
+        public bool ShowGameIntro = true;
+
         #endregion
     }
 

@@ -13,6 +13,7 @@ namespace Vermines.Characters {
         public string Name = "Divinity";
 
         public Sprite DivinitySprite;
+        public Sprite BannerIcon;
 
         public List<AEffect> Effects;
     }

@@ -16,3 +16,4 @@ MonoBehaviour:
   family: 1
   Name: Cricket
   CultistSprite: {fileID: 21300000, guid: 6b04f842de3a1b84abb27c12b072ea4c, type: 3}
+  Color: {r: 0.6431373, g: 0.7215686, b: 0.345098, a: 1}

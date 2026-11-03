@@ -50,6 +50,8 @@ namespace Vermines.Test {
 
         private readonly List<ICard> _Cards = new();
 
+        private readonly List<PUI_MiniDeckDrawer> _Drawers = new();
+
         private readonly List<ICard> _Partisans = new();
 
         private readonly List<ICard> _Tools = new();
@@ -75,6 +77,9 @@ namespace Vermines.Test {
 
                 return;
             }
+            // Every drawer of the scene that has no player is fed (the standalone one and the one of the local player banner).
+            _Drawers.AddRange(FindObjectsByType<PUI_MiniDeckDrawer>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+
             CardSetDatabase.Instance.Initialize(_Families, null);
 
             _Partisans.AddRange(CardSetDatabase.Instance.GetEveryCardWith(card => card.Data.Type == CardType.Partisan));
@@ -89,7 +94,7 @@ namespace Vermines.Test {
         {
             _TitleStyle ??= new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold, fontSize = 14 };
 
-            GUILayout.BeginArea(new Rect(16f, 16f, 260f, 520f), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(16f, 16f, 260f, 480f), GUI.skin.box);
 
             GUILayout.Label("Mini deck drawer", _TitleStyle);
             GUILayout.Label($"Partisans : {CountOf(CardType.Partisan)}   Objets : {CountOf(CardType.Tools)}");
@@ -146,7 +151,7 @@ namespace Vermines.Test {
                 _Cards.Add(_Partisans[i]);
             for (int i = 0; i < _StartingTools && i < _Tools.Count; i++)
                 _Cards.Add(_Tools[i]);
-            _Drawer.Refresh(_Cards, true);
+            RefreshAll(null, true);
         }
 
         private void Clear()
@@ -156,7 +161,7 @@ namespace Vermines.Test {
             _NextReason = PUI_CardRemoveReason.Recycled;
 
             _Cards.Clear();
-            _Drawer.Refresh(_Cards, ResolveReason);
+            RefreshAll(ResolveReason);
         }
 
         private void AddRandom(List<ICard> pool, bool refresh = true)
@@ -171,7 +176,7 @@ namespace Vermines.Test {
             _Cards.Add(available[Random.Range(0, available.Count)]);
 
             if (refresh)
-                _Drawer.Refresh(_Cards);
+                RefreshAll(null);
         }
 
         private void RemoveRandom(PUI_CardRemoveReason reason)
@@ -181,7 +186,7 @@ namespace Vermines.Test {
             _NextReason = reason;
 
             _Cards.RemoveAt(Random.Range(0, _Cards.Count));
-            _Drawer.Refresh(_Cards, ResolveReason);
+            RefreshAll(ResolveReason);
         }
 
         private void Shuffle()
@@ -191,7 +196,7 @@ namespace Vermines.Test {
 
                 (_Cards[i], _Cards[j]) = (_Cards[j], _Cards[i]);
             }
-            _Drawer.Refresh(_Cards);
+            RefreshAll(null);
         }
 
         private void ToggleAuto()
@@ -234,6 +239,14 @@ namespace Vermines.Test {
         #endregion
 
         #region Helpers
+
+        private void RefreshAll(System.Func<ICard, PUI_CardRemoveReason> reasonResolver, bool instant = false)
+        {
+            foreach (PUI_MiniDeckDrawer drawer in _Drawers) {
+                if (drawer != null && drawer.Player == null)
+                    drawer.Refresh(_Cards, reasonResolver, instant);
+            }
+        }
 
         private PUI_CardRemoveReason ResolveReason(ICard card)
         {

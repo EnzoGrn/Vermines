@@ -12,6 +12,7 @@ namespace Vermines.Gameplay.Phases
     using Vermines.CardSystem.Enumerations;
     using Vermines.Core;
     using Vermines.Gameplay.Phases.Enumerations;
+    using Vermines.Tutorial.Integration;
     using Vermines.Player;
     using Vermines.UI;
     using Vermines.UI.Screen;
@@ -41,7 +42,15 @@ namespace Vermines.Gameplay.Phases
 
         private TurnTimer _TurnTimer;
 
+        /// <summary>
+        /// True once the game intro was played (before the first turn only).
+        /// </summary>
+        private bool _IntroPlayed;
+
         #endregion
+
+        [SerializeField]
+        private PUI_GameIntro _UIIntro_Prefab;
 
         #region Network Methods
 
@@ -159,6 +168,16 @@ namespace Vermines.Gameplay.Phases
 
             if (!PlayerController.Local)
                 Debug.LogWarning("[PhaseManager] SacrificeRoutine: PlayerController.Local never became ready within timeout - turn banner may not display correctly this time.");
+
+            // Before the first turn: intro with every player, their cultist and their god.
+            // The host waits for the whole intro even if skipped, so the first turn starts at the same moment for everyone.
+            if (!_IntroPlayed) {
+                _IntroPlayed = true;
+
+                if (!TutorialMatch.IsActive || TutorialMatch.Setup.ShowGameIntro)
+                    yield return PUI_GameIntro.PlayForGame(Context.GameplayMode, Context.NetworkGame, Runner.LocalPlayer, _UIIntro_Prefab, Runner.IsServer);
+                PUI_GameIntro.MarkFinished();
+            }
 
             if (gameplayUIController != null)
                 gameplayUIController.Show<GameplayUITurn>();

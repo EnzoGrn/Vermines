@@ -79,6 +79,9 @@ MonoBehaviour:
     phaseAsset: {fileID: 11400000, guid: 9236617600cc4234a98c920257cc2fcb, type: 2}
   - phaseType: 3
     phaseAsset: {fileID: 11400000, guid: 312b28fe26f967b4dbd4dafc3c64c2f8, type: 2}
+  _UIIntro_Prefab: {fileID: 4014701441247539395, guid: f409f1384b9396e42885cabe5df6be75, type: 3}
+  _IntroDelayAfterLoading: 0
+  _IntroLoadingTimeout: 0
 --- !u!114 &9082486691376895040
 MonoBehaviour:
   m_ObjectHideFlags: 0

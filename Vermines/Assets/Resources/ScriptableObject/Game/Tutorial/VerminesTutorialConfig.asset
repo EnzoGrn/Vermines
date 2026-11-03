@@ -55,6 +55,7 @@ MonoBehaviour:
       MarketPiles: []
       FallbackSeed: 7
       VictorySoulsOverride: 0
+      ShowGameIntro: 1
     Opponent:
       AgentIndex: 1
       Turns: []
@@ -112,6 +113,7 @@ MonoBehaviour:
       MarketPiles: []
       FallbackSeed: 11
       VictorySoulsOverride: 0
+      ShowGameIntro: 0
     Opponent:
       AgentIndex: 1
       Turns: []
@@ -172,6 +174,7 @@ MonoBehaviour:
       - '*'
       FallbackSeed: 13
       VictorySoulsOverride: 0
+      ShowGameIntro: 1
     Opponent:
       AgentIndex: 1
       Turns: []
@@ -227,6 +230,7 @@ MonoBehaviour:
       MarketPiles: []
       FallbackSeed: 17
       VictorySoulsOverride: 0
+      ShowGameIntro: 1
     Opponent:
       AgentIndex: 1
       Turns: []
@@ -367,6 +371,7 @@ MonoBehaviour:
       MarketPiles: []
       FallbackSeed: 19
       VictorySoulsOverride: 0
+      ShowGameIntro: 1
     Opponent:
       AgentIndex: 1
       Turns: []

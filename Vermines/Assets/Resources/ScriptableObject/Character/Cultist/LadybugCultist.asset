@@ -16,3 +16,4 @@ MonoBehaviour:
   family: 4
   Name: Ladybug
   CultistSprite: {fileID: 21300000, guid: 9d9b04aa1d838234cb004d1f512e42ea, type: 3}
+  Color: {r: 0.7372549, g: 0.3764706, b: 0.4784314, a: 1}
