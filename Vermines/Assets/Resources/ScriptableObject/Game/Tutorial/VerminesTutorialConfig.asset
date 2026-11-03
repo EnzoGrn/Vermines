@@ -139,7 +139,7 @@ MonoBehaviour:
       - DisplayName: Vous
         CultistId: 
         GodId: 
-        StartingEloquence: 5
+        StartingEloquence: 7
         StartingSouls: 0
         DeckTopToBottom: []
         ExactDeck: 1

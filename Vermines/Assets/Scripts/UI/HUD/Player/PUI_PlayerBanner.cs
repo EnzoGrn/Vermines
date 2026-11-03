@@ -151,6 +151,16 @@ namespace Vermines.UI {
         /// </summary>
         public bool IsTurnActive { get; private set; }
 
+        /// <summary>
+        /// Eloquence gauge (tutorial targets...).
+        /// </summary>
+        public PUI_IconGauge EloquenceGauge => _Eloquence;
+
+        /// <summary>
+        /// Souls gauge (tutorial targets...).
+        /// </summary>
+        public PUI_IconGauge SoulsGauge => _Souls;
+
         #endregion
 
         #region Unity Methods
@@ -210,8 +220,20 @@ namespace Vermines.UI {
 
             if (_DeckDrawer != null)
                 _DeckDrawer.Bind(player);
-            if (IsAlive(player))
-                Refresh(true);
+            if (!IsAlive(player))
+                return;
+            Refresh(true);
+            SyncTurn(true);
+        }
+
+        /// <summary>
+        /// Shows whether it is currently the turn of the bound player (the banner may be created mid-game).
+        /// </summary>
+        public void SyncTurn(bool instant = false)
+        {
+            if (!IsAlive(_Player) || _Player.Context == null || _Player.Context.GameplayMode == null)
+                return;
+            OnTurnChanged(_Player.Context.GameplayMode.CurrentPlayerIndex, instant);
         }
 
         private void Refresh(bool instant)
@@ -341,13 +363,18 @@ namespace Vermines.UI {
 
         private void OnTurnChanged(int turnIndex)
         {
+            OnTurnChanged(turnIndex, false);
+        }
+
+        private void OnTurnChanged(int turnIndex, bool instant)
+        {
             if (!IsAlive(_Player) || _Player.Context == null || _Player.Context.GameplayMode == null)
                 return;
             var order = _Player.Context.GameplayMode.PlayerTurnOrder;
 
             if (order.Length == 0)
                 return;
-            SetTurnActive(order.Get(((turnIndex % order.Length) + order.Length) % order.Length) == _Player.Object.InputAuthority);
+            SetTurnActive(order.Get(((turnIndex % order.Length) + order.Length) % order.Length) == _Player.Object.InputAuthority, instant);
         }
 
         private static Sprite GetFamilySprite(CardFamily family, string spriteName)
