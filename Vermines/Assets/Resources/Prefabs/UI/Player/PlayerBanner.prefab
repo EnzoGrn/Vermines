@@ -231,15 +231,6 @@ MonoBehaviour:
   _DeckDrawer: {fileID: 1328704624144039230}
   _Eloquence: {fileID: 4079262776093373116}
   _Souls: {fileID: 6059942734010305780}
-  _FamilyColors:
-  - Family: 1
-    Color: {r: 0.6431, g: 0.7216, b: 0.3451, a: 1}
-  - Family: 6
-    Color: {r: 0.3372549, g: 0.41568628, b: 0.8784314, a: 1}
-  - Family: 4
-    Color: {r: 0.7373, g: 0.3765, b: 0.4784, a: 1}
-  - Family: 3
-    Color: {r: 0.298, g: 0.6549, b: 0.6471, a: 1}
   _DefaultColor: {r: 1, g: 1, b: 1, a: 1}
   _TurnSlide: {fileID: 5739120384756201843}
   _TurnOffset: 40

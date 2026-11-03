@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: GameIntro Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: GameIntro
+  m_TableCollectionNameGuidString: d5a325509ea94edf98ec45fa4163efa9
+  m_Entries:
+  - m_Id: 4100000001
+    m_Key: intro.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4100000002
+    m_Key: intro.subtitle.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4100000003
+    m_Key: intro.subtitle.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4100000004
+    m_Key: intro.subtitle.4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4100000005
+    m_Key: intro.local
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4100000006
+    m_Key: intro.first
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4100000007
+    m_Key: intro.no_effect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4100000008
+    m_Key: intro.unknown_god
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 4100000000000000001
+  references:
+    version: 2
+    RefIds:
+    - rid: 4100000000000000001
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1793718000000

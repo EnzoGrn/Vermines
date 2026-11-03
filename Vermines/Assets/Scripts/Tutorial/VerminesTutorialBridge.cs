@@ -42,6 +42,10 @@ namespace Vermines.Tutorial.Integration {
         private float _StartTimeout = 60f;
 
         [SerializeField]
+        [Tooltip("Longest wait for the game intro before the first dialogue of the lesson.")]
+        private float _IntroTimeout = 45f;
+
+        [SerializeField]
         [Tooltip("Pause before an opponent ends its Gain phase, so the player sees it.")]
         private float _OpponentGainDelay = 1.2f;
 
@@ -179,6 +183,8 @@ namespace Vermines.Tutorial.Integration {
             _MatchRunning = true;
             _MatchSeen    = false;
 
+            int introCount = PUI_GameIntro.FinishedCount;
+
             Global.Networking.StartGame(request);
 
             // Ready when the scripted board is built, the local player exists and the loading screen is gone.
@@ -194,6 +200,11 @@ namespace Vermines.Tutorial.Integration {
                 yield return null;
             }
 
+            // The first dialogue waits for the game intro (or for its skip when the lesson has none).
+            float introLimit = Time.realtimeSinceStartup + _IntroTimeout;
+
+            while (PUI_GameIntro.FinishedCount == introCount && Time.realtimeSinceStartup < introLimit)
+                yield return null;
             TutorialEventBus.Publish(VerminesTutorialEvents.MatchStarted);
         }
 

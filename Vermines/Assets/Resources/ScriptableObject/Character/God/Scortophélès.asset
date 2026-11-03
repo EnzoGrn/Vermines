@@ -15,5 +15,6 @@ MonoBehaviour:
   ID: 4
   Name: "Scortoph\xE9l\xE8s"
   DivinitySprite: {fileID: 21300000, guid: 96198a8edcc42824aa01e79ae444484d, type: 3}
+  BannerIcon: {fileID: 21300000, guid: 58e794f4eef7bee4583a6ca95090de67, type: 3}
   Effects:
   - {fileID: 11400000, guid: cbdaeee38ca2b1b4a980ba84fa0deaff, type: 2}

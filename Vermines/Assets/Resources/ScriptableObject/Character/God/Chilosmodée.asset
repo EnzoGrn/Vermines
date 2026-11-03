@@ -15,5 +15,6 @@ MonoBehaviour:
   ID: 2
   Name: "Chilosmod\xE9e"
   DivinitySprite: {fileID: 21300000, guid: 4b2f622ec38e1f746b21a35b11f012e6, type: 3}
+  BannerIcon: {fileID: 21300000, guid: d9ebecd53c20a2d459308f0217a01f85, type: 3}
   Effects:
   - {fileID: 11400000, guid: 05cdc6ffc8d3cb8488ae4dec06d0b030, type: 2}

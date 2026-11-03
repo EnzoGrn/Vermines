@@ -14,5 +14,10 @@ namespace Vermines.Characters {
         public string Name = "Cultist";
 
         public Sprite CultistSprite;
+
+        /// <summary>
+        /// Color of the cultist, used to tint the player banners and the game intro.
+        /// </summary>
+        public Color Color = Color.white;
     }
 }
