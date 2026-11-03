@@ -2,6 +2,7 @@
   <Project Path="Vermines.csproj" />
   <Project Path="Fusion.Menu.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="CelticEdge.Tutorial.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="OMGG.Chronicle.csproj" />
   <Project Path="Fusion.Unity.csproj" />
@@ -9,6 +10,9 @@
   <Project Path="OMGG.Scene.csproj" />
   <Project Path="OMGG.Menu.csproj" />
   <Project Path="OMGG.Optimizer.Manager.csproj" />
+  <Project Path="CelticEdge.Tutorial.Demo.csproj" />
+  <Project Path="CelticEdge.Tutorial.Tests.csproj" />
+  <Project Path="CelticEdge.Tutorial.Editor.csproj" />
   <Project Path="PlayMode.csproj" />
   <Project Path="Fusion.Unity.Editor.csproj" />
   <Project Path="Singleton.csproj" />

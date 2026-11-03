@@ -45,7 +45,10 @@ namespace Vermines.UI
         private void OnPromptRequested(EffectPrompt prompt)
         {
             if (_Controller == null)
+            {
+                Debug.LogError("EffectPromptPresenter: GameplayUIController is null, cannot handle the prompt request.");
                 return;
+            }
 
             // Set the state first so screens shown below already see it.
             EffectPromptState.Set(prompt);
@@ -84,7 +87,10 @@ namespace Vermines.UI
             EffectPromptState.Clear();
 
             if (_Controller == null)
+            {
+                Debug.LogError("EffectPromptPresenter: GameplayUIController is null, cannot handle the prompt.");
                 return;
+            }
 
             // Board prompts live on a screen that stays open (the table).
             if (kind == EffectPromptKind.Sacrifice || kind == EffectPromptKind.Discard)
