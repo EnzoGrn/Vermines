@@ -15,5 +15,6 @@ MonoBehaviour:
   ID: 3
   Name: Mantislith
   DivinitySprite: {fileID: 21300000, guid: 0aa317cd3537d2b42b0353aaa79857e1, type: 3}
+  BannerIcon: {fileID: 21300000, guid: 916318847821aba489ca62abceb9cabc, type: 3}
   Effects:
   - {fileID: 11400000, guid: 5283e19031f74704fa47d7a09403cc90, type: 2}

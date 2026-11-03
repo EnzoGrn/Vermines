@@ -26,33 +26,6 @@ namespace Vermines.UI {
     /// </remarks>
     public class PUI_PlayerBanner : MonoBehaviour {
 
-        #region Types
-
-        /// <summary>
-        /// Banner color of one insect family.
-        /// </summary>
-        [Serializable]
-        public struct FamilyColor {
-
-            /// <summary>
-            /// The family.
-            /// </summary>
-            public CardFamily Family;
-
-            /// <summary>
-            /// Color applied to the banner image.
-            /// </summary>
-            public Color Color;
-
-            public FamilyColor(CardFamily family, string hex)
-            {
-                Family = family;
-                Color  = ColorUtility.TryParseHtmlString(hex, out Color color) ? color : Color.white;
-            }
-        }
-
-        #endregion
-
         #region Attributes
 
         /// <summary>
@@ -105,15 +78,9 @@ namespace Vermines.UI {
         private PUI_IconGauge _Souls;
 
         /// <summary>
-        /// Banner color of each family a player can pick (taken from the family card backgrounds).
+        /// Banner color while the family is unknown (the family colors come from the cultist database).
         /// </summary>
         [Header("Family")]
-        [SerializeField]
-        private List<FamilyColor> _FamilyColors = new();
-
-        /// <summary>
-        /// Banner color while the family is unknown.
-        /// </summary>
         [SerializeField]
         private Color _DefaultColor = Color.white;
 
@@ -352,13 +319,12 @@ namespace Vermines.UI {
             }
         }
 
+        /// <summary>
+        /// Banner color of <paramref name="family"/>, read from the cultist database.
+        /// </summary>
         public Color GetFamilyColor(CardFamily family)
         {
-            foreach (FamilyColor entry in _FamilyColors) {
-                if (entry.Family == family)
-                    return entry.Color;
-            }
-            return _DefaultColor;
+            return TryGetCultistColor(family, out Color color) ? color : _DefaultColor;
         }
 
         #endregion
@@ -391,19 +357,42 @@ namespace Vermines.UI {
             return UISpriteLoader.GetDefaultSprite(CardType.Partisan, family, spriteName);
         }
 
-        private static Sprite GetCultistSprite(CardFamily family)
+        /// <summary>
+        /// Cultist portrait of <paramref name="family"/> (also used by the game intro).
+        /// </summary>
+        public static Sprite GetCultistSprite(CardFamily family)
         {
             if (family == CardFamily.None || family == CardFamily.Count)
                 return null;
-            Cultist[] cultists = Global.Settings != null && Global.Settings.Cultists != null ? Global.Settings.Cultists.GetAllCultists() : null;
+            Cultist cultist = GetCultist(family);
 
-            if (cultists != null) {
-                foreach (Cultist cultist in cultists) {
-                    if (cultist != null && cultist.family == family && cultist.CultistSprite != null)
-                        return cultist.CultistSprite;
-                }
-            }
+            if (cultist != null && cultist.CultistSprite != null)
+                return cultist.CultistSprite;
             return UISpriteLoader.GetDefaultSprite(CardType.Partisan, family, "Cultist");
+        }
+
+        /// <summary>
+        /// Color of the cultist of <paramref name="family"/> in the cultist database (also used by the game intro).
+        /// </summary>
+        public static bool TryGetCultistColor(CardFamily family, out Color color)
+        {
+            Cultist cultist = GetCultist(family);
+
+            color = cultist != null ? cultist.Color : Color.white;
+
+            return cultist != null;
+        }
+
+        /// <summary>
+        /// Cultist of <paramref name="family"/> in <see cref="Global.Settings"/>, null when unknown.
+        /// </summary>
+        public static Cultist GetCultist(CardFamily family)
+        {
+            if (family == CardFamily.None || family == CardFamily.Count)
+                return null;
+            if (Global.Settings == null || Global.Settings.Cultists == null)
+                return null;
+            return Global.Settings.Cultists.GetCultistByFamily(family);
         }
 
         private int MaxEloquence()

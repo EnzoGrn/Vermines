@@ -3,6 +3,8 @@ using UnityEngine;
 
 namespace Vermines.Characters {
 
+    using Vermines.CardSystem.Enumerations;
+
     [CreateAssetMenu(fileName = "New Cultist Database", menuName = "Vermines/Characters/CultistDatabase")]
     public class CultistDatabase : ScriptableObject {
 
@@ -18,6 +20,18 @@ namespace Vermines.Characters {
                     return cultist;
             }
 
+            return null;
+        }
+
+        /// <summary>
+        /// Cultist of <paramref name="family"/>, or null when the database has none.
+        /// </summary>
+        public Cultist GetCultistByFamily(CardFamily family)
+        {
+            foreach (Cultist cultist in _Cultists) {
+                if (cultist != null && cultist.family == family)
+                    return cultist;
+            }
             return null;
         }
 
