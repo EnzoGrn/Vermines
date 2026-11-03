@@ -38,9 +38,9 @@ namespace Vermines.Tutorial.Integration {
 
         #region Attributes
 
-        private static readonly FieldInfo BannerPlayerField    = typeof(PlayerBannerUI).GetField("_player"      , BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo BannerEloquenceField = typeof(PlayerBannerUI).GetField("eloquenceText", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo BannerSoulsField     = typeof(PlayerBannerUI).GetField("soulsText"    , BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo BannerPlayerField    = typeof(PUI_PlayerBanner).GetField("_player"      , BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo BannerEloquenceField = typeof(PUI_PlayerBanner).GetField("eloquenceText", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo BannerSoulsField     = typeof(PUI_PlayerBanner).GetField("soulsText"    , BindingFlags.Instance | BindingFlags.NonPublic);
 
         private static readonly FieldInfo ChoiceCardField       = typeof(GameplayUIChoiceEffect).GetField("_card"          , BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo ChoiceButtonsField    = typeof(GameplayUIChoiceEffect).GetField("_spawnedButtons", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -166,10 +166,10 @@ namespace Vermines.Tutorial.Integration {
         {
             PlayerController local = PlayerController.Local;
 
-            if (local == null || BannerPlayerField == null)
+            if (local == null)
                 return;
-            foreach (PlayerBannerUI banner in Object.FindObjectsByType<PlayerBannerUI>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
-                PlayerController player = BannerPlayerField.GetValue(banner) as PlayerController;
+            foreach (PUI_PlayerBanner banner in Object.FindObjectsByType<PUI_PlayerBanner>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+                PlayerController player = BannerPlayerField?.GetValue(banner) as PlayerController;
 
                 if (player == null)
                     continue;
@@ -181,6 +181,20 @@ namespace Vermines.Tutorial.Integration {
                     Tag(eloquence, owner + "_eloquence");
                 if (BannerSoulsField?.GetValue(banner) is GameObject souls && souls != null)
                     Tag(souls, owner + "_souls");
+            }
+
+            // Banners of PlayerBannerPlugin (PUI_LocalPlayerBanner for me, PUI_PlayerBanner for the opponents).
+            foreach (PUI_PlayerBanner banner in Object.FindObjectsByType<PUI_PlayerBanner>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
+                if (banner.Player == null)
+                    continue;
+                string owner = banner.Player == local ? "my" : "opponent";
+
+                Tag(banner.gameObject, owner + "_banner");
+
+                if (banner.EloquenceGauge != null)
+                    Tag(banner.EloquenceGauge.gameObject, owner + "_eloquence");
+                if (banner.SoulsGauge != null)
+                    Tag(banner.SoulsGauge.gameObject, owner + "_souls");
             }
         }
 

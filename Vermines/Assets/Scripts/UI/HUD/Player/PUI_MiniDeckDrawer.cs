@@ -17,7 +17,7 @@ namespace Vermines.UI {
     /// </summary>
     /// <remarks>
     /// The piles are networked on the <see cref="PlayerController"/>,so the drawer polls them every frame and works the same on every client,
-    /// for every player.It binds itself to the player of a parent <see cref="PlayerBannerUI"/>, to the local player, or to the player given to <see cref="Bind"/>.
+    /// for every player.It binds itself to the player of a parent <see cref="PUI_PlayerBanner"/>, to the local player, or to the player given to <see cref="Bind"/>.
     /// </remarks>
     public class PUI_MiniDeckDrawer : MonoBehaviour {
 
@@ -93,7 +93,7 @@ namespace Vermines.UI {
 
         private PlayerController _Player;
 
-        private PlayerBannerUI _Banner;
+        private PUI_PlayerBanner _Banner;
 
         private Func<ICard, PUI_CardRemoveReason> _ReasonResolver;
 
@@ -121,7 +121,7 @@ namespace Vermines.UI {
         {
             if (_Container == null)
                 _Container = transform as RectTransform;
-            _Banner = GetComponentInParent<PlayerBannerUI>(true);
+            _Banner = GetComponentInParent<PUI_PlayerBanner>(true);
         }
 
         private void LateUpdate()
@@ -184,7 +184,7 @@ namespace Vermines.UI {
         private void TryAutoBind()
         {
             if (_Banner != null) {
-                PlayerController bannerPlayer = _Banner.GetPlayer();
+                PlayerController bannerPlayer = _Banner.Player;
 
                 if (IsAlive(bannerPlayer))
                     Bind(bannerPlayer);

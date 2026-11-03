@@ -1,39 +1,74 @@
-using Fusion;
-using System.Collections;
+using UnityEngine.Serialization;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Collections;
 using UnityEngine.UI;
-using Vermines.Core;
-using Vermines.Core.Player;
-using Vermines.Core.Scene;
-using Vermines.Player;
-using Vermines.UI.Screen;
+using UnityEngine;
+using Fusion;
 
-namespace Vermines.UI.Plugin
-{
+namespace Vermines.UI.Plugin {
+
+    using Vermines.Core.Scene;
+    using Vermines.UI.Screen;
+    using Vermines.Player;
+    using Vermines.Core;
+
     /// <summary>
-    /// Manages the display of player banners in the gameplay screen.
+    /// Creates the banners of the other players in the gameplay screen, in turn order.
     /// </summary>
-    public class PlayerBannerPlugin : GameplayScreenPlugin
-    {
+    /// <remarks>
+    /// The banner of the local player is not created here: put a <see cref="PUI_LocalPlayerBanner"/> in the scene,
+    /// it binds itself to <see cref="PlayerController.Local"/>.
+    /// Every banner follows its player alone (statistics, family, deck, turn slide); the plugin only creates them,
+    /// removes the ones whose player left and opens the player details on click.
+    /// </remarks>
+    public class PlayerBannerPlugin : GameplayScreenPlugin {
+
+        #region Attributes
+
         /// <summary>
-        /// The player banner prefab.
+        /// Banner prefab of the other players (PlayerBanner.prefab).
         /// Can't be null.
         /// </summary>
         [InlineHelp, SerializeField]
-        protected PlayerBannerUI playerBannerPrefab;
+        private PUI_PlayerBanner _BannerPrefab;
 
         /// <summary>
-        /// The parent transform for the banners.
+        /// Parent of the banners of the other players (a vertical layout group).
         /// Can't be null.
         /// </summary>
-        [InlineHelp, SerializeField]
-        protected Transform bannerParent;
+        [InlineHelp, SerializeField, FormerlySerializedAs("bannerParent")]
+        private Transform _BannerParent;
 
-        private Dictionary<int, PlayerStatistics> _players = new();
-        private readonly List<PlayerBannerUI> _banners = new();
+        /// <summary>
+        /// Banner of the local player, only used to open the player details on click. Found in the scene when empty.
+        /// </summary>
+        [InlineHelp, SerializeField]
+        private PUI_LocalPlayerBanner _LocalBanner;
+
+        /// <summary>
+        /// Maximum number of banners of the other players.
+        /// </summary>
+        [InlineHelp, SerializeField]
+        private int _MaxBanners = 3;
+
+        /// <summary>
+        /// Opens the player details when a banner is clicked.
+        /// </summary>
+        [InlineHelp, SerializeField]
+        private bool _OpenDetailsOnClick = true;
+
+        /// <summary>
+        /// Banners of the other players, in turn order.
+        /// </summary>
+        public IReadOnlyList<PUI_PlayerBanner> Banners => _Banners;
+
+        private readonly List<PUI_PlayerBanner> _Banners = new();
 
         private bool _PendingInit;
+
+        private bool _Initialized;
+
+        #endregion
 
         #region Override Methods
 
@@ -45,34 +80,57 @@ namespace Vermines.UI.Plugin
         {
             base.Show(screen);
 
-            GameEvents.OnTurnChanged.AddListener(NextTurn);
-            GameEvents.OnPlayerUpdated.AddListener(UpdatePlayer);
-
-            if (_PendingInit)
-            {
+            if (_PendingInit) {
                 _PendingInit = false;
+
                 StartCoroutine(InitWhenLocalPlayerReady());
             }
         }
 
-        /// <summary>
-        /// Hides the plugin.
-        /// </summary>
-        public override void Hide()
-        {
-            base.Hide();
+        #endregion
 
-            GameEvents.OnTurnChanged.RemoveListener(NextTurn);
-            GameEvents.OnPlayerUpdated.RemoveListener(UpdatePlayer);
-        }
+        #region Unity Methods
 
-        public void Awake()
+        private void Awake()
         {
             GameEvents.OnGameInitialized.AddListenerAndReplay(Init);
         }
 
+        private void OnDestroy()
+        {
+            GameEvents.OnGameInitialized.RemoveListener(Init);
+            GameEvents.OnGameInitialized.RemoveListener(Reorder);
+        }
+
+        private void LateUpdate()
+        {
+            if (!_Initialized)
+                return;
+            // A player who left the game: his banner goes away.
+            for (int i = _Banners.Count - 1; i >= 0; i--) {
+                PUI_PlayerBanner banner = _Banners[i];
+
+                if (banner == null) {
+                    _Banners.RemoveAt(i);
+
+                    continue;
+                }
+
+                if (banner.Player != null && banner.Player.Object != null && banner.Player.Object.IsValid)
+                    continue;
+                _Banners.RemoveAt(i);
+
+                Destroy(banner.gameObject);
+            }
+        }
+
         #endregion
 
+        #region Init
+
+        /// <summary>
+        /// Creates the banners once the game is initialized.
+        /// </summary>
         public void Init()
         {
             GameEvents.OnGameInitialized.RemoveListener(Init);
@@ -88,152 +146,131 @@ namespace Vermines.UI.Plugin
             float timeout = 10f;
             float elapsed = 0f;
 
-            while (PlayerController.Local == null && elapsed < timeout)
-            {
+            while (PlayerController.Local == null && elapsed < timeout) {
                 yield return null;
+
                 elapsed += Time.unscaledDeltaTime;
             }
-            if (PlayerController.Local == null)
-            {
+            if (PlayerController.Local == null) {
                 Debug.LogError("[PlayerBannerPlugin] PlayerController.Local never became ready within timeout - player banners will not be created.");
 
                 yield break;
             }
-            GameEvents.OnGameInitialized.AddListenerAndReplay(ReorderBanners);
+            CreateBanners();
+            HookLocalBanner();
 
-            _players.Clear();
+            // The turn order can be set after the game initialization: sort again when it is known.
+            GameEvents.OnGameInitialized.AddListenerAndReplay(Reorder);
 
-            foreach (PlayerBannerUI banner in _banners)
-                if (banner != null) Destroy(banner.gameObject);
-            _banners.Clear();
+            _Initialized = true;
+        }
 
+        private void CreateBanners()
+        {
+            foreach (PUI_PlayerBanner banner in _Banners) {
+                if (banner != null)
+                    Destroy(banner.gameObject);
+            }
+            _Banners.Clear();
+
+            if (_BannerPrefab == null || _BannerParent == null) {
+                Debug.LogError("[PlayerBannerPlugin] The banner prefab or the banner parent is missing.", this);
+
+                return;
+            }
             SceneContext context = PlayerController.Local.Context;
-
             List<PlayerController> players = context.Runner.GetAllBehaviours<PlayerController>();
 
-            players.Sort((a, b) => {
-                var pa = a.Object.InputAuthority;
-                var pb = b.Object.InputAuthority;
+            SortByTurnOrder(players, context.GameplayMode, player => player.Object.InputAuthority);
 
-                int ia = IndexInTurnOrder(context.GameplayMode, pa);
-                int ib = IndexInTurnOrder(context.GameplayMode, pb);
+            foreach (PlayerController player in players) {
+                if (player == PlayerController.Local)
+                    continue;
+                if (_Banners.Count >= _MaxBanners) {
+                    Debug.LogWarning("[PlayerBannerPlugin] Maximum number of banners reached.", this);
 
-                return ia.CompareTo(ib);
-            });
-
-            foreach (PlayerController player in players)
-            {
-                _players[player.Object.InputAuthority.PlayerId] = player.Statistics;
-
+                    break;
+                }
                 CreateBanner(player);
             }
         }
 
-        private int IndexInTurnOrder(GameplayMode mode, PlayerRef player)
+        /// <summary>
+        /// Creates the banner of <paramref name="player"/> at the end of the layout.
+        /// </summary>
+        public PUI_PlayerBanner CreateBanner(PlayerController player)
         {
-            for (int i = 0; i < mode.PlayerTurnOrder.Length; i++)
+            PUI_PlayerBanner banner = Instantiate(_BannerPrefab, _BannerParent);
+
+            banner.name = $"PlayerBanner ({player.NetworkedNickname.Value})";
+            banner.Bind(player);
+
+            AddClick(banner);
+
+            _Banners.Add(banner);
+
+            return banner;
+        }
+
+        private void HookLocalBanner()
+        {
+            if (_LocalBanner == null)
+                _LocalBanner = FindFirstObjectByType<PUI_LocalPlayerBanner>(FindObjectsInactive.Include);
+            if (_LocalBanner != null)
+                AddClick(_LocalBanner);
+        }
+
+        private void Reorder()
+        {
+            GameEvents.OnGameInitialized.RemoveListener(Reorder);
+
+            if (PlayerController.Local == null || PlayerController.Local.Context == null)
+                return;
+            _Banners.RemoveAll(banner => banner == null || banner.Player == null);
+
+            SortByTurnOrder(_Banners, PlayerController.Local.Context.GameplayMode, banner => banner.Player.Object.InputAuthority);
+
+            for (int i = 0; i < _Banners.Count; i++) {
+                _Banners[i].transform.SetSiblingIndex(i);
+                _Banners[i].SyncTurn(true);
+            }
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private void AddClick(PUI_PlayerBanner banner)
+        {
+            if (!_OpenDetailsOnClick)
+                return;
+            if (!banner.TryGetComponent(out Button button)) {
+                button = banner.gameObject.AddComponent<Button>();
+
+                button.transition = Selectable.Transition.None;
+            }
+            button.onClick.AddListener(() => {
+                if (banner.Player != null && _ParentScreen != null && _ParentScreen.Controller != null)
+                    _ParentScreen.Controller.ShowWithParams<GameplayUIPlayerDetails, PlayerController>(banner.Player);
+            });
+        }
+
+        private static void SortByTurnOrder<T>(List<T> items, GameplayMode mode, System.Func<T, PlayerRef> getRef)
+        {
+            if (mode == null)
+                return;
+            items.Sort((a, b) => IndexInTurnOrder(mode, getRef(a)).CompareTo(IndexInTurnOrder(mode, getRef(b))));
+        }
+
+        private static int IndexInTurnOrder(GameplayMode mode, PlayerRef player)
+        {
+            for (int i = 0; i < mode.PlayerTurnOrder.Length; i++) {
                 if (mode.PlayerTurnOrder.Get(i) == player)
                     return i;
+            }
             return int.MaxValue;
         }
 
-        private void ReorderBanners()
-        {
-            var context = PlayerController.Local.Context;
-            var mode = context.GameplayMode;
-
-            List<PlayerBannerUI> sorted = new(_banners);
-
-            sorted.Sort((a, b) => {
-                int ia = IndexInTurnOrder(mode, a.GetPlayerRef());
-                int ib = IndexInTurnOrder(mode, b.GetPlayerRef());
-
-                return ia.CompareTo(ib);
-            });
-
-            _banners.Clear();
-            _banners.AddRange(sorted);
-
-            for (int i = 0; i < _banners.Count; i++)
-                _banners[i].transform.SetSiblingIndex(i);
-            for (int i = 0; i < _banners.Count; i++)
-                _banners[i].SetActive(i == 0);
-            GameEvents.OnGameInitialized.RemoveListener(ReorderBanners);
-        }
-
-        public void CreateBanner(PlayerController player)
-        {
-            if (_banners.Count >= 4) // TODO: Replace with a config value
-            {
-                Debug.LogWarning("Maximum number of _banners reached.");
-                return;
-            }
-            var banner = Instantiate(playerBannerPrefab, bannerParent);
-            banner.Initialize(player);
-            _banners.Add(banner);
-            banner.Show();
-            banner.SetActive(_banners.Count == 1); // Only the first banner is active initially
-            banner.onHideComplete.AddListener(() =>
-            {
-
-                banner.transform.SetAsLastSibling();
-
-                banner.Show();
-
-                for (int i = 0; i < _banners.Count; i++)
-                {
-                    _banners[i].SetActive(i == 0);
-                }
-            });
-            Button button = banner.GetComponent<Button>();
-            button.onClick.AddListener(() =>
-            {
-                _ParentScreen.Controller.ShowWithParams<GameplayUIPlayerDetails, PlayerController>(_banners.Find(b => b.GetPlayerId() == player.Object.InputAuthority.PlayerId)?.GetPlayer());
-            });
-        }
-
-        public void UpdateBanner(PlayerStatistics playerData, int playerId)
-        {
-            var banner = _banners.Find(b => b.GetPlayerId() == playerId);
-            if (banner != null)
-            {
-                banner.UpdateStats(playerData);
-            }
-        }
-
-        public void UpdateAllPlayers()
-        {
-            List<PlayerController> players = PlayerController.Local.Context.Runner.GetAllBehaviours<PlayerController>();
-
-            foreach (PlayerController player in players)
-                UpdatePlayer(player);
-        }
-
-        public void UpdatePlayer(PlayerController player)
-        {
-            int playerId = player.Object.InputAuthority.PlayerId;
-
-            if (_players.ContainsKey(playerId)) {
-                _players[playerId] = player.Statistics;
-
-                UpdateBanner(player.Statistics, playerId);
-            }
-        }
-
-        public void NextTurn(int currentPlayerIndex)
-        {
-            if (_banners.Count == 0) return;
-
-            var current = _banners[0];
-            _banners.RemoveAt(0);
-            _banners.Add(current);
-
-            AnimateBannerExitAndReorder(current);
-        }
-
-        private void AnimateBannerExitAndReorder(PlayerBannerUI banner)
-        {
-            banner.Hide();
-        }
+        #endregion
     }
 }
