@@ -189,7 +189,12 @@ namespace Vermines.Tutorial.Integration {
             foreach (NavBarWidget nav in Object.FindObjectsByType<NavBarWidget>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
                 foreach (Button button in nav.GetComponentsInChildren<Button>(false)) {
                     string name = TutorialCardIds.Key(button.gameObject.name);
-                    string id   = name.Contains("court") ? "court_button" : name.Contains("market") ? "market_button" : name.Contains("back") || name.Contains("close") ? "back_button" : "nav:" + name;
+                    string id = name.Contains("court") ? "court_button"
+                              : name.Contains("market") ? "market_button"
+                              : name.Contains("table") ? "table_button"
+                              : name.Contains("recycle") ? "recycle_button"
+                              : name.Contains("city") || name.Contains("back") || name.Contains("close") ? "back_button"
+                              : "nav:" + name;
 
                     Tag(button.gameObject, id);
                 }
