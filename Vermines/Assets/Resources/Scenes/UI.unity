@@ -4031,7 +4031,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -7897,7 +7897,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -8216,6 +8216,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Vermines::Vermines.UI.NavBarWidget
   _Controller: {fileID: 202515939}
+  _MarketJuice: {fileID: 8174078038152113196}
+  _CourtyardJuice: {fileID: 8858042828487417236}
+  _CityJuice: {fileID: 4173923673519118140}
+  _TableJuice: {fileID: 6081460337070433390}
+  _RecycleJuice: {fileID: 1611213087}
 --- !u!1001 &525736488
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8491,7 +8496,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -16369,7 +16374,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -24028,7 +24033,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -24255,7 +24260,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -25538,6 +25543,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1611213083}
   - component: {fileID: 1611213086}
+  - component: {fileID: 1611213087}
+  - component: {fileID: 1611213089}
+  - component: {fileID: 1611213088}
   m_Layer: 5
   m_Name: Recycle Button
   m_TagString: Untagged
@@ -25622,6 +25630,66 @@ MonoBehaviour:
           m_StringArgument: OnRecycleButtonPressed
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1611213087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611213082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d9b0861bd4cf98479d616255a9ea6db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Vermines::Vermines.UI.NavButtonJuice
+  _Visuals:
+  - {fileID: 1837091571}
+  - {fileID: 230170910}
+  _HoverLift: 10
+  _SelectedLift: 26
+  _HoverScale: 1.06
+  _PressScale: 0.93
+  _Duration: 0.15
+  _ClickPunch: 0.12
+  _RefusedShake: 10
+--- !u!114 &1611213088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611213082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1611213089
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611213082}
+  m_CullTransparentMesh: 1
 --- !u!1 &1617955571
 GameObject:
   m_ObjectHideFlags: 0
@@ -28004,7 +28072,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -28868,7 +28936,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -32282,7 +32350,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -35625,6 +35693,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5375806401374127581}
   - component: {fileID: 8174078038152113195}
+  - component: {fileID: 8174078038152113196}
+  - component: {fileID: 8174078038152113198}
+  - component: {fileID: 8174078038152113197}
   m_Layer: 5
   m_Name: Market Button
   m_TagString: Untagged
@@ -36119,7 +36190,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -36173,6 +36244,9 @@ GameObject:
   m_Component:
   - component: {fileID: 935025945575772533}
   - component: {fileID: 4173923673519118139}
+  - component: {fileID: 4173923673519118140}
+  - component: {fileID: 4173923673519118142}
+  - component: {fileID: 4173923673519118141}
   m_Layer: 5
   m_Name: City Button
   m_TagString: Untagged
@@ -36623,6 +36697,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6081460337070433389}
   - component: {fileID: 1420112968271457749}
+  - component: {fileID: 6081460337070433390}
+  - component: {fileID: 6081460337070433392}
+  - component: {fileID: 6081460337070433391}
   m_Layer: 5
   m_Name: Table Button
   m_TagString: Untagged
@@ -38052,6 +38129,66 @@ MonoBehaviour:
           m_StringArgument: OnBackButtonPressed
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &4173923673519118140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117086590408789712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d9b0861bd4cf98479d616255a9ea6db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Vermines::Vermines.UI.NavButtonJuice
+  _Visuals:
+  - {fileID: 1540471822}
+  - {fileID: 494402311}
+  _HoverLift: 10
+  _SelectedLift: 26
+  _HoverScale: 1.06
+  _PressScale: 0.93
+  _Duration: 0.15
+  _ClickPunch: 0.12
+  _RefusedShake: 10
+--- !u!114 &4173923673519118141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117086590408789712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &4173923673519118142
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117086590408789712}
+  m_CullTransparentMesh: 1
 --- !u!1 &4204105925461173977
 GameObject:
   m_ObjectHideFlags: 0
@@ -39856,6 +39993,66 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 70, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6081460337070433390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2721395055301145331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d9b0861bd4cf98479d616255a9ea6db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Vermines::Vermines.UI.NavButtonJuice
+  _Visuals:
+  - {fileID: 1756479814}
+  - {fileID: 1021249723}
+  _HoverLift: 10
+  _SelectedLift: 26
+  _HoverScale: 1.06
+  _PressScale: 0.93
+  _Duration: 0.15
+  _ClickPunch: 0.12
+  _RefusedShake: 10
+--- !u!114 &6081460337070433391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2721395055301145331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &6081460337070433392
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2721395055301145331}
+  m_CullTransparentMesh: 1
 --- !u!1 &6097224885883713500
 GameObject:
   m_ObjectHideFlags: 0
@@ -41138,6 +41335,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8858042828487417235}
   - component: {fileID: 1935691010537874916}
+  - component: {fileID: 8858042828487417236}
+  - component: {fileID: 8858042828487417238}
+  - component: {fileID: 8858042828487417237}
   m_Layer: 5
   m_Name: Courtyard Button
   m_TagString: Untagged
@@ -42134,6 +42334,66 @@ MonoBehaviour:
           m_StringArgument: OnOpenMarket
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &8174078038152113196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1695962088438840296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d9b0861bd4cf98479d616255a9ea6db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Vermines::Vermines.UI.NavButtonJuice
+  _Visuals:
+  - {fileID: 1541394368}
+  - {fileID: 7249985892748383244}
+  _HoverLift: 10
+  _SelectedLift: 26
+  _HoverScale: 1.06
+  _PressScale: 0.93
+  _Duration: 0.15
+  _ClickPunch: 0.12
+  _RefusedShake: 10
+--- !u!114 &8174078038152113197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1695962088438840296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &8174078038152113198
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1695962088438840296}
+  m_CullTransparentMesh: 1
 --- !u!224 &8201500124179466366
 RectTransform:
   m_ObjectHideFlags: 0
@@ -43176,6 +43436,66 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 70, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &8858042828487417236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7357814172223172302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d9b0861bd4cf98479d616255a9ea6db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Vermines::Vermines.UI.NavButtonJuice
+  _Visuals:
+  - {fileID: 2043851849}
+  - {fileID: 529523990}
+  _HoverLift: 10
+  _SelectedLift: 26
+  _HoverScale: 1.06
+  _PressScale: 0.93
+  _Duration: 0.15
+  _ClickPunch: 0.12
+  _RefusedShake: 10
+--- !u!114 &8858042828487417237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7357814172223172302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &8858042828487417238
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7357814172223172302}
+  m_CullTransparentMesh: 1
 --- !u!114 &8918244930853893417
 MonoBehaviour:
   m_ObjectHideFlags: 0
