@@ -197,8 +197,12 @@ namespace Vermines.Player {
                 if (Object.InputAuthority == Context.Runner.LocalPlayer) {
                     GameplayUIController uiController = GameplayUI;
 
-                    if (uiController != null)
-                        uiController.ShowWithParams<GameplayUIChoiceEffect, ICard>(card);
+                    // Remembers the open screen (the table when the card was dropped on the discard),
+                    // so it comes back once the chosen effect, and the prompts it opens, are done.
+                    if (uiController != null) {
+                        uiController.GetActiveScreen(out GameplayUIScreen origin);
+                        uiController.ShowWithParams<GameplayUIChoiceEffect, ICard>(card, origin is GameplayUIChoiceEffect ? null : origin);
+                    }
                 }
             } else {
                 foreach (AEffect effect in card.Data.Effects) {

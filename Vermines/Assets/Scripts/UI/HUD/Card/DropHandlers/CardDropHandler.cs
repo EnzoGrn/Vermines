@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Vermines.CardSystem.Elements;
 using Vermines.Gameplay.Cards.Effect;
+using Vermines.Gameplay.Errors;
 using Vermines.Player;
 using Vermines.UI.GameTable;
 
@@ -54,6 +55,29 @@ namespace Vermines.UI.Card
             }
         }
 
+        /// <summary>
+        /// Tells the player that the card cannot be played (or discarded) out of their turn:
+        /// the message goes through GameEvents.OnActionRefused, shown by the error toast, and by the tutorial during a lesson.
+        /// </summary>
+        protected void ReportNotYourTurn(ICard card, bool discard)
+        {
+            PlayerController player = PlayerController.Local;
+
+            if (player == null || player.Object == null || !player.Object.IsValid)
+                return;
+            GameActionError error = new GameActionError
+            {
+                Scope       = ErrorScope.Local,
+                Target      = player.Object.InputAuthority,
+                Severity    = ErrorSeverity.Minor,
+                Location    = discard ? ErrorLocation.Discard : ErrorLocation.Table,
+                MessageKey  = discard ? "Table_Discard_NotYourTurn" : "Table_Play_NotYourTurn",
+                MessageArgs = new GameActionErrorArgs(card != null ? card.ID.ToString() : "-1")
+            };
+
+            GameEvents.OnActionRefused.Invoke(error, GameActionError.Localize(error));
+        }
+
         protected GameObject GetHandDisplay(ICard card)
             => PlayerController.Local.Context.HandManager.GetCardDisplayGO(card);
 
@@ -71,6 +95,8 @@ namespace Vermines.UI.Card
             if (!IsMyTurn)
             {
                 drag.ReturnToOriginalPosition();
+
+                ReportNotYourTurn(drag.GetCard(), false);
 
                 return;
             }

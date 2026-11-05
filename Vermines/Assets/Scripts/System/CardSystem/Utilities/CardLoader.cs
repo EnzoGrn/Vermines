@@ -139,7 +139,7 @@ namespace Vermines.CardSystem.Utilities {
             if (sprite != null)
                 copy.Sprite = sprite;
             for (int i = 0; i < copy.Effects.Count; i++) {
-                AEffect effect = Object.Instantiate(copy.Effects[i]);
+                AEffect effect = CloneEffect(copy.Effects[i]);
 
                 effect.Initialize(Context, null);
 
@@ -147,6 +147,22 @@ namespace Vermines.CardSystem.Utilities {
             }
 
             return copy;
+        }
+
+        /// <summary>
+        /// Copies an effect and its whole chain of sub effects. Object.Instantiate only copies the first level:
+        /// the sub effect asset was shared by every copy of the card, so its Card was the last copy initialized
+        /// (e.g. the Royal Missive asked the server to run the effect of another player's missive: "CardWrongOwner").
+        /// </summary>
+        private static AEffect CloneEffect(AEffect source)
+        {
+            if (source == null)
+                return null;
+            AEffect clone = Object.Instantiate(source);
+
+            if (clone.SubEffect != null)
+                clone.SubEffect = CloneEffect(clone.SubEffect);
+            return clone;
         }
 
         private ICard SetIdentity(ICard card)

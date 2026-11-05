@@ -24,6 +24,9 @@ namespace Vermines.UI.Screen
 
         [Header("Navigation Buttons")]
 
+        /// <summary>
+        /// Optional close button (the table can be left with the navigation bar).
+        /// </summary>
         [InlineHelp, SerializeField]
         protected UnityEngine.UI.Button _CloseButton;
 
@@ -35,9 +38,21 @@ namespace Vermines.UI.Screen
         protected List<TableCardSlot> partisanSlots = new();
         [SerializeField] protected CardSlotBase discardSlot;
 
+        /// <summary>
+        /// Play mat of the local player (family texture, turn lock, blood). Optional.
+        /// </summary>
+        [SerializeField] protected PUI_PlayMat _PlayMat;
+
+        /// <summary>
+        /// Size of a partisan slot on the table, in pixels. The slot keeps the card proportions and fits in this size.
+        /// </summary>
+        [SerializeField] protected Vector2 _SlotSize = new Vector2(200f, 275f);
+
         [Header("Texts")]
         [InlineHelp, SerializeField]
         protected Text tableText;
+
+        private bool _SacrificeMode;
 
         #endregion
 
@@ -54,6 +69,15 @@ namespace Vermines.UI.Screen
 
             AwakeUser();
 
+            // Subscribed before the checks below: a missing optional reference must never cut the table off its events
+            // (a sacrificed partisan stayed on the table when Awake returned early).
+            GameEvents.OnCardSacrificed.AddListener(OnCardSacrificed);
+            GameEvents.OnCardReborned.AddListener(OnCardReborned);
+            EffectPromptState.Changed += OnPromptStateChanged;
+
+            if (_PlayMat != null)
+                _PlayMat.LockChanged += OnTableLockChanged;
+
             #region Error Handling
 
             if (discardSlot == null)
@@ -61,16 +85,6 @@ namespace Vermines.UI.Screen
                 Debug.LogErrorFormat(
                     gameObject,
                     "GameplayUITable Critical Error: Missing 'CardSlotBase' reference on GameObject '{0}'. This component is required to render the discard zone. Please assign a valid DiscardCardSlot in the Inspector.",
-                    gameObject.name
-                );
-                return;
-            }
-
-            if (_CloseButton == null)
-            {
-                Debug.LogErrorFormat(
-                    gameObject,
-                    "GameplayUITable Critical Error: Missing 'Button' reference on GameObject '{0}'. This component is required to render the close button. Please assign a valid Button in the Inspector.",
                     gameObject.name
                 );
                 return;
@@ -97,10 +111,6 @@ namespace Vermines.UI.Screen
             }
 
             #endregion
-
-            GameEvents.OnCardSacrificed.AddListener(OnCardSacrificed);
-            GameEvents.OnCardReborned.AddListener(OnCardReborned);
-            EffectPromptState.Changed += OnPromptStateChanged;
         }
 
         public override void Init()
@@ -138,6 +148,10 @@ namespace Vermines.UI.Screen
             HideUser();
 
             GameEvents.OnCardClicked.RemoveListener(OnCardClicked);
+
+            // The sacrifice splashes disappear when the table closes.
+            if (_PlayMat != null)
+                _PlayMat.OnTableClosed();
         }
 
         private void OnDestroy()
@@ -149,6 +163,9 @@ namespace Vermines.UI.Screen
             GameEvents.OnDiscardShuffled.RemoveListener(ClearDiscard);
             GameEvents.OnCardClicked.RemoveListener(OnCardClicked);
             EffectPromptState.Changed -= OnPromptStateChanged;
+
+            if (_PlayMat != null)
+                _PlayMat.LockChanged -= OnTableLockChanged;
         }
 
         #endregion
@@ -204,8 +221,17 @@ namespace Vermines.UI.Screen
             slot.Setup(acceptedType);
             slot.SetIndex(index);
             slot.ResetSlot();
-            slot.transform.localScale = Vector3.one * 1.6f;
+            slot.transform.localScale = Vector3.one * GetSlotScale(slot);
             return slot;
+        }
+
+        private float GetSlotScale(TableCardSlot slot)
+        {
+            Rect rect = ((RectTransform)slot.transform).rect;
+
+            if (rect.width <= 0f || rect.height <= 0f)
+                return 1.6f;
+            return Mathf.Min(_SlotSize.x / rect.width, _SlotSize.y / rect.height);
         }
 
         private void SetupDiscardZone()
@@ -281,10 +307,27 @@ namespace Vermines.UI.Screen
             if (active && !IsMyTurn())
                 return;
 
-            string localizedText = LocalizePhase(active ? "table.sacrifice_text" : "table.default_text");
-            tableText.text = string.IsNullOrEmpty(localizedText) ? "Unknown" : localizedText;
+            _SacrificeMode = active;
+
+            RefreshTableText();
 
             SetDiscardZoneInteractable(!active);
+        }
+
+        /// <summary>
+        /// Title of the table: locked (not our turn), sacrifice mode, or default.
+        /// </summary>
+        private void RefreshTableText()
+        {
+            string key = _SacrificeMode ? "table.sacrifice_text" : "table.default_text";
+            string localizedText = LocalizePhase(key);
+
+            tableText.text = string.IsNullOrEmpty(localizedText) ? "Unknown" : localizedText;
+        }
+
+        private void OnTableLockChanged(bool locked)
+        {
+            RefreshTableText();
         }
 
         private string LocalizePhase(string key)
@@ -363,6 +406,9 @@ namespace Vermines.UI.Screen
                 var slot = partisanSlots[i];
                 if (slot.CardDisplay && slot.CardDisplay.Card.ID == card.ID)
                 {
+                    if (_PlayMat != null)
+                        _PlayMat.PlaySacrificeSplash(slot.transform as RectTransform);
+
                     RemoveCardFromPartisanSlot(i);
                     return;
                 }

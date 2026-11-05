@@ -76,7 +76,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 12509439717498880
-    m_Localized: Play Area
+    m_Localized: Game Table
     m_Metadata:
       m_Items: []
   - m_Id: 54313612796452864
@@ -98,6 +98,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 72500278587973632
     m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72913374248607744
+    m_Localized: "It\u2019s not your turn"
     m_Metadata:
       m_Items: []
   references:

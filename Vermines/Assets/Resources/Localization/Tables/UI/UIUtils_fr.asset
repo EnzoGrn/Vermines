@@ -76,7 +76,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 12509439717498880
-    m_Localized: Zone de jeu
+    m_Localized: Table de Jeu
     m_Metadata:
       m_Items: []
   - m_Id: 54313612796452864
@@ -98,6 +98,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 72500278587973632
     m_Localized: Annuler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72913374248607744
+    m_Localized: "Ce n\u2019est pas votre tour"
     m_Metadata:
       m_Items: []
   references:

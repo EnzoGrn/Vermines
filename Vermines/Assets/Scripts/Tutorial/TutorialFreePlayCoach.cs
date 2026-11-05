@@ -271,8 +271,9 @@ namespace Vermines.Tutorial.Integration {
         {
             switch (e.Id) {
                 case VerminesTutorialEvents.ActionRefused:
-                    // The errors of the opponents' actions are not the player's.
-                    if (IsHumanTurn())
+                    // The errors of the opponents' actions are not the player's,
+                    // except the player's own attempts to play during the opponent's turn.
+                    if (IsHumanTurn() || (e.Arg != null && e.Arg.EndsWith("_NotYourTurn")))
                         ShowHint(e.Arg);
 
                     break;

@@ -95,6 +95,10 @@ MonoBehaviour:
     m_Key: Recycle.cancel
     m_Metadata:
       m_Items: []
+  - m_Id: 72913374248607744
+    m_Key: table.locked_text
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
