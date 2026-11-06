@@ -13,6 +13,8 @@ namespace Vermines.UI.Screen {
 
         public CardSlotBase TutorialDiscardSlot => discardSlot;
 
+        public Vermines.UI.GameTable.PUI_PlayMat TutorialPlayMat => _PlayMat;
+
         /// <summary>
         /// A lesson can start with partisans already on the table (VerminesPlayerSetup.StartingPartisans):
         ///   the table only displays the cards dropped on it, so the missing ones are shown here.

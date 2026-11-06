@@ -33,6 +33,8 @@ namespace Vermines.UI.Card
             {
                 drag.ReturnToOriginalPosition();
 
+                ReportNotYourTurn(drag.GetCard(), true);
+
                 return;
             }
 

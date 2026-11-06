@@ -258,6 +258,16 @@ MonoBehaviour:
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
+      - Trigger: Table_Play_NotYourTurn
+        InterludeId: pas_ton_tour
+        Once: 0
+        CooldownPeriods: 0
+        CooldownSeconds: 4
+      - Trigger: Table_Discard_NotYourTurn
+        InterludeId: pas_ton_tour
+        Once: 0
+        CooldownPeriods: 0
+        CooldownSeconds: 4
       - Trigger: court_incomplete
         InterludeId: cour_vide
         Once: 1
@@ -399,6 +409,16 @@ MonoBehaviour:
         Once: 0
         CooldownPeriods: 1
         CooldownSeconds: 0
+      - Trigger: Table_Play_NotYourTurn
+        InterludeId: pas_ton_tour
+        Once: 0
+        CooldownPeriods: 0
+        CooldownSeconds: 4
+      - Trigger: Table_Discard_NotYourTurn
+        InterludeId: pas_ton_tour
+        Once: 0
+        CooldownPeriods: 0
+        CooldownSeconds: 4
       - Trigger: court_incomplete
         InterludeId: cour_vide
         Once: 1

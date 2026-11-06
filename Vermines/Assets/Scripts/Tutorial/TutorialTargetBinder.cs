@@ -233,6 +233,10 @@ namespace Vermines.Tutorial.Integration {
 
                 if (table.TutorialDiscardSlot != null)
                     Tag(table.TutorialDiscardSlot.gameObject, "discard_slot");
+                if (table.TutorialDiscardSlot is DiscardCardSlot discard && discard.Pile != null)
+                    Tag(discard.Pile.gameObject, "discard_pile");
+                if (table.TutorialPlayMat != null)
+                    Tag(table.TutorialPlayMat.gameObject, "playmat");
             }
 
             foreach (GameplayUIDualButtonPopup popup in Object.FindObjectsByType<GameplayUIDualButtonPopup>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
