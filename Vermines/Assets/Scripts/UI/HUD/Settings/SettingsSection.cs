@@ -35,6 +35,14 @@ namespace Vermines.UI {
         [Header("Feel")]
         [SerializeField] private float _Duration = 0.3f;
 
+        [Header("Editor")]
+        [Tooltip("Editor only: unfolds the body so the rows can be tuned without playing. "
+               + "Ignored at runtime: Awake still folds the section.")]
+        [SerializeField] private bool _PreviewExpanded;
+
+        // Lets unticking fold the body back without touching a body that was unfolded by hand.
+        [SerializeField, HideInInspector] private bool _PreviewApplied;
+
         #endregion
 
         #region Getters & Setters
@@ -63,6 +71,55 @@ namespace Vermines.UI {
                 _Header.onClick.RemoveListener(Toggle);
             DOTween.Kill(this);
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (Application.isPlaying)
+                return;
+            // Layout rebuilds and undo records are not allowed inside OnValidate.
+            UnityEditor.EditorApplication.delayCall += ApplyPreview;
+        }
+
+        /// <summary>
+        /// Editor only. Also available from the component's context menu after adding rows to the section.
+        /// </summary>
+        [ContextMenu("Refresh Preview")]
+        private void ApplyPreview()
+        {
+            UnityEditor.EditorApplication.delayCall -= ApplyPreview;
+
+            // Destroyed meanwhile, in play mode, or a prefab asset selected in the Project window (no scene to lay out).
+            if (this == null || Application.isPlaying || !gameObject.scene.IsValid())
+                return;
+            if (_Body == null || _BodyGroup == null || _Content == null)
+                return;
+            if (!_PreviewExpanded && !_PreviewApplied)
+                return;
+            float height = 0f;
+
+            if (_PreviewExpanded) {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_Content);
+
+                height = LayoutUtility.GetPreferredHeight(_Content);
+            }
+
+            float alpha = _PreviewExpanded ? 1f : 0f;
+            Vector3 arrowAngle = new(0f, 0f, _PreviewExpanded ? _ArrowOpenAngle : 0f);
+
+            UnityEditor.Undo.RecordObjects(
+                _Arrow != null ? new UnityEngine.Object[] { this, _Body, _BodyGroup, _Arrow }
+                               : new UnityEngine.Object[] { this, _Body, _BodyGroup },
+                "Preview settings section");
+
+            _PreviewApplied       = _PreviewExpanded;
+            _Body.preferredHeight = height;
+            _BodyGroup.alpha      = alpha;
+
+            if (_Arrow != null)
+                _Arrow.localEulerAngles = arrowAngle;
+        }
+#endif
 
         #endregion
 
