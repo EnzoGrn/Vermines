@@ -7,6 +7,7 @@ namespace Vermines.Menu.View {
     using Vermines.UI.Dialog;
     using Vermines.UI.Core;
     using Vermines.UI;
+    using Vermines.UI.View;
     using Vermines.Characters;
     using Vermines.Extension;
     using Vermines.Core;
@@ -114,7 +115,9 @@ namespace Vermines.Menu.View {
 
         private void OnSettingsButton()
         {
-            Open<UISettingsView>();
+            // The scroll replaces the book; scenes not migrated yet keep the book.
+            if (Open<UISettingsScrollView>() == null)
+                Open<UISettingsView>();
         }
 
         private void OnPartyButton()

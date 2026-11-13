@@ -77,7 +77,8 @@ namespace Vermines.UI {
         [SerializeField]
         private UIButton _ResetButton;
 
-        [SerializeField] private StaggerReveal _Reveal;
+        [SerializeField]
+        private StaggerReveal _Reveal;
 
         private Coroutine _ShowCoroutine;
         private Coroutine _HideCoroutine;
@@ -231,7 +232,9 @@ namespace Vermines.UI {
             base.OnOpen();
 
             _Content?.SetActive(true);
-            _Reveal?.Play();
+
+            if (_Reveal != null)
+                _Reveal.Play();
             PrepareResolutionDropdown();
             LoadValues();
 

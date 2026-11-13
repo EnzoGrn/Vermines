@@ -7,6 +7,7 @@ namespace Vermines.Menu.CustomLobby {
     using Vermines.Core.UI;
     using Vermines.UI.Dialog;
     using Vermines.UI;
+    using Vermines.UI.View;
     using Vermines.Extension;
     using Vermines.Core;
     using Fusion;
@@ -90,7 +91,9 @@ namespace Vermines.Menu.CustomLobby {
 
         private void OnSettingsButton()
         {
-            Open<UISettingsView>();
+            // The scroll replaces the book; scenes not migrated yet keep the book.
+            if (Open<UISettingsScrollView>() == null)
+                Open<UISettingsView>();
         }
 
         private void OnQuitButton()
