@@ -4822,6 +4822,7 @@ MonoBehaviour:
   _ItemsDelay: 0.25
   _ItemStagger: 0.07
   _ItemSlide: 60
+  _Overshoot: 1.1
   _AsideRise: 150
   _HideMovesPanel: 1
 --- !u!225 &281316166
@@ -4959,8 +4960,8 @@ RectTransform:
   m_GameObject: {fileID: 288040534}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1161744161}
   - {fileID: 567160293}
@@ -4968,7 +4969,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 280, y: 815}
+  m_AnchoredPosition: {x: 260, y: 805}
   m_SizeDelta: {x: 30, y: 790}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &288040536
@@ -5028,8 +5029,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 540719329}
   m_HandleRect: {fileID: 540719327}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -8986,6 +8987,7 @@ MonoBehaviour:
   _ItemsDelay: 0.25
   _ItemStagger: 0.07
   _ItemSlide: 60
+  _Overshoot: 1.1
   _AsideRise: 0
   _HideMovesPanel: 0
 --- !u!225 &520919351
@@ -9578,7 +9580,7 @@ RectTransform:
   - {fileID: 1636215026}
   m_Father: {fileID: 567160293}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
@@ -17792,7 +17794,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 280, y: 470}
+  m_AnchoredPosition: {x: 258, y: 470}
   m_SizeDelta: {x: 860, y: 26}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &989856688
@@ -19800,6 +19802,7 @@ GameObject:
   - component: {fileID: 1073540731}
   - component: {fileID: 1073540733}
   - component: {fileID: 1073540732}
+  - component: {fileID: 1073540734}
   m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
@@ -19926,6 +19929,59 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1073540730}
   m_CullTransparentMesh: 1
+--- !u!114 &1073540734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073540730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25fe2d83c745444f91cccd072153c54b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Vermines::Vermines.UI.Effects.TMPCurveWave
+  _Curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -2
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _Amplitude: -9.3
+  _Frequency: 1
+  _Phase: 0
+  _FollowSlope: 1
+  _SlopeFactor: 1
+  _Speed: 0
+  _UnscaledTime: 1
+  _Loop: 1
 --- !u!1 &1075784316
 GameObject:
   m_ObjectHideFlags: 0
@@ -21541,7 +21597,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -280, y: 470}
+  m_AnchoredPosition: {x: -263, y: 470}
   m_SizeDelta: {x: 860, y: 26}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1132946139
@@ -23720,6 +23776,7 @@ GameObject:
   - component: {fileID: 1284503263}
   - component: {fileID: 1284503265}
   - component: {fileID: 1284503264}
+  - component: {fileID: 1284503266}
   m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
@@ -23743,8 +23800,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -28.539995, y: -5.35}
+  m_SizeDelta: {x: 57.080013, y: -10.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1284503264
 MonoBehaviour:
@@ -23846,6 +23903,59 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1284503262}
   m_CullTransparentMesh: 1
+--- !u!114 &1284503266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284503262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25fe2d83c745444f91cccd072153c54b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Vermines::Vermines.UI.Effects.TMPCurveWave
+  _Curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -2
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _Amplitude: -0.29
+  _Frequency: 1
+  _Phase: 0
+  _FollowSlope: 1
+  _SlopeFactor: 1
+  _Speed: 0
+  _UnscaledTime: 1
+  _Loop: 1
 --- !u!1 &1284579592
 GameObject:
   m_ObjectHideFlags: 0
@@ -32012,14 +32122,14 @@ RectTransform:
   m_GameObject: {fileID: 1636215025}
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.0000002, y: 1.0000002, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 540719327}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -280, y: -815}
+  m_AnchoredPosition: {x: 0, y: -0.000030517578}
   m_SizeDelta: {x: 790, y: 26}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1636215027
@@ -37083,7 +37193,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 3260}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 596}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1896735350
@@ -38031,8 +38141,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 22}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 11}
+  m_SizeDelta: {x: 0, y: -22}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1931481075
 MonoBehaviour:
