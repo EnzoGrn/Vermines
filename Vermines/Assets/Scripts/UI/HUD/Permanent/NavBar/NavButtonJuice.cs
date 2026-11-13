@@ -16,6 +16,8 @@ namespace Vermines.UI
         [SerializeField] private RectTransform[] _Visuals;
 
         [Header("Feel")]
+        [Tooltip("Where hover / selected lift the visuals: up for the nav bar (bottom edge), down for buttons hanging from the top edge.")]
+        [SerializeField] private Vector2 _LiftDirection = Vector2.up;
         [SerializeField] private float _HoverLift = 10f;
         [SerializeField] private float _SelectedLift = 26f;
         [SerializeField] private float _HoverScale = 1.06f;
@@ -112,7 +114,7 @@ namespace Vermines.UI
 
             for (int i = 0; i < _Visuals.Length; i++)
             {
-                Vector2 position = _BasePositions[i] + Vector2.up * lift;
+                Vector2 position = _BasePositions[i] + _LiftDirection.normalized * lift;
                 Vector3 targetScale = _BaseScales[i] * scale;
 
                 if (instant)
